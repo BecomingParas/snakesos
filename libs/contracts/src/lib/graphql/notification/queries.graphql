@@ -1,0 +1,51 @@
+# ===================================================================
+# NOTIFICATION - QUERIES
+# ===================================================================
+
+extend type Query {
+  """
+  Get notification by ID
+  """
+  notification(id: ID!): Notification @auth
+  
+  """
+  Get my notifications
+  """
+  myNotifications(
+    pagination: PaginationInput
+    filter: NotificationFilterInput
+    sort: NotificationSortInput
+  ): NotificationConnection! @auth
+  
+  """
+  Get unread notifications count
+  """
+  unreadNotificationsCount: Int! @auth
+  
+  """
+  Get notification statistics
+  """
+  notificationStats(userId: ID): NotificationStats! @auth
+  
+  """
+  Get notification preferences
+  """
+  myNotificationPreferences: NotificationPreferences! @auth
+}
+
+"""
+Connection type for paginated notification results
+"""
+type NotificationConnection {
+  edges: [NotificationEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for notification connection
+"""
+type NotificationEdge {
+  node: Notification!
+  cursor: String!
+}

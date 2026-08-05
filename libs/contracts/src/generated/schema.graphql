@@ -1,0 +1,4258 @@
+"""
+Requires authentication and optionally specific roles
+"""
+directive @auth(
+  """
+  Required user roles to access this field/type
+  """
+  requires: [UserRole!]
+) on FIELD_DEFINITION | OBJECT
+
+"""
+Rate limit directive for mutations
+"""
+directive @rateLimit(
+  """
+  Maximum requests per window
+  """
+  limit: Int!
+
+  """
+  Time window in seconds
+  """
+  window: Int!
+) on FIELD_DEFINITION
+
+"""
+AI-powered snake identification result
+"""
+type AIIdentification {
+  alternativeMatches: [AlternativeMatch!]!
+  colorDetected: [String!]!
+  confidence: Float!
+  correctSpecies: SnakeSpecies
+  createdAt: DateTime!
+  dangerAssessment: String
+  id: ID!
+  imageThumbnail: String
+  imageUrl: String!
+  model: String!
+  promptUsed: String
+  provider: AIProvider!
+  rescueRequest: RescueRequest
+  responseTime: Int
+  sizeEstimate: String
+  species: SnakeSpecies
+  uploadSource: UploadSource!
+  user: User
+  userFeedback: IdentificationFeedback
+  venomousDetected: Boolean
+}
+
+"""
+Connection type for paginated AI identification results
+"""
+type AIIdentificationConnection {
+  edges: [AIIdentificationEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for AI identification connection
+"""
+type AIIdentificationEdge {
+  cursor: String!
+  node: AIIdentification!
+}
+
+"""
+Filter input for AI identification queries
+"""
+input AIIdentificationFilterInput {
+  createdAfter: DateTime
+  createdBefore: DateTime
+  feedback: IdentificationFeedback
+  hasFeedback: Boolean
+  maxConfidence: Float
+  minConfidence: Float
+  provider: AIProvider
+  providers: [AIProvider!]
+  speciesId: ID
+  uploadSource: UploadSource
+  userId: ID
+}
+
+"""
+Fields available for sorting AI identifications
+"""
+enum AIIdentificationSortField {
+  CONFIDENCE
+  CREATED_AT
+  PROVIDER
+  RESPONSE_TIME
+}
+
+"""
+Sort input for AI identification queries
+"""
+input AIIdentificationSortInput {
+  field: AIIdentificationSortField!
+  order: SortOrder!
+}
+
+"""
+AI identification statistics
+"""
+type AIIdentificationStats {
+  accuracyRate: Float
+  averageConfidence: Float!
+  averageResponseTime: Int!
+  byProvider: [IdentificationByProvider!]!
+  topIdentifiedSpecies: [SpeciesIdentificationCount!]!
+  total: Int!
+}
+
+"""
+AI model configuration
+"""
+type AIModelConfig {
+  accuracy: Float
+  averageResponseTime: Int
+  enabled: Boolean!
+  maxImageSize: Int!
+  model: String!
+  provider: AIProvider!
+  supportedFormats: [String!]!
+}
+
+"""
+AI provider for snake identification
+"""
+enum AIProvider {
+  CLAUDE
+  CUSTOM
+  GEMINI
+  LOCAL
+  OPENAI
+}
+
+"""
+Input for volunteer accepting a rescue
+"""
+input AcceptRescueInput {
+  currentLat: Latitude
+  currentLng: Longitude
+  estimatedArrival: Int
+  rescueId: ID!
+}
+
+"""
+Activity log entry for audit trail
+"""
+type ActivityLog {
+  action: String!
+  createdAt: DateTime!
+  id: ID!
+  ipAddress: String
+  metadata: JSON
+  resource: String
+  resourceId: ID
+  user: User!
+  userAgent: String
+  userId: ID!
+}
+
+"""
+Paginated connection for activity logs
+"""
+type ActivityLogConnection {
+  edges: [ActivityLog!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Activity pattern
+"""
+enum ActivityPattern {
+  BOTH
+  CREPUSCULAR
+  DIURNAL
+  NOCTURNAL
+}
+
+"""
+Input for adding timeline event
+"""
+input AddTimelineEventInput {
+  description: String
+  event: String!
+  lat: Latitude
+  lng: Longitude
+  metadata: JSON
+  rescueId: ID!
+}
+
+"""
+Alternative species match from AI
+"""
+type AlternativeMatch {
+  confidence: Float!
+  reasoning: String
+  species: SnakeSpecies!
+}
+
+"""
+Input for analytics date range
+"""
+input AnalyticsDateRangeInput {
+  endDate: DateTime!
+  startDate: DateTime!
+}
+
+"""
+Time period for analytics
+"""
+enum AnalyticsTimePeriod {
+  CUSTOM
+  LAST_7_DAYS
+  LAST_30_DAYS
+  LAST_90_DAYS
+  LAST_MONTH
+  LAST_YEAR
+  THIS_MONTH
+  THIS_YEAR
+  TODAY
+  YESTERDAY
+}
+
+"""
+Input for volunteer application
+"""
+input ApplyVolunteerInput {
+  address: String!
+  assignedZone: String
+  availableDays: [String!]!
+  availableTime: AvailabilityTime!
+  bio: String
+  certifications: [String!]
+  contact: Phone!
+  coverageRadius: Int
+  dateOfBirth: DateTime
+  email: Email
+  emergencyAvailability: Boolean!
+  emergencyContact: String
+  emergencyPhone: Phone
+  equipment: [String!]
+  experience: ExperienceLevel!
+  experienceYears: Int
+  gender: String
+  hasEquipment: Boolean!
+  imageUrl: String
+  languages: [String!]
+  municipality: String!
+  name: String!
+  skills: [String!]
+  vehicle: VehicleType!
+  vehicleDetails: String
+  ward: Int
+}
+
+"""
+Input for assigning a rescue to a volunteer
+"""
+input AssignRescueInput {
+  notes: String
+  rescueId: ID!
+  volunteerId: ID!
+}
+
+"""
+Authentication payload returned on successful login/register
+"""
+type AuthPayload {
+  expiresIn: Int!
+  refreshToken: String!
+  token: String!
+  user: User!
+}
+
+"""
+Availability time preference
+"""
+enum AvailabilityTime {
+  ANYTIME
+  EVENINGS
+  WEEKDAYS
+  WEEKENDS
+}
+
+"""
+Available volunteers for dispatch
+"""
+type AvailableVolunteer {
+  currentlyAssigned: Int!
+  distance: Float
+  estimatedArrival: Int
+  volunteer: Volunteer!
+}
+
+"""
+Blog post
+"""
+type BlogPost {
+  author: User!
+  category: PostCategory!
+  commentCount: Int!
+  commentsEnabled: Boolean!
+  content: String!
+  createdAt: DateTime!
+  excerpt: String
+  id: ID!
+  imageUrl: String
+  images: [String!]!
+  likes: Int!
+  metaDescription: String
+  metaKeywords: [String!]!
+  metaTitle: String
+  publishedAt: DateTime
+  scheduledAt: DateTime
+  shares: Int!
+  slug: String!
+  status: PostStatus!
+  tags: [String!]!
+  title: String!
+  updatedAt: DateTime!
+  videoUrl: String
+  views: Int!
+}
+
+"""
+Connection type for paginated blog post results
+"""
+type BlogPostConnection {
+  edges: [BlogPostEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for blog post connection
+"""
+type BlogPostEdge {
+  cursor: String!
+  node: BlogPost!
+}
+
+"""
+Filter input for blog post queries
+"""
+input BlogPostFilterInput {
+  authorId: ID
+  categories: [PostCategory!]
+  category: PostCategory
+  publishedAfter: DateTime
+  publishedBefore: DateTime
+  search: String
+  status: PostStatus
+  statuses: [PostStatus!]
+  tags: [String!]
+}
+
+"""
+Fields available for sorting blog posts
+"""
+enum BlogPostSortField {
+  CREATED_AT
+  LIKES
+  PUBLISHED_AT
+  TITLE
+  UPDATED_AT
+  VIEWS
+}
+
+"""
+Sort input for blog post queries
+"""
+input BlogPostSortInput {
+  field: BlogPostSortField!
+  order: SortOrder!
+}
+
+"""
+Input for sending bulk notifications
+"""
+input BulkNotificationInput {
+  channels: [NotificationChannel!]
+  link: String
+  message: String!
+  priority: NotificationPriority
+  title: String!
+  type: NotificationType!
+  userIds: [ID!]!
+}
+
+"""
+Bulk operation result
+"""
+type BulkOperationResult {
+  """
+  List of errors for failed items
+  """
+  errors: [Error!]!
+
+  """
+  Number of failed operations
+  """
+  failed: Int!
+
+  """
+  Number of items processed
+  """
+  processed: Int!
+
+  """
+  Number of successful operations
+  """
+  succeeded: Int!
+}
+
+"""
+CMS statistics
+"""
+type CMSStats {
+  draftPosts: Int!
+  featuredImages: [GalleryImage!]!
+  popularPosts: [BlogPost!]!
+  publicImages: Int!
+  publishedPosts: Int!
+  recentPosts: [BlogPost!]!
+  totalImages: Int!
+  totalLikes: Int!
+  totalPosts: Int!
+  totalViews: Int!
+}
+
+"""
+Input for changing password
+"""
+input ChangePasswordInput {
+  currentPassword: String!
+  newPassword: String!
+}
+
+"""
+Input for completing a rescue
+"""
+input CompleteRescueInput {
+  outcome: RescueOutcome!
+  releaseLat: Latitude
+  releaseLng: Longitude
+  releaseLocation: String
+  rescueId: ID!
+  rescueImages: [String!]
+  rescueReport: String!
+  speciesId: ID
+}
+
+"""
+Conservation status
+"""
+enum ConservationStatus {
+  CRITICALLY_ENDANGERED
+  DATA_DEFICIENT
+  ENDANGERED
+  EXTINCT
+  EXTINCT_IN_WILD
+  LEAST_CONCERN
+  NEAR_THREATENED
+  VULNERABLE
+}
+
+"""
+Contact message from users
+"""
+type ContactMessage {
+  assignedTo: User
+  category: MessageCategory!
+  createdAt: DateTime!
+  email: Email!
+  id: ID!
+  ipAddress: String
+  message: String!
+  name: String!
+  phone: Phone
+  priority: MessagePriority!
+  responded: Boolean!
+  respondedAt: DateTime
+  response: String
+  source: String!
+  status: MessageStatus!
+  subject: String!
+  updatedAt: DateTime!
+  userAgent: String
+}
+
+"""
+Connection type for paginated contact message results
+"""
+type ContactMessageConnection {
+  edges: [ContactMessageEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for contact message connection
+"""
+type ContactMessageEdge {
+  cursor: String!
+  node: ContactMessage!
+}
+
+"""
+Filter input for contact message queries
+"""
+input ContactMessageFilterInput {
+  assignedTo: ID
+  categories: [MessageCategory!]
+  category: MessageCategory
+  createdAfter: DateTime
+  createdBefore: DateTime
+  priorities: [MessagePriority!]
+  priority: MessagePriority
+  responded: Boolean
+  search: String
+  status: MessageStatus
+  statuses: [MessageStatus!]
+}
+
+"""
+Fields available for sorting contact messages
+"""
+enum ContactMessageSortField {
+  CATEGORY
+  CREATED_AT
+  NAME
+  PRIORITY
+  STATUS
+}
+
+"""
+Sort input for contact message queries
+"""
+input ContactMessageSortInput {
+  field: ContactMessageSortField!
+  order: SortOrder!
+}
+
+"""
+Contact message statistics
+"""
+type ContactMessageStats {
+  averageResponseTime: Int!
+  byCategory: [MessageByCategory!]!
+  byPriority: [MessageByPriority!]!
+  newMessages: Int!
+  recentMessages: [ContactMessage!]!
+  respondedMessages: Int!
+  total: Int!
+}
+
+"""
+Input for creating a blog post
+"""
+input CreateBlogPostInput {
+  category: PostCategory!
+  commentsEnabled: Boolean
+  content: String!
+  excerpt: String
+  imageUrl: String
+  images: [String!]
+  metaDescription: String
+  metaKeywords: [String!]
+  metaTitle: String
+  scheduledAt: DateTime
+  slug: String!
+  status: PostStatus
+  tags: [String!]
+  title: String!
+  videoUrl: String
+}
+
+"""
+Input for creating a donation
+"""
+input CreateDonationInput {
+  amount: Float!
+  anonymous: Boolean
+  campaign: String
+  currency: String
+  donorEmail: Email
+  donorName: String!
+  donorPhone: Phone
+  message: String
+  paymentMethod: PaymentMethod!
+  purpose: DonationPurpose
+}
+
+"""
+Input for creating a notification
+"""
+input CreateNotificationInput {
+  actionUrl: String
+  channels: [NotificationChannel!]
+  expiresAt: DateTime
+  link: String
+  message: String!
+  metadata: JSON
+  priority: NotificationPriority
+  rescueId: ID
+  title: String!
+  type: NotificationType!
+  userId: ID!
+}
+
+"""
+Input for creating a rescue request
+"""
+input CreateRescueRequestInput {
+  address: String!
+  biteDetails: String
+  email: Email
+  emergencyDetails: String
+  hasBite: Boolean
+  isEmergency: Boolean
+  landmark: String
+  lat: Latitude
+  lng: Longitude
+  locationAccuracy: Float
+  municipality: String!
+  name: String!
+  notes: String
+  phone: Phone!
+  snakeColor: String
+  snakeDescription: String
+  snakeImageUrl: String
+  snakeImages: [String!]
+  snakeSize: String
+  source: RescueSource
+  ward: Int
+}
+
+"""
+Input for creating snake species
+"""
+input CreateSnakeSpeciesInput {
+  activeTime: ActivityPattern
+  aliases: [String!]
+  altitudeRange: String
+  averageLength: String
+  behavior: String
+  color: String
+  conservationStatus: ConservationStatus
+  dangerLevel: DangerLevel
+  diet: String
+  distinctiveFeatures: [String!]
+  emergencyAdvice: String
+  family: String
+  firstAidSteps: [String!]
+  foundInNepal: Boolean
+  genus: String
+  habitat: String
+  identificationGuide: String
+  imageUrl: String
+  images: [String!]
+  localNames: [String!]
+  maxLength: String
+  name: String!
+  nepaliName: String!
+  pattern: String
+  protected: Boolean
+  regions: [String!]
+  safetyTips: String
+  scientificName: String!
+  species: String
+  venomType: VenomType
+  venomous: Boolean!
+  videoUrl: String
+}
+
+"""
+Input for creating a training session
+"""
+input CreateTrainingInput {
+  certificate: String
+  description: String
+  duration: Int!
+  instructor: String
+  location: String!
+  materials: [String!]
+  maxParticipants: Int!
+  scheduledAt: DateTime!
+  title: String!
+  type: TrainingType!
+}
+
+"""
+Cursor-based pagination input
+"""
+input CursorPaginationInput {
+  """
+  Cursor to start from
+  """
+  after: String
+
+  """
+  Cursor to end at
+  """
+  before: String
+
+  """
+  Number of items (max 100)
+  """
+  first: Int
+
+  """
+  Number of items from end (max 100)
+  """
+  last: Int
+}
+
+"""
+Danger level of snake species
+"""
+enum DangerLevel {
+  HARMLESS
+  HIGHLY_DANGEROUS
+  MEDICALLY_SIGNIFICANT
+  MILDLY_VENOMOUS
+}
+
+"""
+Dashboard statistics overview
+"""
+type DashboardStats {
+  activeRescues: Int!
+  activeVolunteers: Int!
+  averageResponseTime: Int!
+  completedRescues: Int!
+  completionRate: Float!
+  donationTrend: TrendData!
+  recentDonations: [Donation!]!
+  recentRescues: [RescueRequest!]!
+  rescueTrend: TrendData!
+  totalDonationAmount: Float!
+  totalDonations: Float!
+  totalRescues: Int!
+  totalSpecies: Int!
+  totalUsers: Int!
+  totalVolunteers: Int!
+  venomousEncounters: Int!
+  verifiedRescuers: Int!
+  volunteerTrend: TrendData!
+}
+
+"""
+ISO 8601 datetime string (e.g., "2024-08-05T12:30:00Z")
+"""
+scalar DateTime
+
+"""
+Donation transaction
+"""
+type Donation {
+  amount: Float!
+  amountUSD: Float
+  anonymous: Boolean!
+  campaign: String
+  createdAt: DateTime!
+  currency: String!
+  donor: User
+  donorEmail: Email
+  donorName: String!
+  donorPhone: Phone
+  gatewayResponse: JSON
+  id: ID!
+  invoiceUrl: String
+  ipAddress: String
+  message: String
+  paidAt: DateTime
+  paymentGateway: String!
+  paymentMethod: PaymentMethod!
+  purpose: DonationPurpose
+  receiptNumber: String
+  receiptUrl: String
+  refundAmount: Float
+  refundReason: String
+  refundedAt: DateTime
+  source: String!
+  status: PaymentStatus!
+  transactionId: String
+  updatedAt: DateTime!
+  userAgent: String
+  verificationNotes: String
+  verifiedAt: DateTime
+  verifiedBy: User
+}
+
+"""
+Donation count by payment method
+"""
+type DonationByMethod {
+  count: Int!
+  method: PaymentMethod!
+  totalAmount: Float!
+}
+
+"""
+Donation count by purpose
+"""
+type DonationByPurpose {
+  count: Int!
+  purpose: DonationPurpose!
+  totalAmount: Float!
+}
+
+"""
+Connection type for paginated donation results
+"""
+type DonationConnection {
+  edges: [DonationEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for donation connection
+"""
+type DonationEdge {
+  cursor: String!
+  node: Donation!
+}
+
+"""
+Filter input for donation queries
+"""
+input DonationFilterInput {
+  anonymous: Boolean
+  createdAfter: DateTime
+  createdBefore: DateTime
+  donorId: ID
+  maxAmount: Float
+  methods: [PaymentMethod!]
+  minAmount: Float
+  paymentMethod: PaymentMethod
+  purpose: DonationPurpose
+  purposes: [DonationPurpose!]
+  status: PaymentStatus
+  statuses: [PaymentStatus!]
+  verified: Boolean
+}
+
+"""
+Donation purpose
+"""
+enum DonationPurpose {
+  EDUCATION
+  EMERGENCY_FUND
+  EQUIPMENT
+  GENERAL
+  INFRASTRUCTURE
+  MEDICAL
+  RESEARCH
+  TRAINING
+}
+
+"""
+Fields available for sorting donations
+"""
+enum DonationSortField {
+  AMOUNT
+  CREATED_AT
+  DONOR_NAME
+  PAID_AT
+}
+
+"""
+Sort input for donation queries
+"""
+input DonationSortInput {
+  field: DonationSortField!
+  order: SortOrder!
+}
+
+"""
+Donation statistics
+"""
+type DonationStats {
+  averageDonation: Float!
+  byMethod: [DonationByMethod!]!
+  byPurpose: [DonationByPurpose!]!
+  monthlyTrend: [MonthlyDonationData!]!
+  recentDonations: [Donation!]!
+  topDonors: [TopDonor!]!
+  totalAmount: Float!
+  totalAmountUSD: Float!
+  totalDonations: Int!
+}
+
+"""
+Input for donation statistics
+"""
+input DonationStatsInput {
+  endDate: DateTime
+  paymentMethod: PaymentMethod
+  purpose: DonationPurpose
+  startDate: DateTime
+}
+
+"""
+Donation status change event
+"""
+type DonationStatusChangeEvent {
+  changedAt: DateTime!
+  donation: Donation!
+  newStatus: PaymentStatus!
+  oldStatus: PaymentStatus!
+}
+
+"""
+Valid email address format
+"""
+scalar Email
+
+"""
+Email verification response
+"""
+type EmailVerificationPayload {
+  message: String!
+  success: Boolean!
+  user: User
+}
+
+"""
+Engagement metrics
+"""
+type EngagementMetrics {
+  avgSessionDuration: Int!
+  bounceRate: Float!
+  topPages: [PageView!]!
+  totalPageViews: Int!
+  uniqueVisitors: Int!
+  userGrowth: [TimeSeriesPoint!]!
+}
+
+"""
+Structured error with code, message, and metadata
+"""
+type Error {
+  """
+  Machine-readable error code
+  """
+  code: ErrorCode!
+
+  """
+  Field that caused the error (for validation)
+  """
+  field: String
+
+  """
+  Human-readable error message
+  """
+  message: String!
+
+  """
+  Additional error metadata
+  """
+  metadata: JSON
+
+  """
+  Error severity
+  """
+  severity: ErrorSeverity!
+}
+
+"""
+Error code for programmatic handling
+"""
+enum ErrorCode {
+  ALREADY_EXISTS
+  BUSINESS_RULE_VIOLATION
+  CONFLICT
+  DUPLICATE_ENTRY
+  FORBIDDEN
+  INSUFFICIENT_PERMISSIONS
+  INTERNAL_SERVER_ERROR
+  INVALID_CREDENTIALS
+  INVALID_INPUT
+  NOT_FOUND
+  OPERATION_NOT_ALLOWED
+  RATE_LIMIT_EXCEEDED
+  REQUIRED_FIELD_MISSING
+  RESOURCE_NOT_FOUND
+  SERVICE_UNAVAILABLE
+  TIMEOUT
+  TOKEN_EXPIRED
+  TOO_MANY_REQUESTS
+  UNAUTHENTICATED
+  UNAUTHORIZED
+  VALIDATION_ERROR
+}
+
+"""
+Error severity level
+"""
+enum ErrorSeverity {
+  CRITICAL
+  HIGH
+  LOW
+  MEDIUM
+}
+
+"""
+Experience level of volunteer
+"""
+enum ExperienceLevel {
+  BEGINNER
+  EXPERT
+  INTERMEDIATE
+}
+
+"""
+Input for finding available volunteers
+"""
+input FindAvailableVolunteersInput {
+  lat: Latitude!
+  limit: Int
+  lng: Longitude!
+  minExperience: ExperienceLevel
+  radiusKm: Float!
+  requireEquipment: Boolean
+  requireVehicle: Boolean
+}
+
+"""
+Category of gallery image
+"""
+enum GalleryCategory {
+  EDUCATION
+  EVENT
+  HABITAT
+  RESCUE
+  SPECIES
+  TRAINING
+  VOLUNTEER
+}
+
+"""
+Gallery image
+"""
+type GalleryImage {
+  category: GalleryCategory
+  createdAt: DateTime!
+  description: String
+  dimensions: String
+  fileSize: Int
+  format: String
+  id: ID!
+  imageUrl: String!
+  isFeatured: Boolean!
+  isPublic: Boolean!
+  likes: Int!
+  rescue: RescueRequest
+  rescueId: ID
+  species: SnakeSpecies
+  speciesId: ID
+  tags: [String!]!
+  thumbnailUrl: String
+  title: String
+  updatedAt: DateTime!
+  uploader: User
+  views: Int!
+}
+
+"""
+Connection type for paginated gallery image results
+"""
+type GalleryImageConnection {
+  edges: [GalleryImageEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for gallery image connection
+"""
+type GalleryImageEdge {
+  cursor: String!
+  node: GalleryImage!
+}
+
+"""
+Filter input for gallery image queries
+"""
+input GalleryImageFilterInput {
+  categories: [GalleryCategory!]
+  category: GalleryCategory
+  isFeatured: Boolean
+  isPublic: Boolean
+  rescueId: ID
+  search: String
+  speciesId: ID
+  tags: [String!]
+  uploaderId: ID
+}
+
+"""
+Fields available for sorting gallery images
+"""
+enum GalleryImageSortField {
+  CREATED_AT
+  LIKES
+  TITLE
+  VIEWS
+}
+
+"""
+Sort input for gallery image queries
+"""
+input GalleryImageSortInput {
+  field: GalleryImageSortField!
+  order: SortOrder!
+}
+
+"""
+Geographic heatmap data
+"""
+type GeographicHeatmap {
+  intensity: Float!
+  lat: Latitude!
+  lng: Longitude!
+  municipality: String!
+  rescueCount: Int!
+}
+
+"""
+Input for geographic heatmap
+"""
+input GeographicHeatmapInput {
+  dateRange: AnalyticsDateRangeInput
+  municipality: String
+}
+
+"""
+Identification count by provider
+"""
+type IdentificationByProvider {
+  averageConfidence: Float!
+  averageResponseTime: Int!
+  count: Int!
+  provider: AIProvider!
+}
+
+"""
+User feedback on AI identification accuracy
+"""
+enum IdentificationFeedback {
+  CORRECT
+  INCORRECT
+  PARTIAL
+  UNSURE
+}
+
+"""
+Identification feedback event
+"""
+type IdentificationFeedbackEvent {
+  correctSpecies: SnakeSpecies
+  feedback: IdentificationFeedback!
+  identification: AIIdentification!
+  providedAt: DateTime!
+  user: User!
+}
+
+"""
+Input for providing feedback on identification
+"""
+input IdentificationFeedbackInput {
+  correctSpeciesId: ID
+  feedback: IdentificationFeedback!
+  identificationId: ID!
+  notes: String
+}
+
+"""
+Input for identifying snake from image
+"""
+input IdentifySnakeInput {
+  imageUrl: String!
+  includeAlternatives: Boolean
+  minConfidence: Float
+  uploadSource: UploadSource
+  userId: ID
+}
+
+"""
+JSON object for flexible data structures
+"""
+scalar JSON
+
+"""
+Latitude coordinate (-90 to 90)
+"""
+scalar Latitude
+
+"""
+Input for user login
+"""
+input LoginInput {
+  email: Email!
+  password: String!
+}
+
+"""
+Longitude coordinate (-180 to 180)
+"""
+scalar Longitude
+
+"""
+Message count by category
+"""
+type MessageByCategory {
+  category: MessageCategory!
+  count: Int!
+  newCount: Int!
+}
+
+"""
+Message count by priority
+"""
+type MessageByPriority {
+  count: Int!
+  priority: MessagePriority!
+}
+
+"""
+Category of contact message
+"""
+enum MessageCategory {
+  COMPLAINT
+  DONATION
+  FEEDBACK
+  GENERAL
+  MEDIA
+  PARTNERSHIP
+  RESCUE
+  TECHNICAL
+  VOLUNTEER
+}
+
+"""
+Priority of contact message
+"""
+enum MessagePriority {
+  HIGH
+  LOW
+  NORMAL
+  URGENT
+}
+
+"""
+Status of contact message
+"""
+enum MessageStatus {
+  ARCHIVED
+  CLOSED
+  NEW
+  READ
+  RESPONDED
+}
+
+"""
+Monthly donation trend data
+"""
+type MonthlyDonationData {
+  amount: Float!
+  count: Int!
+  month: String!
+  year: Int!
+}
+
+type Mutation {
+  _empty: String
+
+  """
+  Volunteer accepts rescue assignment
+  """
+  acceptRescue(input: AcceptRescueInput!): RescueRequest!
+
+  """
+  Add timeline event to rescue
+  """
+  addRescueTimelineEvent(input: AddTimelineEventInput!): RescueTimeline!
+
+  """
+  Apply to become a volunteer
+  """
+  applyVolunteer(input: ApplyVolunteerInput!): Volunteer!
+
+  """
+  Archive a blog post
+  """
+  archiveBlogPost(id: ID!): BlogPost!
+
+  """
+  Archive contact message
+  """
+  archiveContactMessage(messageId: ID!): ContactMessage!
+
+  """
+  Assign rescue to volunteer (admin/coordinator)
+  """
+  assignRescue(input: AssignRescueInput!): RescueRequest!
+
+  """
+  Bulk approve volunteers
+  """
+  bulkApproveVolunteers(volunteerIds: [ID!]!): BulkOperationResult!
+
+  """
+  Bulk assign rescues to volunteer
+  """
+  bulkAssignRescues(rescueIds: [ID!]!, volunteerId: ID!): BulkOperationResult!
+
+  """
+  Bulk delete gallery images
+  """
+  bulkDeleteGalleryImages(ids: [ID!]!): BulkOperationResult!
+
+  """
+  Bulk import snake species
+  """
+  bulkImportSnakeSpecies(
+    species: [CreateSnakeSpeciesInput!]!
+  ): BulkOperationResult!
+
+  """
+  Bulk publish blog posts
+  """
+  bulkPublishBlogPosts(ids: [ID!]!): BulkOperationResult!
+
+  """
+  Bulk update message status
+  """
+  bulkUpdateMessageStatus(
+    messageIds: [ID!]!
+    status: MessageStatus!
+  ): BulkOperationResult!
+
+  """
+  Bulk update rescue status
+  """
+  bulkUpdateRescueStatus(
+    rescueIds: [ID!]!
+    status: RescueStatus!
+  ): BulkOperationResult!
+
+  """
+  Cancel rescue request
+  """
+  cancelRescue(reason: String, rescueId: ID!): RescueRequest!
+
+  """
+  Cancel training session
+  """
+  cancelTraining(reason: String, trainingId: ID!): Training!
+
+  """
+  Cancel training enrollment
+  """
+  cancelTrainingEnrollment(trainingId: ID!): Training!
+
+  """
+  Change password
+  """
+  changePassword(input: ChangePasswordInput!): SuccessResponse!
+
+  """
+  Mark rescue as completed
+  """
+  completeRescue(input: CompleteRescueInput!): RescueRequest!
+
+  """
+  Mark training as completed (admin)
+  """
+  completeTraining(trainingId: ID!): Training!
+
+  """
+  Confirm password reset with token
+  """
+  confirmPasswordReset(input: PasswordResetConfirmInput!): SuccessResponse!
+
+  """
+  Create a blog post
+  """
+  createBlogPost(input: CreateBlogPostInput!): BlogPost!
+
+  """
+  Create a donation
+  """
+  createDonation(input: CreateDonationInput!): Donation!
+
+  """
+  Create a notification (admin only)
+  """
+  createNotification(input: CreateNotificationInput!): Notification!
+
+  """
+  Create a new rescue request
+  """
+  createRescueRequest(input: CreateRescueRequestInput!): RescueRequest!
+
+  """
+  Create new snake species (admin only)
+  """
+  createSnakeSpecies(input: CreateSnakeSpeciesInput!): SnakeSpecies!
+
+  """
+  Create a training session
+  """
+  createTraining(input: CreateTrainingInput!): Training!
+
+  """
+  Delete AI identification
+  """
+  deleteAIIdentification(id: ID!): SuccessResponse!
+
+  """
+  Delete user account (soft delete)
+  """
+  deleteAccount: SuccessResponse!
+
+  """
+  Delete a blog post (soft delete)
+  """
+  deleteBlogPost(id: ID!): SuccessResponse!
+
+  """
+  Delete contact message (soft delete)
+  """
+  deleteContactMessage(id: ID!): SuccessResponse!
+
+  """
+  Delete gallery image (soft delete)
+  """
+  deleteGalleryImage(id: ID!): SuccessResponse!
+
+  """
+  Delete notification
+  """
+  deleteNotification(id: ID!): SuccessResponse!
+
+  """
+  Delete all read notifications
+  """
+  deleteReadNotifications: SuccessResponse!
+
+  """
+  Delete rescue request (soft delete, admin only)
+  """
+  deleteRescueRequest(id: ID!): SuccessResponse!
+
+  """
+  Delete snake species (soft delete, admin only)
+  """
+  deleteSnakeSpecies(id: ID!): SuccessResponse!
+
+  """
+  Delete training session (soft delete)
+  """
+  deleteTraining(id: ID!): SuccessResponse!
+
+  """
+  Delete user by ID (admin only, soft delete)
+  """
+  deleteUser(userId: ID!): SuccessResponse!
+
+  """
+  Delete volunteer profile (soft delete)
+  """
+  deleteVolunteer(volunteerId: ID!): SuccessResponse!
+
+  """
+  Enroll in training session
+  """
+  enrollInTraining(trainingId: ID!): Training!
+
+  """
+  Generate donation receipt
+  """
+  generateDonationReceipt(donationId: ID!): Donation!
+
+  """
+  Identify snake from image using AI
+  """
+  identifySnake(input: IdentifySnakeInput!): AIIdentification!
+
+  """
+  Increment blog post views
+  """
+  incrementBlogPostViews(id: ID!): BlogPost!
+
+  """
+  Increment gallery image views
+  """
+  incrementGalleryImageViews(id: ID!): GalleryImage!
+
+  """
+  Like a blog post
+  """
+  likeBlogPost(id: ID!): BlogPost!
+
+  """
+  Like a gallery image
+  """
+  likeGalleryImage(id: ID!): GalleryImage!
+
+  """
+  Login with email and password
+  """
+  login(input: LoginInput!): AuthPayload!
+
+  """
+  Logout current user
+  """
+  logout: SuccessResponse!
+
+  """
+  Mark all notifications as read
+  """
+  markAllNotificationsAsRead: SuccessResponse!
+
+  """
+  Mark message as read
+  """
+  markMessageAsRead(messageId: ID!): ContactMessage!
+
+  """
+  Mark notification as read
+  """
+  markNotificationAsRead(id: ID!): Notification!
+
+  """
+  Login or register with OAuth provider (Google)
+  """
+  oauthLogin(input: OAuthLoginInput!): AuthPayload!
+
+  """
+  Process payment (callback from gateway)
+  """
+  processPayment(input: ProcessPaymentInput!): Donation!
+
+  """
+  Provide feedback on AI identification
+  """
+  provideIdentificationFeedback(
+    input: IdentificationFeedbackInput!
+  ): AIIdentification!
+
+  """
+  Publish a blog post
+  """
+  publishBlogPost(id: ID!): BlogPost!
+
+  """
+  Rate volunteer after rescue completion
+  """
+  rateVolunteer(
+    feedback: String
+    rating: Int!
+    rescueId: ID!
+    volunteerId: ID!
+  ): Volunteer!
+
+  """
+  Reactivate suspended volunteer
+  """
+  reactivateVolunteer(volunteerId: ID!): Volunteer!
+
+  """
+  Refresh analytics cache
+  """
+  refreshAnalyticsCache: SuccessResponse!
+
+  """
+  Refresh access token using refresh token
+  """
+  refreshToken(refreshToken: String!): AuthPayload!
+
+  """
+  Refund donation (admin)
+  """
+  refundDonation(input: RefundDonationInput!): Donation!
+
+  """
+  Register new user account
+  """
+  register(input: RegisterInput!): AuthPayload!
+
+  """
+  Reopen cancelled/closed rescue
+  """
+  reopenRescue(rescueId: ID!): RescueRequest!
+
+  """
+  Reprocess identification with different model
+  """
+  reprocessIdentification(
+    identificationId: ID!
+    provider: AIProvider!
+  ): AIIdentification!
+
+  """
+  Request password reset email
+  """
+  requestPasswordReset(
+    input: PasswordResetRequestInput!
+  ): PasswordResetTokenPayload!
+
+  """
+  Resend email verification
+  """
+  resendVerificationEmail(input: ResendVerificationInput!): SuccessResponse!
+
+  """
+  Respond to a contact message
+  """
+  respondToMessage(input: RespondToMessageInput!): ContactMessage!
+
+  """
+  Approve or reject volunteer application
+  """
+  reviewVolunteerApplication(input: ReviewVolunteerInput!): Volunteer!
+
+  """
+  Send bulk notifications (admin only)
+  """
+  sendBulkNotifications(input: BulkNotificationInput!): BulkOperationResult!
+
+  """
+  Submit a contact message
+  """
+  submitContactMessage(input: SubmitContactMessageInput!): ContactMessage!
+
+  """
+  Suspend volunteer
+  """
+  suspendVolunteer(reason: String!, volunteerId: ID!): Volunteer!
+
+  """
+  Test notification delivery
+  """
+  testNotificationDelivery(channel: NotificationChannel!): SuccessResponse!
+
+  """
+  Track page view
+  """
+  trackPageView(duration: Int, page: String!): SuccessResponse!
+
+  """
+  Update AI model configuration (admin only)
+  """
+  updateAIModelConfig(input: UpdateAIModelConfigInput!): AIModelConfig!
+
+  """
+  Update a blog post
+  """
+  updateBlogPost(id: ID!, input: UpdateBlogPostInput!): BlogPost!
+
+  """
+  Update gallery image
+  """
+  updateGalleryImage(id: ID!, input: UpdateGalleryImageInput!): GalleryImage!
+
+  """
+  Update message status
+  """
+  updateMessageStatus(input: UpdateMessageStatusInput!): ContactMessage!
+
+  """
+  Update notification preferences
+  """
+  updateNotificationPreferences(
+    input: UpdateNotificationPreferencesInput!
+  ): NotificationPreferences!
+
+  """
+  Update payment gateway configuration
+  """
+  updatePaymentGateway(input: UpdatePaymentGatewayInput!): PaymentGatewayConfig!
+
+  """
+  Update user profile
+  """
+  updateProfile(input: UpdateUserProfileInput!): User!
+
+  """
+  Update rescue progress (volunteer)
+  """
+  updateRescueProgress(input: UpdateRescueProgressInput!): RescueRequest!
+
+  """
+  Update a rescue request
+  """
+  updateRescueRequest(id: ID!, input: UpdateRescueRequestInput!): RescueRequest!
+
+  """
+  Update snake species (admin only)
+  """
+  updateSnakeSpecies(id: ID!, input: UpdateSnakeSpeciesInput!): SnakeSpecies!
+
+  """
+  Update a training session
+  """
+  updateTraining(id: ID!, input: UpdateTrainingInput!): Training!
+
+  """
+  Update user role (admin only)
+  """
+  updateUserRole(role: UserRole!, userId: ID!): User!
+
+  """
+  Update user status (admin only)
+  """
+  updateUserStatus(status: UserStatus!, userId: ID!): User!
+
+  """
+  Update volunteer availability status
+  """
+  updateVolunteerAvailability(
+    input: UpdateVolunteerAvailabilityInput!
+  ): Volunteer!
+
+  """
+  Update volunteer profile
+  """
+  updateVolunteerProfile(input: UpdateVolunteerInput!): Volunteer!
+
+  """
+  Update volunteer zone assignment
+  """
+  updateVolunteerZone(volunteerId: ID!, zone: String!): Volunteer!
+
+  """
+  Upload gallery image
+  """
+  uploadGalleryImage(input: UploadGalleryImageInput!): GalleryImage!
+
+  """
+  Verify donation (admin)
+  """
+  verifyDonation(donationId: ID!, notes: String): Donation!
+
+  """
+  Verify email with token
+  """
+  verifyEmail(input: VerifyEmailInput!): EmailVerificationPayload!
+
+  """
+  Verify completed rescue (admin)
+  """
+  verifyRescue(notes: String, rescueId: ID!): RescueRequest!
+
+  """
+  Verify snake species (admin only)
+  """
+  verifySnakeSpecies(id: ID!): SnakeSpecies!
+
+  """
+  Verify volunteer (upgrade to verified rescuer)
+  """
+  verifyVolunteer(notes: String, volunteerId: ID!): Volunteer!
+}
+
+"""
+Standard mutation response with errors
+"""
+interface MutationResponse {
+  """
+  List of errors if operation failed
+  """
+  errors: [Error!]
+
+  """
+  Human-readable message
+  """
+  message: String
+
+  """
+  Operation succeeded
+  """
+  success: Boolean!
+}
+
+"""
+Nearby rescue requests (for duplicate detection)
+"""
+type NearbyRescue {
+  distance: Float!
+  rescue: RescueRequest!
+}
+
+"""
+Input for searching nearby rescues
+"""
+input NearbyRescuesInput {
+  lat: Latitude!
+  lng: Longitude!
+  radiusKm: Float!
+  status: RescueStatus
+  withinHours: Int
+}
+
+"""
+User notification
+"""
+type Notification {
+  actionUrl: String
+  createdAt: DateTime!
+  expiresAt: DateTime
+  id: ID!
+  link: String
+  message: String!
+  metadata: JSON
+  priority: NotificationPriority!
+  read: Boolean!
+  readAt: DateTime
+  rescue: RescueRequest
+  sentViaApp: Boolean!
+  sentViaEmail: Boolean!
+  sentViaSMS: Boolean!
+  sentViaTelegram: Boolean!
+  title: String!
+  type: NotificationType!
+  user: User!
+}
+
+"""
+Notification count by priority
+"""
+type NotificationByPriority {
+  count: Int!
+  priority: NotificationPriority!
+}
+
+"""
+Notification count by type
+"""
+type NotificationByType {
+  count: Int!
+  type: NotificationType!
+  unreadCount: Int!
+}
+
+"""
+Delivery channel for notification
+"""
+enum NotificationChannel {
+  APP
+  EMAIL
+  PUSH
+  SMS
+  TELEGRAM
+}
+
+"""
+Connection type for paginated notification results
+"""
+type NotificationConnection {
+  edges: [NotificationEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Notification delivery statistics
+"""
+type NotificationDeliveryStats {
+  app: Int!
+  email: Int!
+  sms: Int!
+  telegram: Int!
+  totalDelivered: Int!
+  totalFailed: Int!
+}
+
+"""
+Edge type for notification connection
+"""
+type NotificationEdge {
+  cursor: String!
+  node: Notification!
+}
+
+"""
+Filter input for notification queries
+"""
+input NotificationFilterInput {
+  createdAfter: DateTime
+  createdBefore: DateTime
+  priorities: [NotificationPriority!]
+  priority: NotificationPriority
+  read: Boolean
+  rescueId: ID
+  type: NotificationType
+  types: [NotificationType!]
+}
+
+"""
+Notification preferences
+"""
+type NotificationPreferences {
+  donationReceipts: Boolean!
+  enableApp: Boolean!
+  enableEmail: Boolean!
+  enableSMS: Boolean!
+  enableTelegram: Boolean!
+  quietHoursEnd: String
+  quietHoursStart: String
+  rescueUpdates: Boolean!
+  systemAnnouncements: Boolean!
+  timezone: String!
+  trainingReminders: Boolean!
+  updatedAt: DateTime!
+  userId: ID!
+  volunteerUpdates: Boolean!
+}
+
+"""
+Input for updating notification preferences
+"""
+input NotificationPreferencesInput {
+  emailNotifications: Boolean
+  rescueUpdates: Boolean
+  smsNotifications: Boolean
+  systemAnnouncements: Boolean
+  telegramNotifications: Boolean
+  volunteerUpdates: Boolean
+}
+
+"""
+Priority level of notification
+"""
+enum NotificationPriority {
+  HIGH
+  LOW
+  NORMAL
+  URGENT
+}
+
+"""
+Notification read event
+"""
+type NotificationReadEvent {
+  notification: Notification!
+  readAt: DateTime!
+  userId: ID!
+}
+
+"""
+Fields available for sorting notifications
+"""
+enum NotificationSortField {
+  CREATED_AT
+  PRIORITY
+  READ_AT
+  TYPE
+}
+
+"""
+Sort input for notification queries
+"""
+input NotificationSortInput {
+  field: NotificationSortField!
+  order: SortOrder!
+}
+
+"""
+Notification statistics
+"""
+type NotificationStats {
+  byPriority: [NotificationByPriority!]!
+  byType: [NotificationByType!]!
+  deliveryStats: NotificationDeliveryStats!
+  total: Int!
+  unread: Int!
+}
+
+"""
+Type of notification
+"""
+enum NotificationType {
+  ANNOUNCEMENT
+  DONATION_RECEIVED
+  RESCUE_ACCEPTED
+  RESCUE_ASSIGNED
+  RESCUE_CANCELLED
+  RESCUE_COMPLETED
+  RESCUE_CREATED
+  SYSTEM_ALERT
+  TRAINING_REMINDER
+  TRAINING_SCHEDULED
+  VOLUNTEER_APPROVED
+  VOLUNTEER_REJECTED
+}
+
+"""
+Input for OAuth (Google) login
+"""
+input OAuthLoginInput {
+  email: Email
+  googleId: String
+  name: String
+  provider: String!
+  token: String!
+}
+
+"""
+Information about pagination in a connection
+"""
+type PageInfo {
+  """
+  When paginating forwards, the cursor to continue
+  """
+  endCursor: String
+
+  """
+  When paginating forwards, are there more items?
+  """
+  hasNextPage: Boolean!
+
+  """
+  When paginating backwards, are there more items?
+  """
+  hasPreviousPage: Boolean!
+
+  """
+  When paginating backwards, the cursor to continue
+  """
+  startCursor: String
+}
+
+"""
+Page view statistics
+"""
+type PageView {
+  avgDuration: Int!
+  page: String!
+  uniqueViews: Int!
+  views: Int!
+}
+
+"""
+Generic pagination input
+"""
+input PaginationInput {
+  """
+  Number of items to return (max 100)
+  """
+  limit: Int = 20
+
+  """
+  Page number (1-indexed)
+  """
+  page: Int = 1
+}
+
+"""
+Input for password reset confirmation
+"""
+input PasswordResetConfirmInput {
+  newPassword: String!
+  token: String!
+}
+
+"""
+Input for password reset request
+"""
+input PasswordResetRequestInput {
+  email: Email!
+}
+
+"""
+Password reset token response
+"""
+type PasswordResetTokenPayload {
+  expiresAt: DateTime!
+  message: String!
+}
+
+"""
+Payment gateway configuration
+"""
+type PaymentGatewayConfig {
+  currencies: [String!]!
+  description: String
+  displayName: String!
+  enabled: Boolean!
+  maxAmount: Float
+  method: PaymentMethod!
+  minAmount: Float
+  testMode: Boolean!
+}
+
+"""
+Payment method
+"""
+enum PaymentMethod {
+  BANK_TRANSFER
+  CASH
+  ESEWA
+  FONEPAY
+  IME_PAY
+  KHALTI
+  PAYPAL
+  STRIPE
+}
+
+"""
+Payment status
+"""
+enum PaymentStatus {
+  CANCELLED
+  COMPLETED
+  FAILED
+  PENDING
+  PROCESSING
+  REFUNDED
+}
+
+"""
+Valid phone number (international format)
+"""
+scalar Phone
+
+"""
+Positive integer
+"""
+scalar PositiveInt
+
+"""
+Category of blog post
+"""
+enum PostCategory {
+  ANNOUNCEMENT
+  EDUCATION
+  EVENT
+  GUIDE
+  NEWS
+  RESEARCH
+  SUCCESS_STORY
+}
+
+"""
+Status of blog post
+"""
+enum PostStatus {
+  ARCHIVED
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+}
+
+"""
+Input for processing payment
+"""
+input ProcessPaymentInput {
+  donationId: ID!
+  gatewayResponse: JSON
+  transactionId: String!
+}
+
+type Query {
+  _empty: String
+
+  """
+  Get active rescues (in progress)
+  """
+  activeRescues(pagination: PaginationInput): RescueRequestConnection!
+
+  """
+  Get AI identification by ID
+  """
+  aiIdentification(id: ID!): AIIdentification
+
+  """
+  Get AI identification statistics
+  """
+  aiIdentificationStats: AIIdentificationStats!
+
+  """
+  List AI identifications
+  """
+  aiIdentifications(
+    filter: AIIdentificationFilterInput
+    pagination: PaginationInput
+    sort: AIIdentificationSortInput
+  ): AIIdentificationConnection!
+
+  """
+  Get AI model configuration
+  """
+  aiModelConfig(provider: AIProvider!): AIModelConfig
+
+  """
+  List all snake species
+  """
+  allSnakeSpecies(
+    filter: SnakeSpeciesFilterInput
+    pagination: PaginationInput
+    sort: SnakeSpeciesSortInput
+  ): SnakeSpeciesConnection!
+
+  """
+  Get available AI models
+  """
+  availableAIModels: [AIModelConfig!]!
+
+  """
+  Get available payment gateways
+  """
+  availablePaymentGateways: [PaymentGatewayConfig!]!
+
+  """
+  Find available volunteers near location
+  """
+  availableVolunteers(
+    input: FindAvailableVolunteersInput!
+  ): [AvailableVolunteer!]!
+
+  """
+  Get blog post by ID or slug
+  """
+  blogPost(id: ID, slug: String): BlogPost
+
+  """
+  List blog posts
+  """
+  blogPosts(
+    filter: BlogPostFilterInput
+    pagination: PaginationInput
+    sort: BlogPostSortInput
+  ): BlogPostConnection!
+
+  """
+  Verify if email is available for registration
+  """
+  checkEmailAvailability(email: Email!): Boolean!
+
+  """
+  Get CMS statistics
+  """
+  cmsStats: CMSStats!
+
+  """
+  Get contact message by ID
+  """
+  contactMessage(id: ID!): ContactMessage
+
+  """
+  Get contact message statistics
+  """
+  contactMessageStats: ContactMessageStats!
+
+  """
+  List contact messages
+  """
+  contactMessages(
+    filter: ContactMessageFilterInput
+    pagination: PaginationInput
+    sort: ContactMessageSortInput
+  ): ContactMessageConnection!
+
+  """
+  Get dashboard statistics
+  """
+  dashboardStats(period: AnalyticsTimePeriod): DashboardStats!
+
+  """
+  Get donation by ID
+  """
+  donation(id: ID!): Donation
+
+  """
+  Get donation statistics
+  """
+  donationStats(input: DonationStatsInput): DonationStats!
+
+  """
+  List donations
+  """
+  donations(
+    filter: DonationFilterInput
+    pagination: PaginationInput
+    sort: DonationSortInput
+  ): DonationConnection!
+
+  """
+  Get engagement metrics
+  """
+  engagementMetrics(dateRange: AnalyticsDateRangeInput): EngagementMetrics!
+
+  """
+  Export analytics data (CSV/JSON)
+  """
+  exportAnalytics(
+    format: String
+    input: RescueAnalyticsInput
+    type: String!
+  ): String!
+
+  """
+  Get featured gallery images (public)
+  """
+  featuredGalleryImages(pagination: PaginationInput): GalleryImageConnection!
+
+  """
+  Get gallery image by ID
+  """
+  galleryImage(id: ID!): GalleryImage
+
+  """
+  List gallery images
+  """
+  galleryImages(
+    filter: GalleryImageFilterInput
+    pagination: PaginationInput
+    sort: GalleryImageSortInput
+  ): GalleryImageConnection!
+
+  """
+  Get geographic heatmap data
+  """
+  geographicHeatmap(input: GeographicHeatmapInput): [GeographicHeatmap!]!
+
+  """
+  Get current authenticated user
+  """
+  me: User
+
+  """
+  Get assigned rescues (volunteer view)
+  """
+  myAssignedRescues(
+    filter: RescueRequestFilterInput
+    pagination: PaginationInput
+  ): RescueRequestConnection!
+
+  """
+  Get my donations
+  """
+  myDonations(pagination: PaginationInput): DonationConnection!
+
+  """
+  Get my identification history
+  """
+  myIdentificationHistory(
+    pagination: PaginationInput
+  ): AIIdentificationConnection!
+
+  """
+  Get notification preferences
+  """
+  myNotificationPreferences: NotificationPreferences!
+
+  """
+  Get my notifications
+  """
+  myNotifications(
+    filter: NotificationFilterInput
+    pagination: PaginationInput
+    sort: NotificationSortInput
+  ): NotificationConnection!
+
+  """
+  Get my rescue requests (citizen view)
+  """
+  myRescueRequests(
+    filter: RescueRequestFilterInput
+    pagination: PaginationInput
+  ): RescueRequestConnection!
+
+  """
+  Get my enrolled trainings
+  """
+  myTrainings(pagination: PaginationInput): TrainingConnection!
+
+  """
+  Get my volunteer profile
+  """
+  myVolunteerProfile: Volunteer
+
+  """
+  Find nearby rescue requests (for duplicate detection)
+  """
+  nearbyRescues(input: NearbyRescuesInput!): [NearbyRescue!]!
+
+  """
+  Get new contact messages count
+  """
+  newContactMessagesCount: Int!
+
+  """
+  Get notification by ID
+  """
+  notification(id: ID!): Notification
+
+  """
+  Get notification statistics
+  """
+  notificationStats(userId: ID): NotificationStats!
+
+  """
+  Get payment gateway configuration
+  """
+  paymentGatewayConfig(method: PaymentMethod!): PaymentGatewayConfig
+
+  """
+  Get pending rescues count
+  """
+  pendingRescuesCount: Int!
+
+  """
+  Get pending volunteer applications
+  """
+  pendingVolunteerApplications(
+    pagination: PaginationInput
+  ): VolunteerConnection!
+
+  """
+  Get published blog posts (public)
+  """
+  publishedBlogPosts(
+    category: PostCategory
+    pagination: PaginationInput
+  ): BlogPostConnection!
+
+  """
+  Get rescue analytics
+  """
+  rescueAnalytics(input: RescueAnalyticsInput): RescueAnalytics!
+
+  """
+  Get rescue request by ID
+  """
+  rescueRequest(id: ID!): RescueRequest
+
+  """
+  List rescue requests
+  """
+  rescueRequests(
+    filter: RescueRequestFilterInput
+    pagination: PaginationInput
+    sort: RescueSortInput
+  ): RescueRequestConnection!
+
+  """
+  Get rescue statistics
+  """
+  rescueStats(input: RescueStatsInput): RescueStats!
+
+  """
+  Get rescue timeline
+  """
+  rescueTimeline(rescueId: ID!): [RescueTimeline!]!
+
+  """
+  Search blog posts
+  """
+  searchBlogPosts(
+    pagination: PaginationInput
+    query: String!
+  ): BlogPostConnection!
+
+  """
+  Search rescue requests
+  """
+  searchRescues(
+    filter: RescueRequestFilterInput
+    pagination: PaginationInput
+    query: String!
+  ): RescueRequestConnection!
+
+  """
+  Search snake species
+  """
+  searchSnakeSpecies(
+    filter: SnakeSpeciesFilterInput
+    pagination: PaginationInput
+    query: String!
+  ): SnakeSpeciesConnection!
+
+  """
+  Search users (admin only)
+  """
+  searchUsers(pagination: PaginationInput, query: String!): UserConnection!
+
+  """
+  Search volunteers
+  """
+  searchVolunteers(
+    filter: VolunteerFilterInput
+    pagination: PaginationInput
+    query: String!
+  ): VolunteerConnection!
+
+  """
+  Get snake species by ID
+  """
+  snakeSpecies(id: ID!): SnakeSpecies
+
+  """
+  Get snake species by region
+  """
+  snakeSpeciesByRegion(
+    pagination: PaginationInput
+    region: String!
+  ): SnakeSpeciesConnection!
+
+  """
+  Get snake species statistics
+  """
+  snakeSpeciesStats: SnakeSpeciesStats!
+
+  """
+  Get snake species by danger level
+  """
+  snakesByDangerLevel(
+    dangerLevel: DangerLevel!
+    pagination: PaginationInput
+  ): SnakeSpeciesConnection!
+
+  """
+  Get training session by ID
+  """
+  training(id: ID!): Training
+
+  """
+  Get training statistics
+  """
+  trainingStats: TrainingStats!
+
+  """
+  List training sessions
+  """
+  trainings(
+    filter: TrainingFilterInput
+    pagination: PaginationInput
+    sort: TrainingSortInput
+  ): TrainingConnection!
+
+  """
+  Get unread notifications count
+  """
+  unreadNotificationsCount: Int!
+
+  """
+  Get upcoming training sessions (public)
+  """
+  upcomingTrainings(pagination: PaginationInput): TrainingConnection!
+
+  """
+  Get user by ID (admin only)
+  """
+  user(id: ID!): User
+
+  """
+  Get user profile by ID (public)
+  """
+  userProfile(id: ID!): UserProfile
+
+  """
+  List all users (admin only)
+  """
+  users(
+    filter: UserFilterInput
+    pagination: PaginationInput
+    sort: UserSortInput
+  ): UserConnection!
+
+  """
+  Get venomous snake species
+  """
+  venomousSnakes(pagination: PaginationInput): SnakeSpeciesConnection!
+
+  """
+  Verify password reset token validity
+  """
+  verifyPasswordResetToken(token: String!): Boolean!
+
+  """
+  Get volunteer by ID
+  """
+  volunteer(id: ID!): Volunteer
+
+  """
+  Get volunteer analytics
+  """
+  volunteerAnalytics(input: VolunteerAnalyticsInput): VolunteerAnalytics!
+
+  """
+  Get volunteer statistics
+  """
+  volunteerStats: VolunteerStats!
+
+  """
+  List all volunteers
+  """
+  volunteers(
+    filter: VolunteerFilterInput
+    pagination: PaginationInput
+    sort: VolunteerSortInput
+  ): VolunteerConnection!
+}
+
+"""
+Input for refunding donation
+"""
+input RefundDonationInput {
+  amount: Float
+  donationId: ID!
+  reason: String!
+}
+
+"""
+Input for user registration
+"""
+input RegisterInput {
+  email: Email!
+  language: String
+  name: String!
+  password: String!
+  phone: Phone
+  timezone: String
+}
+
+"""
+Activity point for rescue timeline charts
+"""
+type RescueActivityPoint {
+  cancelled: Int!
+  completed: Int!
+  count: Int!
+  date: DateTime!
+  pending: Int!
+}
+
+"""
+Rescue analytics
+"""
+type RescueAnalytics {
+  byMunicipality: [RescueByMunicipality!]!
+  byPriority: [RescueByPriority!]!
+  bySpecies: [RescueBySpecies!]!
+  byStatus: [RescueByStatus!]!
+  byTimeOfDay: [RescueByTimeOfDay!]!
+  responseTimeAnalysis: ResponseTimeAnalysis!
+  successRate: Float!
+  timeSeriesData: [TimeSeriesPoint!]!
+  totalRescues: Int!
+}
+
+"""
+Input for rescue analytics
+"""
+input RescueAnalyticsInput {
+  dateRange: AnalyticsDateRangeInput
+  municipality: String
+  priority: RescuePriority
+  status: RescueStatus
+  volunteerId: ID
+}
+
+"""
+Rescue assignment event
+"""
+type RescueAssignmentEvent {
+  assignedAt: DateTime!
+  assignedBy: User!
+  notes: String
+  rescue: RescueRequest!
+  volunteer: Volunteer!
+}
+
+"""
+Rescue count by municipality
+"""
+type RescueByMunicipality {
+  count: Int!
+  municipality: String!
+  percentage: Float!
+}
+
+"""
+Rescue count by priority
+"""
+type RescueByPriority {
+  count: Int!
+  percentage: Float!
+  priority: RescuePriority!
+}
+
+"""
+Rescue count by species
+"""
+type RescueBySpecies {
+  count: Int!
+  percentage: Float!
+  species: SnakeSpecies!
+}
+
+"""
+Rescue count by status
+"""
+type RescueByStatus {
+  count: Int!
+  percentage: Float!
+  status: RescueStatus!
+}
+
+"""
+Rescue count by time of day
+"""
+type RescueByTimeOfDay {
+  averageResponseTime: Int!
+  count: Int!
+  hour: Int!
+}
+
+"""
+Rescue statistics by municipality
+"""
+type RescueMunicipalityStats {
+  count: Int!
+  municipality: String!
+  percentage: Float!
+}
+
+"""
+Outcome of a completed rescue
+"""
+enum RescueOutcome {
+  ALREADY_GONE
+  DECEASED
+  FALSE_ALARM
+  NO_SNAKE_FOUND
+  REFUSED_HELP
+  RESCUED_RELOCATED
+}
+
+"""
+Priority level of a rescue request
+"""
+enum RescuePriority {
+  CRITICAL
+  HIGH
+  LOW
+  MEDIUM
+}
+
+"""
+Rescue statistics by priority
+"""
+type RescuePriorityStats {
+  count: Int!
+  percentage: Float!
+  priority: RescuePriority!
+}
+
+"""
+Snake rescue request
+"""
+type RescueRequest {
+  acceptedAt: DateTime
+  address: String!
+  aiIdentification: AIIdentification
+  arrivedAt: DateTime
+  assignedAt: DateTime
+  assignedBy: User
+  assignedVolunteer: Volunteer
+  biteDetails: String
+  completedAt: DateTime
+  createdAt: DateTime!
+  email: Email
+  emergencyDetails: String
+  hasBite: Boolean!
+  id: ID!
+  internalNotes: String
+  isEmergency: Boolean!
+  landmark: String
+  lat: Latitude
+  lng: Longitude
+  locationAccuracy: Float
+  municipality: String!
+  name: String!
+  notes: String
+  notifications: [Notification!]!
+  outcome: RescueOutcome
+  phone: Phone!
+  priority: RescuePriority!
+  referenceNumber: String
+  rescueDuration: Int
+  rescueImages: [String!]!
+  rescueReport: String
+  snakeColor: String
+  snakeDescription: String
+  snakeImageUrl: String
+  snakeImages: [String!]!
+  snakeSize: String
+  source: RescueSource!
+  species: SnakeSpecies
+  startedAt: DateTime
+  status: RescueStatus!
+  stillPresent: Boolean!
+  timeline: [RescueTimeline!]!
+  updatedAt: DateTime!
+  user: User
+  verifiedAt: DateTime
+  verifiedBy: User
+  ward: Int
+}
+
+"""
+Connection type for paginated rescue results
+"""
+type RescueRequestConnection {
+  edges: [RescueRequestEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for rescue connection
+"""
+type RescueRequestEdge {
+  cursor: String!
+  node: RescueRequest!
+}
+
+"""
+Filter input for rescue queries
+"""
+input RescueRequestFilterInput {
+  assignedTo: ID
+  completedAfter: DateTime
+  completedBefore: DateTime
+  createdAfter: DateTime
+  createdBefore: DateTime
+  hasBite: Boolean
+  isEmergency: Boolean
+  municipalities: [String!]
+  municipality: String
+  priorities: [RescuePriority!]
+  priority: RescuePriority
+  search: String
+  speciesId: ID
+  status: RescueStatus
+  statuses: [RescueStatus!]
+}
+
+"""
+Fields available for sorting rescues
+"""
+enum RescueSortField {
+  ASSIGNED_AT
+  COMPLETED_AT
+  CREATED_AT
+  MUNICIPALITY
+  PRIORITY
+  STATUS
+  UPDATED_AT
+}
+
+"""
+Sort input for rescue queries
+"""
+input RescueSortInput {
+  field: RescueSortField!
+  order: SortOrder!
+}
+
+"""
+Source of rescue request
+"""
+enum RescueSource {
+  APP
+  PHONE
+  TELEGRAM
+  WEB
+}
+
+"""
+Rescue statistics by species
+"""
+type RescueSpeciesStats {
+  count: Int!
+  percentage: Float!
+  species: SnakeSpecies!
+}
+
+"""
+Statistics for rescue operations
+"""
+type RescueStats {
+  averageRescueTime: Float
+  averageResponseTime: Float
+  byMunicipality: [RescueMunicipalityStats!]!
+  byPriority: [RescuePriorityStats!]!
+  bySpecies: [RescueSpeciesStats!]!
+  cancelled: Int!
+  completed: Int!
+  inProgress: Int!
+  pending: Int!
+  recentActivity: [RescueActivityPoint!]!
+  successRate: Float
+  total: Int!
+}
+
+"""
+Input for rescue statistics
+"""
+input RescueStatsInput {
+  endDate: DateTime
+  municipality: String
+  speciesId: ID
+  startDate: DateTime
+  volunteerId: ID
+}
+
+"""
+Status of a rescue request
+"""
+enum RescueStatus {
+  ACCEPTED
+  ASSIGNED
+  CANCELLED
+  CLOSED
+  COMPLETED
+  EXPIRED
+  IN_PROGRESS
+  PENDING
+}
+
+"""
+Timeline event for a rescue request
+"""
+type RescueTimeline {
+  createdAt: DateTime!
+  description: String
+  event: String!
+  id: ID!
+  lat: Latitude
+  lng: Longitude
+  metadata: JSON
+  rescue: RescueRequest!
+  user: User
+}
+
+"""
+Input for resending verification email
+"""
+input ResendVerificationInput {
+  email: Email!
+}
+
+"""
+Input for responding to a contact message
+"""
+input RespondToMessageInput {
+  messageId: ID!
+  response: String!
+  sendEmail: Boolean
+}
+
+"""
+Response time analysis
+"""
+type ResponseTimeAnalysis {
+  average: Int!
+  byPriority: [ResponseTimeByPriority!]!
+  fastest: Int!
+  median: Int!
+  slowest: Int!
+}
+
+"""
+Response time by priority
+"""
+type ResponseTimeByPriority {
+  average: Int!
+  median: Int!
+  priority: RescuePriority!
+}
+
+"""
+Input for approving/rejecting volunteer
+"""
+input ReviewVolunteerInput {
+  approved: Boolean!
+  assignedZone: String
+  notes: String
+  volunteerId: ID!
+}
+
+"""
+Snake size categories
+"""
+enum SnakeSize {
+  LARGE
+  MEDIUM
+  SMALL
+}
+
+"""
+Snake species information
+"""
+type SnakeSpecies {
+  activeTime: ActivityPattern
+  aiIdentifications(pagination: PaginationInput): AIIdentificationConnection!
+  aliases: [String!]!
+  altitudeRange: String
+  averageLength: String
+  behavior: String
+  color: String
+  conservationStatus: ConservationStatus
+  createdAt: DateTime!
+  dangerLevel: DangerLevel
+  diet: String
+  distinctiveFeatures: [String!]!
+  emergencyAdvice: String
+  family: String
+  firstAidSteps: [String!]!
+  foundInNepal: Boolean!
+  genus: String
+  habitat: String
+  id: ID!
+  identificationCount: Int!
+  identificationGuide: String
+  imageUrl: String
+  images: [String!]!
+  localNames: [String!]!
+  maxLength: String
+  name: String!
+  nepaliName: String!
+  pattern: String
+  protected: Boolean!
+  regions: [String!]!
+  rescueCount: Int!
+  rescueRequests(pagination: PaginationInput): RescueRequestConnection!
+  safetyTips: String
+  scientificName: String!
+  species: String
+  updatedAt: DateTime!
+  venomType: VenomType
+  venomous: Boolean!
+  verified: Boolean!
+  verifiedBy: User
+  videoUrl: String
+}
+
+"""
+Connection type for paginated snake species results
+"""
+type SnakeSpeciesConnection {
+  edges: [SnakeSpeciesEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for snake species connection
+"""
+type SnakeSpeciesEdge {
+  cursor: String!
+  node: SnakeSpecies!
+}
+
+"""
+Filter input for snake species queries
+"""
+input SnakeSpeciesFilterInput {
+  dangerLevel: DangerLevel
+  dangerLevels: [DangerLevel!]
+  family: String
+  foundInNepal: Boolean
+  protected: Boolean
+  region: String
+  search: String
+  venomous: Boolean
+  verified: Boolean
+}
+
+"""
+Fields available for sorting snake species
+"""
+enum SnakeSpeciesSortField {
+  CREATED_AT
+  DANGER_LEVEL
+  IDENTIFICATION_COUNT
+  NAME
+  RESCUE_COUNT
+  SCIENTIFIC_NAME
+}
+
+"""
+Sort input for snake species queries
+"""
+input SnakeSpeciesSortInput {
+  field: SnakeSpeciesSortField!
+  order: SortOrder!
+}
+
+"""
+Snake species statistics
+"""
+type SnakeSpeciesStats {
+  byDangerLevel: [SpeciesByDangerLevel!]!
+  byFamily: [SpeciesByFamily!]!
+  harmlessCount: Int!
+  mostEncountered: [SnakeSpecies!]!
+  totalSpecies: Int!
+  venomousCount: Int!
+}
+
+"""
+Sort order
+"""
+enum SortOrder {
+  ASC
+  DESC
+}
+
+"""
+Species count by danger level
+"""
+type SpeciesByDangerLevel {
+  count: Int!
+  dangerLevel: DangerLevel!
+}
+
+"""
+Species count by family
+"""
+type SpeciesByFamily {
+  count: Int!
+  family: String!
+  venomousCount: Int!
+}
+
+"""
+Species identification count
+"""
+type SpeciesIdentificationCount {
+  averageConfidence: Float!
+  count: Int!
+  species: SnakeSpecies!
+}
+
+"""
+Input for submitting a contact message
+"""
+input SubmitContactMessageInput {
+  category: MessageCategory
+  email: Email!
+  message: String!
+  name: String!
+  phone: Phone
+  subject: String!
+}
+
+type Subscription {
+  _empty: String
+
+  """
+  Subscribe to new AI identifications
+  """
+  aiIdentificationCompleted(userId: ID): AIIdentification!
+
+  """
+  Subscribe to analytics data changes
+  """
+  analyticsUpdated(type: String!): JSON!
+
+  """
+  Subscribe to new blog post publications
+  """
+  blogPostPublished: BlogPost!
+
+  """
+  Subscribe to blog post updates
+  """
+  blogPostUpdated(id: ID): BlogPost!
+
+  """
+  Subscribe to new contact messages
+  """
+  contactMessageReceived: ContactMessage!
+
+  """
+  Subscribe to contact message updates
+  """
+  contactMessageUpdated(id: ID): ContactMessage!
+
+  """
+  Subscribe to real-time dashboard updates
+  """
+  dashboardUpdated: DashboardStats!
+
+  """
+  Subscribe to new donations
+  """
+  donationReceived: Donation!
+
+  """
+  Subscribe to donation status changes
+  """
+  donationStatusChanged(donationId: ID): DonationStatusChangeEvent!
+
+  """
+  Subscribe to emergency rescues (high priority)
+  """
+  emergencyRescueCreated: RescueRequest!
+
+  """
+  Subscribe to new gallery image uploads
+  """
+  galleryImageUploaded: GalleryImage!
+
+  """
+  Subscribe to identification feedback events
+  """
+  identificationFeedbackReceived: IdentificationFeedbackEvent!
+
+  """
+  Subscribe to nearby rescues (for volunteers)
+  """
+  nearbyRescuesUpdated(
+    lat: Latitude!
+    lng: Longitude!
+    radiusKm: Float!
+  ): RescueRequest!
+
+  """
+  Subscribe to notification read events
+  """
+  notificationRead(userId: ID!): NotificationReadEvent!
+
+  """
+  Subscribe to new notifications
+  """
+  notificationReceived(userId: ID!): Notification!
+
+  """
+  Subscribe to rescue assignments (volunteer)
+  """
+  rescueAssigned(volunteerId: ID!): RescueAssignmentEvent!
+
+  """
+  Subscribe to new rescue requests
+  """
+  rescueCreated(municipality: String): RescueRequest!
+
+  """
+  Subscribe to rescue timeline updates
+  """
+  rescueTimelineUpdated(rescueId: ID!): RescueTimeline!
+
+  """
+  Subscribe to rescue status changes
+  """
+  rescueUpdated(rescueId: ID): RescueRequest!
+
+  """
+  Subscribe to new snake species additions
+  """
+  snakeSpeciesAdded: SnakeSpecies!
+
+  """
+  Subscribe to snake species updates
+  """
+  snakeSpeciesUpdated(id: ID): SnakeSpecies!
+
+  """
+  Subscribe to new training sessions
+  """
+  trainingCreated: Training!
+
+  """
+  Subscribe to training enrollments
+  """
+  trainingEnrollmentReceived(trainingId: ID!): TrainingEnrollmentEvent!
+
+  """
+  Subscribe to training updates
+  """
+  trainingUpdated(id: ID): Training!
+
+  """
+  Subscribe to unread count changes
+  """
+  unreadCountChanged(userId: ID!): UnreadCountEvent!
+
+  """
+  Subscribe to user status changes (admin only)
+  """
+  userStatusChanged: UserStatusChangeEvent!
+
+  """
+  Subscribe to user profile updates
+  """
+  userUpdated(userId: ID!): User!
+
+  """
+  Subscribe to volunteer application submissions
+  """
+  volunteerApplicationReceived: Volunteer!
+
+  """
+  Subscribe to volunteer availability changes
+  """
+  volunteerAvailabilityChanged(
+    municipality: String
+  ): VolunteerAvailabilityEvent!
+
+  """
+  Subscribe to volunteer status changes
+  """
+  volunteerStatusChanged(volunteerId: ID): VolunteerStatusChangeEvent!
+}
+
+"""
+Standard success response
+"""
+type SuccessResponse {
+  """
+  Success message
+  """
+  message: String
+
+  """
+  Additional metadata
+  """
+  metadata: JSON
+
+  """
+  Operation succeeded
+  """
+  success: Boolean!
+}
+
+"""
+Time series data point
+"""
+type TimeSeriesPoint {
+  label: String
+  timestamp: DateTime!
+  value: Float!
+}
+
+"""
+Top donor information
+"""
+type TopDonor {
+  anonymous: Boolean!
+  donor: User
+  donorName: String!
+  totalAmount: Float!
+  totalDonations: Int!
+}
+
+"""
+Training session
+"""
+type Training {
+  availableSeats: Int!
+  certificate: String
+  createdAt: DateTime!
+  description: String
+  duration: Int!
+  id: ID!
+  instructor: String
+  location: String!
+  materials: [String!]!
+  maxParticipants: Int!
+  participants: [User!]!
+  registeredCount: Int!
+  scheduledAt: DateTime!
+  status: TrainingStatus!
+  title: String!
+  type: TrainingType!
+  updatedAt: DateTime!
+  volunteers: [Volunteer!]!
+}
+
+"""
+Training count by type
+"""
+type TrainingByType {
+  count: Int!
+  totalParticipants: Int!
+  type: TrainingType!
+}
+
+"""
+Connection type for paginated training results
+"""
+type TrainingConnection {
+  edges: [TrainingEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for training connection
+"""
+type TrainingEdge {
+  cursor: String!
+  node: Training!
+}
+
+"""
+Training enrollment event
+"""
+type TrainingEnrollmentEvent {
+  availableSeats: Int!
+  enrolledAt: DateTime!
+  training: Training!
+  user: User!
+}
+
+"""
+Filter input for training queries
+"""
+input TrainingFilterInput {
+  hasAvailableSeats: Boolean
+  location: String
+  scheduledAfter: DateTime
+  scheduledBefore: DateTime
+  status: TrainingStatus
+  statuses: [TrainingStatus!]
+  type: TrainingType
+  types: [TrainingType!]
+}
+
+"""
+Fields available for sorting training sessions
+"""
+enum TrainingSortField {
+  CREATED_AT
+  REGISTERED_COUNT
+  SCHEDULED_AT
+  TITLE
+}
+
+"""
+Sort input for training queries
+"""
+input TrainingSortInput {
+  field: TrainingSortField!
+  order: SortOrder!
+}
+
+"""
+Training statistics
+"""
+type TrainingStats {
+  averageAttendance: Float!
+  byType: [TrainingByType!]!
+  completedSessions: Int!
+  recentSessions: [Training!]!
+  totalParticipants: Int!
+  totalSessions: Int!
+  upcomingSession: Int!
+}
+
+"""
+Status of training session
+"""
+enum TrainingStatus {
+  CANCELLED
+  COMPLETED
+  ONGOING
+  POSTPONED
+  SCHEDULED
+}
+
+"""
+Type of training
+"""
+enum TrainingType {
+  ADVANCED
+  BASIC
+  DOCUMENTATION
+  EQUIPMENT_HANDLING
+  FIRST_AID
+  REFRESHER
+  SAFETY_PROTOCOLS
+  SPECIES_IDENTIFICATION
+}
+
+"""
+Trend data for time series
+"""
+type TrendData {
+  change: Float!
+  current: Int!
+  data: [TimeSeriesPoint!]!
+  direction: TrendDirection!
+  previous: Int!
+}
+
+"""
+Trend direction
+"""
+enum TrendDirection {
+  DOWN
+  STABLE
+  UP
+}
+
+"""
+Unread count change event
+"""
+type UnreadCountEvent {
+  changedAt: DateTime!
+  unreadCount: Int!
+  userId: ID!
+}
+
+"""
+Input for AI model configuration
+"""
+input UpdateAIModelConfigInput {
+  enabled: Boolean
+  maxImageSize: Int
+  model: String
+  provider: AIProvider!
+  supportedFormats: [String!]
+}
+
+"""
+Input for updating a blog post
+"""
+input UpdateBlogPostInput {
+  category: PostCategory
+  commentsEnabled: Boolean
+  content: String
+  excerpt: String
+  imageUrl: String
+  images: [String!]
+  metaDescription: String
+  metaKeywords: [String!]
+  metaTitle: String
+  scheduledAt: DateTime
+  slug: String
+  status: PostStatus
+  tags: [String!]
+  title: String
+  videoUrl: String
+}
+
+"""
+Input for updating gallery image
+"""
+input UpdateGalleryImageInput {
+  category: GalleryCategory
+  description: String
+  isFeatured: Boolean
+  isPublic: Boolean
+  tags: [String!]
+  title: String
+}
+
+"""
+Input for updating message status
+"""
+input UpdateMessageStatusInput {
+  assignedTo: ID
+  messageId: ID!
+  status: MessageStatus!
+}
+
+"""
+Input for updating notification preferences
+"""
+input UpdateNotificationPreferencesInput {
+  donationReceipts: Boolean
+  enableApp: Boolean
+  enableEmail: Boolean
+  enableSMS: Boolean
+  enableTelegram: Boolean
+  quietHoursEnd: String
+  quietHoursStart: String
+  rescueUpdates: Boolean
+  systemAnnouncements: Boolean
+  timezone: String
+  trainingReminders: Boolean
+  volunteerUpdates: Boolean
+}
+
+"""
+Input for updating payment gateway config
+"""
+input UpdatePaymentGatewayInput {
+  currencies: [String!]
+  description: String
+  displayName: String
+  enabled: Boolean
+  maxAmount: Float
+  method: PaymentMethod!
+  minAmount: Float
+  testMode: Boolean
+}
+
+"""
+Input for updating rescue progress
+"""
+input UpdateRescueProgressInput {
+  lat: Latitude
+  lng: Longitude
+  notes: String
+  rescueId: ID!
+  status: RescueStatus!
+}
+
+"""
+Input for updating a rescue request
+"""
+input UpdateRescueRequestInput {
+  address: String
+  biteDetails: String
+  emergencyDetails: String
+  hasBite: Boolean
+  internalNotes: String
+  isEmergency: Boolean
+  landmark: String
+  lat: Latitude
+  lng: Longitude
+  municipality: String
+  notes: String
+  priority: RescuePriority
+  snakeColor: String
+  snakeDescription: String
+  snakeImageUrl: String
+  snakeImages: [String!]
+  snakeSize: String
+  speciesId: ID
+  status: RescueStatus
+  stillPresent: Boolean
+  ward: Int
+}
+
+"""
+Input for updating snake species
+"""
+input UpdateSnakeSpeciesInput {
+  activeTime: ActivityPattern
+  aliases: [String!]
+  altitudeRange: String
+  averageLength: String
+  behavior: String
+  color: String
+  conservationStatus: ConservationStatus
+  dangerLevel: DangerLevel
+  diet: String
+  distinctiveFeatures: [String!]
+  emergencyAdvice: String
+  family: String
+  firstAidSteps: [String!]
+  foundInNepal: Boolean
+  genus: String
+  habitat: String
+  identificationGuide: String
+  imageUrl: String
+  images: [String!]
+  localNames: [String!]
+  maxLength: String
+  name: String
+  nepaliName: String
+  pattern: String
+  protected: Boolean
+  regions: [String!]
+  safetyTips: String
+  scientificName: String
+  species: String
+  venomType: VenomType
+  venomous: Boolean
+  videoUrl: String
+}
+
+"""
+Input for updating a training session
+"""
+input UpdateTrainingInput {
+  certificate: String
+  description: String
+  duration: Int
+  instructor: String
+  location: String
+  materials: [String!]
+  maxParticipants: Int
+  scheduledAt: DateTime
+  status: TrainingStatus
+  title: String
+  type: TrainingType
+}
+
+"""
+Input for updating user profile
+"""
+input UpdateUserProfileInput {
+  avatar: String
+  language: String
+  name: String
+  notificationPreferences: JSON
+  phone: Phone
+  timezone: String
+}
+
+"""
+Input for updating volunteer availability
+"""
+input UpdateVolunteerAvailabilityInput {
+  currentLat: Latitude
+  currentLng: Longitude
+  isAvailableNow: Boolean!
+}
+
+"""
+Input for updating volunteer profile
+"""
+input UpdateVolunteerInput {
+  address: String
+  assignedZone: String
+  availableDays: [String!]
+  availableTime: AvailabilityTime
+  bio: String
+  certifications: [String!]
+  contact: Phone
+  coverageRadius: Int
+  email: Email
+  emergencyAvailability: Boolean
+  emergencyContact: String
+  emergencyPhone: Phone
+  equipment: [String!]
+  hasEquipment: Boolean
+  imageUrl: String
+  languages: [String!]
+  municipality: String
+  skills: [String!]
+  vehicle: VehicleType
+  vehicleDetails: String
+  ward: Int
+}
+
+"""
+File upload scalar for multipart/form-data
+"""
+scalar Upload
+
+"""
+Input for uploading gallery image
+"""
+input UploadGalleryImageInput {
+  category: GalleryCategory
+  description: String
+  imageUrl: String!
+  isFeatured: Boolean
+  isPublic: Boolean
+  rescueId: ID
+  speciesId: ID
+  tags: [String!]
+  thumbnailUrl: String
+  title: String
+}
+
+"""
+Upload source for identification
+"""
+enum UploadSource {
+  API
+  APP
+  TELEGRAM
+  WEB
+}
+
+"""
+User account with authentication and profile information
+"""
+type User {
+  activityLogs(pagination: PaginationInput): ActivityLogConnection
+  aiIdentifications(pagination: PaginationInput): AIIdentificationConnection
+  avatar: String
+  blogPosts(
+    filter: BlogPostFilterInput
+    pagination: PaginationInput
+  ): BlogPostConnection
+  createdAt: DateTime!
+  donations(pagination: PaginationInput): DonationConnection
+  email: Email!
+  emailVerified: Boolean!
+  galleryImages(pagination: PaginationInput): GalleryImageConnection
+  googleEmail: Email
+  googleId: String
+  id: ID!
+  language: String!
+  lastLoginAt: DateTime
+  lastLoginIp: String
+  name: String!
+  notificationPreferences: JSON
+  notifications(
+    filter: NotificationFilterInput
+    pagination: PaginationInput
+  ): NotificationConnection
+  phone: Phone
+  rescueRequests(
+    filter: RescueRequestFilterInput
+    pagination: PaginationInput
+  ): RescueRequestConnection
+  role: UserRole!
+  status: UserStatus!
+  timezone: String!
+  updatedAt: DateTime!
+  verifiedAt: DateTime
+  volunteerProfile: Volunteer
+}
+
+"""
+Connection type for paginated user results
+"""
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for user connection
+"""
+type UserEdge {
+  cursor: String!
+  node: User!
+}
+
+"""
+Filter input for user queries
+"""
+input UserFilterInput {
+  createdAfter: DateTime
+  createdBefore: DateTime
+  emailVerified: Boolean
+  role: UserRole
+  search: String
+  status: UserStatus
+}
+
+"""
+User profile for public display
+"""
+type UserProfile {
+  avatar: String
+  id: ID!
+  joinedAt: DateTime!
+  name: String!
+  role: UserRole!
+  totalRescues: Int!
+  volunteerProfile: Volunteer
+}
+
+"""
+User role for role-based access control
+"""
+enum UserRole {
+  """
+  Administrator with full system access
+  """
+  ADMIN
+
+  """
+  Regular citizen who can submit rescue requests
+  """
+  CITIZEN
+
+  """
+  District-level coordinator managing volunteers
+  """
+  DISTRICT_COORDINATOR
+
+  """
+  Super administrator with system configuration access
+  """
+  SUPER_ADMIN
+
+  """
+  Verified snake rescuer with full rescue capabilities
+  """
+  VERIFIED_RESCUER
+
+  """
+  Approved volunteer (not yet verified)
+  """
+  VOLUNTEER
+}
+
+"""
+Fields available for sorting users
+"""
+enum UserSortField {
+  CREATED_AT
+  EMAIL
+  LAST_LOGIN_AT
+  NAME
+  UPDATED_AT
+}
+
+"""
+Sort input for user queries
+"""
+input UserSortInput {
+  field: UserSortField!
+  order: SortOrder!
+}
+
+"""
+User account status
+"""
+enum UserStatus {
+  """
+  Active and can use the system
+  """
+  ACTIVE
+
+  """
+  Permanently banned
+  """
+  BANNED
+
+  """
+  Inactive (voluntarily disabled)
+  """
+  INACTIVE
+
+  """
+  Pending email verification
+  """
+  PENDING_VERIFICATION
+
+  """
+  Suspended by admin
+  """
+  SUSPENDED
+}
+
+"""
+User status change event
+"""
+type UserStatusChangeEvent {
+  changedAt: DateTime!
+  changedBy: User
+  newStatus: UserStatus!
+  oldStatus: UserStatus!
+  user: User!
+  userId: ID!
+}
+
+"""
+Validation error for specific field
+"""
+type ValidationError {
+  """
+  Error code
+  """
+  code: String!
+
+  """
+  Field name that failed validation
+  """
+  field: String!
+
+  """
+  Validation error message
+  """
+  message: String!
+}
+
+"""
+Vehicle availability
+"""
+enum VehicleType {
+  BIKE
+  BOTH
+  CAR
+  NONE
+}
+
+"""
+Venom type
+"""
+enum VenomType {
+  CYTOTOXIC
+  HEMOTOXIC
+  MIXED
+  NEUROTOXIC
+}
+
+"""
+Input for email verification
+"""
+input VerifyEmailInput {
+  token: String!
+}
+
+"""
+Volunteer profile and information
+"""
+type Volunteer {
+  address: String!
+  assignedZone: String
+  availableDays: [String!]!
+  availableTime: AvailabilityTime!
+  averageRescueTime: Int
+  averageResponseTime: Int
+  bio: String
+  cancelledRescues: Int!
+  certificationExpiry: DateTime
+  certifications: [String!]!
+  completedRescues: Int!
+  contact: Phone!
+  coverageRadius: Int!
+  createdAt: DateTime!
+  currentLat: Latitude
+  currentLng: Longitude
+  dateOfBirth: DateTime
+  email: Email
+  emergencyAvailability: Boolean!
+  emergencyContact: String
+  emergencyPhone: Phone
+  equipment: [String!]!
+  experience: ExperienceLevel!
+  experienceYears: Int
+  gender: String
+  hasEquipment: Boolean!
+  id: ID!
+  imageUrl: String
+  isAvailableNow: Boolean!
+  languages: [String!]!
+  lastLocationUpdate: DateTime
+  municipality: String!
+  name: String!
+  rating: Float
+  rejectedAt: DateTime
+  rejectedBy: User
+  rejectionReason: String
+  rescueAssignments(
+    filter: RescueRequestFilterInput
+    pagination: PaginationInput
+  ): RescueRequestConnection!
+  skills: [String!]!
+  status: VolunteerStatus!
+  successRate: Float
+  totalRatings: Int!
+  totalRescues: Int!
+  trainingCompleted: Boolean!
+  trainingDate: DateTime
+  trainings(pagination: PaginationInput): TrainingConnection!
+  updatedAt: DateTime!
+  user: User
+  vehicle: VehicleType!
+  vehicleDetails: String
+  verifiedAt: DateTime
+  verifiedBy: User
+  ward: Int
+}
+
+"""
+Volunteer analytics
+"""
+type VolunteerAnalytics {
+  activeCount: Int!
+  averageRating: Float!
+  byExperience: [VolunteerByExperience!]!
+  byMunicipality: [VolunteerByMunicipality!]!
+  byStatus: [VolunteerByStatus!]!
+  timeSeriesData: [TimeSeriesPoint!]!
+  topPerformers: [VolunteerPerformance!]!
+  totalVolunteers: Int!
+}
+
+"""
+Input for volunteer analytics
+"""
+input VolunteerAnalyticsInput {
+  dateRange: AnalyticsDateRangeInput
+  experience: ExperienceLevel
+  municipality: String
+  status: VolunteerStatus
+}
+
+"""
+Volunteer availability change event
+"""
+type VolunteerAvailabilityEvent {
+  changedAt: DateTime!
+  currentLat: Latitude
+  currentLng: Longitude
+  isAvailableNow: Boolean!
+  volunteer: Volunteer!
+}
+
+"""
+Volunteer count by experience
+"""
+type VolunteerByExperience {
+  count: Int!
+  experience: ExperienceLevel!
+  percentage: Float!
+}
+
+"""
+Volunteer count by municipality
+"""
+type VolunteerByMunicipality {
+  count: Int!
+  municipality: String!
+  percentage: Float!
+}
+
+"""
+Volunteer count by status
+"""
+type VolunteerByStatus {
+  count: Int!
+  percentage: Float!
+  status: VolunteerStatus!
+}
+
+"""
+Connection type for paginated volunteer results
+"""
+type VolunteerConnection {
+  edges: [VolunteerEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for volunteer connection
+"""
+type VolunteerEdge {
+  cursor: String!
+  node: Volunteer!
+}
+
+"""
+Volunteer statistics by experience
+"""
+type VolunteerExperienceStats {
+  count: Int!
+  experience: ExperienceLevel!
+}
+
+"""
+Filter input for volunteer queries
+"""
+input VolunteerFilterInput {
+  emergencyAvailability: Boolean
+  experience: ExperienceLevel
+  hasEquipment: Boolean
+  hasVehicle: Boolean
+  isAvailableNow: Boolean
+  minRating: Float
+  minSuccessRate: Float
+  municipalities: [String!]
+  municipality: String
+  search: String
+  status: VolunteerStatus
+  statuses: [VolunteerStatus!]
+}
+
+"""
+Volunteer statistics by municipality
+"""
+type VolunteerMunicipalityStats {
+  activeCount: Int!
+  count: Int!
+  municipality: String!
+}
+
+"""
+Volunteer performance metrics
+"""
+type VolunteerPerformance {
+  averageResponseTime: Int!
+  rating: Float!
+  rescuesCompleted: Int!
+  successRate: Float!
+  volunteer: Volunteer!
+}
+
+"""
+Fields available for sorting volunteers
+"""
+enum VolunteerSortField {
+  CREATED_AT
+  MUNICIPALITY
+  NAME
+  RATING
+  SUCCESS_RATE
+  TOTAL_RESCUES
+}
+
+"""
+Sort input for volunteer queries
+"""
+input VolunteerSortInput {
+  field: VolunteerSortField!
+  order: SortOrder!
+}
+
+"""
+Volunteer statistics
+"""
+type VolunteerStats {
+  active: Int!
+  byExperience: [VolunteerExperienceStats!]!
+  byMunicipality: [VolunteerMunicipalityStats!]!
+  pending: Int!
+  suspended: Int!
+  topPerformers: [VolunteerPerformance!]!
+  total: Int!
+  verified: Int!
+}
+
+"""
+Status of volunteer application/account
+"""
+enum VolunteerStatus {
+  APPROVED
+  INACTIVE
+  PENDING
+  REJECTED
+  SUSPENDED
+  VERIFIED
+}
+
+"""
+Volunteer status change event
+"""
+type VolunteerStatusChangeEvent {
+  changedAt: DateTime!
+  changedBy: User
+  newStatus: VolunteerStatus!
+  oldStatus: VolunteerStatus!
+  reason: String
+  volunteer: Volunteer!
+  volunteerId: ID!
+}

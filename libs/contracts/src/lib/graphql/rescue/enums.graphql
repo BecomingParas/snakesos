@@ -1,0 +1,58 @@
+# ===================================================================
+# RESCUE - ENUMS
+# ===================================================================
+
+"""
+Status of a rescue request
+"""
+enum RescueStatus {
+  PENDING
+  ASSIGNED
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  CLOSED
+  EXPIRED
+}
+
+"""
+Priority level of a rescue request
+"""
+enum RescuePriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+"""
+Outcome of a completed rescue
+"""
+enum RescueOutcome {
+  RESCUED_RELOCATED
+  ALREADY_GONE
+  FALSE_ALARM
+  NO_SNAKE_FOUND
+  DECEASED
+  REFUSED_HELP
+}
+
+"""
+Snake size categories
+"""
+enum SnakeSize {
+  SMALL
+  MEDIUM
+  LARGE
+}
+
+"""
+Source of rescue request
+"""
+enum RescueSource {
+  WEB
+  APP
+  PHONE
+  TELEGRAM
+}

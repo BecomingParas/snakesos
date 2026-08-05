@@ -1,0 +1,137 @@
+# ===================================================================
+# RESCUE - REUSABLE FRAGMENTS
+# ===================================================================
+
+"""
+Core rescue fields
+"""
+fragment RescueCore on RescueRequest {
+  id
+  name
+  phone
+  municipality
+  address
+  status
+  priority
+  isEmergency
+  createdAt
+}
+
+"""
+Rescue with location
+"""
+fragment RescueWithLocation on RescueRequest {
+  ...RescueCore
+  ward
+  landmark
+  lat
+  lng
+  locationAccuracy
+}
+
+"""
+Rescue with snake info
+"""
+fragment RescueWithSnakeInfo on RescueRequest {
+  ...RescueWithLocation
+  snakeDescription
+  snakeSize
+  snakeColor
+  snakeImageUrl
+  snakeImages
+  species {
+    id
+    name
+    scientificName
+    venomous
+    dangerLevel
+  }
+}
+
+"""
+Rescue with assignment
+"""
+fragment RescueWithAssignment on RescueRequest {
+  ...RescueCore
+  assignedVolunteer {
+    id
+    name
+    contact
+    currentLat
+    currentLng
+  }
+  assignedAt
+  acceptedAt
+}
+
+"""
+Full rescue details
+"""
+fragment RescueFull on RescueRequest {
+  ...RescueWithSnakeInfo
+  email
+  stillPresent
+  notes
+  internalNotes
+  assignedVolunteer {
+    id
+    name
+    contact
+    vehicle
+  }
+  assignedAt
+  acceptedAt
+  arrivedAt
+  startedAt
+  completedAt
+  outcome
+  rescueReport
+  rescueImages
+  rescueDuration
+  verifiedAt
+  emergencyDetails
+  hasBite
+  biteDetails
+  source
+  referenceNumber
+  updatedAt
+}
+
+"""
+Rescue timeline event
+"""
+fragment TimelineEvent on RescueTimeline {
+  id
+  event
+  description
+  metadata
+  user {
+    id
+    name
+  }
+  lat
+  lng
+  createdAt
+}
+
+"""
+Rescue for list view
+"""
+fragment RescueListItem on RescueRequest {
+  ...RescueCore
+  ward
+  lat
+  lng
+  snakeImageUrl
+  species {
+    id
+    name
+    venomous
+  }
+  assignedVolunteer {
+    id
+    name
+  }
+  referenceNumber
+  updatedAt
+}

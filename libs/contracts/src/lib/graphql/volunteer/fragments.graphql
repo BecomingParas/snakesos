@@ -1,0 +1,106 @@
+# ===================================================================
+# VOLUNTEER - REUSABLE FRAGMENTS
+# ===================================================================
+
+"""
+Core volunteer fields
+"""
+fragment VolunteerCore on Volunteer {
+  id
+  name
+  contact
+  municipality
+  status
+  experience
+  isAvailableNow
+  totalRescues
+  rating
+}
+
+"""
+Volunteer with location
+"""
+fragment VolunteerWithLocation on Volunteer {
+  ...VolunteerCore
+  address
+  ward
+  currentLat
+  currentLng
+  assignedZone
+  coverageRadius
+}
+
+"""
+Volunteer with performance
+"""
+fragment VolunteerWithPerformance on Volunteer {
+  ...VolunteerCore
+  completedRescues
+  cancelledRescues
+  successRate
+  averageResponseTime
+  averageRescueTime
+  totalRatings
+}
+
+"""
+Full volunteer profile
+"""
+fragment VolunteerFull on Volunteer {
+  ...VolunteerWithLocation
+  email
+  dateOfBirth
+  gender
+  emergencyContact
+  emergencyPhone
+  experienceYears
+  vehicle
+  vehicleDetails
+  skills
+  certifications
+  languages
+  availableTime
+  availableDays
+  emergencyAvailability
+  lastLocationUpdate
+  imageUrl
+  bio
+  verifiedAt
+  trainingCompleted
+  trainingDate
+  certificationExpiry
+  hasEquipment
+  equipment
+  completedRescues
+  successRate
+  averageResponseTime
+  rating
+  createdAt
+  updatedAt
+}
+
+"""
+Volunteer for dispatch
+"""
+fragment VolunteerForDispatch on Volunteer {
+  ...VolunteerWithLocation
+  vehicle
+  hasEquipment
+  equipment
+  isAvailableNow
+  emergencyAvailability
+  experienceYears
+  rating
+  successRate
+}
+
+"""
+Volunteer list item
+"""
+fragment VolunteerListItem on Volunteer {
+  ...VolunteerCore
+  email
+  vehicle
+  verifiedAt
+  createdAt
+}

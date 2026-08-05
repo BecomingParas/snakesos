@@ -1,0 +1,44 @@
+# ===================================================================
+# VOLUNTEER - ENUMS
+# ===================================================================
+
+"""
+Status of volunteer application/account
+"""
+enum VolunteerStatus {
+  PENDING
+  APPROVED
+  VERIFIED
+  SUSPENDED
+  REJECTED
+  INACTIVE
+}
+
+"""
+Experience level of volunteer
+"""
+enum ExperienceLevel {
+  BEGINNER
+  INTERMEDIATE
+  EXPERT
+}
+
+"""
+Vehicle availability
+"""
+enum VehicleType {
+  NONE
+  BIKE
+  CAR
+  BOTH
+}
+
+"""
+Availability time preference
+"""
+enum AvailabilityTime {
+  ANYTIME
+  WEEKENDS
+  EVENINGS
+  WEEKDAYS
+}

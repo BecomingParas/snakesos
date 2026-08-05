@@ -1,0 +1,108 @@
+# ===================================================================
+# SNAKE - TYPE DEFINITIONS
+# ===================================================================
+
+"""
+Snake species information
+"""
+type SnakeSpecies {
+  id: ID!
+  
+  # Nomenclature
+  name: String!
+  scientificName: String!
+  nepaliName: String!
+  localNames: [String!]!
+  aliases: [String!]!
+  
+  # Classification
+  family: String
+  genus: String
+  species: String
+  
+  # Danger Assessment
+  venomous: Boolean!
+  dangerLevel: DangerLevel
+  venomType: VenomType
+  
+  # Physical Characteristics
+  averageLength: String
+  maxLength: String
+  color: String
+  pattern: String
+  identificationGuide: String
+  distinctiveFeatures: [String!]!
+  
+  # Behavior & Habitat
+  behavior: String
+  habitat: String
+  activeTime: ActivityPattern
+  diet: String
+  
+  # Safety Information
+  safetyTips: String
+  emergencyAdvice: String
+  firstAidSteps: [String!]!
+  
+  # Distribution
+  foundInNepal: Boolean!
+  regions: [String!]!
+  altitudeRange: String
+  
+  # Conservation
+  conservationStatus: ConservationStatus
+  protected: Boolean!
+  
+  # Media
+  imageUrl: String
+  images: [String!]!
+  videoUrl: String
+  
+  # Statistics
+  rescueCount: Int!
+  identificationCount: Int!
+  
+  # Metadata
+  verified: Boolean!
+  verifiedBy: User
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  
+  # Relations
+  rescueRequests(
+    pagination: PaginationInput
+  ): RescueRequestConnection!
+  
+  aiIdentifications(
+    pagination: PaginationInput
+  ): AIIdentificationConnection!
+}
+
+"""
+Snake species statistics
+"""
+type SnakeSpeciesStats {
+  totalSpecies: Int!
+  venomousCount: Int!
+  harmlessCount: Int!
+  byDangerLevel: [SpeciesByDangerLevel!]!
+  byFamily: [SpeciesByFamily!]!
+  mostEncountered: [SnakeSpecies!]!
+}
+
+"""
+Species count by danger level
+"""
+type SpeciesByDangerLevel {
+  dangerLevel: DangerLevel!
+  count: Int!
+}
+
+"""
+Species count by family
+"""
+type SpeciesByFamily {
+  family: String!
+  count: Int!
+  venomousCount: Int!
+}

@@ -1,0 +1,221 @@
+# ===================================================================
+# ANALYTICS - TYPE DEFINITIONS
+# ===================================================================
+
+"""
+Dashboard statistics overview
+"""
+type DashboardStats {
+  # Rescue Metrics
+  totalRescues: Int!
+  activeRescues: Int!
+  completedRescues: Int!
+  completionRate: Float!
+  averageResponseTime: Int!
+  
+  # Volunteer Metrics
+  totalVolunteers: Int!
+  activeVolunteers: Int!
+  verifiedRescuers: Int!
+  
+  # Species Metrics
+  totalSpecies: Int!
+  venomousEncounters: Int!
+  
+  # Community Metrics
+  totalUsers: Int!
+  totalDonations: Float!
+  totalDonationAmount: Float!
+  
+  # Recent Activity
+  recentRescues: [RescueRequest!]!
+  recentDonations: [Donation!]!
+  
+  # Trends
+  rescueTrend: TrendData!
+  volunteerTrend: TrendData!
+  donationTrend: TrendData!
+}
+
+"""
+Trend data for time series
+"""
+type TrendData {
+  current: Int!
+  previous: Int!
+  change: Float!
+  direction: TrendDirection!
+  data: [TimeSeriesPoint!]!
+}
+
+"""
+Trend direction
+"""
+enum TrendDirection {
+  UP
+  DOWN
+  STABLE
+}
+
+"""
+Time series data point
+"""
+type TimeSeriesPoint {
+  timestamp: DateTime!
+  value: Float!
+  label: String
+}
+
+"""
+Rescue analytics
+"""
+type RescueAnalytics {
+  totalRescues: Int!
+  byStatus: [RescueByStatus!]!
+  byPriority: [RescueByPriority!]!
+  byMunicipality: [RescueByMunicipality!]!
+  bySpecies: [RescueBySpecies!]!
+  byTimeOfDay: [RescueByTimeOfDay!]!
+  responseTimeAnalysis: ResponseTimeAnalysis!
+  successRate: Float!
+  timeSeriesData: [TimeSeriesPoint!]!
+}
+
+"""
+Rescue count by status
+"""
+type RescueByStatus {
+  status: RescueStatus!
+  count: Int!
+  percentage: Float!
+}
+
+"""
+Rescue count by priority
+"""
+type RescueByPriority {
+  priority: RescuePriority!
+  count: Int!
+  percentage: Float!
+}
+
+"""
+Rescue count by municipality
+"""
+type RescueByMunicipality {
+  municipality: String!
+  count: Int!
+  percentage: Float!
+}
+
+"""
+Rescue count by species
+"""
+type RescueBySpecies {
+  species: SnakeSpecies!
+  count: Int!
+  percentage: Float!
+}
+
+"""
+Rescue count by time of day
+"""
+type RescueByTimeOfDay {
+  hour: Int!
+  count: Int!
+  averageResponseTime: Int!
+}
+
+"""
+Response time analysis
+"""
+type ResponseTimeAnalysis {
+  average: Int!
+  median: Int!
+  fastest: Int!
+  slowest: Int!
+  byPriority: [ResponseTimeByPriority!]!
+}
+
+"""
+Response time by priority
+"""
+type ResponseTimeByPriority {
+  priority: RescuePriority!
+  average: Int!
+  median: Int!
+}
+
+"""
+Volunteer analytics
+"""
+type VolunteerAnalytics {
+  totalVolunteers: Int!
+  activeCount: Int!
+  byStatus: [VolunteerByStatus!]!
+  byExperience: [VolunteerByExperience!]!
+  byMunicipality: [VolunteerByMunicipality!]!
+  topPerformers: [VolunteerPerformance!]!
+  averageRating: Float!
+  timeSeriesData: [TimeSeriesPoint!]!
+}
+
+"""
+Volunteer count by status
+"""
+type VolunteerByStatus {
+  status: VolunteerStatus!
+  count: Int!
+  percentage: Float!
+}
+
+"""
+Volunteer count by experience
+"""
+type VolunteerByExperience {
+  experience: ExperienceLevel!
+  count: Int!
+  percentage: Float!
+}
+
+"""
+Volunteer count by municipality
+"""
+type VolunteerByMunicipality {
+  municipality: String!
+  count: Int!
+  percentage: Float!
+}
+
+"""
+Geographic heatmap data
+"""
+type GeographicHeatmap {
+  municipality: String!
+  lat: Latitude!
+  lng: Longitude!
+  rescueCount: Int!
+  intensity: Float!
+}
+
+"""
+Engagement metrics
+"""
+type EngagementMetrics {
+  totalPageViews: Int!
+  uniqueVisitors: Int!
+  avgSessionDuration: Int!
+  bounceRate: Float!
+  topPages: [PageView!]!
+  userGrowth: [TimeSeriesPoint!]!
+}
+
+"""
+Page view statistics
+"""
+type PageView {
+  page: String!
+  views: Int!
+  uniqueViews: Int!
+  avgDuration: Int!
+}

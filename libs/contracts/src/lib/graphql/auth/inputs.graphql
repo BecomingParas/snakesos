@@ -1,0 +1,126 @@
+# ===================================================================
+# AUTH - INPUT TYPES
+# ===================================================================
+
+"""
+Input for user registration
+"""
+input RegisterInput {
+  email: Email!
+  password: String!
+  name: String!
+  phone: Phone
+  language: String
+  timezone: String
+}
+
+"""
+Input for user login
+"""
+input LoginInput {
+  email: Email!
+  password: String!
+}
+
+"""
+Input for OAuth (Google) login
+"""
+input OAuthLoginInput {
+  provider: String!
+  token: String!
+  googleId: String
+  email: Email
+  name: String
+}
+
+"""
+Input for updating user profile
+"""
+input UpdateUserProfileInput {
+  name: String
+  phone: Phone
+  avatar: String
+  language: String
+  timezone: String
+  notificationPreferences: JSON
+}
+
+"""
+Input for changing password
+"""
+input ChangePasswordInput {
+  currentPassword: String!
+  newPassword: String!
+}
+
+"""
+Input for password reset request
+"""
+input PasswordResetRequestInput {
+  email: Email!
+}
+
+"""
+Input for password reset confirmation
+"""
+input PasswordResetConfirmInput {
+  token: String!
+  newPassword: String!
+}
+
+"""
+Input for email verification
+"""
+input VerifyEmailInput {
+  token: String!
+}
+
+"""
+Input for resending verification email
+"""
+input ResendVerificationInput {
+  email: Email!
+}
+
+"""
+Input for updating notification preferences
+"""
+input NotificationPreferencesInput {
+  emailNotifications: Boolean
+  smsNotifications: Boolean
+  telegramNotifications: Boolean
+  rescueUpdates: Boolean
+  volunteerUpdates: Boolean
+  systemAnnouncements: Boolean
+}
+
+"""
+Filter input for user queries
+"""
+input UserFilterInput {
+  role: UserRole
+  status: UserStatus
+  emailVerified: Boolean
+  search: String
+  createdAfter: DateTime
+  createdBefore: DateTime
+}
+
+"""
+Sort input for user queries
+"""
+input UserSortInput {
+  field: UserSortField!
+  order: SortOrder!
+}
+
+"""
+Fields available for sorting users
+"""
+enum UserSortField {
+  NAME
+  EMAIL
+  CREATED_AT
+  UPDATED_AT
+  LAST_LOGIN_AT
+}

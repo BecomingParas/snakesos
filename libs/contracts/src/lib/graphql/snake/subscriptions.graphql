@@ -1,0 +1,15 @@
+# ===================================================================
+# SNAKE - SUBSCRIPTIONS
+# ===================================================================
+
+extend type Subscription {
+  """
+  Subscribe to new snake species additions
+  """
+  snakeSpeciesAdded: SnakeSpecies! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Subscribe to snake species updates
+  """
+  snakeSpeciesUpdated(id: ID): SnakeSpecies! @auth
+}

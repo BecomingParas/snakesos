@@ -1,0 +1,15 @@
+# ===================================================================
+# ANALYTICS - SUBSCRIPTIONS
+# ===================================================================
+
+extend type Subscription {
+  """
+  Subscribe to real-time dashboard updates
+  """
+  dashboardUpdated: DashboardStats! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Subscribe to analytics data changes
+  """
+  analyticsUpdated(type: String!): JSON! @auth(requires: [ADMIN, SUPER_ADMIN])
+}

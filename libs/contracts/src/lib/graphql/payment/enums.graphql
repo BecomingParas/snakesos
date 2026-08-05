@@ -1,0 +1,43 @@
+# ===================================================================
+# PAYMENT - ENUMS
+# ===================================================================
+
+"""
+Payment method
+"""
+enum PaymentMethod {
+  ESEWA
+  KHALTI
+  IME_PAY
+  FONEPAY
+  BANK_TRANSFER
+  STRIPE
+  PAYPAL
+  CASH
+}
+
+"""
+Payment status
+"""
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+"""
+Donation purpose
+"""
+enum DonationPurpose {
+  GENERAL
+  EMERGENCY_FUND
+  EQUIPMENT
+  TRAINING
+  MEDICAL
+  RESEARCH
+  EDUCATION
+  INFRASTRUCTURE
+}

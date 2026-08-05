@@ -1,0 +1,47 @@
+# ===================================================================
+# SNAKE - ENUMS
+# ===================================================================
+
+"""
+Danger level of snake species
+"""
+enum DangerLevel {
+  HARMLESS
+  MILDLY_VENOMOUS
+  MEDICALLY_SIGNIFICANT
+  HIGHLY_DANGEROUS
+}
+
+"""
+Venom type
+"""
+enum VenomType {
+  NEUROTOXIC
+  HEMOTOXIC
+  CYTOTOXIC
+  MIXED
+}
+
+"""
+Activity pattern
+"""
+enum ActivityPattern {
+  NOCTURNAL
+  DIURNAL
+  CREPUSCULAR
+  BOTH
+}
+
+"""
+Conservation status
+"""
+enum ConservationStatus {
+  LEAST_CONCERN
+  NEAR_THREATENED
+  VULNERABLE
+  ENDANGERED
+  CRITICALLY_ENDANGERED
+  EXTINCT_IN_WILD
+  EXTINCT
+  DATA_DEFICIENT
+}

@@ -1,0 +1,26 @@
+# ===================================================================
+# AI - SUBSCRIPTIONS
+# ===================================================================
+
+extend type Subscription {
+  """
+  Subscribe to new AI identifications
+  """
+  aiIdentificationCompleted(userId: ID): AIIdentification! @auth
+  
+  """
+  Subscribe to identification feedback events
+  """
+  identificationFeedbackReceived: IdentificationFeedbackEvent! @auth(requires: [ADMIN, SUPER_ADMIN])
+}
+
+"""
+Identification feedback event
+"""
+type IdentificationFeedbackEvent {
+  identification: AIIdentification!
+  feedback: IdentificationFeedback!
+  user: User!
+  correctSpecies: SnakeSpecies
+  providedAt: DateTime!
+}

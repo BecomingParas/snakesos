@@ -1,0 +1,35 @@
+# ===================================================================
+# PAYMENT - MUTATIONS
+# ===================================================================
+
+extend type Mutation {
+  """
+  Create a donation
+  """
+  createDonation(input: CreateDonationInput!): Donation!
+  
+  """
+  Process payment (callback from gateway)
+  """
+  processPayment(input: ProcessPaymentInput!): Donation!
+  
+  """
+  Verify donation (admin)
+  """
+  verifyDonation(donationId: ID!, notes: String): Donation! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Refund donation (admin)
+  """
+  refundDonation(input: RefundDonationInput!): Donation! @auth(requires: [SUPER_ADMIN])
+  
+  """
+  Generate donation receipt
+  """
+  generateDonationReceipt(donationId: ID!): Donation! @auth
+  
+  """
+  Update payment gateway configuration
+  """
+  updatePaymentGateway(input: UpdatePaymentGatewayInput!): PaymentGatewayConfig! @auth(requires: [SUPER_ADMIN])
+}

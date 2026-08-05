@@ -1,0 +1,143 @@
+# ===================================================================
+# VOLUNTEER - INPUT TYPES
+# ===================================================================
+
+"""
+Input for volunteer application
+"""
+input ApplyVolunteerInput {
+  # Personal Information
+  name: String!
+  contact: Phone!
+  email: Email
+  address: String!
+  municipality: String!
+  ward: Int
+  dateOfBirth: DateTime
+  gender: String
+  
+  # Emergency Contact
+  emergencyContact: String
+  emergencyPhone: Phone
+  
+  # Qualification & Experience
+  experience: ExperienceLevel!
+  experienceYears: Int
+  vehicle: VehicleType!
+  vehicleDetails: String
+  skills: [String!]
+  certifications: [String!]
+  languages: [String!]
+  
+  # Availability
+  availableTime: AvailabilityTime!
+  availableDays: [String!]!
+  emergencyAvailability: Boolean!
+  assignedZone: String
+  coverageRadius: Int
+  
+  # Profile
+  imageUrl: String
+  bio: String
+  
+  # Equipment
+  hasEquipment: Boolean!
+  equipment: [String!]
+}
+
+"""
+Input for updating volunteer profile
+"""
+input UpdateVolunteerInput {
+  contact: Phone
+  email: Email
+  address: String
+  municipality: String
+  ward: Int
+  emergencyContact: String
+  emergencyPhone: Phone
+  vehicle: VehicleType
+  vehicleDetails: String
+  skills: [String!]
+  certifications: [String!]
+  languages: [String!]
+  availableTime: AvailabilityTime
+  availableDays: [String!]
+  emergencyAvailability: Boolean
+  assignedZone: String
+  coverageRadius: Int
+  imageUrl: String
+  bio: String
+  hasEquipment: Boolean
+  equipment: [String!]
+}
+
+"""
+Input for updating volunteer availability
+"""
+input UpdateVolunteerAvailabilityInput {
+  isAvailableNow: Boolean!
+  currentLat: Latitude
+  currentLng: Longitude
+}
+
+"""
+Input for approving/rejecting volunteer
+"""
+input ReviewVolunteerInput {
+  volunteerId: ID!
+  approved: Boolean!
+  notes: String
+  assignedZone: String
+}
+
+"""
+Filter input for volunteer queries
+"""
+input VolunteerFilterInput {
+  status: VolunteerStatus
+  statuses: [VolunteerStatus!]
+  municipality: String
+  municipalities: [String!]
+  experience: ExperienceLevel
+  isAvailableNow: Boolean
+  emergencyAvailability: Boolean
+  hasVehicle: Boolean
+  hasEquipment: Boolean
+  minSuccessRate: Float
+  minRating: Float
+  search: String
+}
+
+"""
+Sort input for volunteer queries
+"""
+input VolunteerSortInput {
+  field: VolunteerSortField!
+  order: SortOrder!
+}
+
+"""
+Fields available for sorting volunteers
+"""
+enum VolunteerSortField {
+  NAME
+  CREATED_AT
+  TOTAL_RESCUES
+  SUCCESS_RATE
+  RATING
+  MUNICIPALITY
+}
+
+"""
+Input for finding available volunteers
+"""
+input FindAvailableVolunteersInput {
+  lat: Latitude!
+  lng: Longitude!
+  radiusKm: Float!
+  requireVehicle: Boolean
+  requireEquipment: Boolean
+  minExperience: ExperienceLevel
+  limit: Int
+}

@@ -1,0 +1,64 @@
+# ===================================================================
+# AUTH - REUSABLE FRAGMENTS
+# ===================================================================
+
+"""
+Core user fields
+"""
+fragment UserCore on User {
+  id
+  email
+  name
+  role
+  status
+  avatar
+}
+
+"""
+User with preferences
+"""
+fragment UserWithPreferences on User {
+  ...UserCore
+  phone
+  language
+  timezone
+  emailVerified
+  notificationPreferences
+}
+
+"""
+Full user details (admin view)
+"""
+fragment UserFull on User {
+  ...UserWithPreferences
+  googleId
+  googleEmail
+  verifiedAt
+  lastLoginAt
+  lastLoginIp
+  createdAt
+  updatedAt
+}
+
+"""
+Public user profile
+"""
+fragment UserPublic on User {
+  id
+  name
+  avatar
+  role
+  createdAt
+}
+
+"""
+Auth payload fields
+"""
+fragment AuthPayloadFields on AuthPayload {
+  token
+  refreshToken
+  expiresIn
+  user {
+    ...UserWithPreferences
+  }
+}

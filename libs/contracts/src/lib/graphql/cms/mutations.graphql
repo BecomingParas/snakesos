@@ -1,0 +1,75 @@
+# ===================================================================
+# CMS - MUTATIONS
+# ===================================================================
+
+extend type Mutation {
+  """
+  Create a blog post
+  """
+  createBlogPost(input: CreateBlogPostInput!): BlogPost! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Update a blog post
+  """
+  updateBlogPost(id: ID!, input: UpdateBlogPostInput!): BlogPost! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Publish a blog post
+  """
+  publishBlogPost(id: ID!): BlogPost! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Archive a blog post
+  """
+  archiveBlogPost(id: ID!): BlogPost! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Delete a blog post (soft delete)
+  """
+  deleteBlogPost(id: ID!): SuccessResponse! @auth(requires: [SUPER_ADMIN])
+  
+  """
+  Increment blog post views
+  """
+  incrementBlogPostViews(id: ID!): BlogPost!
+  
+  """
+  Like a blog post
+  """
+  likeBlogPost(id: ID!): BlogPost! @auth
+  
+  """
+  Upload gallery image
+  """
+  uploadGalleryImage(input: UploadGalleryImageInput!): GalleryImage! @auth(requires: [ADMIN, SUPER_ADMIN, VERIFIED_RESCUER])
+  
+  """
+  Update gallery image
+  """
+  updateGalleryImage(id: ID!, input: UpdateGalleryImageInput!): GalleryImage! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Delete gallery image (soft delete)
+  """
+  deleteGalleryImage(id: ID!): SuccessResponse! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Increment gallery image views
+  """
+  incrementGalleryImageViews(id: ID!): GalleryImage!
+  
+  """
+  Like a gallery image
+  """
+  likeGalleryImage(id: ID!): GalleryImage! @auth
+  
+  """
+  Bulk publish blog posts
+  """
+  bulkPublishBlogPosts(ids: [ID!]!): BulkOperationResult! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Bulk delete gallery images
+  """
+  bulkDeleteGalleryImages(ids: [ID!]!): BulkOperationResult! @auth(requires: [SUPER_ADMIN])
+}

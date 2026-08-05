@@ -1,0 +1,58 @@
+# ===================================================================
+# AI - QUERIES
+# ===================================================================
+
+extend type Query {
+  """
+  Get AI identification by ID
+  """
+  aiIdentification(id: ID!): AIIdentification
+  
+  """
+  List AI identifications
+  """
+  aiIdentifications(
+    pagination: PaginationInput
+    filter: AIIdentificationFilterInput
+    sort: AIIdentificationSortInput
+  ): AIIdentificationConnection! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Get my identification history
+  """
+  myIdentificationHistory(
+    pagination: PaginationInput
+  ): AIIdentificationConnection! @auth
+  
+  """
+  Get AI identification statistics
+  """
+  aiIdentificationStats: AIIdentificationStats! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Get available AI models
+  """
+  availableAIModels: [AIModelConfig!]!
+  
+  """
+  Get AI model configuration
+  """
+  aiModelConfig(provider: AIProvider!): AIModelConfig @auth(requires: [ADMIN, SUPER_ADMIN])
+}
+
+"""
+Connection type for paginated AI identification results
+"""
+type AIIdentificationConnection {
+  edges: [AIIdentificationEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for AI identification connection
+"""
+type AIIdentificationEdge {
+  node: AIIdentification!
+  cursor: String!
+}

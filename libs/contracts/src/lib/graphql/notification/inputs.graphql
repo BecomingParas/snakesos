@@ -1,0 +1,83 @@
+# ===================================================================
+# NOTIFICATION - INPUT TYPES
+# ===================================================================
+
+"""
+Input for creating a notification
+"""
+input CreateNotificationInput {
+  userId: ID!
+  type: NotificationType!
+  title: String!
+  message: String!
+  link: String
+  actionUrl: String
+  rescueId: ID
+  priority: NotificationPriority
+  channels: [NotificationChannel!]
+  metadata: JSON
+  expiresAt: DateTime
+}
+
+"""
+Input for sending bulk notifications
+"""
+input BulkNotificationInput {
+  userIds: [ID!]!
+  type: NotificationType!
+  title: String!
+  message: String!
+  link: String
+  priority: NotificationPriority
+  channels: [NotificationChannel!]
+}
+
+"""
+Filter input for notification queries
+"""
+input NotificationFilterInput {
+  type: NotificationType
+  types: [NotificationType!]
+  priority: NotificationPriority
+  priorities: [NotificationPriority!]
+  read: Boolean
+  rescueId: ID
+  createdAfter: DateTime
+  createdBefore: DateTime
+}
+
+"""
+Sort input for notification queries
+"""
+input NotificationSortInput {
+  field: NotificationSortField!
+  order: SortOrder!
+}
+
+"""
+Fields available for sorting notifications
+"""
+enum NotificationSortField {
+  CREATED_AT
+  PRIORITY
+  TYPE
+  READ_AT
+}
+
+"""
+Input for updating notification preferences
+"""
+input UpdateNotificationPreferencesInput {
+  enableApp: Boolean
+  enableEmail: Boolean
+  enableSMS: Boolean
+  enableTelegram: Boolean
+  rescueUpdates: Boolean
+  volunteerUpdates: Boolean
+  trainingReminders: Boolean
+  donationReceipts: Boolean
+  systemAnnouncements: Boolean
+  quietHoursStart: String
+  quietHoursEnd: String
+  timezone: String
+}

@@ -1,0 +1,95 @@
+# ===================================================================
+# CMS - QUERIES
+# ===================================================================
+
+extend type Query {
+  """
+  Get blog post by ID or slug
+  """
+  blogPost(id: ID, slug: String): BlogPost
+  
+  """
+  List blog posts
+  """
+  blogPosts(
+    pagination: PaginationInput
+    filter: BlogPostFilterInput
+    sort: BlogPostSortInput
+  ): BlogPostConnection!
+  
+  """
+  Get published blog posts (public)
+  """
+  publishedBlogPosts(
+    pagination: PaginationInput
+    category: PostCategory
+  ): BlogPostConnection!
+  
+  """
+  Search blog posts
+  """
+  searchBlogPosts(
+    query: String!
+    pagination: PaginationInput
+  ): BlogPostConnection!
+  
+  """
+  Get gallery image by ID
+  """
+  galleryImage(id: ID!): GalleryImage
+  
+  """
+  List gallery images
+  """
+  galleryImages(
+    pagination: PaginationInput
+    filter: GalleryImageFilterInput
+    sort: GalleryImageSortInput
+  ): GalleryImageConnection!
+  
+  """
+  Get featured gallery images (public)
+  """
+  featuredGalleryImages(
+    pagination: PaginationInput
+  ): GalleryImageConnection!
+  
+  """
+  Get CMS statistics
+  """
+  cmsStats: CMSStats! @auth(requires: [ADMIN, SUPER_ADMIN])
+}
+
+"""
+Connection type for paginated blog post results
+"""
+type BlogPostConnection {
+  edges: [BlogPostEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for blog post connection
+"""
+type BlogPostEdge {
+  node: BlogPost!
+  cursor: String!
+}
+
+"""
+Connection type for paginated gallery image results
+"""
+type GalleryImageConnection {
+  edges: [GalleryImageEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for gallery image connection
+"""
+type GalleryImageEdge {
+  node: GalleryImage!
+  cursor: String!
+}

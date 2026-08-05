@@ -1,0 +1,136 @@
+# ===================================================================
+# AUTH - USER TYPE DEFINITIONS
+# ===================================================================
+
+"""
+User account with authentication and profile information
+"""
+type User {
+  id: ID!
+  email: Email!
+  name: String!
+  phone: Phone
+  role: UserRole!
+  status: UserStatus!
+  avatar: String
+  
+  # OAuth Integration
+  googleId: String
+  googleEmail: Email
+  
+  # Email Verification
+  emailVerified: Boolean!
+  verifiedAt: DateTime
+  
+  # Security
+  lastLoginAt: DateTime
+  lastLoginIp: String
+  
+  # Preferences
+  language: String!
+  timezone: String!
+  notificationPreferences: JSON
+  
+  # Metadata
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  
+  # Relations
+  rescueRequests(
+    pagination: PaginationInput
+    filter: RescueRequestFilterInput
+  ): RescueRequestConnection
+  
+  volunteerProfile: Volunteer
+  
+  blogPosts(
+    pagination: PaginationInput
+    filter: BlogPostFilterInput
+  ): BlogPostConnection
+  
+  galleryImages(
+    pagination: PaginationInput
+  ): GalleryImageConnection
+  
+  donations(
+    pagination: PaginationInput
+  ): DonationConnection
+  
+  aiIdentifications(
+    pagination: PaginationInput
+  ): AIIdentificationConnection
+  
+  notifications(
+    pagination: PaginationInput
+    filter: NotificationFilterInput
+  ): NotificationConnection
+  
+  activityLogs(
+    pagination: PaginationInput
+  ): ActivityLogConnection
+}
+
+"""
+Authentication payload returned on successful login/register
+"""
+type AuthPayload {
+  token: String!
+  refreshToken: String!
+  user: User!
+  expiresIn: Int!
+}
+
+"""
+User profile for public display
+"""
+type UserProfile {
+  id: ID!
+  name: String!
+  avatar: String
+  role: UserRole!
+  volunteerProfile: Volunteer
+  totalRescues: Int!
+  joinedAt: DateTime!
+}
+
+"""
+Password reset token response
+"""
+type PasswordResetTokenPayload {
+  message: String!
+  expiresAt: DateTime!
+}
+
+"""
+Email verification response
+"""
+type EmailVerificationPayload {
+  success: Boolean!
+  message: String!
+  user: User
+}
+
+"""
+Activity log entry for audit trail
+"""
+type ActivityLog {
+  id: ID!
+  userId: ID!
+  user: User!
+  action: String!
+  resource: String
+  resourceId: ID
+  metadata: JSON
+  ipAddress: String
+  userAgent: String
+  createdAt: DateTime!
+}
+
+"""
+Paginated connection for activity logs
+"""
+type ActivityLogConnection {
+  edges: [ActivityLog!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}

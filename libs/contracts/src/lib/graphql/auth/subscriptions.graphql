@@ -1,0 +1,27 @@
+# ===================================================================
+# AUTH - SUBSCRIPTIONS
+# ===================================================================
+
+extend type Subscription {
+  """
+  Subscribe to user profile updates
+  """
+  userUpdated(userId: ID!): User! @auth
+  
+  """
+  Subscribe to user status changes (admin only)
+  """
+  userStatusChanged: UserStatusChangeEvent! @auth(requires: [ADMIN, SUPER_ADMIN])
+}
+
+"""
+User status change event
+"""
+type UserStatusChangeEvent {
+  userId: ID!
+  user: User!
+  oldStatus: UserStatus!
+  newStatus: UserStatus!
+  changedBy: User
+  changedAt: DateTime!
+}

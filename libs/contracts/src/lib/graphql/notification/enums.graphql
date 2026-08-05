@@ -1,0 +1,42 @@
+# ===================================================================
+# NOTIFICATION - ENUMS
+# ===================================================================
+
+"""
+Type of notification
+"""
+enum NotificationType {
+  RESCUE_CREATED
+  RESCUE_ASSIGNED
+  RESCUE_ACCEPTED
+  RESCUE_COMPLETED
+  RESCUE_CANCELLED
+  VOLUNTEER_APPROVED
+  VOLUNTEER_REJECTED
+  TRAINING_SCHEDULED
+  TRAINING_REMINDER
+  DONATION_RECEIVED
+  SYSTEM_ALERT
+  ANNOUNCEMENT
+}
+
+"""
+Priority level of notification
+"""
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+"""
+Delivery channel for notification
+"""
+enum NotificationChannel {
+  APP
+  EMAIL
+  SMS
+  TELEGRAM
+  PUSH
+}

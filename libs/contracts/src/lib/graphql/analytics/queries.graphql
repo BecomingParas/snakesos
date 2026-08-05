@@ -1,0 +1,39 @@
+# ===================================================================
+# ANALYTICS - QUERIES
+# ===================================================================
+
+extend type Query {
+  """
+  Get dashboard statistics
+  """
+  dashboardStats(period: AnalyticsTimePeriod): DashboardStats! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Get rescue analytics
+  """
+  rescueAnalytics(input: RescueAnalyticsInput): RescueAnalytics! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Get volunteer analytics
+  """
+  volunteerAnalytics(input: VolunteerAnalyticsInput): VolunteerAnalytics! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Get geographic heatmap data
+  """
+  geographicHeatmap(input: GeographicHeatmapInput): [GeographicHeatmap!]! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Get engagement metrics
+  """
+  engagementMetrics(dateRange: AnalyticsDateRangeInput): EngagementMetrics! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Export analytics data (CSV/JSON)
+  """
+  exportAnalytics(
+    type: String!
+    input: RescueAnalyticsInput
+    format: String
+  ): String! @auth(requires: [ADMIN, SUPER_ADMIN])
+}

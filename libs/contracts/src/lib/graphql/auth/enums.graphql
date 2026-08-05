@@ -1,0 +1,68 @@
+# ===================================================================
+# AUTH - ENUMS
+# ===================================================================
+
+"""
+User role for role-based access control
+"""
+enum UserRole {
+  """
+  Regular citizen who can submit rescue requests
+  """
+  CITIZEN
+  
+  """
+  Approved volunteer (not yet verified)
+  """
+  VOLUNTEER
+  
+  """
+  Verified snake rescuer with full rescue capabilities
+  """
+  VERIFIED_RESCUER
+  
+  """
+  District-level coordinator managing volunteers
+  """
+  DISTRICT_COORDINATOR
+  
+  """
+  Administrator with full system access
+  """
+  ADMIN
+  
+  """
+  Super administrator with system configuration access
+  """
+  SUPER_ADMIN
+}
+
+"""
+User account status
+"""
+enum UserStatus {
+  """
+  Active and can use the system
+  """
+  ACTIVE
+  
+  """
+  Inactive (voluntarily disabled)
+  """
+  INACTIVE
+  
+  """
+  Suspended by admin
+  """
+  SUSPENDED
+  
+  """
+  Pending email verification
+  """
+  PENDING_VERIFICATION
+  
+  """
+  Permanently banned
+  """
+  BANNED
+}

@@ -1,0 +1,40 @@
+# ===================================================================
+# TRAINING - MUTATIONS
+# ===================================================================
+
+extend type Mutation {
+  """
+  Create a training session
+  """
+  createTraining(input: CreateTrainingInput!): Training! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Update a training session
+  """
+  updateTraining(id: ID!, input: UpdateTrainingInput!): Training! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Enroll in training session
+  """
+  enrollInTraining(trainingId: ID!): Training! @auth
+  
+  """
+  Cancel training enrollment
+  """
+  cancelTrainingEnrollment(trainingId: ID!): Training! @auth
+  
+  """
+  Mark training as completed (admin)
+  """
+  completeTraining(trainingId: ID!): Training! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Cancel training session
+  """
+  cancelTraining(trainingId: ID!, reason: String): Training! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Delete training session (soft delete)
+  """
+  deleteTraining(id: ID!): SuccessResponse! @auth(requires: [SUPER_ADMIN])
+}

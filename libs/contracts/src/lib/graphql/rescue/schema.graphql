@@ -1,0 +1,159 @@
+# ===================================================================
+# RESCUE - TYPE DEFINITIONS
+# ===================================================================
+
+"""
+Snake rescue request
+"""
+type RescueRequest {
+  id: ID!
+  
+  # Reporter Information
+  user: User
+  name: String!
+  phone: Phone!
+  email: Email
+  
+  # Location Details
+  municipality: String!
+  ward: Int
+  address: String!
+  landmark: String
+  lat: Latitude
+  lng: Longitude
+  locationAccuracy: Float
+  
+  # Snake Information
+  snakeDescription: String
+  snakeSize: String
+  snakeColor: String
+  snakeImageUrl: String
+  snakeImages: [String!]!
+  
+  # Species Identification
+  species: SnakeSpecies
+  aiIdentification: AIIdentification
+  
+  # Rescue Status
+  status: RescueStatus!
+  priority: RescuePriority!
+  stillPresent: Boolean!
+  notes: String
+  internalNotes: String
+  
+  # Assignment
+  assignedVolunteer: Volunteer
+  assignedAt: DateTime
+  assignedBy: User
+  
+  # Tracking
+  acceptedAt: DateTime
+  arrivedAt: DateTime
+  startedAt: DateTime
+  
+  # Completion
+  completedAt: DateTime
+  outcome: RescueOutcome
+  rescueReport: String
+  rescueImages: [String!]!
+  rescueDuration: Int
+  
+  # Verification
+  verifiedBy: User
+  verifiedAt: DateTime
+  
+  # Emergency Details
+  isEmergency: Boolean!
+  emergencyDetails: String
+  hasBite: Boolean!
+  biteDetails: String
+  
+  # Metadata
+  source: RescueSource!
+  referenceNumber: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  
+  # Relations
+  timeline: [RescueTimeline!]!
+  notifications: [Notification!]!
+}
+
+"""
+Timeline event for a rescue request
+"""
+type RescueTimeline {
+  id: ID!
+  rescue: RescueRequest!
+  event: String!
+  description: String
+  metadata: JSON
+  user: User
+  lat: Latitude
+  lng: Longitude
+  createdAt: DateTime!
+}
+
+"""
+Statistics for rescue operations
+"""
+type RescueStats {
+  total: Int!
+  pending: Int!
+  inProgress: Int!
+  completed: Int!
+  cancelled: Int!
+  averageResponseTime: Float
+  averageRescueTime: Float
+  successRate: Float
+  byPriority: [RescuePriorityStats!]!
+  byMunicipality: [RescueMunicipalityStats!]!
+  bySpecies: [RescueSpeciesStats!]!
+  recentActivity: [RescueActivityPoint!]!
+}
+
+"""
+Rescue statistics by priority
+"""
+type RescuePriorityStats {
+  priority: RescuePriority!
+  count: Int!
+  percentage: Float!
+}
+
+"""
+Rescue statistics by municipality
+"""
+type RescueMunicipalityStats {
+  municipality: String!
+  count: Int!
+  percentage: Float!
+}
+
+"""
+Rescue statistics by species
+"""
+type RescueSpeciesStats {
+  species: SnakeSpecies!
+  count: Int!
+  percentage: Float!
+}
+
+"""
+Activity point for rescue timeline charts
+"""
+type RescueActivityPoint {
+  date: DateTime!
+  count: Int!
+  completed: Int!
+  pending: Int!
+  cancelled: Int!
+}
+
+"""
+Nearby rescue requests (for duplicate detection)
+"""
+type NearbyRescue {
+  rescue: RescueRequest!
+  distance: Float!
+}

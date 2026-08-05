@@ -1,0 +1,87 @@
+# ===================================================================
+# AI - REUSABLE FRAGMENTS
+# ===================================================================
+
+"""
+Core AI identification fields
+"""
+fragment AIIdentificationCore on AIIdentification {
+  id
+  imageUrl
+  imageThumbnail
+  confidence
+  provider
+  model
+  createdAt
+}
+
+"""
+AI identification with species
+"""
+fragment AIIdentificationWithSpecies on AIIdentification {
+  ...AIIdentificationCore
+  species {
+    id
+    name
+    scientificName
+    venomous
+    dangerLevel
+    imageUrl
+  }
+  venomousDetected
+  dangerAssessment
+}
+
+"""
+AI identification with alternatives
+"""
+fragment AIIdentificationWithAlternatives on AIIdentification {
+  ...AIIdentificationWithSpecies
+  alternativeMatches {
+    species {
+      id
+      name
+      scientificName
+      venomous
+      dangerLevel
+    }
+    confidence
+    reasoning
+  }
+}
+
+"""
+Full AI identification details
+"""
+fragment AIIdentificationFull on AIIdentification {
+  ...AIIdentificationWithAlternatives
+  uploadSource
+  promptUsed
+  responseTime
+  colorDetected
+  sizeEstimate
+  user {
+    id
+    name
+    email
+  }
+  userFeedback
+  correctSpecies {
+    id
+    name
+    scientificName
+  }
+}
+
+"""
+AI identification list item
+"""
+fragment AIIdentificationListItem on AIIdentification {
+  ...AIIdentificationCore
+  species {
+    id
+    name
+    venomous
+  }
+  userFeedback
+}

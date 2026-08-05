@@ -1,0 +1,141 @@
+# ===================================================================
+# CMS - INPUT TYPES
+# ===================================================================
+
+"""
+Input for creating a blog post
+"""
+input CreateBlogPostInput {
+  title: String!
+  slug: String!
+  content: String!
+  excerpt: String
+  category: PostCategory!
+  tags: [String!]
+  imageUrl: String
+  images: [String!]
+  videoUrl: String
+  metaTitle: String
+  metaDescription: String
+  metaKeywords: [String!]
+  status: PostStatus
+  scheduledAt: DateTime
+  commentsEnabled: Boolean
+}
+
+"""
+Input for updating a blog post
+"""
+input UpdateBlogPostInput {
+  title: String
+  slug: String
+  content: String
+  excerpt: String
+  category: PostCategory
+  tags: [String!]
+  imageUrl: String
+  images: [String!]
+  videoUrl: String
+  metaTitle: String
+  metaDescription: String
+  metaKeywords: [String!]
+  status: PostStatus
+  scheduledAt: DateTime
+  commentsEnabled: Boolean
+}
+
+"""
+Input for uploading gallery image
+"""
+input UploadGalleryImageInput {
+  title: String
+  description: String
+  imageUrl: String!
+  thumbnailUrl: String
+  category: GalleryCategory
+  tags: [String!]
+  rescueId: ID
+  speciesId: ID
+  isPublic: Boolean
+  isFeatured: Boolean
+}
+
+"""
+Input for updating gallery image
+"""
+input UpdateGalleryImageInput {
+  title: String
+  description: String
+  category: GalleryCategory
+  tags: [String!]
+  isPublic: Boolean
+  isFeatured: Boolean
+}
+
+"""
+Filter input for blog post queries
+"""
+input BlogPostFilterInput {
+  status: PostStatus
+  statuses: [PostStatus!]
+  category: PostCategory
+  categories: [PostCategory!]
+  authorId: ID
+  tags: [String!]
+  search: String
+  publishedAfter: DateTime
+  publishedBefore: DateTime
+}
+
+"""
+Sort input for blog post queries
+"""
+input BlogPostSortInput {
+  field: BlogPostSortField!
+  order: SortOrder!
+}
+
+"""
+Fields available for sorting blog posts
+"""
+enum BlogPostSortField {
+  CREATED_AT
+  PUBLISHED_AT
+  UPDATED_AT
+  VIEWS
+  LIKES
+  TITLE
+}
+
+"""
+Filter input for gallery image queries
+"""
+input GalleryImageFilterInput {
+  category: GalleryCategory
+  categories: [GalleryCategory!]
+  tags: [String!]
+  isPublic: Boolean
+  isFeatured: Boolean
+  uploaderId: ID
+  rescueId: ID
+  speciesId: ID
+  search: String
+}
+
+"""
+Sort input for gallery image queries
+"""
+input GalleryImageSortInput {
+  field: GalleryImageSortField!
+  order: SortOrder!
+}
+
+"""
+Fields available for sorting gallery images
+"""
+enum GalleryImageSortField {
+  CREATED_AT
+  VIEWS
+  LIKES
+  TITLE
+}

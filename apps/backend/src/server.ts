@@ -1,0 +1,60 @@
+/**
+ * Apollo Server Setup
+ * Creates and configures Apollo Server with GraphQL schema
+ */
+
+import { expressMiddleware } from '@as-integrations/express5';
+import type { Express, Request, Response } from 'express';
+import { createLogger } from '@snake-rescue/shared';
+import { createApolloServer, type GraphQLContext } from '@snake-rescue/core';
+import { 
+  authResolvers, 
+  rescueQueryResolvers, 
+  rescueMutationResolvers 
+} from '@snake-rescue/modules';
+import { config } from './config/index.js';
+
+const logger = createLogger('Server');
+
+/**
+ * Setup Apollo Server and integrate with Express
+ */
+export async function setupApolloServer(app: Express) {
+  // Combine all resolvers into an array for merging
+  const resolvers = [
+    authResolvers,
+    rescueQueryResolvers,
+    rescueMutationResolvers,
+  ];
+
+  // Create Apollo Server with schema and resolvers
+  const server = createApolloServer(resolvers);
+
+  // Start Apollo Server
+  await server.start();
+  logger.info('Apollo Server started');
+
+  // Apply Apollo middleware to Express
+  app.use(
+    config.graphqlPath,
+    expressMiddleware(server as any, {
+      context: async ({ req, res }: { req: Request; res: Response }): Promise<GraphQLContext> => {
+        // Context is populated by authMiddleware and createContextFactory
+        return {
+          req,
+          res,
+          user: (req as any).user,
+          session: (req as any).session,
+        } as GraphQLContext;
+      },
+    })
+  );
+
+  logger.info(`GraphQL endpoint: ${config.graphqlPath}`);
+  
+  if (config.graphqlPlayground) {
+    logger.info(`GraphQL Playground: http://${config.host}:${config.port}${config.graphqlPath}`);
+  }
+
+  return server;
+}

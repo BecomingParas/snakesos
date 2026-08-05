@@ -1,0 +1,98 @@
+# ===================================================================
+# PAYMENT - INPUT TYPES
+# ===================================================================
+
+"""
+Input for creating a donation
+"""
+input CreateDonationInput {
+  donorName: String!
+  donorEmail: Email
+  donorPhone: Phone
+  amount: Float!
+  currency: String
+  paymentMethod: PaymentMethod!
+  purpose: DonationPurpose
+  campaign: String
+  message: String
+  anonymous: Boolean
+}
+
+"""
+Input for processing payment
+"""
+input ProcessPaymentInput {
+  donationId: ID!
+  transactionId: String!
+  gatewayResponse: JSON
+}
+
+"""
+Input for refunding donation
+"""
+input RefundDonationInput {
+  donationId: ID!
+  reason: String!
+  amount: Float
+}
+
+"""
+Filter input for donation queries
+"""
+input DonationFilterInput {
+  status: PaymentStatus
+  statuses: [PaymentStatus!]
+  paymentMethod: PaymentMethod
+  methods: [PaymentMethod!]
+  purpose: DonationPurpose
+  purposes: [DonationPurpose!]
+  donorId: ID
+  anonymous: Boolean
+  minAmount: Float
+  maxAmount: Float
+  createdAfter: DateTime
+  createdBefore: DateTime
+  verified: Boolean
+}
+
+"""
+Sort input for donation queries
+"""
+input DonationSortInput {
+  field: DonationSortField!
+  order: SortOrder!
+}
+
+"""
+Fields available for sorting donations
+"""
+enum DonationSortField {
+  CREATED_AT
+  AMOUNT
+  PAID_AT
+  DONOR_NAME
+}
+
+"""
+Input for donation statistics
+"""
+input DonationStatsInput {
+  startDate: DateTime
+  endDate: DateTime
+  purpose: DonationPurpose
+  paymentMethod: PaymentMethod
+}
+
+"""
+Input for updating payment gateway config
+"""
+input UpdatePaymentGatewayInput {
+  method: PaymentMethod!
+  enabled: Boolean
+  displayName: String
+  description: String
+  minAmount: Float
+  maxAmount: Float
+  currencies: [String!]
+  testMode: Boolean
+}

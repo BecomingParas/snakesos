@@ -1,0 +1,30 @@
+# ===================================================================
+# SNAKE - MUTATIONS
+# ===================================================================
+
+extend type Mutation {
+  """
+  Create new snake species (admin only)
+  """
+  createSnakeSpecies(input: CreateSnakeSpeciesInput!): SnakeSpecies! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Update snake species (admin only)
+  """
+  updateSnakeSpecies(id: ID!, input: UpdateSnakeSpeciesInput!): SnakeSpecies! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Verify snake species (admin only)
+  """
+  verifySnakeSpecies(id: ID!): SnakeSpecies! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Delete snake species (soft delete, admin only)
+  """
+  deleteSnakeSpecies(id: ID!): SuccessResponse! @auth(requires: [SUPER_ADMIN])
+  
+  """
+  Bulk import snake species
+  """
+  bulkImportSnakeSpecies(species: [CreateSnakeSpeciesInput!]!): BulkOperationResult! @auth(requires: [SUPER_ADMIN])
+}

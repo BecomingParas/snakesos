@@ -1,0 +1,107 @@
+# ===================================================================
+# NOTIFICATION - TYPE DEFINITIONS
+# ===================================================================
+
+"""
+User notification
+"""
+type Notification {
+  id: ID!
+  
+  # Recipient
+  user: User!
+  
+  # Content
+  type: NotificationType!
+  title: String!
+  message: String!
+  link: String
+  actionUrl: String
+  
+  # Delivery Channels
+  sentViaApp: Boolean!
+  sentViaEmail: Boolean!
+  sentViaSMS: Boolean!
+  sentViaTelegram: Boolean!
+  
+  # Status
+  read: Boolean!
+  readAt: DateTime
+  
+  # Context
+  rescue: RescueRequest
+  
+  # Metadata
+  metadata: JSON
+  priority: NotificationPriority!
+  expiresAt: DateTime
+  
+  createdAt: DateTime!
+}
+
+"""
+Notification statistics
+"""
+type NotificationStats {
+  total: Int!
+  unread: Int!
+  byType: [NotificationByType!]!
+  byPriority: [NotificationByPriority!]!
+  deliveryStats: NotificationDeliveryStats!
+}
+
+"""
+Notification count by type
+"""
+type NotificationByType {
+  type: NotificationType!
+  count: Int!
+  unreadCount: Int!
+}
+
+"""
+Notification count by priority
+"""
+type NotificationByPriority {
+  priority: NotificationPriority!
+  count: Int!
+}
+
+"""
+Notification delivery statistics
+"""
+type NotificationDeliveryStats {
+  app: Int!
+  email: Int!
+  sms: Int!
+  telegram: Int!
+  totalDelivered: Int!
+  totalFailed: Int!
+}
+
+"""
+Notification preferences
+"""
+type NotificationPreferences {
+  userId: ID!
+  
+  # Channel Preferences
+  enableApp: Boolean!
+  enableEmail: Boolean!
+  enableSMS: Boolean!
+  enableTelegram: Boolean!
+  
+  # Type Preferences
+  rescueUpdates: Boolean!
+  volunteerUpdates: Boolean!
+  trainingReminders: Boolean!
+  donationReceipts: Boolean!
+  systemAnnouncements: Boolean!
+  
+  # Quiet Hours
+  quietHoursStart: String
+  quietHoursEnd: String
+  timezone: String!
+  
+  updatedAt: DateTime!
+}

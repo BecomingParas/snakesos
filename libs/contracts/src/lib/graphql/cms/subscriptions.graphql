@@ -1,0 +1,20 @@
+# ===================================================================
+# CMS - SUBSCRIPTIONS
+# ===================================================================
+
+extend type Subscription {
+  """
+  Subscribe to new blog post publications
+  """
+  blogPostPublished: BlogPost!
+  
+  """
+  Subscribe to blog post updates
+  """
+  blogPostUpdated(id: ID): BlogPost! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Subscribe to new gallery image uploads
+  """
+  galleryImageUploaded: GalleryImage! @auth(requires: [ADMIN, SUPER_ADMIN])
+}

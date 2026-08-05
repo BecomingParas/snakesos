@@ -1,0 +1,85 @@
+# ===================================================================
+# NOTIFICATION - REUSABLE FRAGMENTS
+# ===================================================================
+
+"""
+Core notification fields
+"""
+fragment NotificationCore on Notification {
+  id
+  type
+  title
+  message
+  read
+  priority
+  createdAt
+}
+
+"""
+Notification with link
+"""
+fragment NotificationWithLink on Notification {
+  ...NotificationCore
+  link
+  actionUrl
+}
+
+"""
+Notification with context
+"""
+fragment NotificationWithContext on Notification {
+  ...NotificationWithLink
+  rescue {
+    id
+    referenceNumber
+    status
+  }
+  metadata
+}
+
+"""
+Full notification details
+"""
+fragment NotificationFull on Notification {
+  ...NotificationWithContext
+  user {
+    id
+    name
+    email
+  }
+  sentViaApp
+  sentViaEmail
+  sentViaSMS
+  sentViaTelegram
+  readAt
+  expiresAt
+}
+
+"""
+Notification list item
+"""
+fragment NotificationListItem on Notification {
+  ...NotificationCore
+  link
+  readAt
+}
+
+"""
+Notification preferences
+"""
+fragment NotificationPreferencesFields on NotificationPreferences {
+  userId
+  enableApp
+  enableEmail
+  enableSMS
+  enableTelegram
+  rescueUpdates
+  volunteerUpdates
+  trainingReminders
+  donationReceipts
+  systemAnnouncements
+  quietHoursStart
+  quietHoursEnd
+  timezone
+  updatedAt
+}

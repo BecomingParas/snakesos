@@ -1,0 +1,53 @@
+# ===================================================================
+# CONTACT - REUSABLE FRAGMENTS
+# ===================================================================
+
+"""
+Core contact message fields
+"""
+fragment ContactMessageCore on ContactMessage {
+  id
+  name
+  email
+  subject
+  category
+  status
+  priority
+  createdAt
+}
+
+"""
+Contact message with details
+"""
+fragment ContactMessageWithDetails on ContactMessage {
+  ...ContactMessageCore
+  phone
+  message
+  responded
+  respondedAt
+}
+
+"""
+Full contact message details
+"""
+fragment ContactMessageFull on ContactMessage {
+  ...ContactMessageWithDetails
+  assignedTo {
+    id
+    name
+    email
+  }
+  response
+  ipAddress
+  userAgent
+  source
+  updatedAt
+}
+
+"""
+Contact message list item
+"""
+fragment ContactMessageListItem on ContactMessage {
+  ...ContactMessageCore
+  responded
+}

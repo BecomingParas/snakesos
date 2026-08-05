@@ -1,0 +1,68 @@
+# ===================================================================
+# TRAINING - INPUT TYPES
+# ===================================================================
+
+"""
+Input for creating a training session
+"""
+input CreateTrainingInput {
+  title: String!
+  description: String
+  type: TrainingType!
+  scheduledAt: DateTime!
+  duration: Int!
+  location: String!
+  instructor: String
+  maxParticipants: Int!
+  materials: [String!]
+  certificate: String
+}
+
+"""
+Input for updating a training session
+"""
+input UpdateTrainingInput {
+  title: String
+  description: String
+  type: TrainingType
+  scheduledAt: DateTime
+  duration: Int
+  location: String
+  instructor: String
+  maxParticipants: Int
+  status: TrainingStatus
+  materials: [String!]
+  certificate: String
+}
+
+"""
+Filter input for training queries
+"""
+input TrainingFilterInput {
+  type: TrainingType
+  types: [TrainingType!]
+  status: TrainingStatus
+  statuses: [TrainingStatus!]
+  scheduledAfter: DateTime
+  scheduledBefore: DateTime
+  location: String
+  hasAvailableSeats: Boolean
+}
+
+"""
+Sort input for training queries
+"""
+input TrainingSortInput {
+  field: TrainingSortField!
+  order: SortOrder!
+}
+
+"""
+Fields available for sorting training sessions
+"""
+enum TrainingSortField {
+  SCHEDULED_AT
+  CREATED_AT
+  REGISTERED_COUNT
+  TITLE
+}

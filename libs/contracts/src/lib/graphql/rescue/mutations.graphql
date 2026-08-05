@@ -1,0 +1,70 @@
+# ===================================================================
+# RESCUE - MUTATIONS
+# ===================================================================
+
+extend type Mutation {
+  """
+  Create a new rescue request
+  """
+  createRescueRequest(input: CreateRescueRequestInput!): RescueRequest!
+  
+  """
+  Update a rescue request
+  """
+  updateRescueRequest(id: ID!, input: UpdateRescueRequestInput!): RescueRequest! @auth
+  
+  """
+  Assign rescue to volunteer (admin/coordinator)
+  """
+  assignRescue(input: AssignRescueInput!): RescueRequest! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Volunteer accepts rescue assignment
+  """
+  acceptRescue(input: AcceptRescueInput!): RescueRequest! @auth(requires: [VOLUNTEER, VERIFIED_RESCUER])
+  
+  """
+  Update rescue progress (volunteer)
+  """
+  updateRescueProgress(input: UpdateRescueProgressInput!): RescueRequest! @auth(requires: [VOLUNTEER, VERIFIED_RESCUER])
+  
+  """
+  Mark rescue as completed
+  """
+  completeRescue(input: CompleteRescueInput!): RescueRequest! @auth(requires: [VOLUNTEER, VERIFIED_RESCUER])
+  
+  """
+  Cancel rescue request
+  """
+  cancelRescue(rescueId: ID!, reason: String): RescueRequest! @auth
+  
+  """
+  Reopen cancelled/closed rescue
+  """
+  reopenRescue(rescueId: ID!): RescueRequest! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Verify completed rescue (admin)
+  """
+  verifyRescue(rescueId: ID!, notes: String): RescueRequest! @auth(requires: [VERIFIED_RESCUER, DISTRICT_COORDINATOR, ADMIN, SUPER_ADMIN])
+  
+  """
+  Add timeline event to rescue
+  """
+  addRescueTimelineEvent(input: AddTimelineEventInput!): RescueTimeline! @auth
+  
+  """
+  Bulk assign rescues to volunteer
+  """
+  bulkAssignRescues(rescueIds: [ID!]!, volunteerId: ID!): BulkOperationResult! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Bulk update rescue status
+  """
+  bulkUpdateRescueStatus(rescueIds: [ID!]!, status: RescueStatus!): BulkOperationResult! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Delete rescue request (soft delete, admin only)
+  """
+  deleteRescueRequest(id: ID!): SuccessResponse! @auth(requires: [SUPER_ADMIN])
+}

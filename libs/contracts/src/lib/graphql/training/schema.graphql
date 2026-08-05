@@ -1,0 +1,62 @@
+# ===================================================================
+# TRAINING - TYPE DEFINITIONS
+# ===================================================================
+
+"""
+Training session
+"""
+type Training {
+  id: ID!
+  
+  title: String!
+  description: String
+  type: TrainingType!
+  
+  # Schedule
+  scheduledAt: DateTime!
+  duration: Int!
+  location: String!
+  instructor: String
+  
+  # Capacity
+  maxParticipants: Int!
+  registeredCount: Int!
+  availableSeats: Int!
+  
+  # Status
+  status: TrainingStatus!
+  
+  # Materials
+  materials: [String!]!
+  certificate: String
+  
+  # Metadata
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  
+  # Relations
+  participants: [User!]!
+  volunteers: [Volunteer!]!
+}
+
+"""
+Training statistics
+"""
+type TrainingStats {
+  totalSessions: Int!
+  upcomingSession: Int!
+  completedSessions: Int!
+  totalParticipants: Int!
+  averageAttendance: Float!
+  byType: [TrainingByType!]!
+  recentSessions: [Training!]!
+}
+
+"""
+Training count by type
+"""
+type TrainingByType {
+  type: TrainingType!
+  count: Int!
+  totalParticipants: Int!
+}

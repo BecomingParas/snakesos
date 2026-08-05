@@ -1,0 +1,46 @@
+# ===================================================================
+# CONTACT - QUERIES
+# ===================================================================
+
+extend type Query {
+  """
+  Get contact message by ID
+  """
+  contactMessage(id: ID!): ContactMessage @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  List contact messages
+  """
+  contactMessages(
+    pagination: PaginationInput
+    filter: ContactMessageFilterInput
+    sort: ContactMessageSortInput
+  ): ContactMessageConnection! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Get new contact messages count
+  """
+  newContactMessagesCount: Int! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Get contact message statistics
+  """
+  contactMessageStats: ContactMessageStats! @auth(requires: [ADMIN, SUPER_ADMIN])
+}
+
+"""
+Connection type for paginated contact message results
+"""
+type ContactMessageConnection {
+  edges: [ContactMessageEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for contact message connection
+"""
+type ContactMessageEdge {
+  node: ContactMessage!
+  cursor: String!
+}

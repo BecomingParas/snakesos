@@ -1,0 +1,44 @@
+# ===================================================================
+# VOLUNTEER - SUBSCRIPTIONS
+# ===================================================================
+
+extend type Subscription {
+  """
+  Subscribe to volunteer application submissions
+  """
+  volunteerApplicationReceived: Volunteer! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Subscribe to volunteer status changes
+  """
+  volunteerStatusChanged(volunteerId: ID): VolunteerStatusChangeEvent! @auth
+  
+  """
+  Subscribe to volunteer availability changes
+  """
+  volunteerAvailabilityChanged(municipality: String): VolunteerAvailabilityEvent! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+}
+
+"""
+Volunteer status change event
+"""
+type VolunteerStatusChangeEvent {
+  volunteerId: ID!
+  volunteer: Volunteer!
+  oldStatus: VolunteerStatus!
+  newStatus: VolunteerStatus!
+  changedBy: User
+  reason: String
+  changedAt: DateTime!
+}
+
+"""
+Volunteer availability change event
+"""
+type VolunteerAvailabilityEvent {
+  volunteer: Volunteer!
+  isAvailableNow: Boolean!
+  currentLat: Latitude
+  currentLng: Longitude
+  changedAt: DateTime!
+}

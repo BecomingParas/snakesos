@@ -1,0 +1,30 @@
+# ===================================================================
+# AI - MUTATIONS
+# ===================================================================
+
+extend type Mutation {
+  """
+  Identify snake from image using AI
+  """
+  identifySnake(input: IdentifySnakeInput!): AIIdentification!
+  
+  """
+  Provide feedback on AI identification
+  """
+  provideIdentificationFeedback(input: IdentificationFeedbackInput!): AIIdentification! @auth
+  
+  """
+  Update AI model configuration (admin only)
+  """
+  updateAIModelConfig(input: UpdateAIModelConfigInput!): AIModelConfig! @auth(requires: [SUPER_ADMIN])
+  
+  """
+  Reprocess identification with different model
+  """
+  reprocessIdentification(identificationId: ID!, provider: AIProvider!): AIIdentification! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Delete AI identification
+  """
+  deleteAIIdentification(id: ID!): SuccessResponse! @auth(requires: [SUPER_ADMIN])
+}

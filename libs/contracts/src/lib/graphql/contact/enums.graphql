@@ -1,0 +1,39 @@
+# ===================================================================
+# CONTACT - ENUMS
+# ===================================================================
+
+"""
+Category of contact message
+"""
+enum MessageCategory {
+  GENERAL
+  RESCUE
+  VOLUNTEER
+  DONATION
+  TECHNICAL
+  FEEDBACK
+  PARTNERSHIP
+  MEDIA
+  COMPLAINT
+}
+
+"""
+Status of contact message
+"""
+enum MessageStatus {
+  NEW
+  READ
+  RESPONDED
+  CLOSED
+  ARCHIVED
+}
+
+"""
+Priority of contact message
+"""
+enum MessagePriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}

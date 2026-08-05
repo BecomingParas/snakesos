@@ -1,0 +1,67 @@
+# ===================================================================
+# VOLUNTEER - QUERIES
+# ===================================================================
+
+extend type Query {
+  """
+  Get volunteer by ID
+  """
+  volunteer(id: ID!): Volunteer
+  
+  """
+  List all volunteers
+  """
+  volunteers(
+    pagination: PaginationInput
+    filter: VolunteerFilterInput
+    sort: VolunteerSortInput
+  ): VolunteerConnection! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Get my volunteer profile
+  """
+  myVolunteerProfile: Volunteer @auth
+  
+  """
+  Get volunteer statistics
+  """
+  volunteerStats: VolunteerStats! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Find available volunteers near location
+  """
+  availableVolunteers(input: FindAvailableVolunteersInput!): [AvailableVolunteer!]! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Get pending volunteer applications
+  """
+  pendingVolunteerApplications(
+    pagination: PaginationInput
+  ): VolunteerConnection! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Search volunteers
+  """
+  searchVolunteers(
+    query: String!
+    pagination: PaginationInput
+    filter: VolunteerFilterInput
+  ): VolunteerConnection! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+}
+
+"""
+Connection type for paginated volunteer results
+"""
+type VolunteerConnection {
+  edges: [VolunteerEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for volunteer connection
+"""
+type VolunteerEdge {
+  node: Volunteer!
+  cursor: String!
+}

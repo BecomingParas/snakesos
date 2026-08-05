@@ -1,0 +1,45 @@
+# ===================================================================
+# NOTIFICATION - MUTATIONS
+# ===================================================================
+
+extend type Mutation {
+  """
+  Create a notification (admin only)
+  """
+  createNotification(input: CreateNotificationInput!): Notification! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Send bulk notifications (admin only)
+  """
+  sendBulkNotifications(input: BulkNotificationInput!): BulkOperationResult! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Mark notification as read
+  """
+  markNotificationAsRead(id: ID!): Notification! @auth
+  
+  """
+  Mark all notifications as read
+  """
+  markAllNotificationsAsRead: SuccessResponse! @auth
+  
+  """
+  Delete notification
+  """
+  deleteNotification(id: ID!): SuccessResponse! @auth
+  
+  """
+  Delete all read notifications
+  """
+  deleteReadNotifications: SuccessResponse! @auth
+  
+  """
+  Update notification preferences
+  """
+  updateNotificationPreferences(input: UpdateNotificationPreferencesInput!): NotificationPreferences! @auth
+  
+  """
+  Test notification delivery
+  """
+  testNotificationDelivery(channel: NotificationChannel!): SuccessResponse! @auth
+}

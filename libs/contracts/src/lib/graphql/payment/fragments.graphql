@@ -1,0 +1,83 @@
+# ===================================================================
+# PAYMENT - REUSABLE FRAGMENTS
+# ===================================================================
+
+"""
+Core donation fields
+"""
+fragment DonationCore on Donation {
+  id
+  donorName
+  amount
+  currency
+  paymentMethod
+  status
+  anonymous
+  createdAt
+}
+
+"""
+Donation with payment details
+"""
+fragment DonationWithPayment on Donation {
+  ...DonationCore
+  transactionId
+  paymentGateway
+  paidAt
+  receiptNumber
+}
+
+"""
+Full donation details
+"""
+fragment DonationFull on Donation {
+  ...DonationWithPayment
+  donor {
+    id
+    name
+    email
+  }
+  donorEmail
+  donorPhone
+  amountUSD
+  gatewayResponse
+  purpose
+  campaign
+  message
+  receiptUrl
+  invoiceUrl
+  verifiedAt
+  verifiedBy {
+    id
+    name
+  }
+  verificationNotes
+  refundedAt
+  refundReason
+  refundAmount
+  source
+  updatedAt
+}
+
+"""
+Donation list item
+"""
+fragment DonationListItem on Donation {
+  ...DonationCore
+  purpose
+  paidAt
+}
+
+"""
+Payment gateway config
+"""
+fragment PaymentGatewayConfigFields on PaymentGatewayConfig {
+  method
+  enabled
+  displayName
+  description
+  minAmount
+  maxAmount
+  currencies
+  testMode
+}

@@ -1,0 +1,100 @@
+# ===================================================================
+# AI - TYPE DEFINITIONS
+# ===================================================================
+
+"""
+AI-powered snake identification result
+"""
+type AIIdentification {
+  id: ID!
+  
+  # Input
+  imageUrl: String!
+  imageThumbnail: String
+  uploadSource: UploadSource!
+  
+  # Results
+  species: SnakeSpecies
+  confidence: Float!
+  
+  # Alternative Matches
+  alternativeMatches: [AlternativeMatch!]!
+  
+  # AI Provider Details
+  provider: AIProvider!
+  model: String!
+  promptUsed: String
+  responseTime: Int
+  
+  # Additional Analysis
+  venomousDetected: Boolean
+  dangerAssessment: String
+  colorDetected: [String!]!
+  sizeEstimate: String
+  
+  # User Context
+  user: User
+  
+  # Feedback
+  userFeedback: IdentificationFeedback
+  correctSpecies: SnakeSpecies
+  
+  # Metadata
+  createdAt: DateTime!
+  
+  # Relations
+  rescueRequest: RescueRequest
+}
+
+"""
+Alternative species match from AI
+"""
+type AlternativeMatch {
+  species: SnakeSpecies!
+  confidence: Float!
+  reasoning: String
+}
+
+"""
+AI identification statistics
+"""
+type AIIdentificationStats {
+  total: Int!
+  byProvider: [IdentificationByProvider!]!
+  averageConfidence: Float!
+  accuracyRate: Float
+  topIdentifiedSpecies: [SpeciesIdentificationCount!]!
+  averageResponseTime: Int!
+}
+
+"""
+Identification count by provider
+"""
+type IdentificationByProvider {
+  provider: AIProvider!
+  count: Int!
+  averageConfidence: Float!
+  averageResponseTime: Int!
+}
+
+"""
+Species identification count
+"""
+type SpeciesIdentificationCount {
+  species: SnakeSpecies!
+  count: Int!
+  averageConfidence: Float!
+}
+
+"""
+AI model configuration
+"""
+type AIModelConfig {
+  provider: AIProvider!
+  model: String!
+  enabled: Boolean!
+  maxImageSize: Int!
+  supportedFormats: [String!]!
+  averageResponseTime: Int
+  accuracy: Float
+}

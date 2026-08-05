@@ -1,0 +1,128 @@
+# ===================================================================
+# PAYMENT - TYPE DEFINITIONS
+# ===================================================================
+
+"""
+Donation transaction
+"""
+type Donation {
+  id: ID!
+  
+  # Donor Information
+  donor: User
+  donorName: String!
+  donorEmail: Email
+  donorPhone: Phone
+  
+  # Amount
+  amount: Float!
+  currency: String!
+  amountUSD: Float
+  
+  # Payment Details
+  paymentMethod: PaymentMethod!
+  paymentGateway: String!
+  transactionId: String
+  gatewayResponse: JSON
+  
+  # Status
+  status: PaymentStatus!
+  paidAt: DateTime
+  
+  # Purpose
+  purpose: DonationPurpose
+  campaign: String
+  message: String
+  anonymous: Boolean!
+  
+  # Receipt
+  receiptNumber: String
+  receiptUrl: String
+  invoiceUrl: String
+  
+  # Verification
+  verifiedAt: DateTime
+  verifiedBy: User
+  verificationNotes: String
+  
+  # Refund
+  refundedAt: DateTime
+  refundReason: String
+  refundAmount: Float
+  
+  # Metadata
+  ipAddress: String
+  userAgent: String
+  source: String!
+  
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+Donation statistics
+"""
+type DonationStats {
+  totalDonations: Int!
+  totalAmount: Float!
+  totalAmountUSD: Float!
+  averageDonation: Float!
+  byMethod: [DonationByMethod!]!
+  byPurpose: [DonationByPurpose!]!
+  topDonors: [TopDonor!]!
+  recentDonations: [Donation!]!
+  monthlyTrend: [MonthlyDonationData!]!
+}
+
+"""
+Donation count by payment method
+"""
+type DonationByMethod {
+  method: PaymentMethod!
+  count: Int!
+  totalAmount: Float!
+}
+
+"""
+Donation count by purpose
+"""
+type DonationByPurpose {
+  purpose: DonationPurpose!
+  count: Int!
+  totalAmount: Float!
+}
+
+"""
+Top donor information
+"""
+type TopDonor {
+  donor: User
+  donorName: String!
+  totalDonations: Int!
+  totalAmount: Float!
+  anonymous: Boolean!
+}
+
+"""
+Monthly donation trend data
+"""
+type MonthlyDonationData {
+  month: String!
+  year: Int!
+  count: Int!
+  amount: Float!
+}
+
+"""
+Payment gateway configuration
+"""
+type PaymentGatewayConfig {
+  method: PaymentMethod!
+  enabled: Boolean!
+  displayName: String!
+  description: String
+  minAmount: Float
+  maxAmount: Float
+  currencies: [String!]!
+  testMode: Boolean!
+}

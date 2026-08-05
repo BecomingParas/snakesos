@@ -1,0 +1,131 @@
+# ===================================================================
+# SNAKE - INPUT TYPES
+# ===================================================================
+
+"""
+Input for creating snake species
+"""
+input CreateSnakeSpeciesInput {
+  # Nomenclature
+  name: String!
+  scientificName: String!
+  nepaliName: String!
+  localNames: [String!]
+  aliases: [String!]
+  
+  # Classification
+  family: String
+  genus: String
+  species: String
+  
+  # Danger Assessment
+  venomous: Boolean!
+  dangerLevel: DangerLevel
+  venomType: VenomType
+  
+  # Physical Characteristics
+  averageLength: String
+  maxLength: String
+  color: String
+  pattern: String
+  identificationGuide: String
+  distinctiveFeatures: [String!]
+  
+  # Behavior & Habitat
+  behavior: String
+  habitat: String
+  activeTime: ActivityPattern
+  diet: String
+  
+  # Safety Information
+  safetyTips: String
+  emergencyAdvice: String
+  firstAidSteps: [String!]
+  
+  # Distribution
+  foundInNepal: Boolean
+  regions: [String!]
+  altitudeRange: String
+  
+  # Conservation
+  conservationStatus: ConservationStatus
+  protected: Boolean
+  
+  # Media
+  imageUrl: String
+  images: [String!]
+  videoUrl: String
+}
+
+"""
+Input for updating snake species
+"""
+input UpdateSnakeSpeciesInput {
+  name: String
+  scientificName: String
+  nepaliName: String
+  localNames: [String!]
+  aliases: [String!]
+  family: String
+  genus: String
+  species: String
+  venomous: Boolean
+  dangerLevel: DangerLevel
+  venomType: VenomType
+  averageLength: String
+  maxLength: String
+  color: String
+  pattern: String
+  identificationGuide: String
+  distinctiveFeatures: [String!]
+  behavior: String
+  habitat: String
+  activeTime: ActivityPattern
+  diet: String
+  safetyTips: String
+  emergencyAdvice: String
+  firstAidSteps: [String!]
+  foundInNepal: Boolean
+  regions: [String!]
+  altitudeRange: String
+  conservationStatus: ConservationStatus
+  protected: Boolean
+  imageUrl: String
+  images: [String!]
+  videoUrl: String
+}
+
+"""
+Filter input for snake species queries
+"""
+input SnakeSpeciesFilterInput {
+  venomous: Boolean
+  dangerLevel: DangerLevel
+  dangerLevels: [DangerLevel!]
+  family: String
+  foundInNepal: Boolean
+  protected: Boolean
+  verified: Boolean
+  region: String
+  search: String
+}
+
+"""
+Sort input for snake species queries
+"""
+input SnakeSpeciesSortInput {
+  field: SnakeSpeciesSortField!
+  order: SortOrder!
+}
+
+"""
+Fields available for sorting snake species
+"""
+enum SnakeSpeciesSortField {
+  NAME
+  SCIENTIFIC_NAME
+  RESCUE_COUNT
+  IDENTIFICATION_COUNT
+  DANGER_LEVEL
+  CREATED_AT
+}

@@ -1,0 +1,15 @@
+# ===================================================================
+# ANALYTICS - MUTATIONS
+# ===================================================================
+
+extend type Mutation {
+  """
+  Track page view
+  """
+  trackPageView(page: String!, duration: Int): SuccessResponse!
+  
+  """
+  Refresh analytics cache
+  """
+  refreshAnalyticsCache: SuccessResponse! @auth(requires: [SUPER_ADMIN])
+}

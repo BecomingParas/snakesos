@@ -1,0 +1,80 @@
+# ===================================================================
+# AUTH - MUTATIONS
+# ===================================================================
+
+extend type Mutation {
+  """
+  Register new user account
+  """
+  register(input: RegisterInput!): AuthPayload!
+  
+  """
+  Login with email and password
+  """
+  login(input: LoginInput!): AuthPayload!
+  
+  """
+  Login or register with OAuth provider (Google)
+  """
+  oauthLogin(input: OAuthLoginInput!): AuthPayload!
+  
+  """
+  Logout current user
+  """
+  logout: SuccessResponse! @auth
+  
+  """
+  Refresh access token using refresh token
+  """
+  refreshToken(refreshToken: String!): AuthPayload!
+  
+  """
+  Update user profile
+  """
+  updateProfile(input: UpdateUserProfileInput!): User! @auth
+  
+  """
+  Change password
+  """
+  changePassword(input: ChangePasswordInput!): SuccessResponse! @auth
+  
+  """
+  Request password reset email
+  """
+  requestPasswordReset(input: PasswordResetRequestInput!): PasswordResetTokenPayload!
+  
+  """
+  Confirm password reset with token
+  """
+  confirmPasswordReset(input: PasswordResetConfirmInput!): SuccessResponse!
+  
+  """
+  Verify email with token
+  """
+  verifyEmail(input: VerifyEmailInput!): EmailVerificationPayload!
+  
+  """
+  Resend email verification
+  """
+  resendVerificationEmail(input: ResendVerificationInput!): SuccessResponse!
+  
+  """
+  Update user role (admin only)
+  """
+  updateUserRole(userId: ID!, role: UserRole!): User! @auth(requires: [SUPER_ADMIN])
+  
+  """
+  Update user status (admin only)
+  """
+  updateUserStatus(userId: ID!, status: UserStatus!): User! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Delete user account (soft delete)
+  """
+  deleteAccount: SuccessResponse! @auth
+  
+  """
+  Delete user by ID (admin only, soft delete)
+  """
+  deleteUser(userId: ID!): SuccessResponse! @auth(requires: [SUPER_ADMIN])
+}

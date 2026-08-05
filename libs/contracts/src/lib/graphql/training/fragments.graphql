@@ -1,0 +1,57 @@
+# ===================================================================
+# TRAINING - REUSABLE FRAGMENTS
+# ===================================================================
+
+"""
+Core training fields
+"""
+fragment TrainingCore on Training {
+  id
+  title
+  type
+  scheduledAt
+  duration
+  location
+  status
+  maxParticipants
+  registeredCount
+  availableSeats
+}
+
+"""
+Training with details
+"""
+fragment TrainingWithDetails on Training {
+  ...TrainingCore
+  description
+  instructor
+  materials
+  certificate
+  createdAt
+}
+
+"""
+Full training details
+"""
+fragment TrainingFull on Training {
+  ...TrainingWithDetails
+  participants {
+    id
+    name
+    email
+  }
+  volunteers {
+    id
+    name
+    contact
+  }
+  updatedAt
+}
+
+"""
+Training list item
+"""
+fragment TrainingListItem on Training {
+  ...TrainingCore
+  instructor
+}

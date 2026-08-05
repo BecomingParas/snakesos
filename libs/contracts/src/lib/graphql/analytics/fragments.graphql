@@ -1,0 +1,38 @@
+# ===================================================================
+# ANALYTICS - REUSABLE FRAGMENTS
+# ===================================================================
+
+"""
+Dashboard stats overview
+"""
+fragment DashboardStatsOverview on DashboardStats {
+  totalRescues
+  activeRescues
+  completedRescues
+  completionRate
+  averageResponseTime
+  totalVolunteers
+  activeVolunteers
+  totalUsers
+  totalDonations
+  totalDonationAmount
+}
+
+"""
+Trend data fields
+"""
+fragment TrendDataFields on TrendData {
+  current
+  previous
+  change
+  direction
+}
+
+"""
+Time series data
+"""
+fragment TimeSeriesData on TimeSeriesPoint {
+  timestamp
+  value
+  label
+}

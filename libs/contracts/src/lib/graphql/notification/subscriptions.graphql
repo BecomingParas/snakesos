@@ -1,0 +1,38 @@
+# ===================================================================
+# NOTIFICATION - SUBSCRIPTIONS
+# ===================================================================
+
+extend type Subscription {
+  """
+  Subscribe to new notifications
+  """
+  notificationReceived(userId: ID!): Notification! @auth
+  
+  """
+  Subscribe to notification read events
+  """
+  notificationRead(userId: ID!): NotificationReadEvent! @auth
+  
+  """
+  Subscribe to unread count changes
+  """
+  unreadCountChanged(userId: ID!): UnreadCountEvent! @auth
+}
+
+"""
+Notification read event
+"""
+type NotificationReadEvent {
+  notification: Notification!
+  userId: ID!
+  readAt: DateTime!
+}
+
+"""
+Unread count change event
+"""
+type UnreadCountEvent {
+  userId: ID!
+  unreadCount: Int!
+  changedAt: DateTime!
+}

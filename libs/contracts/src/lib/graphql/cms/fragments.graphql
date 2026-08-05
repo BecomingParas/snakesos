@@ -1,0 +1,123 @@
+# ===================================================================
+# CMS - REUSABLE FRAGMENTS
+# ===================================================================
+
+"""
+Core blog post fields
+"""
+fragment BlogPostCore on BlogPost {
+  id
+  title
+  slug
+  excerpt
+  category
+  status
+  imageUrl
+  publishedAt
+  createdAt
+}
+
+"""
+Blog post with author
+"""
+fragment BlogPostWithAuthor on BlogPost {
+  ...BlogPostCore
+  author {
+    id
+    name
+    avatar
+  }
+  tags
+  views
+  likes
+}
+
+"""
+Full blog post details
+"""
+fragment BlogPostFull on BlogPost {
+  ...BlogPostWithAuthor
+  content
+  images
+  videoUrl
+  metaTitle
+  metaDescription
+  metaKeywords
+  scheduledAt
+  commentsEnabled
+  commentCount
+  shares
+  updatedAt
+}
+
+"""
+Blog post list item
+"""
+fragment BlogPostListItem on BlogPost {
+  ...BlogPostCore
+  author {
+    id
+    name
+  }
+  tags
+  views
+}
+
+"""
+Core gallery image fields
+"""
+fragment GalleryImageCore on GalleryImage {
+  id
+  title
+  imageUrl
+  thumbnailUrl
+  category
+  isPublic
+  isFeatured
+  createdAt
+}
+
+"""
+Gallery image with context
+"""
+fragment GalleryImageWithContext on GalleryImage {
+  ...GalleryImageCore
+  description
+  tags
+  rescue {
+    id
+    referenceNumber
+  }
+  species {
+    id
+    name
+    scientificName
+  }
+}
+
+"""
+Full gallery image details
+"""
+fragment GalleryImageFull on GalleryImage {
+  ...GalleryImageWithContext
+  uploader {
+    id
+    name
+    avatar
+  }
+  views
+  likes
+  fileSize
+  dimensions
+  format
+  updatedAt
+}
+
+"""
+Gallery image list item
+"""
+fragment GalleryImageListItem on GalleryImage {
+  ...GalleryImageCore
+  views
+  likes
+}

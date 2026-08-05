@@ -1,0 +1,39 @@
+# ===================================================================
+# CMS - ENUMS
+# ===================================================================
+
+"""
+Status of blog post
+"""
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  SCHEDULED
+}
+
+"""
+Category of blog post
+"""
+enum PostCategory {
+  NEWS
+  EDUCATION
+  RESEARCH
+  SUCCESS_STORY
+  ANNOUNCEMENT
+  GUIDE
+  EVENT
+}
+
+"""
+Category of gallery image
+"""
+enum GalleryCategory {
+  RESCUE
+  SPECIES
+  TRAINING
+  EVENT
+  VOLUNTEER
+  EDUCATION
+  HABITAT
+}

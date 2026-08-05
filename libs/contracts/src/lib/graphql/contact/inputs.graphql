@@ -1,0 +1,69 @@
+# ===================================================================
+# CONTACT - INPUT TYPES
+# ===================================================================
+
+"""
+Input for submitting a contact message
+"""
+input SubmitContactMessageInput {
+  name: String!
+  email: Email!
+  phone: Phone
+  subject: String!
+  message: String!
+  category: MessageCategory
+}
+
+"""
+Input for responding to a contact message
+"""
+input RespondToMessageInput {
+  messageId: ID!
+  response: String!
+  sendEmail: Boolean
+}
+
+"""
+Input for updating message status
+"""
+input UpdateMessageStatusInput {
+  messageId: ID!
+  status: MessageStatus!
+  assignedTo: ID
+}
+
+"""
+Filter input for contact message queries
+"""
+input ContactMessageFilterInput {
+  status: MessageStatus
+  statuses: [MessageStatus!]
+  category: MessageCategory
+  categories: [MessageCategory!]
+  priority: MessagePriority
+  priorities: [MessagePriority!]
+  assignedTo: ID
+  responded: Boolean
+  createdAfter: DateTime
+  createdBefore: DateTime
+  search: String
+}
+
+"""
+Sort input for contact message queries
+"""
+input ContactMessageSortInput {
+  field: ContactMessageSortField!
+  order: SortOrder!
+}
+
+"""
+Fields available for sorting contact messages
+"""
+enum ContactMessageSortField {
+  CREATED_AT
+  PRIORITY
+  STATUS
+  CATEGORY
+  NAME
+}

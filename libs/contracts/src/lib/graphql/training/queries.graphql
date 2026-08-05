@@ -1,0 +1,55 @@
+# ===================================================================
+# TRAINING - QUERIES
+# ===================================================================
+
+extend type Query {
+  """
+  Get training session by ID
+  """
+  training(id: ID!): Training
+  
+  """
+  List training sessions
+  """
+  trainings(
+    pagination: PaginationInput
+    filter: TrainingFilterInput
+    sort: TrainingSortInput
+  ): TrainingConnection! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Get upcoming training sessions (public)
+  """
+  upcomingTrainings(
+    pagination: PaginationInput
+  ): TrainingConnection!
+  
+  """
+  Get my enrolled trainings
+  """
+  myTrainings(
+    pagination: PaginationInput
+  ): TrainingConnection! @auth
+  
+  """
+  Get training statistics
+  """
+  trainingStats: TrainingStats! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+}
+
+"""
+Connection type for paginated training results
+"""
+type TrainingConnection {
+  edges: [TrainingEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for training connection
+"""
+type TrainingEdge {
+  node: Training!
+  cursor: String!
+}

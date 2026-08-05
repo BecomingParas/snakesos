@@ -1,0 +1,25 @@
+# ===================================================================
+# PAYMENT - SUBSCRIPTIONS
+# ===================================================================
+
+extend type Subscription {
+  """
+  Subscribe to new donations
+  """
+  donationReceived: Donation! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Subscribe to donation status changes
+  """
+  donationStatusChanged(donationId: ID): DonationStatusChangeEvent! @auth
+}
+
+"""
+Donation status change event
+"""
+type DonationStatusChangeEvent {
+  donation: Donation!
+  oldStatus: PaymentStatus!
+  newStatus: PaymentStatus!
+  changedAt: DateTime!
+}

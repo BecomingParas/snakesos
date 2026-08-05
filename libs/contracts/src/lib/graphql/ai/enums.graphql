@@ -1,0 +1,34 @@
+# ===================================================================
+# AI - ENUMS
+# ===================================================================
+
+"""
+AI provider for snake identification
+"""
+enum AIProvider {
+  GEMINI
+  OPENAI
+  CLAUDE
+  LOCAL
+  CUSTOM
+}
+
+"""
+User feedback on AI identification accuracy
+"""
+enum IdentificationFeedback {
+  CORRECT
+  INCORRECT
+  PARTIAL
+  UNSURE
+}
+
+"""
+Upload source for identification
+"""
+enum UploadSource {
+  WEB
+  APP
+  API
+  TELEGRAM
+}

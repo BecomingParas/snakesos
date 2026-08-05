@@ -1,0 +1,56 @@
+# ===================================================================
+# ANALYTICS - INPUT TYPES
+# ===================================================================
+
+"""
+Input for analytics date range
+"""
+input AnalyticsDateRangeInput {
+  startDate: DateTime!
+  endDate: DateTime!
+}
+
+"""
+Input for rescue analytics
+"""
+input RescueAnalyticsInput {
+  dateRange: AnalyticsDateRangeInput
+  municipality: String
+  status: RescueStatus
+  priority: RescuePriority
+  volunteerId: ID
+}
+
+"""
+Input for volunteer analytics
+"""
+input VolunteerAnalyticsInput {
+  dateRange: AnalyticsDateRangeInput
+  municipality: String
+  status: VolunteerStatus
+  experience: ExperienceLevel
+}
+
+"""
+Input for geographic heatmap
+"""
+input GeographicHeatmapInput {
+  dateRange: AnalyticsDateRangeInput
+  municipality: String
+}
+
+"""
+Time period for analytics
+"""
+enum AnalyticsTimePeriod {
+  TODAY
+  YESTERDAY
+  LAST_7_DAYS
+  LAST_30_DAYS
+  LAST_90_DAYS
+  THIS_MONTH
+  LAST_MONTH
+  THIS_YEAR
+  LAST_YEAR
+  CUSTOM
+}

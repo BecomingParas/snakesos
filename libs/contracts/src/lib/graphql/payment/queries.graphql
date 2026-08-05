@@ -1,0 +1,58 @@
+# ===================================================================
+# PAYMENT - QUERIES
+# ===================================================================
+
+extend type Query {
+  """
+  Get donation by ID
+  """
+  donation(id: ID!): Donation @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  List donations
+  """
+  donations(
+    pagination: PaginationInput
+    filter: DonationFilterInput
+    sort: DonationSortInput
+  ): DonationConnection! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Get my donations
+  """
+  myDonations(
+    pagination: PaginationInput
+  ): DonationConnection! @auth
+  
+  """
+  Get donation statistics
+  """
+  donationStats(input: DonationStatsInput): DonationStats! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Get available payment gateways
+  """
+  availablePaymentGateways: [PaymentGatewayConfig!]!
+  
+  """
+  Get payment gateway configuration
+  """
+  paymentGatewayConfig(method: PaymentMethod!): PaymentGatewayConfig @auth(requires: [ADMIN, SUPER_ADMIN])
+}
+
+"""
+Connection type for paginated donation results
+"""
+type DonationConnection {
+  edges: [DonationEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for donation connection
+"""
+type DonationEdge {
+  node: Donation!
+  cursor: String!
+}

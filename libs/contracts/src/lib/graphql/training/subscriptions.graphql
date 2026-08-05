@@ -1,0 +1,30 @@
+# ===================================================================
+# TRAINING - SUBSCRIPTIONS
+# ===================================================================
+
+extend type Subscription {
+  """
+  Subscribe to new training sessions
+  """
+  trainingCreated: Training! @auth
+  
+  """
+  Subscribe to training updates
+  """
+  trainingUpdated(id: ID): Training! @auth
+  
+  """
+  Subscribe to training enrollments
+  """
+  trainingEnrollmentReceived(trainingId: ID!): TrainingEnrollmentEvent! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+}
+
+"""
+Training enrollment event
+"""
+type TrainingEnrollmentEvent {
+  training: Training!
+  user: User!
+  enrolledAt: DateTime!
+  availableSeats: Int!
+}

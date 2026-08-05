@@ -1,0 +1,195 @@
+# ===================================================================
+# RESCUE - INPUT TYPES
+# ===================================================================
+
+"""
+Input for creating a rescue request
+"""
+input CreateRescueRequestInput {
+  # Reporter Information
+  name: String!
+  phone: Phone!
+  email: Email
+  
+  # Location Details
+  municipality: String!
+  ward: Int
+  address: String!
+  landmark: String
+  lat: Latitude
+  lng: Longitude
+  locationAccuracy: Float
+  
+  # Snake Information
+  snakeDescription: String
+  snakeSize: String
+  snakeColor: String
+  snakeImageUrl: String
+  snakeImages: [String!]
+  
+  # Emergency Details
+  isEmergency: Boolean
+  emergencyDetails: String
+  hasBite: Boolean
+  biteDetails: String
+  
+  # Additional Notes
+  notes: String
+  
+  # Source tracking
+  source: RescueSource
+}
+
+"""
+Input for updating a rescue request
+"""
+input UpdateRescueRequestInput {
+  # Location Details
+  municipality: String
+  ward: Int
+  address: String
+  landmark: String
+  lat: Latitude
+  lng: Longitude
+  
+  # Snake Information
+  snakeDescription: String
+  snakeSize: String
+  snakeColor: String
+  snakeImageUrl: String
+  snakeImages: [String!]
+  speciesId: ID
+  
+  # Status
+  status: RescueStatus
+  priority: RescuePriority
+  stillPresent: Boolean
+  notes: String
+  internalNotes: String
+  
+  # Emergency
+  isEmergency: Boolean
+  emergencyDetails: String
+  hasBite: Boolean
+  biteDetails: String
+}
+
+"""
+Input for assigning a rescue to a volunteer
+"""
+input AssignRescueInput {
+  rescueId: ID!
+  volunteerId: ID!
+  notes: String
+}
+
+"""
+Input for volunteer accepting a rescue
+"""
+input AcceptRescueInput {
+  rescueId: ID!
+  estimatedArrival: Int
+  currentLat: Latitude
+  currentLng: Longitude
+}
+
+"""
+Input for updating rescue progress
+"""
+input UpdateRescueProgressInput {
+  rescueId: ID!
+  status: RescueStatus!
+  lat: Latitude
+  lng: Longitude
+  notes: String
+}
+
+"""
+Input for completing a rescue
+"""
+input CompleteRescueInput {
+  rescueId: ID!
+  outcome: RescueOutcome!
+  rescueReport: String!
+  rescueImages: [String!]
+  speciesId: ID
+  releaseLat: Latitude
+  releaseLng: Longitude
+  releaseLocation: String
+}
+
+"""
+Input for adding timeline event
+"""
+input AddTimelineEventInput {
+  rescueId: ID!
+  event: String!
+  description: String
+  metadata: JSON
+  lat: Latitude
+  lng: Longitude
+}
+
+"""
+Filter input for rescue queries
+"""
+input RescueRequestFilterInput {
+  status: RescueStatus
+  statuses: [RescueStatus!]
+  priority: RescuePriority
+  priorities: [RescuePriority!]
+  municipality: String
+  municipalities: [String!]
+  assignedTo: ID
+  speciesId: ID
+  isEmergency: Boolean
+  hasBite: Boolean
+  createdAfter: DateTime
+  createdBefore: DateTime
+  completedAfter: DateTime
+  completedBefore: DateTime
+  search: String
+}
+
+"""
+Sort input for rescue queries
+"""
+input RescueSortInput {
+  field: RescueSortField!
+  order: SortOrder!
+}
+
+"""
+Fields available for sorting rescues
+"""
+enum RescueSortField {
+  CREATED_AT
+  UPDATED_AT
+  PRIORITY
+  STATUS
+  MUNICIPALITY
+  ASSIGNED_AT
+  COMPLETED_AT
+}
+
+"""
+Input for searching nearby rescues
+"""
+input NearbyRescuesInput {
+  lat: Latitude!
+  lng: Longitude!
+  radiusKm: Float!
+  status: RescueStatus
+  withinHours: Int
+}
+
+"""
+Input for rescue statistics
+"""
+input RescueStatsInput {
+  startDate: DateTime
+  endDate: DateTime
+  municipality: String
+  volunteerId: ID
+  speciesId: ID
+}

@@ -1,0 +1,64 @@
+# ===================================================================
+# AUTH - QUERIES
+# ===================================================================
+
+extend type Query {
+  """
+  Get current authenticated user
+  """
+  me: User @auth
+  
+  """
+  Get user by ID (admin only)
+  """
+  user(id: ID!): User @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  List all users (admin only)
+  """
+  users(
+    pagination: PaginationInput
+    filter: UserFilterInput
+    sort: UserSortInput
+  ): UserConnection! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Get user profile by ID (public)
+  """
+  userProfile(id: ID!): UserProfile
+  
+  """
+  Search users (admin only)
+  """
+  searchUsers(
+    query: String!
+    pagination: PaginationInput
+  ): UserConnection! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Verify if email is available for registration
+  """
+  checkEmailAvailability(email: Email!): Boolean!
+  
+  """
+  Verify password reset token validity
+  """
+  verifyPasswordResetToken(token: String!): Boolean!
+}
+
+"""
+Connection type for paginated user results
+"""
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for user connection
+"""
+type UserEdge {
+  node: User!
+  cursor: String!
+}

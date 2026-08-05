@@ -1,0 +1,70 @@
+# ===================================================================
+# AI - INPUT TYPES
+# ===================================================================
+
+"""
+Input for identifying snake from image
+"""
+input IdentifySnakeInput {
+  imageUrl: String!
+  uploadSource: UploadSource
+  userId: ID
+  includeAlternatives: Boolean
+  minConfidence: Float
+}
+
+"""
+Input for providing feedback on identification
+"""
+input IdentificationFeedbackInput {
+  identificationId: ID!
+  feedback: IdentificationFeedback!
+  correctSpeciesId: ID
+  notes: String
+}
+
+"""
+Filter input for AI identification queries
+"""
+input AIIdentificationFilterInput {
+  provider: AIProvider
+  providers: [AIProvider!]
+  minConfidence: Float
+  maxConfidence: Float
+  hasFeedback: Boolean
+  feedback: IdentificationFeedback
+  speciesId: ID
+  userId: ID
+  uploadSource: UploadSource
+  createdAfter: DateTime
+  createdBefore: DateTime
+}
+
+"""
+Sort input for AI identification queries
+"""
+input AIIdentificationSortInput {
+  field: AIIdentificationSortField!
+  order: SortOrder!
+}
+
+"""
+Fields available for sorting AI identifications
+"""
+enum AIIdentificationSortField {
+  CREATED_AT
+  CONFIDENCE
+  RESPONSE_TIME
+  PROVIDER
+}
+
+"""
+Input for AI model configuration
+"""
+input UpdateAIModelConfigInput {
+  provider: AIProvider!
+  model: String
+  enabled: Boolean
+  maxImageSize: Int
+  supportedFormats: [String!]
+}

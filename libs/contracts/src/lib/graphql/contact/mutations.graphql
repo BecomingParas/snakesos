@@ -1,0 +1,40 @@
+# ===================================================================
+# CONTACT - MUTATIONS
+# ===================================================================
+
+extend type Mutation {
+  """
+  Submit a contact message
+  """
+  submitContactMessage(input: SubmitContactMessageInput!): ContactMessage!
+  
+  """
+  Respond to a contact message
+  """
+  respondToMessage(input: RespondToMessageInput!): ContactMessage! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Update message status
+  """
+  updateMessageStatus(input: UpdateMessageStatusInput!): ContactMessage! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Mark message as read
+  """
+  markMessageAsRead(messageId: ID!): ContactMessage! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Archive contact message
+  """
+  archiveContactMessage(messageId: ID!): ContactMessage! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Delete contact message (soft delete)
+  """
+  deleteContactMessage(id: ID!): SuccessResponse! @auth(requires: [SUPER_ADMIN])
+  
+  """
+  Bulk update message status
+  """
+  bulkUpdateMessageStatus(messageIds: [ID!]!, status: MessageStatus!): BulkOperationResult! @auth(requires: [ADMIN, SUPER_ADMIN])
+}

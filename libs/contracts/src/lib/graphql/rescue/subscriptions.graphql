@@ -1,0 +1,46 @@
+# ===================================================================
+# RESCUE - SUBSCRIPTIONS
+# ===================================================================
+
+extend type Subscription {
+  """
+  Subscribe to new rescue requests
+  """
+  rescueCreated(municipality: String): RescueRequest! @auth(requires: [VOLUNTEER, VERIFIED_RESCUER, DISTRICT_COORDINATOR, ADMIN, SUPER_ADMIN])
+  
+  """
+  Subscribe to rescue status changes
+  """
+  rescueUpdated(rescueId: ID): RescueRequest! @auth
+  
+  """
+  Subscribe to rescue assignments (volunteer)
+  """
+  rescueAssigned(volunteerId: ID!): RescueAssignmentEvent! @auth(requires: [VOLUNTEER, VERIFIED_RESCUER])
+  
+  """
+  Subscribe to rescue timeline updates
+  """
+  rescueTimelineUpdated(rescueId: ID!): RescueTimeline! @auth
+  
+  """
+  Subscribe to nearby rescues (for volunteers)
+  """
+  nearbyRescuesUpdated(lat: Latitude!, lng: Longitude!, radiusKm: Float!): RescueRequest! @auth(requires: [VOLUNTEER, VERIFIED_RESCUER])
+  
+  """
+  Subscribe to emergency rescues (high priority)
+  """
+  emergencyRescueCreated: RescueRequest! @auth(requires: [VERIFIED_RESCUER, DISTRICT_COORDINATOR, ADMIN, SUPER_ADMIN])
+}
+
+"""
+Rescue assignment event
+"""
+type RescueAssignmentEvent {
+  rescue: RescueRequest!
+  volunteer: Volunteer!
+  assignedBy: User!
+  assignedAt: DateTime!
+  notes: String
+}

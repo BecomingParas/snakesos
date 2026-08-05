@@ -1,0 +1,28 @@
+# ===================================================================
+# TRAINING - ENUMS
+# ===================================================================
+
+"""
+Type of training
+"""
+enum TrainingType {
+  BASIC
+  ADVANCED
+  REFRESHER
+  FIRST_AID
+  SPECIES_IDENTIFICATION
+  EQUIPMENT_HANDLING
+  SAFETY_PROTOCOLS
+  DOCUMENTATION
+}
+
+"""
+Status of training session
+"""
+enum TrainingStatus {
+  SCHEDULED
+  ONGOING
+  COMPLETED
+  CANCELLED
+  POSTPONED
+}

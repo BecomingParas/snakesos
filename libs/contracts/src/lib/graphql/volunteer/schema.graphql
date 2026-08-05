@@ -1,0 +1,146 @@
+# ===================================================================
+# VOLUNTEER - TYPE DEFINITIONS
+# ===================================================================
+
+"""
+Volunteer profile and information
+"""
+type Volunteer {
+  id: ID!
+  
+  # User Link
+  user: User
+  
+  # Personal Information
+  name: String!
+  contact: Phone!
+  email: Email
+  address: String!
+  municipality: String!
+  ward: Int
+  dateOfBirth: DateTime
+  gender: String
+  
+  # Emergency Contact
+  emergencyContact: String
+  emergencyPhone: Phone
+  
+  # Qualification & Experience
+  experience: ExperienceLevel!
+  experienceYears: Int
+  vehicle: VehicleType!
+  vehicleDetails: String
+  skills: [String!]!
+  certifications: [String!]!
+  languages: [String!]!
+  
+  # Availability
+  availableTime: AvailabilityTime!
+  availableDays: [String!]!
+  emergencyAvailability: Boolean!
+  isAvailableNow: Boolean!
+  assignedZone: String
+  coverageRadius: Int!
+  
+  # Location (for dispatch)
+  currentLat: Latitude
+  currentLng: Longitude
+  lastLocationUpdate: DateTime
+  
+  # Profile
+  imageUrl: String
+  bio: String
+  
+  # Verification & Status
+  status: VolunteerStatus!
+  verifiedAt: DateTime
+  verifiedBy: User
+  rejectedAt: DateTime
+  rejectedBy: User
+  rejectionReason: String
+  
+  # Performance Metrics
+  totalRescues: Int!
+  completedRescues: Int!
+  cancelledRescues: Int!
+  successRate: Float
+  averageResponseTime: Int
+  averageRescueTime: Int
+  rating: Float
+  totalRatings: Int!
+  
+  # Training & Certification
+  trainingCompleted: Boolean!
+  trainingDate: DateTime
+  certificationExpiry: DateTime
+  
+  # Equipment
+  hasEquipment: Boolean!
+  equipment: [String!]!
+  
+  # Metadata
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  
+  # Relations
+  rescueAssignments(
+    pagination: PaginationInput
+    filter: RescueRequestFilterInput
+  ): RescueRequestConnection!
+  
+  trainings(
+    pagination: PaginationInput
+  ): TrainingConnection!
+}
+
+"""
+Volunteer statistics
+"""
+type VolunteerStats {
+  total: Int!
+  active: Int!
+  verified: Int!
+  pending: Int!
+  suspended: Int!
+  byMunicipality: [VolunteerMunicipalityStats!]!
+  byExperience: [VolunteerExperienceStats!]!
+  topPerformers: [VolunteerPerformance!]!
+}
+
+"""
+Volunteer statistics by municipality
+"""
+type VolunteerMunicipalityStats {
+  municipality: String!
+  count: Int!
+  activeCount: Int!
+}
+
+"""
+Volunteer statistics by experience
+"""
+type VolunteerExperienceStats {
+  experience: ExperienceLevel!
+  count: Int!
+}
+
+"""
+Volunteer performance metrics
+"""
+type VolunteerPerformance {
+  volunteer: Volunteer!
+  rescuesCompleted: Int!
+  successRate: Float!
+  averageResponseTime: Int!
+  rating: Float!
+}
+
+"""
+Available volunteers for dispatch
+"""
+type AvailableVolunteer {
+  volunteer: Volunteer!
+  distance: Float
+  estimatedArrival: Int
+  currentlyAssigned: Int!
+}

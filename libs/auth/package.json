@@ -1,0 +1,26 @@
+{
+  "name": "@snake-rescue/auth",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "@snake-rescue/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "better-auth": "^1.6.26",
+    "csrf-csrf": "^3.1.2",
+    "express-rate-limit": "^8.6.0",
+    "graphql": "^17.0.2",
+    "@snake-rescue/database": "*",
+    "tslib": "^2.3.0"
+  }
+}

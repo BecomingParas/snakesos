@@ -1,0 +1,70 @@
+# ===================================================================
+# SHARED RESPONSE TYPES
+# ===================================================================
+# Standard response patterns for mutations and operations
+# ===================================================================
+
+"""
+Standard success response
+"""
+type SuccessResponse {
+  """
+  Operation succeeded
+  """
+  success: Boolean!
+  
+  """
+  Success message
+  """
+  message: String
+  
+  """
+  Additional metadata
+  """
+  metadata: JSON
+}
+
+"""
+Standard mutation response with errors
+"""
+interface MutationResponse {
+  """
+  Operation succeeded
+  """
+  success: Boolean!
+  
+  """
+  Human-readable message
+  """
+  message: String
+  
+  """
+  List of errors if operation failed
+  """
+  errors: [Error!]
+}
+
+"""
+Bulk operation result
+"""
+type BulkOperationResult {
+  """
+  Number of items processed
+  """
+  processed: Int!
+  
+  """
+  Number of successful operations
+  """
+  succeeded: Int!
+  
+  """
+  Number of failed operations
+  """
+  failed: Int!
+  
+  """
+  List of errors for failed items
+  """
+  errors: [Error!]!
+}

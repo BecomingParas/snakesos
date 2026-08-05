@@ -1,0 +1,15 @@
+# ===================================================================
+# CONTACT - SUBSCRIPTIONS
+# ===================================================================
+
+extend type Subscription {
+  """
+  Subscribe to new contact messages
+  """
+  contactMessageReceived: ContactMessage! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Subscribe to contact message updates
+  """
+  contactMessageUpdated(id: ID): ContactMessage! @auth(requires: [ADMIN, SUPER_ADMIN])
+}

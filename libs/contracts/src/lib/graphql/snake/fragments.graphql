@@ -1,0 +1,83 @@
+# ===================================================================
+# SNAKE - REUSABLE FRAGMENTS
+# ===================================================================
+
+"""
+Core snake species fields
+"""
+fragment SnakeSpeciesCore on SnakeSpecies {
+  id
+  name
+  scientificName
+  nepaliName
+  venomous
+  dangerLevel
+  imageUrl
+}
+
+"""
+Snake species with identification info
+"""
+fragment SnakeSpeciesIdentification on SnakeSpecies {
+  ...SnakeSpeciesCore
+  color
+  pattern
+  distinctiveFeatures
+  identificationGuide
+  averageLength
+  maxLength
+}
+
+"""
+Snake species with safety info
+"""
+fragment SnakeSpeciesSafety on SnakeSpecies {
+  ...SnakeSpeciesCore
+  venomType
+  safetyTips
+  emergencyAdvice
+  firstAidSteps
+}
+
+"""
+Full snake species details
+"""
+fragment SnakeSpeciesFull on SnakeSpecies {
+  ...SnakeSpeciesIdentification
+  localNames
+  aliases
+  family
+  genus
+  species
+  venomType
+  behavior
+  habitat
+  activeTime
+  diet
+  safetyTips
+  emergencyAdvice
+  firstAidSteps
+  foundInNepal
+  regions
+  altitudeRange
+  conservationStatus
+  protected
+  images
+  videoUrl
+  rescueCount
+  identificationCount
+  verified
+  createdAt
+  updatedAt
+}
+
+"""
+Snake species list item
+"""
+fragment SnakeSpeciesListItem on SnakeSpecies {
+  ...SnakeSpeciesCore
+  family
+  regions
+  rescueCount
+  verified
+}

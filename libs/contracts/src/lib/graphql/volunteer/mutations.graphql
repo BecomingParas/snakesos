@@ -1,0 +1,60 @@
+# ===================================================================
+# VOLUNTEER - MUTATIONS
+# ===================================================================
+
+extend type Mutation {
+  """
+  Apply to become a volunteer
+  """
+  applyVolunteer(input: ApplyVolunteerInput!): Volunteer! @auth
+  
+  """
+  Update volunteer profile
+  """
+  updateVolunteerProfile(input: UpdateVolunteerInput!): Volunteer! @auth(requires: [VOLUNTEER, VERIFIED_RESCUER])
+  
+  """
+  Update volunteer availability status
+  """
+  updateVolunteerAvailability(input: UpdateVolunteerAvailabilityInput!): Volunteer! @auth(requires: [VOLUNTEER, VERIFIED_RESCUER])
+  
+  """
+  Approve or reject volunteer application
+  """
+  reviewVolunteerApplication(input: ReviewVolunteerInput!): Volunteer! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Verify volunteer (upgrade to verified rescuer)
+  """
+  verifyVolunteer(volunteerId: ID!, notes: String): Volunteer! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Suspend volunteer
+  """
+  suspendVolunteer(volunteerId: ID!, reason: String!): Volunteer! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Reactivate suspended volunteer
+  """
+  reactivateVolunteer(volunteerId: ID!): Volunteer! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Update volunteer zone assignment
+  """
+  updateVolunteerZone(volunteerId: ID!, zone: String!): Volunteer! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Rate volunteer after rescue completion
+  """
+  rateVolunteer(volunteerId: ID!, rescueId: ID!, rating: Int!, feedback: String): Volunteer! @auth
+  
+  """
+  Bulk approve volunteers
+  """
+  bulkApproveVolunteers(volunteerIds: [ID!]!): BulkOperationResult! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Delete volunteer profile (soft delete)
+  """
+  deleteVolunteer(volunteerId: ID!): SuccessResponse! @auth(requires: [SUPER_ADMIN])
+}

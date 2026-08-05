@@ -1,0 +1,88 @@
+# ===================================================================
+# RESCUE - QUERIES
+# ===================================================================
+
+extend type Query {
+  """
+  Get rescue request by ID
+  """
+  rescueRequest(id: ID!): RescueRequest
+  
+  """
+  List rescue requests
+  """
+  rescueRequests(
+    pagination: PaginationInput
+    filter: RescueRequestFilterInput
+    sort: RescueSortInput
+  ): RescueRequestConnection!
+  
+  """
+  Get my rescue requests (citizen view)
+  """
+  myRescueRequests(
+    pagination: PaginationInput
+    filter: RescueRequestFilterInput
+  ): RescueRequestConnection! @auth
+  
+  """
+  Get assigned rescues (volunteer view)
+  """
+  myAssignedRescues(
+    pagination: PaginationInput
+    filter: RescueRequestFilterInput
+  ): RescueRequestConnection! @auth(requires: [VOLUNTEER, VERIFIED_RESCUER, DISTRICT_COORDINATOR])
+  
+  """
+  Search rescue requests
+  """
+  searchRescues(
+    query: String!
+    pagination: PaginationInput
+    filter: RescueRequestFilterInput
+  ): RescueRequestConnection! @auth
+  
+  """
+  Find nearby rescue requests (for duplicate detection)
+  """
+  nearbyRescues(input: NearbyRescuesInput!): [NearbyRescue!]!
+  
+  """
+  Get rescue statistics
+  """
+  rescueStats(input: RescueStatsInput): RescueStats! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Get rescue timeline
+  """
+  rescueTimeline(rescueId: ID!): [RescueTimeline!]!
+  
+  """
+  Get pending rescues count
+  """
+  pendingRescuesCount: Int!
+  
+  """
+  Get active rescues (in progress)
+  """
+  activeRescues(
+    pagination: PaginationInput
+  ): RescueRequestConnection! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+}
+
+"""
+Connection type for paginated rescue results
+"""
+type RescueRequestConnection {
+  edges: [RescueRequestEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for rescue connection
+"""
+type RescueRequestEdge {
+  node: RescueRequest!
+  cursor: String!
+}

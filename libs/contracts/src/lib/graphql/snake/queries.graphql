@@ -1,0 +1,73 @@
+# ===================================================================
+# SNAKE - QUERIES
+# ===================================================================
+
+extend type Query {
+  """
+  Get snake species by ID
+  """
+  snakeSpecies(id: ID!): SnakeSpecies
+  
+  """
+  List all snake species
+  """
+  allSnakeSpecies(
+    pagination: PaginationInput
+    filter: SnakeSpeciesFilterInput
+    sort: SnakeSpeciesSortInput
+  ): SnakeSpeciesConnection!
+  
+  """
+  Search snake species
+  """
+  searchSnakeSpecies(
+    query: String!
+    pagination: PaginationInput
+    filter: SnakeSpeciesFilterInput
+  ): SnakeSpeciesConnection!
+  
+  """
+  Get venomous snake species
+  """
+  venomousSnakes(
+    pagination: PaginationInput
+  ): SnakeSpeciesConnection!
+  
+  """
+  Get snake species by danger level
+  """
+  snakesByDangerLevel(
+    dangerLevel: DangerLevel!
+    pagination: PaginationInput
+  ): SnakeSpeciesConnection!
+  
+  """
+  Get snake species statistics
+  """
+  snakeSpeciesStats: SnakeSpeciesStats! @auth(requires: [ADMIN, SUPER_ADMIN])
+  
+  """
+  Get snake species by region
+  """
+  snakeSpeciesByRegion(
+    region: String!
+    pagination: PaginationInput
+  ): SnakeSpeciesConnection!
+}
+
+"""
+Connection type for paginated snake species results
+"""
+type SnakeSpeciesConnection {
+  edges: [SnakeSpeciesEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
+Edge type for snake species connection
+"""
+type SnakeSpeciesEdge {
+  node: SnakeSpecies!
+  cursor: String!
+}

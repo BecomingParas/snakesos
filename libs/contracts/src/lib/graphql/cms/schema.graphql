@@ -1,0 +1,109 @@
+# ===================================================================
+# CMS - TYPE DEFINITIONS
+# ===================================================================
+
+"""
+Blog post
+"""
+type BlogPost {
+  id: ID!
+  
+  # Content
+  title: String!
+  slug: String!
+  content: String!
+  excerpt: String
+  
+  # Categorization
+  category: PostCategory!
+  tags: [String!]!
+  
+  # Author
+  author: User!
+  
+  # Publishing
+  status: PostStatus!
+  publishedAt: DateTime
+  scheduledAt: DateTime
+  
+  # Media
+  imageUrl: String
+  images: [String!]!
+  videoUrl: String
+  
+  # SEO
+  metaTitle: String
+  metaDescription: String
+  metaKeywords: [String!]!
+  
+  # Engagement
+  views: Int!
+  likes: Int!
+  shares: Int!
+  
+  # Comments
+  commentsEnabled: Boolean!
+  commentCount: Int!
+  
+  # Metadata
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+Gallery image
+"""
+type GalleryImage {
+  id: ID!
+  
+  # Content
+  title: String
+  description: String
+  imageUrl: String!
+  thumbnailUrl: String
+  
+  # Categorization
+  category: GalleryCategory
+  tags: [String!]!
+  
+  # Context
+  rescueId: ID
+  rescue: RescueRequest
+  speciesId: ID
+  species: SnakeSpecies
+  
+  # Uploader
+  uploader: User
+  
+  # Visibility
+  isPublic: Boolean!
+  isFeatured: Boolean!
+  
+  # Engagement
+  views: Int!
+  likes: Int!
+  
+  # Metadata
+  fileSize: Int
+  dimensions: String
+  format: String
+  
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+CMS statistics
+"""
+type CMSStats {
+  totalPosts: Int!
+  publishedPosts: Int!
+  draftPosts: Int!
+  totalImages: Int!
+  publicImages: Int!
+  totalViews: Int!
+  totalLikes: Int!
+  popularPosts: [BlogPost!]!
+  recentPosts: [BlogPost!]!
+  featuredImages: [GalleryImage!]!
+}
