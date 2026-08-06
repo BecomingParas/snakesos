@@ -6,7 +6,7 @@
 import { expressMiddleware } from '@as-integrations/express5';
 import type { Express, Request, Response } from 'express';
 import { createLogger } from '@snake-rescue/shared';
-import { createApolloServer, type GraphQLContext } from '@snake-rescue/core';
+import { createApolloServer, buildContext, type GraphQLContext } from '@snake-rescue/core';
 import { 
   authResolvers, 
   rescueQueryResolvers, 
@@ -39,13 +39,8 @@ export async function setupApolloServer(app: Express) {
     config.graphqlPath,
     expressMiddleware(server as any, {
       context: async ({ req, res }: { req: Request; res: Response }): Promise<GraphQLContext> => {
-        // Context is populated by authMiddleware and createContextFactory
-        return {
-          req,
-          res,
-          user: (req as any).user,
-          session: (req as any).session,
-        } as GraphQLContext;
+        // Use buildContext to create fully-featured context with loaders, permissions, etc.
+        return await buildContext({ req, res });
       },
     })
   );

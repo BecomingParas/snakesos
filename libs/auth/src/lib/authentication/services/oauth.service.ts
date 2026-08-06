@@ -16,8 +16,8 @@ export class OAuthService {
       const account = await prisma.account.create({
         data: {
           userId: data.userId,
-          provider: data.provider,
-          providerAccountId: data.providerAccountId,
+          providerId: data.provider,
+          accountId: data.providerAccountId,
           accessToken: data.accessToken,
           refreshToken: data.refreshToken,
           expiresAt: data.expiresAt,
@@ -58,7 +58,7 @@ export class OAuthService {
       }
 
       const hasPassword = !!user.password;
-      const otherAccounts = user.accounts.filter((acc) => acc.provider !== provider);
+      const otherAccounts = user.accounts.filter((acc) => acc.providerId !== provider);
 
       if (!hasPassword && otherAccounts.length === 0) {
         return {
@@ -70,7 +70,7 @@ export class OAuthService {
       await prisma.account.deleteMany({
         where: {
           userId,
-          provider,
+          providerId: provider,
         },
       });
 
@@ -94,8 +94,8 @@ export class OAuthService {
       where: { userId },
       select: {
         id: true,
-        provider: true,
-        providerAccountId: true,
+        providerId: true,
+        accountId: true,
         createdAt: true,
       },
     });
@@ -107,9 +107,9 @@ export class OAuthService {
   async isAccountLinked(provider: string, providerAccountId: string): Promise<boolean> {
     const account = await prisma.account.findUnique({
       where: {
-        provider_providerAccountId: {
-          provider,
-          providerAccountId,
+        providerId_accountId: {
+          providerId: provider,
+          accountId: providerAccountId,
         },
       },
     });
@@ -123,9 +123,9 @@ export class OAuthService {
   async getUserByProviderAccount(provider: string, providerAccountId: string): Promise<any | null> {
     const account = await prisma.account.findUnique({
       where: {
-        provider_providerAccountId: {
-          provider,
-          providerAccountId,
+        providerId_accountId: {
+          providerId: provider,
+          accountId: providerAccountId,
         },
       },
       include: {

@@ -3,8 +3,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, X, Camera, AlertTriangle, ShieldCheck, Zap, Loader2, ChevronRight, RefreshCw } from 'lucide-react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { FloatingWidgets } from '@snake-rescue/ui';
 import Link from 'next/link';
 
@@ -118,7 +116,6 @@ export default function AIIdentifierPage() {
 
   return (
     <div className="min-h-screen bg-[#0a1512]">
-      <Navbar />
 
       {/* Hero */}
       <div className="py-20 px-4 text-center border-b border-white/5 bg-gradient-to-b from-emerald-950/30 to-transparent relative overflow-hidden">
@@ -349,7 +346,6 @@ export default function AIIdentifierPage() {
         </div>
       </div>
 
-      <Footer />
       <FloatingWidgets />
     </div>
   );

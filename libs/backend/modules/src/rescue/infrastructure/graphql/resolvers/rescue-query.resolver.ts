@@ -60,7 +60,7 @@ export const rescueQueryResolvers = {
     rescueStats: async (_parent: any, _args: any, context: GraphQLContext) => {
       // Admin only
       context.requireAuth();
-      // TODO: Add permission check for admin
+      context.requireRole(['ADMIN', 'SUPER_ADMIN']);
 
       const rescueRepository = new RescueRepository(prisma);
       const stats = await rescueRepository.getStatistics();

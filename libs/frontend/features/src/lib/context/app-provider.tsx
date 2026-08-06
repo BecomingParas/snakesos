@@ -19,9 +19,11 @@ export interface Volunteer {
   name: string;
   phone: string;
   municipality: string;
+  assignedZone?: string;
   lat: number;
   lng: number;
   status: string;
+  isAvailableNow?: boolean;
 }
 
 export interface AppContextType {
@@ -55,6 +57,8 @@ const translations: Record<string, string> = {
   available: 'Available',
   busy: 'On Mission',
   tel1: '9816482570',
+  tel2: '9748802442'
+
 };
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
@@ -104,8 +108,26 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       ];
 
       const mockVolunteers: Volunteer[] = [
-        { id: '1', name: 'Ram Kumar', phone: '9816482570', municipality: 'Butwal', lat: 27.6918, lng: 83.4403, status: 'ACTIVE' },
-        { id: '2', name: 'Sita Sharma', phone: '9856789012', municipality: 'Tilottama', lat: 27.6598, lng: 83.4521, status: 'ACTIVE' },
+        { 
+          id: '1', 
+          name: 'Ram Kumar', 
+          phone: '9816482570', 
+          municipality: 'Butwal', 
+          lat: 27.6918, 
+          lng: 83.4403, 
+          status: 'ACTIVE',
+          isAvailableNow: true
+        },
+        { 
+          id: '2', 
+          name: 'Sita Sharma', 
+          phone: '9856789012', 
+          municipality: 'Tilottama', 
+          lat: 27.6598, 
+          lng: 83.4521, 
+          status: 'ACTIVE',
+          isAvailableNow: true
+        },
       ];
 
       // Simulate API delay

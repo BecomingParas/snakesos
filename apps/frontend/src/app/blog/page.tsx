@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { BookOpen, Clock, User, ArrowRight, Search } from 'lucide-react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { FloatingWidgets } from '@snake-rescue/ui';
 
 interface Blog {
@@ -85,7 +83,6 @@ export default function BlogPage() {
 
   return (
     <div className="min-h-screen bg-[#0f1a1c]">
-      <Navbar />
 
       <div className="py-20 px-4 text-center border-b border-white/5 bg-gradient-to-b from-emerald-900/10 to-transparent">
         <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
@@ -206,7 +203,6 @@ export default function BlogPage() {
           </>
         )}
       </div>
-      <Footer />
       <FloatingWidgets />
     </div>
   );

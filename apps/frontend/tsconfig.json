@@ -11,6 +11,7 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
     "plugins": [
@@ -19,10 +20,28 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@snake-rescue/contracts": ["../../libs/contracts/src/index.ts"],
+      "@snake-rescue/database": ["../../libs/database/src/index.ts"],
+      "@snake-rescue/auth": ["../../libs/auth/src/index.ts"],
+      "@snake-rescue/shared": ["../../libs/shared/src/index.ts"],
+      "@snake-rescue/frontend/core": ["../../libs/frontend/core/src/index.ts"],
+      "@snake-rescue/frontend/ui": ["../../libs/frontend/ui/src/index.ts"],
+      "@snake-rescue/frontend/features": [
+        "../../libs/frontend/features/src/index.ts"
+      ],
+      "@snake-rescue/frontend-core": ["../../libs/frontend/core/src/index.ts"],
+      "@snake-rescue/frontend-features": [
+        "../../libs/frontend/features/src/index.ts"
+      ],
+      "@snake-rescue/features": ["../../libs/frontend/features/src/index.ts"],
+      "@snake-rescue/ui": ["../../libs/frontend/ui/src/index.ts"],
+      "@snake-rescue/backend/core": ["../../libs/backend/core/src/index.ts"],
+      "@snake-rescue/backend/modules": [
+        "../../libs/backend/modules/src/index.ts"
+      ]
     },
     "outDir": "dist",
-    "rootDir": "src",
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
   },
   "include": [
@@ -50,6 +69,9 @@
     "eslint.config.mjs"
   ],
   "references": [
+    {
+      "path": "../../libs/frontend/core"
+    },
     {
       "path": "../../libs/frontend/features"
     },

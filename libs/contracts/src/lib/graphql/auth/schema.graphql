@@ -74,7 +74,7 @@ type User {
 Authentication payload returned on successful login/register
 """
 type AuthPayload {
-  token: String!
+  accessToken: String!
   refreshToken: String!
   user: User!
   expiresIn: Int!

@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Users, CheckCircle, Loader2, Shield, Star, Zap } from 'lucide-react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { FloatingWidgets } from '@snake-rescue/ui';
 
 const MUNICIPALITIES = ['Butwal', 'Tilottama', 'Siddharthanagar', 'Devdaha', 'Other'];
@@ -66,7 +64,6 @@ export default function VolunteerPage() {
   if (submitted) {
     return (
       <div className="min-h-screen bg-[#0f1a1c]">
-        <Navbar />
         <div className="flex items-center justify-center min-h-[80vh] px-4">
           <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', bounce: 0.4 }} className="glass-card p-10 rounded-3xl max-w-md w-full text-center border border-emerald-500/30">
             <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ repeat: Infinity, duration: 2 }} className="w-24 h-24 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-emerald-400"><CheckCircle className="w-12 h-12 text-emerald-400" /></motion.div>
@@ -76,14 +73,12 @@ export default function VolunteerPage() {
             <a href="/" className="block w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3 rounded-xl transition-colors">Back to Home</a>
           </motion.div>
         </div>
-        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-[#0f1a1c]">
-      <Navbar />
       <div className="py-20 px-4 text-center border-b border-white/5 bg-gradient-to-b from-emerald-900/15 to-transparent">
         <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
           <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/40 rounded-full px-4 py-1.5 mb-4"><Users className="w-4 h-4 text-emerald-400" /><span className="text-emerald-400 text-sm font-semibold">JOIN OUR TEAM</span></div>
@@ -184,7 +179,6 @@ export default function VolunteerPage() {
           </form>
         </div>
       </div>
-      <Footer />
       <FloatingWidgets />
     </div>
   );

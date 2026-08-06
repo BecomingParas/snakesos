@@ -41,21 +41,48 @@ export async function buildContext(params: ContextParams): Promise<GraphQLContex
     },
 
     // Helper: Check if user has permission
-    hasPermission(permission: string): boolean {
+    async hasPermission(permission: string): Promise<boolean> {
       if (!this.user) return false;
       
-      // TODO: Implement permission checking logic
-      // This will check user's roles and permissions from database
-      return false;
+      // Import role permissions
+      const { ROLE_PERMISSIONS, UserRole } = await import('@snake-rescue/auth');
+      
+      // Check if the user's role has this permission
+      const userRole = this.user.role as typeof UserRole[keyof typeof UserRole];
+      const rolePermissions = ROLE_PERMISSIONS[userRole] || [];
+      
+      return rolePermissions.includes(permission as any);
     },
 
     // Helper: Check if user has role
     hasRole(role: string): boolean {
       if (!this.user) return false;
       
-      // TODO: Implement role checking logic
-      // This will check user's assigned roles
-      return false;
+      // Check if user's role matches
+      return this.user.role === role;
+    },
+
+    // Helper: Require specific role
+    requireRole(allowedRoles: string[]): void {
+      if (!this.user || !this.session) {
+        throw new AuthenticationError('Authentication required');
+      }
+      
+      if (!allowedRoles.includes(this.user.role)) {
+        throw new AuthenticationError(`Insufficient permissions. Required roles: ${allowedRoles.join(', ')}`);
+      }
+    },
+
+    // Helper: Require specific permission
+    async requirePermission(permission: string): Promise<void> {
+      if (!this.user || !this.session) {
+        throw new AuthenticationError('Authentication required');
+      }
+      
+      const hasPermission = await this.hasPermission(permission);
+      if (!hasPermission) {
+        throw new AuthenticationError(`Insufficient permissions. Required: ${permission}`);
+      }
     },
   };
 

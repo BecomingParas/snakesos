@@ -3,8 +3,6 @@
 import { motion } from 'framer-motion';
 import { Heart, Copy, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { FloatingWidgets } from '@snake-rescue/ui';
 
 const PAYMENT_METHODS = [
@@ -76,7 +74,6 @@ export default function DonatePage() {
 
   return (
     <div className="min-h-screen bg-[#0f1a1c]">
-      <Navbar />
 
       {/* Hero */}
       <div className="py-20 px-4 text-center border-b border-white/5 bg-gradient-to-b from-red-900/10 to-transparent">
@@ -181,7 +178,6 @@ export default function DonatePage() {
           </p>
         </motion.div>
       </div>
-      <Footer />
       <FloatingWidgets />
     </div>
   );

@@ -56,31 +56,43 @@ generates:
         Upload: File
 
   # ===================================================================
-  # FRONTEND - Apollo Client Types (disabled until frontend queries exist)
+  # FRONTEND - Apollo Client Types & Hooks
   # ===================================================================
-  # ./src/generated/graphql-operations.ts:
-  #   documents: 
-  #     - '../../apps/frontend/src/**/*.graphql'
-  #     - '../../apps/frontend/src/**/*.tsx'
-  #     - '../../apps/frontend/src/**/*.ts'
-  #   plugins:
-  #     - typescript
-  #     - typescript-operations
-  #     - typescript-react-apollo
-  #   config:
-  #     withHooks: true
-  #     withComponent: false
-  #     withHOC: false
-  #     skipTypename: false
-  #     scalars:
-  #       DateTime: string
-  #       JSON: any
-  #       Email: string
-  #       Phone: string
-  #       Latitude: number
-  #       Longitude: number
-  #       PositiveInt: number
-  #       Upload: File
+  ./src/generated/graphql-operations.ts:
+    documents: 
+      - '../../libs/frontend/features/src/**/*.graphql'
+      - '../../apps/frontend/src/**/*.graphql'
+      - './src/lib/graphql/**/fragments.graphql'
+      - './src/lib/graphql/**/mutations.graphql'
+      - './src/lib/graphql/**/queries.graphql'
+      - './src/lib/graphql/**/subscriptions.graphql'
+      - '!./src/lib/graphql/**/*-schema.graphql'
+      - '!./src/lib/graphql/**/schema.graphql'
+      - '!./src/lib/graphql/**/inputs.graphql'
+      - '!./src/lib/graphql/**/enums.graphql'
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      skipTypename: false
+      dedupeFragments: true
+      preResolveTypes: false
+      withHooks: true
+      withComponent: false
+      withHOC: false
+      namingConvention:
+        typeNames: pascal-case#pascalCase
+        enumValues: keep
+      scalars:
+        DateTime: string
+        JSON: any
+        Email: string
+        Phone: string
+        Latitude: number
+        Longitude: number
+        PositiveInt: number
+        Upload: File
 
   # ===================================================================
   # FRAGMENT MATCHERS

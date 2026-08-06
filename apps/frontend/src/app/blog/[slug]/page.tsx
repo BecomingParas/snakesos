@@ -1,7 +1,5 @@
 import { notFound } from 'next/navigation';
 import { BookOpen, Clock, User } from 'lucide-react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { FloatingWidgets } from '@snake-rescue/ui';
 
 type BlogPost = {
@@ -39,7 +37,6 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
 
   return (
     <div className="min-h-screen bg-[#0f1a1c]">
-      <Navbar />
       <div className="max-w-5xl mx-auto px-4 py-16">
         <article className="space-y-8">
           <div className="flex flex-col gap-3 mb-8 text-center">
@@ -79,7 +76,6 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
           </div>
         </article>
       </div>
-      <Footer />
       <FloatingWidgets />
     </div>
   );

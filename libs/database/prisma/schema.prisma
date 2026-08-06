@@ -122,18 +122,19 @@ model Account {
   id                String   @id @default(uuid())
   userId            String
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  provider          String   // "google", "github", etc.
-  providerAccountId String
+  providerId        String   @map("provider")    // "credential", "google", "github", etc.
+  accountId         String   @map("providerAccountId") // Provider-specific account ID
   accessToken       String?  @db.Text
   refreshToken      String?  @db.Text
   expiresAt         DateTime?
   tokenType         String?
   scope             String?
   idToken           String?  @db.Text
+  password          String?  // Hashed password for credential accounts (Better Auth requirement)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   
-  @@unique([provider, providerAccountId])
+  @@unique([providerId, accountId])
   @@index([userId])
   @@map("accounts")
 }

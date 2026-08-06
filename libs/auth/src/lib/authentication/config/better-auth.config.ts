@@ -1,6 +1,8 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { bearer } from 'better-auth/plugins';
 import { prisma } from '@snake-rescue/database';
+import bcrypt from 'bcryptjs';
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:4000/api/auth',
@@ -11,13 +13,23 @@ export const auth = betterAuth({
   
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true,
+    requireEmailVerification: process.env.NODE_ENV === 'production',
+    // Use bcrypt instead of scrypt (default) for compatibility with seeded users
+    password: {
+      hash: async (password: string) => {
+        return bcrypt.hash(password, 10);
+      },
+      verify: async (data: { password: string; hash: string }) => {
+        return bcrypt.compare(data.password, data.hash);
+      },
+    },
   },
   
   socialProviders: {
     google: {
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      enabled: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
     },
   },
   
@@ -33,8 +45,24 @@ export const auth = betterAuth({
   advanced: {
     cookiePrefix: 'snake_rescue',
     crossSubDomainCookies: {
-      enabled: true,
+      enabled: !!process.env.COOKIE_DOMAIN,
       domain: process.env.COOKIE_DOMAIN,
     },
   },
+
+  // Security settings
+  rateLimit: {
+    enabled: true,
+    window: 15 * 60, // 15 minutes
+    max: 10, // 10 requests per window
+  },
+
+  trustedOrigins: (process.env.CORS_ORIGINS || 'http://localhost:3000').split(','),
+  
+  // Enable Bearer token authentication for JWT support
+  plugins: [
+    bearer({
+      requireSignature: process.env.NODE_ENV === 'production',
+    }),
+  ],
 });

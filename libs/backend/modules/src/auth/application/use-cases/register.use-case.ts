@@ -3,53 +3,80 @@
  * Handles user registration workflow
  */
 
-import { auth } from '@snake-rescue/auth';
-import { UserRepository } from '@snake-rescue/database';
+import { prisma } from '@snake-rescue/database';
 import { ConflictError } from '@snake-rescue/shared';
 import type { RegisterInput, RegisterResponse } from '../dto/index.js';
+import * as bcrypt from 'bcryptjs';
+import { randomBytes } from 'crypto';
 
 export class RegisterUseCase {
-  constructor(
-    private readonly userRepository: UserRepository
-  ) {}
-
   async execute(input: RegisterInput): Promise<RegisterResponse> {
-    const { email, password, name } = input;
+    const { email, password, name, phone } = input;
 
     // Check if user already exists
-    const existingUser = await this.userRepository.findByEmail(email);
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
+    });
+    
     if (existingUser) {
       throw new ConflictError('User with this email already exists');
     }
 
-    // Create user using Better Auth
-    // Better Auth handles password hashing and user creation
-    const result = await auth.api.signUpEmail({
-      body: {
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user
+    const user = await prisma.user.create({
+      data: {
         email,
-        password,
         name,
-      },
+        phone: phone || null,
+        role: 'CITIZEN',
+        status: 'ACTIVE',
+        emailVerified: false,
+        language: 'en',
+        timezone: 'Asia/Kathmandu',
+      }
     });
 
-    if (!result) {
-      throw new Error('Failed to create user');
-    }
+    // Create credential account
+    await prisma.account.create({
+      data: {
+        userId: user.id,
+        providerId: 'credential',
+        accountId: email,
+        password: hashedPassword,
+      }
+    });
 
-    // Get the created user
-    const user = await this.userRepository.findByEmail(email);
-    if (!user) {
-      throw new Error('User created but not found');
-    }
+    // Create session (7 days expiry)
+    const sessionToken = `${user.id}_${Date.now()}_${randomBytes(8).toString('hex')}`;
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+    const session = await prisma.session.create({
+      data: {
+        userId: user.id,
+        token: sessionToken,
+        expiresAt,
+        ipAddress: null,
+        userAgent: null,
+      }
+    });
 
     return {
-      success: true,
-      message: 'Registration successful',
+      accessToken: session.token,
+      refreshToken: session.token, // Same token for now
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
+        role: user.role,
+        phone: user.phone,
+        emailVerified: user.emailVerified,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
       },
+      expiresIn: 60 * 60 * 24 * 7, // 7 days
     };
   }
 }

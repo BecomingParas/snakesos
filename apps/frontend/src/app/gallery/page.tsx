@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Image as ImageIcon, MapPin, Loader2 } from 'lucide-react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { FloatingWidgets } from '@snake-rescue/ui';
 
 interface GalleryItem {
@@ -44,7 +42,6 @@ export default function GalleryPage() {
 
   return (
     <div className="min-h-screen bg-[#0f1a1c]">
-      <Navbar />
       <div className="py-20 px-4 text-center border-b border-white/5 bg-gradient-to-b from-emerald-900/15 to-transparent">
         <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
           <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-500/40 rounded-full px-4 py-1.5 mb-4">
@@ -138,7 +135,6 @@ export default function GalleryPage() {
         )}
       </AnimatePresence>
 
-      <Footer />
       <FloatingWidgets />
     </div>
   );

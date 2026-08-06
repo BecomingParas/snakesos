@@ -38,6 +38,9 @@
     },
     {
       "path": "./libs/backend/modules"
+    },
+    {
+      "path": "./libs/frontend/core"
     }
   ]
 }

@@ -3,14 +3,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, MessageSquare, Send, Loader2, CheckCircle, Clock } from 'lucide-react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 
 const CONTACT_METHODS = [
-  { icon: Phone, label: 'Emergency Hotline', value: '9856034050', sub: 'Available 24/7', href: 'tel:9856034050', color: 'red' },
-  { icon: MessageSquare, label: 'WhatsApp', value: '9856034050', sub: 'Quick response via chat', href: 'https://wa.me/9779856034050', color: 'green' },
-  { icon: Mail, label: 'Email', value: 'info@butwalsnakerescue.org', sub: 'Non-urgent queries', href: 'mailto:info@butwalsnakerescue.org', color: 'blue' },
-  { icon: MapPin, label: 'Location', value: 'Butwal-11, Rupandehi', sub: 'Lumbini Province, Nepal', href: 'https://maps.google.com/?q=Butwal,Nepal', color: 'emerald' },
+  { icon: Phone, label: 'Emergency Hotline', value: '9856034050', sub: 'Available 24/7', href: 'tel:9856034050', iconClass: 'text-red-400', bgClass: 'bg-red-500/20', borderClass: 'border-red-500/40' },
+  { icon: MessageSquare, label: 'WhatsApp', value: '9856034050', sub: 'Quick response via chat', href: 'https://wa.me/9779856034050', iconClass: 'text-green-400', bgClass: 'bg-green-500/20', borderClass: 'border-green-500/40' },
+  { icon: Mail, label: 'Email', value: 'info@butwalsnakerescue.org', sub: 'Non-urgent queries', href: 'mailto:info@butwalsnakerescue.org', iconClass: 'text-blue-400', bgClass: 'bg-blue-500/20', borderClass: 'border-blue-500/40' },
+  { icon: MapPin, label: 'Location', value: 'Butwal-11, Rupandehi', sub: 'Lumbini Province, Nepal', href: 'https://maps.google.com/?q=Butwal,Nepal', iconClass: 'text-emerald-400', bgClass: 'bg-emerald-500/20', borderClass: 'border-emerald-500/40' },
 ];
 
 import { useApp } from '@snake-rescue/features';
@@ -49,7 +47,6 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-[#0f1a1c]">
-      <Navbar />
 
       {/* Hero */}
       <div className="py-20 px-4 text-center border-b border-white/5 bg-gradient-to-b from-blue-900/10 to-transparent">
@@ -66,12 +63,12 @@ export default function ContactPage() {
       <div className="max-w-5xl mx-auto px-4 py-12">
         {/* Contact Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
-          {CONTACT_METHODS.map(({ icon: Icon, label, value, sub, href, color }, i) => (
+          {CONTACT_METHODS.map(({ icon: Icon, label, value, sub, href, iconClass, bgClass, borderClass }, i) => (
             <motion.a key={label} href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noreferrer"
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-              className={`glass-card rounded-2xl p-5 border border-white/10 hover:border-${color}-500/40 transition-all group text-left`}>
-              <div className={`w-10 h-10 bg-${color}-500/20 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
-                <Icon className={`w-5 h-5 text-${color}-400`} />
+              className={`glass-card rounded-2xl p-5 border hover:border-opacity-100 transition-all group text-left ${borderClass}`}>
+              <div className={`w-10 h-10 ${bgClass} rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
+                <Icon className={`w-5 h-5 ${iconClass}`} />
               </div>
               <p className="text-gray-400 text-xs font-medium mb-1">{label}</p>
               <p className="text-white font-semibold text-sm break-all">{value}</p>
@@ -129,15 +126,15 @@ export default function ContactPage() {
             <h2 className="text-2xl font-bold text-white">Response Times</h2>
             <div className="space-y-4">
               {[
-                { type: 'Emergency Rescue Call', time: 'Immediate', color: 'red', note: 'Active rescuers dispatched within 30 minutes' },
-                { type: 'WhatsApp Message', time: '< 1 hour', color: 'green', note: 'During active hours (6 AM – 10 PM)' },
-                { type: 'Email / Contact Form', time: '24–48 hours', color: 'blue', note: 'For non-urgent queries and partnerships' },
-                { type: 'Volunteer Applications', time: '3–5 days', color: 'yellow', note: 'After reviewing your application' },
-              ].map(({ type, time, color, note }) => (
-                <div key={type} className={`glass-card rounded-xl p-4 border border-${color}-500/20`}>
+                { type: 'Emergency Rescue Call', time: 'Immediate', borderClass: 'border-red-500/20', badgeClass: 'text-red-400 bg-red-500/20 border-red-500/30', note: 'Active rescuers dispatched within 30 minutes' },
+                { type: 'WhatsApp Message', time: '< 1 hour', borderClass: 'border-green-500/20', badgeClass: 'text-green-400 bg-green-500/20 border-green-500/30', note: 'During active hours (6 AM – 10 PM)' },
+                { type: 'Email / Contact Form', time: '24–48 hours', borderClass: 'border-blue-500/20', badgeClass: 'text-blue-400 bg-blue-500/20 border-blue-500/30', note: 'For non-urgent queries and partnerships' },
+                { type: 'Volunteer Applications', time: '3–5 days', borderClass: 'border-yellow-500/20', badgeClass: 'text-yellow-400 bg-yellow-500/20 border-yellow-500/30', note: 'After reviewing your application' },
+              ].map(({ type, time, borderClass, badgeClass, note }) => (
+                <div key={type} className={`glass-card rounded-xl p-4 border ${borderClass}`}>
                   <div className="flex items-center justify-between mb-1">
                     <p className="text-white font-medium text-sm">{type}</p>
-                    <span className={`text-xs font-bold text-${color}-400 bg-${color}-500/20 px-2.5 py-1 rounded-full border border-${color}-500/30`}>{time}</span>
+                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${badgeClass}`}>{time}</span>
                   </div>
                   <p className="text-gray-500 text-xs">{note}</p>
                 </div>
@@ -156,7 +153,6 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 }

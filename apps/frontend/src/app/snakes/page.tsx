@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, AlertTriangle, Shield, Zap, X } from 'lucide-react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { FloatingWidgets } from '@snake-rescue/ui';
 
 interface Species {
@@ -36,6 +34,18 @@ export default function SnakesPage() {
     }).catch(() => setLoading(false));
   }, []);
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (selected) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selected]);
+
   useEffect(() => {
     let result = species;
     if (filter === 'VENOMOUS') result = result.filter(s => s.venomous);
@@ -46,7 +56,6 @@ export default function SnakesPage() {
 
   return (
     <div className="min-h-screen bg-[#0f1a1c]">
-      <Navbar />
       <div className="relative overflow-hidden py-20 px-4 text-center border-b border-white/5">
         <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/20 to-transparent pointer-events-none" />
         <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
@@ -174,7 +183,6 @@ export default function SnakesPage() {
           </motion.div>
         )}
       </AnimatePresence>
-      <Footer />
       <FloatingWidgets />
     </div>
   );

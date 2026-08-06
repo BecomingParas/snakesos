@@ -56,7 +56,6 @@ export * from './lib/tooltip';
 export * from './lib/shared-navbar';
 export * from './lib/shared-footer';
 export * from './lib/floating-widgets';
-export * from './lib/coverage-map';
 
 // Custom reusable components
 export * from './lib/hero-banner';
@@ -69,6 +68,13 @@ export * from './lib/player-card-premium';
 export * from './lib/reusable-tabs';
 export * from './lib/use-mobile';
 export * from './lib/use-toast';
+
+// Auth-specific components
+export * from './lib/social-button';
+export * from './lib/divider';
+export * from './lib/phone-input';
+export * from './lib/email-input';
+export * from './lib/success-animation';
 
 // Legacy components (will be refactored)
 export * from './lib/ui';

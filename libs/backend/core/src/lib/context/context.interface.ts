@@ -33,8 +33,10 @@ export interface GraphQLContext {
   
   // Helper methods
   requireAuth(): asserts this is GraphQLContext & { user: User; session: Session };
-  hasPermission(permission: string): boolean;
+  hasPermission(permission: string): Promise<boolean>;
   hasRole(role: string): boolean;
+  requireRole(allowedRoles: string[]): void;
+  requirePermission(permission: string): Promise<void>;
 }
 
 export interface ContextParams {

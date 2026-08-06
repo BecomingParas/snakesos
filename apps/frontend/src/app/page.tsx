@@ -3,7 +3,8 @@
 import { 
   HeroSection, 
   StatsSection, 
-  ServicesSection, 
+  ServicesSection,
+  CoverageAreaSection,
   EducationSection 
 } from '@snake-rescue/features';
 
@@ -13,6 +14,7 @@ export default function HomePage() {
       <HeroSection />
       <StatsSection />
       <ServicesSection />
+      <CoverageAreaSection />
       <EducationSection />
     </div>
   );

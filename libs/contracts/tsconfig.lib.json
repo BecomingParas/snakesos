@@ -9,6 +9,7 @@
     "types": ["node"]
   },
   "include": ["src/**/*.ts"],
+  "exclude": ["src/generated/graphql-operations.ts"],
   "references": [
     {
       "path": "../database/tsconfig.lib.json"

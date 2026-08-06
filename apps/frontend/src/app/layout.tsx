@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Poppins, Inter, Manrope } from "next/font/google";
 import "./global.css";
-import { AppProvider } from "@snake-rescue/features";
-import Navbar from "../components/Navbar";
+import { AppProvider, AuthProvider } from "@snake-rescue/features";
+import { RootProvider } from "@snake-rescue/frontend-core";
+import NavbarWithAuth from "../components/NavbarWithAuth";
 import Footer from "../components/Footer";
+import ErrorBoundary from "../components/ErrorBoundary";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -47,19 +49,26 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${poppins.variable} ${inter.variable} ${manrope.variable} h-full antialiased dark`}
+      suppressHydrationWarning
     >
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className="bg-background text-foreground min-h-screen font-sans">
-        <AppProvider>
-          <Navbar />
-          <main className="min-h-screen">
-            {children}
-          </main>
-          <Footer />
-        </AppProvider>
+        <RootProvider>
+          <AppProvider>
+            <AuthProvider>
+              <NavbarWithAuth />
+              <ErrorBoundary>
+                <main className="min-h-screen">
+                  {children}
+                </main>
+              </ErrorBoundary>
+              <Footer />
+            </AuthProvider>
+          </AppProvider>
+        </RootProvider>
       </body>
     </html>
   );

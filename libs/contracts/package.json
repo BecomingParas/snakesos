@@ -35,5 +35,13 @@
     "graphql": "^17.0.0",
     "graphql-tag": "^2.12.6",
     "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "@snake-rescue/database": "*"
+  },
+  "peerDependenciesMeta": {
+    "@snake-rescue/database": {
+      "optional": true
+    }
   }
 }

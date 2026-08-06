@@ -3,8 +3,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Phone, MapPin, Clock, ChevronDown, Shield, Activity, X } from 'lucide-react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { FloatingWidgets } from '@snake-rescue/ui';
 
 const HOSPITALS = [
@@ -74,11 +72,35 @@ const FIRST_AID_STEPS = [
   },
 ];
 
-const COLOR_MAP: Record<string, { border: string; bg: string; text: string; badge: string }> = {
-  red: { border: 'border-red-500/40', bg: 'bg-red-500/10', text: 'text-red-300', badge: 'bg-red-500/20 text-red-400 border-red-500/40' },
-  emerald: { border: 'border-emerald-500/40', bg: 'bg-emerald-500/10', text: 'text-emerald-300', badge: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' },
-  orange: { border: 'border-orange-500/40', bg: 'bg-orange-500/10', text: 'text-orange-300', badge: 'bg-orange-500/20 text-orange-400 border-orange-500/40' },
-  yellow: { border: 'border-yellow-500/40', bg: 'bg-yellow-500/10', text: 'text-yellow-300', badge: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40' },
+const COLOR_MAP: Record<string, { border: string; bg: string; text: string; badge: string; iconColor: string }> = {
+  red: { 
+    border: 'border-red-500/40', 
+    bg: 'bg-red-500/10', 
+    text: 'text-red-300', 
+    badge: 'bg-red-500/20 text-red-400 border-red-500/40',
+    iconColor: 'text-red-400'
+  },
+  emerald: { 
+    border: 'border-emerald-500/40', 
+    bg: 'bg-emerald-500/10', 
+    text: 'text-emerald-300', 
+    badge: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40',
+    iconColor: 'text-emerald-400'
+  },
+  orange: { 
+    border: 'border-orange-500/40', 
+    bg: 'bg-orange-500/10', 
+    text: 'text-orange-300', 
+    badge: 'bg-orange-500/20 text-orange-400 border-orange-500/40',
+    iconColor: 'text-orange-400'
+  },
+  yellow: { 
+    border: 'border-yellow-500/40', 
+    bg: 'bg-yellow-500/10', 
+    text: 'text-yellow-300', 
+    badge: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/40',
+    iconColor: 'text-yellow-400'
+  },
 };
 
 export default function FirstAidPage() {
@@ -87,7 +109,6 @@ export default function FirstAidPage() {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${emergency ? 'bg-red-950' : 'bg-[#0f1a1c]'}`}>
-      <Navbar />
 
       {/* Emergency Mode Banner */}
       <AnimatePresence>
@@ -143,13 +164,13 @@ export default function FirstAidPage() {
         {/* Quick Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-12">
           {[
-            { label: 'Response Time', value: '< 30 min', icon: Clock, color: 'emerald' },
-            { label: 'Emergency Line', value: '9856034050', icon: Phone, color: 'red' },
-            { label: 'Hospitals Nearby', value: '5+', icon: MapPin, color: 'blue' },
-            { label: 'Anti-venom Available', value: 'Yes', icon: Shield, color: 'yellow' },
-          ].map(({ label, value, icon: Icon, color }) => (
+            { label: 'Response Time', value: '< 30 min', icon: Clock, iconClass: 'text-emerald-400' },
+            { label: 'Emergency Line', value: '9856034050', icon: Phone, iconClass: 'text-red-400' },
+            { label: 'Hospitals Nearby', value: '5+', icon: MapPin, iconClass: 'text-blue-400' },
+            { label: 'Anti-venom Available', value: 'Yes', icon: Shield, iconClass: 'text-yellow-400' },
+          ].map(({ label, value, icon: Icon, iconClass }) => (
             <div key={label} className="glass-card rounded-2xl p-4 text-center border border-white/10">
-              <Icon className={`w-6 h-6 text-${color}-400 mx-auto mb-2`} />
+              <Icon className={`w-6 h-6 ${iconClass} mx-auto mb-2`} />
               <p className="text-white font-bold text-lg">{value}</p>
               <p className="text-gray-500 text-xs">{label}</p>
             </div>
@@ -266,7 +287,6 @@ export default function FirstAidPage() {
         </div>
       </div>
 
-      <Footer />
       <FloatingWidgets />
     </div>
   );

@@ -272,9 +272,9 @@ input AssignRescueInput {
 Authentication payload returned on successful login/register
 """
 type AuthPayload {
+  accessToken: String!
   expiresIn: Int!
   refreshToken: String!
-  token: String!
   user: User!
 }
 
@@ -1372,11 +1372,6 @@ type Mutation {
   cancelTrainingEnrollment(trainingId: ID!): Training!
 
   """
-  Change password
-  """
-  changePassword(input: ChangePasswordInput!): SuccessResponse!
-
-  """
   Mark rescue as completed
   """
   completeRescue(input: CompleteRescueInput!): RescueRequest!
@@ -1385,11 +1380,6 @@ type Mutation {
   Mark training as completed (admin)
   """
   completeTraining(trainingId: ID!): Training!
-
-  """
-  Confirm password reset with token
-  """
-  confirmPasswordReset(input: PasswordResetConfirmInput!): SuccessResponse!
 
   """
   Create a blog post
@@ -1425,11 +1415,6 @@ type Mutation {
   Delete AI identification
   """
   deleteAIIdentification(id: ID!): SuccessResponse!
-
-  """
-  Delete user account (soft delete)
-  """
-  deleteAccount: SuccessResponse!
 
   """
   Delete a blog post (soft delete)
@@ -1472,11 +1457,6 @@ type Mutation {
   deleteTraining(id: ID!): SuccessResponse!
 
   """
-  Delete user by ID (admin only, soft delete)
-  """
-  deleteUser(userId: ID!): SuccessResponse!
-
-  """
   Delete volunteer profile (soft delete)
   """
   deleteVolunteer(volunteerId: ID!): SuccessResponse!
@@ -1517,16 +1497,6 @@ type Mutation {
   likeGalleryImage(id: ID!): GalleryImage!
 
   """
-  Login with email and password
-  """
-  login(input: LoginInput!): AuthPayload!
-
-  """
-  Logout current user
-  """
-  logout: SuccessResponse!
-
-  """
   Mark all notifications as read
   """
   markAllNotificationsAsRead: SuccessResponse!
@@ -1540,11 +1510,6 @@ type Mutation {
   Mark notification as read
   """
   markNotificationAsRead(id: ID!): Notification!
-
-  """
-  Login or register with OAuth provider (Google)
-  """
-  oauthLogin(input: OAuthLoginInput!): AuthPayload!
 
   """
   Process payment (callback from gateway)
@@ -1584,19 +1549,9 @@ type Mutation {
   refreshAnalyticsCache: SuccessResponse!
 
   """
-  Refresh access token using refresh token
-  """
-  refreshToken(refreshToken: String!): AuthPayload!
-
-  """
   Refund donation (admin)
   """
   refundDonation(input: RefundDonationInput!): Donation!
-
-  """
-  Register new user account
-  """
-  register(input: RegisterInput!): AuthPayload!
 
   """
   Reopen cancelled/closed rescue
@@ -1610,18 +1565,6 @@ type Mutation {
     identificationId: ID!
     provider: AIProvider!
   ): AIIdentification!
-
-  """
-  Request password reset email
-  """
-  requestPasswordReset(
-    input: PasswordResetRequestInput!
-  ): PasswordResetTokenPayload!
-
-  """
-  Resend email verification
-  """
-  resendVerificationEmail(input: ResendVerificationInput!): SuccessResponse!
 
   """
   Respond to a contact message
@@ -1691,11 +1634,6 @@ type Mutation {
   updatePaymentGateway(input: UpdatePaymentGatewayInput!): PaymentGatewayConfig!
 
   """
-  Update user profile
-  """
-  updateProfile(input: UpdateUserProfileInput!): User!
-
-  """
   Update rescue progress (volunteer)
   """
   updateRescueProgress(input: UpdateRescueProgressInput!): RescueRequest!
@@ -1714,16 +1652,6 @@ type Mutation {
   Update a training session
   """
   updateTraining(id: ID!, input: UpdateTrainingInput!): Training!
-
-  """
-  Update user role (admin only)
-  """
-  updateUserRole(role: UserRole!, userId: ID!): User!
-
-  """
-  Update user status (admin only)
-  """
-  updateUserStatus(status: UserStatus!, userId: ID!): User!
 
   """
   Update volunteer availability status
@@ -1751,11 +1679,6 @@ type Mutation {
   Verify donation (admin)
   """
   verifyDonation(donationId: ID!, notes: String): Donation!
-
-  """
-  Verify email with token
-  """
-  verifyEmail(input: VerifyEmailInput!): EmailVerificationPayload!
 
   """
   Verify completed rescue (admin)
@@ -2244,11 +2167,6 @@ type Query {
   ): BlogPostConnection!
 
   """
-  Verify if email is available for registration
-  """
-  checkEmailAvailability(email: Email!): Boolean!
-
-  """
   Get CMS statistics
   """
   cmsStats: CMSStats!
@@ -2333,11 +2251,6 @@ type Query {
   Get geographic heatmap data
   """
   geographicHeatmap(input: GeographicHeatmapInput): [GeographicHeatmap!]!
-
-  """
-  Get current authenticated user
-  """
-  me: User
 
   """
   Get assigned rescues (volunteer view)
@@ -2492,11 +2405,6 @@ type Query {
   ): SnakeSpeciesConnection!
 
   """
-  Search users (admin only)
-  """
-  searchUsers(pagination: PaginationInput, query: String!): UserConnection!
-
-  """
   Search volunteers
   """
   searchVolunteers(
@@ -2561,33 +2469,9 @@ type Query {
   upcomingTrainings(pagination: PaginationInput): TrainingConnection!
 
   """
-  Get user by ID (admin only)
-  """
-  user(id: ID!): User
-
-  """
-  Get user profile by ID (public)
-  """
-  userProfile(id: ID!): UserProfile
-
-  """
-  List all users (admin only)
-  """
-  users(
-    filter: UserFilterInput
-    pagination: PaginationInput
-    sort: UserSortInput
-  ): UserConnection!
-
-  """
   Get venomous snake species
   """
   venomousSnakes(pagination: PaginationInput): SnakeSpeciesConnection!
-
-  """
-  Verify password reset token validity
-  """
-  verifyPasswordResetToken(token: String!): Boolean!
 
   """
   Get volunteer by ID
@@ -3824,23 +3708,6 @@ type User {
   updatedAt: DateTime!
   verifiedAt: DateTime
   volunteerProfile: Volunteer
-}
-
-"""
-Connection type for paginated user results
-"""
-type UserConnection {
-  edges: [UserEdge!]!
-  pageInfo: PageInfo!
-  totalCount: Int!
-}
-
-"""
-Edge type for user connection
-"""
-type UserEdge {
-  cursor: String!
-  node: User!
 }
 
 """

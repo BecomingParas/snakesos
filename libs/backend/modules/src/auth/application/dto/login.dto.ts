@@ -12,11 +12,17 @@ export const LoginInputSchema = z.object({
 export type LoginInput = z.infer<typeof LoginInputSchema>;
 
 export interface LoginResponse {
-  success: boolean;
-  message?: string;
-  user?: {
+  accessToken: string;
+  refreshToken: string;
+  user: {
     id: string;
     email: string;
     name: string;
+    role: string;
+    phone: string | null;
+    emailVerified: boolean;
+    createdAt: Date;
+    updatedAt: Date;
   };
+  expiresIn: number;
 }

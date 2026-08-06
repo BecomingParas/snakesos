@@ -16,6 +16,25 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2022",
-    "customConditions": ["@snake-rescue/source"]
+    "customConditions": ["@snake-rescue/source"],
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "@snake-rescue/contracts": ["libs/contracts/src/index.ts"],
+      "@snake-rescue/database": ["libs/database/src/index.ts"],
+      "@snake-rescue/auth": ["libs/auth/src/index.ts"],
+      "@snake-rescue/shared": ["libs/shared/src/index.ts"],
+      "@snake-rescue/frontend/core": ["libs/frontend/core/src/index.ts"],
+      "@snake-rescue/frontend/ui": ["libs/frontend/ui/src/index.ts"],
+      "@snake-rescue/frontend/features": ["libs/frontend/features/src/index.ts"],
+      "@snake-rescue/frontend-core": ["libs/frontend/core/src/index.ts"],
+      "@snake-rescue/frontend-features": ["libs/frontend/features/src/index.ts"],
+      "@snake-rescue/ui": ["libs/frontend/ui/src/index.ts"],
+      "@snake-rescue/backend/core": ["libs/backend/core/src/index.ts"],
+      "@snake-rescue/backend/modules": ["libs/backend/modules/src/index.ts"],
+      "@snake-rescue/backend/loaders": ["libs/backend/loaders/src/index.ts"],
+      "@snake-rescue/backend/services": ["libs/backend/services/src/index.ts"],
+      "@snake-rescue/backend/repositories": ["libs/backend/repositories/src/index.ts"]
+    }
   }
 }

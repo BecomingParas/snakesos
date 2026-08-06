@@ -36,7 +36,9 @@ export const rescueMutationResolvers = {
     assignRescue: async (_parent: any, args: { input: any }, context: GraphQLContext) => {
       // Authentication required (coordinator or admin)
       context.requireAuth();
-      // TODO: Add permission check
+      
+      // Require appropriate role (District Coordinator or Admin)
+      context.requireRole(['DISTRICT_COORDINATOR', 'ADMIN', 'SUPER_ADMIN']);
 
       // 1. Validate input
       const input = RescueValidator.validateAssignVolunteer(args.input);

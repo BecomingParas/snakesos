@@ -8,30 +8,30 @@ import { ShieldAlert, Phone, Mail, MapPin } from 'lucide-react';
 export const Footer: React.FC = () => {
   const { t } = useApp();
 
-  const currentYear = 2025; // Fixed year
+  const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-slate-dark border-t border-white/5 font-manrope">
+    <footer className="bg-slate-900 border-t border-white/5 font-manrope">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           
           {/* Col 1: Brand Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <ShieldAlert className="h-6 w-6 text-primary" />
+              <ShieldAlert className="h-6 w-6 text-emerald-500" />
               <span className="text-lg font-bold font-poppins text-white tracking-tight">
-                Butwal Snake Rescuers
+                SnakeSOS
               </span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed font-manrope">
               Protecting human lives and conserving Rupandehi biodiversity through safe, 24/7 emergency snake rescue, local community education, and snakebite first aid awareness.
             </p>
-            <div className="flex space-x-4 pt-2">
+            <div className="flex space-x-3 pt-2">
               <a
                 href="https://facebook.com/butwalsnakerescuers"
                 target="_blank"
                 rel="noreferrer"
-                className="p-2 bg-white/5 hover:bg-primary/10 border border-white/10 hover:border-primary/20 rounded-lg text-gray-400 hover:text-primary transition-all duration-300 flex items-center justify-center"
+                className="flex h-10 w-10 items-center justify-center rounded border border-white/20 bg-slate-800/50 text-gray-400 transition-all hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-500"
                 aria-label="Facebook"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -42,7 +42,7 @@ export const Footer: React.FC = () => {
                 href="https://instagram.com/butwalsnakerescuers"
                 target="_blank"
                 rel="noreferrer"
-                className="p-2 bg-white/5 hover:bg-primary/10 border border-white/10 hover:border-primary/20 rounded-lg text-gray-400 hover:text-primary transition-all duration-300 flex items-center justify-center"
+                className="flex h-10 w-10 items-center justify-center rounded border border-white/20 bg-slate-800/50 text-gray-400 transition-all hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-500"
                 aria-label="Instagram"
               >
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -53,7 +53,7 @@ export const Footer: React.FC = () => {
                 href="https://tiktok.com/@butwalsnakerescuers"
                 target="_blank"
                 rel="noreferrer"
-                className="p-2 bg-white/5 hover:bg-primary/10 border border-white/10 hover:border-primary/20 rounded-lg text-gray-400 hover:text-primary transition-all duration-300 flex items-center justify-center"
+                className="flex h-10 w-10 items-center justify-center rounded border border-white/20 bg-slate-800/50 text-gray-400 transition-all hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-500"
                 aria-label="TikTok"
               >
                 <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
@@ -65,77 +65,77 @@ export const Footer: React.FC = () => {
 
           {/* Col 2: Coverage Areas */}
           <div>
-            <h3 className="text-white text-sm font-bold uppercase tracking-wider mb-4 border-l-2 border-primary pl-2">
-              {t('coverageAreas')}
+            <h3 className="text-white text-sm font-bold uppercase tracking-wider mb-4">
+              COVERAGE AREAS
             </h3>
             <ul className="space-y-2 text-sm text-gray-400">
               <li className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4 text-primary" />
+                <MapPin className="h-4 w-4 text-emerald-500" />
                 <span>Butwal Municipality</span>
               </li>
               <li className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4 text-primary" />
+                <MapPin className="h-4 w-4 text-emerald-500" />
                 <span>Tilottama Municipality</span>
               </li>
               <li className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4 text-primary" />
+                <MapPin className="h-4 w-4 text-emerald-500" />
                 <span>Siddharthanagar</span>
               </li>
               <li className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4 text-primary" />
+                <MapPin className="h-4 w-4 text-emerald-500" />
                 <span>Devdaha Municipality</span>
               </li>
               <li className="flex items-center space-x-2">
-                <MapPin className="h-4 w-4 text-primary" />
+                <MapPin className="h-4 w-4 text-emerald-500" />
                 <span>Rupandehi Surrounding Zones</span>
               </li>
             </ul>
           </div>
 
-          {/* Col 3: Direct Navigation */}
+          {/* Col 3: Useful Information */}
           <div>
-            <h3 className="text-white font-bold text-lg mb-4">{t('usefulInfo')}</h3>
+            <h3 className="text-white font-bold text-lg mb-4">Useful Information</h3>
             <ul className="space-y-3">
-              <li><Link href="/emergency" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> {t('emergency')}</Link></li>
-              <li><Link href="/snakes" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> {t('snakes')}</Link></li>
-              <li><Link href="/firstaid" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> {t('firstAid')}</Link></li>
-              <li><Link href="/volunteer" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> {t('volunteer')}</Link></li>
-              <li><Link href="/donate" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> {t('donate')}</Link></li>
-              <li><Link href="/admin" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> {t('admin')}</Link></li>
+              <li><Link href="/emergency" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Emergency Rescue</Link></li>
+              <li><Link href="/snakes" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Snake DB & AI</Link></li>
+              <li><Link href="/firstaid" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> First Aid</Link></li>
+              <li><Link href="/volunteer" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Volunteer</Link></li>
+              <li><Link href="/donate" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Donate</Link></li>
+              <li><Link href="/admin" className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Admin Login</Link></li>
             </ul>
           </div>
 
-          {/* Col 4: Hotlines & Quick Contacts */}
+          {/* Col 4: 24/7 Hotline Contacts */}
           <div>
-            <h3 className="text-white text-sm font-bold uppercase tracking-wider mb-4 border-l-2 border-primary pl-2">
-              {t('hotlineContacts')}
+            <h3 className="text-white text-sm font-bold uppercase tracking-wider mb-4">
+              24/7 HOTLINE CONTACTS
             </h3>
             <div className="space-y-3">
               <a
                 href={`tel:${t('tel1')}`}
-                className="flex items-center space-x-3 p-3 bg-red-600/10 hover:bg-red-600/20 border border-red-500/20 hover:border-red-500/40 rounded-xl transition-all group cursor-pointer"
+                className="flex items-center space-x-3 rounded border border-red-600/30 bg-red-600/10 p-4 transition-all hover:border-red-600/50 hover:bg-red-600/20"
               >
-                <Phone className="h-5 w-5 text-red-500 group-hover:scale-105 transition-transform" />
-                <div>
-                  <span className="text-xs text-red-500 uppercase tracking-widest font-bold block leading-none mb-1">Emergency 1</span>
-                  <span className="text-white text-sm font-bold font-mono">{t('tel1')}</span>
+                <Phone className="h-6 w-6 shrink-0 text-red-500" />
+                <div className="flex-1">
+                  <span className="block text-xs font-bold uppercase leading-none tracking-widest text-red-500">EMERGENCY 1</span>
+                  <span className="mt-1 block text-lg font-bold font-mono text-white">{t('tel1')}</span>
                 </div>
               </a>
               
               <a
                 href={`tel:${t('tel2')}`}
-                className="flex items-center space-x-3 p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all group cursor-pointer"
+                className="flex items-center space-x-3 rounded border border-emerald-600/30 bg-emerald-600/10 p-4 transition-all hover:border-emerald-600/50 hover:bg-emerald-600/20"
               >
-                <Phone className="h-5 w-5 text-primary group-hover:scale-105 transition-transform" />
-                <div>
-                  <span className="text-xs text-gray-400 uppercase tracking-widest font-bold block leading-none mb-1">Emergency 2</span>
-                  <span className="text-white text-sm font-bold font-mono">{t('tel2')}</span>
+                <Phone className="h-6 w-6 shrink-0 text-emerald-500" />
+                <div className="flex-1">
+                  <span className="block text-xs font-bold uppercase leading-none tracking-widest text-emerald-500">EMERGENCY 2</span>
+                  <span className="mt-1 block text-lg font-bold font-mono text-white">{t('tel2')}</span>
                 </div>
               </a>
 
-              <div className="flex items-center space-x-3 text-sm text-gray-400 pt-1">
-                <Mail className="h-4 w-4 text-primary" />
-                <span className="text-xs break-all">hotline@butwalsnakerescue.org</span>
+              <div className="flex items-center space-x-3 pt-2">
+                <Mail className="h-5 w-5 shrink-0 text-primary" />
+                <span className="text-sm text-gray-400">hotline@butwalsnakerescue.org</span>
               </div>
             </div>
           </div>
@@ -144,7 +144,7 @@ export const Footer: React.FC = () => {
 
         {/* Bottom Banner */}
         <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500 font-manrope">
-          <p>© {currentYear} Butwal Snake Rescuers. All Rights Reserved. Rupandehi, Nepal.</p>
+          <p>© {currentYear} SnakeSOS. All Rights Reserved. Rupandehi, Nepal.</p>
           <p className="flex items-center gap-1.5">
             {t('designedBy')}
           </p>
