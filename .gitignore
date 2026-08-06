@@ -41,8 +41,19 @@ Thumbs.db
 .nx/cache
 .nx/workspace-data
 .nx/migrate-runs
+.agent/
+.agents/
+.kiro/
+.claude/
+.windsurf/
 .claude/worktrees
 .claude/settings.local.json
+
+# Logs and temporary output
+*.log
+*.err
+*.tmp
+*.temp
 
 # Next.js
 .next
