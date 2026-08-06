@@ -1,0 +1,87 @@
+# ===================================================================
+# AUTH - MUTATION DEFINITIONS
+# ===================================================================
+# Authentication and authorization mutations
+# ===================================================================
+
+extend type Mutation {
+  """
+  Register a new user account
+  """
+  register(input: RegisterInput!): AuthPayload!
+  
+  """
+  Login with email and password
+  """
+  login(input: LoginInput!): AuthPayload!
+  
+  """
+  Login with OAuth provider (Google)
+  """
+  oauthLogin(input: OAuthLoginInput!): AuthPayload!
+  
+  """
+  Logout current user (invalidates refresh token)
+  """
+  logout: Boolean!
+  
+  """
+  Refresh access token using refresh token cookie
+  """
+  refreshToken: AuthPayload!
+  
+  """
+  Request password reset email
+  """
+  forgotPassword(email: String!): PasswordResetTokenPayload!
+  
+  """
+  Reset password with token
+  """
+  resetPassword(input: ResetPasswordInput!): Boolean!
+  
+  """
+  Verify email address with token
+  """
+  verifyEmail(input: VerifyEmailInput!): EmailVerificationPayload!
+  
+  """
+  Resend email verification
+  """
+  resendVerification(input: ResendVerificationInput!): Boolean!
+  
+  """
+  Change password (requires current password)
+  """
+  changePassword(input: ChangePasswordInput!): Boolean!
+  
+  """
+  Update user profile
+  """
+  updateProfile(input: UpdateProfileInput!): User!
+  
+  """
+  Delete user account (soft delete)
+  """
+  deleteAccount(password: String!): Boolean!
+}
+
+"""
+Input for password reset
+"""
+input ResetPasswordInput {
+  token: String!
+  newPassword: String!
+}
+
+"""
+Input for profile update
+"""
+input UpdateProfileInput {
+  name: String
+  phone: Phone
+  avatar: String
+  language: String
+  timezone: String
+}
+

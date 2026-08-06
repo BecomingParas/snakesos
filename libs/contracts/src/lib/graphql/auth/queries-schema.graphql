@@ -1,0 +1,61 @@
+# ===================================================================
+# AUTH - QUERY DEFINITIONS
+# ===================================================================
+# Authentication and user queries
+# ===================================================================
+
+extend type Query {
+  """
+  Get current authenticated user
+  """
+  me: User
+  
+  """
+  Get user by ID (admin or self only)
+  """
+  user(id: ID!): User
+  
+  """
+  Get user profile by ID (public)
+  """
+  userProfile(id: ID!): UserProfile
+  
+  """
+  List all users (admin only)
+  """
+  users(
+    pagination: PaginationInput
+    filter: UserFilterInput
+    sort: UserSortInput
+  ): UserConnection!
+  
+  """
+  Search users by name or email
+  """
+  searchUsers(
+    query: String!
+    pagination: PaginationInput
+  ): UserConnection!
+  
+  """
+  Check if email is available for registration
+  """
+  checkEmailAvailability(email: Email!): Boolean!
+  
+  """
+  Get activity logs for current user
+  """
+  myActivityLogs(
+    pagination: PaginationInput
+  ): ActivityLogConnection!
+}
+
+"""
+Paginated connection for users
+"""
+type UserConnection {
+  edges: [User!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+

@@ -1,0 +1,217 @@
+# Snake Species - All Operations
+
+# ===================================================================
+# FRAGMENTS
+# ===================================================================
+
+fragment SnakeBasicFields on SnakeSpecies {
+  id
+  name
+  scientificName
+  nepaliName
+  localNames
+  family
+  venomous
+  dangerLevel
+  venomType
+  conservationStatus
+  behavior
+  habitat
+  foundInNepal
+  regions
+  imageUrl
+  rescueCount
+  identificationCount
+  verified
+  createdAt
+  updatedAt
+}
+
+fragment SnakeDetailFields on SnakeSpecies {
+  id
+  name
+  scientificName
+  nepaliName
+  localNames
+  family
+  venomous
+  dangerLevel
+  venomType
+  conservationStatus
+  behavior
+  habitat
+  foundInNepal
+  regions
+  imageUrl
+  rescueCount
+  identificationCount
+  verified
+  createdAt
+  updatedAt
+  aliases
+  genus
+  species
+  averageLength
+  maxLength
+  color
+  pattern
+  identificationGuide
+  distinctiveFeatures
+  activeTime
+  diet
+  safetyTips
+  emergencyAdvice
+  firstAidSteps
+  altitudeRange
+  protected
+  images
+  videoUrl
+  verifiedBy {
+    id
+    name
+    email
+  }
+}
+
+# ===================================================================
+# QUERIES
+# ===================================================================
+
+query AllSnakeSpecies(
+  $pagination: PaginationInput
+  $filter: SnakeSpeciesFilterInput
+  $sort: SnakeSpeciesSortInput
+) {
+  allSnakeSpecies(pagination: $pagination, filter: $filter, sort: $sort) {
+    edges {
+      node {
+        ...SnakeBasicFields
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+query SnakeSpecies($id: ID!) {
+  snakeSpecies(id: $id) {
+    ...SnakeDetailFields
+  }
+}
+
+query SearchSnakeSpecies(
+  $query: String!
+  $pagination: PaginationInput
+  $filter: SnakeSpeciesFilterInput
+) {
+  searchSnakeSpecies(query: $query, pagination: $pagination, filter: $filter) {
+    edges {
+      node {
+        ...SnakeBasicFields
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+query VenomousSnakes($pagination: PaginationInput) {
+  venomousSnakes(pagination: $pagination) {
+    edges {
+      node {
+        ...SnakeBasicFields
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+query SnakeSpeciesByRegion($region: String!, $pagination: PaginationInput) {
+  snakeSpeciesByRegion(region: $region, pagination: $pagination) {
+    edges {
+      node {
+        ...SnakeBasicFields
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+query SnakeSpeciesStats {
+  snakeSpeciesStats {
+    totalSpecies
+    venomousCount
+    harmlessCount
+  }
+}
+
+# ===================================================================
+# MUTATIONS
+# ===================================================================
+
+mutation CreateSnakeSpecies($input: CreateSnakeSpeciesInput!) {
+  createSnakeSpecies(input: $input) {
+    ...SnakeDetailFields
+  }
+}
+
+mutation UpdateSnakeSpecies($id: ID!, $input: UpdateSnakeSpeciesInput!) {
+  updateSnakeSpecies(id: $id, input: $input) {
+    ...SnakeDetailFields
+  }
+}
+
+mutation VerifySnakeSpecies($id: ID!) {
+  verifySnakeSpecies(id: $id) {
+    ...SnakeDetailFields
+  }
+}
+
+mutation DeleteSnakeSpecies($id: ID!) {
+  deleteSnakeSpecies(id: $id) {
+    success
+    message
+  }
+}
+
+# ===================================================================
+# SUBSCRIPTIONS
+# ===================================================================
+
+subscription SnakeSpeciesAdded {
+  snakeSpeciesAdded {
+    ...SnakeDetailFields
+  }
+}
+
+subscription SnakeSpeciesUpdated($id: ID) {
+  snakeSpeciesUpdated(id: $id) {
+    ...SnakeDetailFields
+  }
+}

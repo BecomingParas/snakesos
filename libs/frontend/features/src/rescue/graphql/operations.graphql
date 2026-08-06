@@ -1,0 +1,326 @@
+# Rescue Request - All Operations
+
+# ===================================================================
+# FRAGMENTS
+# ===================================================================
+
+fragment RescueBasicFields on RescueRequest {
+  id
+  name
+  phone
+  email
+  municipality
+  ward
+  address
+  landmark
+  lat
+  lng
+  locationAccuracy
+  snakeDescription
+  snakeSize
+  snakeColor
+  snakeImageUrl
+  snakeImages
+  status
+  priority
+  stillPresent
+  isEmergency
+  hasBite
+  notes
+  referenceNumber
+  createdAt
+  updatedAt
+}
+
+fragment RescueDetailFields on RescueRequest {
+  id
+  name
+  phone
+  email
+  municipality
+  ward
+  address
+  landmark
+  lat
+  lng
+  locationAccuracy
+  snakeDescription
+  snakeSize
+  snakeColor
+  snakeImageUrl
+  snakeImages
+  status
+  priority
+  stillPresent
+  isEmergency
+  hasBite
+  notes
+  referenceNumber
+  createdAt
+  updatedAt
+  user {
+    id
+    name
+    email
+    phone
+  }
+  species {
+    id
+    name
+    scientificName
+    venomous
+    dangerLevel
+  }
+  aiIdentification {
+    id
+    confidence
+    provider
+  }
+  internalNotes
+  assignedVolunteer {
+    id
+    name
+    email
+  }
+  assignedAt
+  assignedBy {
+    id
+    name
+  }
+  acceptedAt
+  arrivedAt
+  startedAt
+  completedAt
+  outcome
+  rescueReport
+  rescueImages
+  rescueDuration
+  verifiedBy {
+    id
+    name
+  }
+  verifiedAt
+  emergencyDetails
+  biteDetails
+  source
+  timeline {
+    id
+    event
+    description
+    createdAt
+  }
+}
+
+# ===================================================================
+# QUERIES
+# ===================================================================
+
+query RescueRequests(
+  $pagination: PaginationInput
+  $filter: RescueRequestFilterInput
+  $sort: RescueSortInput
+) {
+  rescueRequests(pagination: $pagination, filter: $filter, sort: $sort) {
+    edges {
+      node {
+        ...RescueBasicFields
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+query RescueRequest($id: ID!) {
+  rescueRequest(id: $id) {
+    ...RescueDetailFields
+  }
+}
+
+query MyRescueRequests(
+  $pagination: PaginationInput
+  $filter: RescueRequestFilterInput
+) {
+  myRescueRequests(pagination: $pagination, filter: $filter) {
+    edges {
+      node {
+        ...RescueDetailFields
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+query MyAssignedRescues(
+  $pagination: PaginationInput
+  $filter: RescueRequestFilterInput
+) {
+  myAssignedRescues(pagination: $pagination, filter: $filter) {
+    edges {
+      node {
+        ...RescueDetailFields
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+query NearbyRescues($input: NearbyRescuesInput!) {
+  nearbyRescues(input: $input) {
+    rescue {
+      ...RescueBasicFields
+    }
+    distance
+  }
+}
+
+query RescueStats($input: RescueStatsInput) {
+  rescueStats(input: $input) {
+    total
+    pending
+    inProgress
+    completed
+    cancelled
+    averageResponseTime
+    averageRescueTime
+    successRate
+  }
+}
+
+query PendingRescuesCount {
+  pendingRescuesCount
+}
+
+# ===================================================================
+# MUTATIONS
+# ===================================================================
+
+mutation CreateRescueRequest($input: CreateRescueRequestInput!) {
+  createRescueRequest(input: $input) {
+    ...RescueDetailFields
+  }
+}
+
+mutation UpdateRescueRequest($id: ID!, $input: UpdateRescueRequestInput!) {
+  updateRescueRequest(id: $id, input: $input) {
+    ...RescueDetailFields
+  }
+}
+
+mutation AssignRescue($input: AssignRescueInput!) {
+  assignRescue(input: $input) {
+    ...RescueDetailFields
+  }
+}
+
+mutation AcceptRescue($input: AcceptRescueInput!) {
+  acceptRescue(input: $input) {
+    ...RescueDetailFields
+  }
+}
+
+mutation UpdateRescueProgress($input: UpdateRescueProgressInput!) {
+  updateRescueProgress(input: $input) {
+    ...RescueDetailFields
+  }
+}
+
+mutation CompleteRescue($input: CompleteRescueInput!) {
+  completeRescue(input: $input) {
+    ...RescueDetailFields
+  }
+}
+
+mutation CancelRescue($rescueId: ID!, $reason: String) {
+  cancelRescue(rescueId: $rescueId, reason: $reason) {
+    ...RescueDetailFields
+  }
+}
+
+mutation ReopenRescue($rescueId: ID!) {
+  reopenRescue(rescueId: $rescueId) {
+    ...RescueDetailFields
+  }
+}
+
+mutation VerifyRescue($rescueId: ID!, $notes: String) {
+  verifyRescue(rescueId: $rescueId, notes: $notes) {
+    ...RescueDetailFields
+  }
+}
+
+# ===================================================================
+# SUBSCRIPTIONS
+# ===================================================================
+
+subscription RescueCreated($municipality: String) {
+  rescueCreated(municipality: $municipality) {
+    ...RescueDetailFields
+  }
+}
+
+subscription RescueUpdated($rescueId: ID) {
+  rescueUpdated(rescueId: $rescueId) {
+    ...RescueDetailFields
+  }
+}
+
+subscription RescueAssigned($volunteerId: ID!) {
+  rescueAssigned(volunteerId: $volunteerId) {
+    rescue {
+      ...RescueDetailFields
+    }
+    volunteer {
+      id
+      name
+      email
+    }
+    assignedBy {
+      id
+      name
+    }
+    assignedAt
+    notes
+  }
+}
+
+subscription RescueTimelineUpdated($rescueId: ID!) {
+  rescueTimelineUpdated(rescueId: $rescueId) {
+    id
+    event
+    description
+    createdAt
+  }
+}
+
+subscription NearbyRescuesUpdated($lat: Latitude!, $lng: Longitude!, $radiusKm: Float!) {
+  nearbyRescuesUpdated(lat: $lat, lng: $lng, radiusKm: $radiusKm) {
+    ...RescueBasicFields
+  }
+}
+
+subscription EmergencyRescueCreated {
+  emergencyRescueCreated {
+    ...RescueDetailFields
+  }
+}
