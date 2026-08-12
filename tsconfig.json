@@ -28,19 +28,10 @@
       "path": "./libs/contracts"
     },
     {
-      "path": "./libs/frontend/ui"
-    },
-    {
-      "path": "./libs/frontend/features"
-    },
-    {
       "path": "./libs/backend/core"
     },
     {
       "path": "./libs/backend/modules"
-    },
-    {
-      "path": "./libs/frontend/core"
     }
   ]
 }

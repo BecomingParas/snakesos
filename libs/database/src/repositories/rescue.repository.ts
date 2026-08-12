@@ -13,7 +13,7 @@ export class RescueRepository extends BaseRepository<
   Prisma.RescueRequestWhereInput
 > {
   constructor(prisma: PrismaClient) {
-    super(prisma, 'RescueRequest');
+    super(prisma, 'rescueRequest' as Prisma.ModelName);
   }
 
   /**

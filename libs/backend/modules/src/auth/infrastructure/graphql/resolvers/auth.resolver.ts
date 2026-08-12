@@ -27,11 +27,20 @@ import { AuthValidator } from '../../validators/auth.validator.js';
 export const authResolvers = {
   Query: {
     /**
-     * Get current user
+     * Get current user with volunteer profile
      */
     me: async (_parent: any, _args: any, context: GraphQLContext) => {
       context.requireAuth();
-      return context.user;
+      
+      // Fetch user with volunteerProfile included
+      const user = await prisma.user.findUnique({
+        where: { id: context.user.id },
+        include: {
+          volunteerProfile: true,
+        },
+      });
+
+      return user;
     },
   },
 

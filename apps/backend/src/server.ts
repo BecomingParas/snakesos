@@ -10,7 +10,8 @@ import { createApolloServer, buildContext, type GraphQLContext } from '@snake-re
 import { 
   authResolvers, 
   rescueQueryResolvers, 
-  rescueMutationResolvers 
+  rescueMutationResolvers,
+  analyticsResolvers,
 } from '@snake-rescue/modules';
 import { config } from './config/index.js';
 
@@ -25,6 +26,7 @@ export async function setupApolloServer(app: Express) {
     authResolvers,
     rescueQueryResolvers,
     rescueMutationResolvers,
+    analyticsResolvers,
   ];
 
   // Create Apollo Server with schema and resolvers

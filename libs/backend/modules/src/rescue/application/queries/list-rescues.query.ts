@@ -35,13 +35,35 @@ export class ListRescuesQuery {
         take: limit,
         orderBy: { createdAt: 'desc' },
         include: {
-          reporter: true,
-          volunteer: true,
+          user: true,
+          assignedVolunteer: {
+            include: {
+              user: true,
+            },
+          },
+          species: true,
         },
       }),
       this.rescueRepository.count(where),
     ]);
 
-    return PaginationHelper.buildPaginatedResponse(rescues, total, page, limit);
+    // Build Relay-style connection response
+    const totalPages = Math.ceil(total / limit);
+    const hasNextPage = page < totalPages;
+    const hasPreviousPage = page > 1;
+
+    return {
+      edges: rescues.map((rescue) => ({
+        node: rescue,
+        cursor: rescue.id,
+      })),
+      pageInfo: {
+        hasNextPage,
+        hasPreviousPage,
+        startCursor: rescues[0]?.id || null,
+        endCursor: rescues[rescues.length - 1]?.id || null,
+      },
+      totalCount: total,
+    };
   }
 }

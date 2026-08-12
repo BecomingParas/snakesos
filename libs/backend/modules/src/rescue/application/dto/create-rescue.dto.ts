@@ -26,11 +26,11 @@ export const CreateRescueInputSchema = z.object({
   snakeImageUrl: z.string().optional(),
   
   // Rescue Details (matches Prisma: priority, notes, isEmergency)
-  priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).default('MEDIUM'),
+  priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).optional(),
   notes: z.string().optional(),
-  isEmergency: z.boolean().default(false),
+  isEmergency: z.boolean().optional(),
   emergencyDetails: z.string().optional(),
-  hasBite: z.boolean().default(false),
+  hasBite: z.boolean().optional(),
   biteDetails: z.string().optional(),
 });
 

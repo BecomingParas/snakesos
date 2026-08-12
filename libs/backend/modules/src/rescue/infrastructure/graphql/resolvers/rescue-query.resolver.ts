@@ -67,5 +67,192 @@ export const rescueQueryResolvers = {
 
       return stats;
     },
+
+    /**
+     * Get my rescue requests (citizen dashboard)
+     */
+    myRescueRequests: async (
+      _parent: any,
+      args: {
+        pagination?: { first?: number; after?: string };
+        filter?: any;
+      },
+      context: GraphQLContext
+    ) => {
+      context.requireAuth();
+
+      const limit = args.pagination?.first || 10;
+      const cursor = args.pagination?.after;
+
+      // Build where clause
+      const where: any = {
+        userId: context.user.id,
+      };
+
+      if (args.filter?.status) {
+        where.status = { in: args.filter.status };
+      }
+
+      if (cursor) {
+        where.id = { lt: cursor };
+      }
+
+      const rescues = await prisma.rescueRequest.findMany({
+        where,
+        take: limit + 1,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          assignedVolunteer: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  phone: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const hasNextPage = rescues.length > limit;
+      const edges = rescues.slice(0, limit);
+
+      return {
+        edges: edges.map((rescue) => ({
+          node: rescue,
+          cursor: rescue.id,
+        })),
+        pageInfo: {
+          hasNextPage,
+          hasPreviousPage: false,
+          startCursor: edges[0]?.id,
+          endCursor: edges[edges.length - 1]?.id,
+        },
+        totalCount: await prisma.rescueRequest.count({ where }),
+      };
+    },
+
+    /**
+     * Get my assigned rescues (rescuer dashboard)
+     */
+    myAssignedRescues: async (
+      _parent: any,
+      args: {
+        pagination?: { first?: number; after?: string };
+        filter?: any;
+      },
+      context: GraphQLContext
+    ) => {
+      context.requireAuth();
+      context.requireRole(['VOLUNTEER', 'VERIFIED_RESCUER', 'DISTRICT_COORDINATOR']);
+
+      // Get volunteer profile
+      const volunteer = await prisma.volunteer.findUnique({
+        where: { userId: context.user.id },
+      });
+
+      if (!volunteer) {
+        return {
+          edges: [],
+          pageInfo: {
+            hasNextPage: false,
+            hasPreviousPage: false,
+            startCursor: null,
+            endCursor: null,
+          },
+          totalCount: 0,
+        };
+      }
+
+      const limit = args.pagination?.first || 10;
+      const cursor = args.pagination?.after;
+
+      const where: any = {
+        assignedTo: volunteer.id,
+        status: { in: ['ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'] },
+      };
+
+      if (cursor) {
+        where.id = { lt: cursor };
+      }
+
+      const rescues = await prisma.rescueRequest.findMany({
+        where,
+        take: limit + 1,
+        orderBy: { createdAt: 'desc' },
+      });
+
+      const hasNextPage = rescues.length > limit;
+      const edges = rescues.slice(0, limit);
+
+      return {
+        edges: edges.map((rescue) => ({
+          node: rescue,
+          cursor: rescue.id,
+        })),
+        pageInfo: {
+          hasNextPage,
+          hasPreviousPage: false,
+          startCursor: edges[0]?.id,
+          endCursor: edges[edges.length - 1]?.id,
+        },
+        totalCount: await prisma.rescueRequest.count({ where }),
+      };
+    },
+
+    /**
+     * Get active rescues (admin/coordinator view)
+     */
+    activeRescues: async (
+      _parent: any,
+      args: { pagination?: { first?: number; after?: string } },
+      context: GraphQLContext
+    ) => {
+      context.requireAuth();
+      context.requireRole(['ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR']);
+
+      const limit = args.pagination?.first || 10;
+      const cursor = args.pagination?.after;
+
+      const where: any = {
+        status: { in: ['PENDING', 'ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'] },
+      };
+
+      if (cursor) {
+        where.id = { lt: cursor };
+      }
+
+      const rescues = await prisma.rescueRequest.findMany({
+        where,
+        take: limit + 1,
+        orderBy: { priority: 'desc' },
+        include: {
+          assignedVolunteer: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      });
+
+      const hasNextPage = rescues.length > limit;
+      const edges = rescues.slice(0, limit);
+
+      return {
+        edges: edges.map((rescue) => ({
+          node: rescue,
+          cursor: rescue.id,
+        })),
+        pageInfo: {
+          hasNextPage,
+          hasPreviousPage: false,
+          startCursor: edges[0]?.id,
+          endCursor: edges[edges.length - 1]?.id,
+        },
+        totalCount: await prisma.rescueRequest.count({ where }),
+      };
+    },
   },
 };

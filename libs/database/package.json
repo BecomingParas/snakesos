@@ -15,11 +15,20 @@
       "default": "./dist/index.js"
     }
   },
+  "scripts": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.0",
+    "pg": "^8.23.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/pg": "^8.11.10",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.7",
     "prisma": "^7.9.0"
   }
 }

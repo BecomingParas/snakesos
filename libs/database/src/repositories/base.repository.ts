@@ -30,7 +30,7 @@ export abstract class BaseRepository<
    * Get the Prisma model delegate
    */
   protected get model(): any {
-    return (this.prisma as any)[this.modelName.toLowerCase()];
+    return (this.prisma as any)[this.modelName];
   }
 
   /**

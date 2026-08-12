@@ -12,13 +12,10 @@
 
 import { PrismaClient, Prisma as PrismaTypes } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
 
 declare global {
   // eslint-disable-next-line no-var
   var prisma: PrismaClient | undefined;
-  // eslint-disable-next-line no-var
-  var pgPool: Pool | undefined;
 }
 
 // Get database URL from environment
@@ -30,15 +27,9 @@ if (!databaseUrl) {
   );
 }
 
-// Create PostgreSQL connection pool (singleton)
-const pool = global.pgPool || new Pool({ connectionString: databaseUrl });
-
-if (process.env.NODE_ENV !== 'production') {
-  global.pgPool = pool;
-}
-
-// Create Prisma PostgreSQL adapter
-const adapter = new PrismaPg(pool);
+// Create Prisma PostgreSQL adapter directly with connection string
+// This avoids Pool type conflicts between workspace and package node_modules
+const adapter = new PrismaPg(databaseUrl);
 
 // Prisma Client Options
 const prismaClientOptions: PrismaTypes.PrismaClientOptions = {
@@ -61,7 +52,6 @@ if (process.env.NODE_ENV !== 'production') {
 // Graceful shutdown handlers
 const cleanup = async () => {
   await prisma.$disconnect();
-  await pool.end();
 };
 
 process.on('beforeExit', cleanup);
@@ -71,6 +61,3 @@ process.on('SIGTERM', cleanup);
 // Export Prisma types
 export * from '@prisma/client';
 export type { Prisma } from '@prisma/client';
-
-// Export pool for advanced use cases
-export { pool };

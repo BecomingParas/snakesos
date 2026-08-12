@@ -2,81 +2,35 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "preserve",
-    "noEmit": true,
-    "emitDeclarationOnly": false,
-    "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
-    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "strict": false,
     "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@snake-rescue/contracts": ["../../libs/contracts/src/index.ts"],
+      "@snake-rescue/shared": ["../../libs/shared/src/index.ts"]
+    },
     "plugins": [
       {
         "name": "next"
       }
     ],
-    "paths": {
-      "@/*": ["./src/*"],
-      "@snake-rescue/contracts": ["../../libs/contracts/src/index.ts"],
-      "@snake-rescue/database": ["../../libs/database/src/index.ts"],
-      "@snake-rescue/auth": ["../../libs/auth/src/index.ts"],
-      "@snake-rescue/shared": ["../../libs/shared/src/index.ts"],
-      "@snake-rescue/frontend/core": ["../../libs/frontend/core/src/index.ts"],
-      "@snake-rescue/frontend/ui": ["../../libs/frontend/ui/src/index.ts"],
-      "@snake-rescue/frontend/features": [
-        "../../libs/frontend/features/src/index.ts"
-      ],
-      "@snake-rescue/frontend-core": ["../../libs/frontend/core/src/index.ts"],
-      "@snake-rescue/frontend-features": [
-        "../../libs/frontend/features/src/index.ts"
-      ],
-      "@snake-rescue/features": ["../../libs/frontend/features/src/index.ts"],
-      "@snake-rescue/ui": ["../../libs/frontend/ui/src/index.ts"],
-      "@snake-rescue/backend/core": ["../../libs/backend/core/src/index.ts"],
-      "@snake-rescue/backend/modules": [
-        "../../libs/backend/modules/src/index.ts"
-      ]
-    },
-    "outDir": "dist",
-    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
+    "types": ["node"]
   },
   "include": [
-    "../../apps/frontend/.next/types/**/*.ts",
-    "../../dist/apps/frontend/.next/types/**/*.ts",
-    "index.d.ts",
     "next-env.d.ts",
-    "src/**/*.js",
-    "src/**/*.jsx",
     "src/**/*.ts",
     "src/**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "../../node_modules/@types"
   ],
   "exclude": [
-    "out-tsc",
-    "dist",
-    "node_modules",
-    "jest.config.ts",
-    "jest.config.cts",
-    "src/**/*.spec.ts",
-    "src/**/*.test.ts",
-    ".next",
-    "eslint.config.js",
-    "eslint.config.cjs",
-    "eslint.config.mjs"
-  ],
-  "references": [
-    {
-      "path": "../../libs/frontend/core"
-    },
-    {
-      "path": "../../libs/frontend/features"
-    },
-    {
-      "path": "../../libs/frontend/ui"
-    }
+    "node_modules"
   ]
 }

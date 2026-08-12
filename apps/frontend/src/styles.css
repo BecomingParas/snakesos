@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+@theme {
+  /* Custom Colors */
+  --color-background: #0f1a1c;
+  --color-foreground: #FFFFFF;
+  --color-card: #182329;
+  --color-account-card: #11181d;
+  
+  --color-primary: #2ECC71;
+  --color-primary-hover: #27AE60;
+  
+  --color-warning: #F39C12;
+  --color-warning-card: #2e3225;
+  
+  --color-active-card: #0e2a25;
+  
+  --color-slate-dark: #121A1F;
+  --color-slate-light: #2C3E50;
+  
+  --color-border: #2a3a40;
+  --color-muted: #2C3E50;
+  --color-muted-foreground: #95A5A6;
+  
+  --color-destructive: #E74C3C;
+  --color-success: #2ECC71;
+  
+  /* Font Families */
+  --font-family-poppins: 'Poppins', sans-serif;
+  --font-family-inter: 'Inter', sans-serif;
+  --font-family-manrope: 'Manrope', sans-serif;
+}
+
+:root {
+  --background: #0f1a1c;
+  --foreground: #FFFFFF;
+  --card: #182329;
+  --account-card: #11181d;
+  --primary: #2ECC71;
+  --primary-hover: #27AE60;
+  --slate-dark: #121A1F;
+  --slate-light: #2C3E50;
+  --accent-muted: #95A5A6;
+  --warning: #F39C12;
+  --warning-card: #2e3225;
+  --active-card: #0e2a25;
+  --font-poppins: 'Poppins', sans-serif;
+  --font-inter: 'Inter', sans-serif;
+  --font-manrope: 'Manrope', sans-serif;
+  
+  /* Chart colors */
+  --color-chart-1: #2ECC71;
+  --color-chart-2: #F39C12;
+  --color-chart-3: #E74C3C;
+  --color-chart-4: #3498DB;
+  --color-chart-5: #9B59B6;
+  
+  /* Additional colors for widgets */
+  --color-popover: #182329;
+  --color-secondary: #2C3E50;
+  --color-accent: #3498DB;
+}
+
+/* Glassmorphism, smooth animations & premium layouts */
+.glass {
+  background: rgba(18, 26, 31, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card {
+  background: rgba(24, 34, 41, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-emerald {
+  background: rgba(46, 204, 113, 0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(46, 204, 113, 0.15);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter);
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--slate-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--slate-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* Leaflet Dark-Mode Tiles Custom Filter Overlay */
+.leaflet-dark-filter {
+  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) !important;
+}
+
+/* Glow effects */
+.glow-primary {
+  box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+}
+
+.glow-red {
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
+.pulse-border {
+  animation: pulse-border-anim 2s infinite;
+}
+
+@keyframes pulse-border-anim {
+  0% {
+    box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(46, 204, 113, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+  }
+}
+
+/* Warning Box - Yellow/Orange Alert Style */
+.warning-box {
+  background-color: #2e3225;
+  border: 2px solid rgba(243, 156, 18, 0.5);
+}
+
+
+/* Map widget patterns */
+.scale-pattern {
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 20px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.03) 0px,
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 20px
+    );
+}
+
+.surface-scale {
+  background: linear-gradient(
+    135deg,
+    rgba(46, 204, 113, 0.05) 0%,
+    rgba(24, 35, 41, 0.9) 50%,
+    rgba(46, 204, 113, 0.05) 100%
+  );
+}
