@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Clock, MapPin, Phone, Send, User } from "lucide-react";
 import { toast } from "sonner";
+import dynamic from 'next/dynamic';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,7 +19,66 @@ import {
 import { PageHeader, Pill, StatusPill, UrgencyPill } from "@/components/ui-bits";
 import { rescues, volunteers, type Rescue } from "@/lib/demo-data";
 
+// Dynamic import for the map component to avoid SSR issues
+const RescueMap = dynamic(
+  () => import('@/components/map/RescueMap').then(mod => ({ default: mod.RescueMap })),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="h-44 flex items-center justify-center bg-secondary/40 rounded-lg border border-border/70">
+        <div className="text-center">
+          <div className="animate-spin h-6 w-6 border-4 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
+          <p className="text-xs text-muted-foreground">Loading map...</p>
+        </div>
+      </div>
+    ),
+  }
+);
+
 const filters = ["all", "critical", "unassigned", "closed"] as const;
+
+// Map rescue IDs to actual Nepal coordinates
+const rescueCoordinates: Record<string, { lat: number; lng: number }> = {
+  'r1': { lat: 27.6988, lng: 85.2924 }, // Kalimati, Kathmandu
+  'r2': { lat: 27.6710, lng: 85.3240 }, // Lalitpur residential
+  'r3': { lat: 27.5291, lng: 84.3542 }, // Chitwan poultry farm
+  'r4': { lat: 27.6768, lng: 84.4345 }, // Bharatpur school
+  'r5': { lat: 28.2096, lng: 83.9856 }, // Pokhara irrigation canal
+  'r6': { lat: 26.7288, lng: 85.9254 }, // Janakpur temple
+};
+
+// Helper function to get coordinates for a rescue
+function getRescueMapData(rescue: Rescue) {
+  const coords = rescueCoordinates[rescue.id] || { lat: 27.7172, lng: 85.324 };
+  
+  return {
+    rescue: {
+      id: rescue.id,
+      lat: coords.lat,
+      lng: coords.lng,
+      address: rescue.location,
+      municipality: rescue.district,
+      status: rescue.status === 'en-route' || rescue.status === 'on-site' ? 'IN_PROGRESS' : 
+              rescue.status === 'closed' || rescue.status === 'released' ? 'COMPLETED' :
+              rescue.status === 'assigned' ? 'ASSIGNED' : 'PENDING',
+      priority: rescue.urgency === 'critical' ? 'CRITICAL' : 
+                rescue.urgency === 'high' ? 'HIGH' : 'MEDIUM',
+      name: rescue.reportedBy,
+      phone: rescue.phone,
+      snakeDescription: rescue.species,
+    },
+    rescuer: rescue.responder ? {
+      id: `rescuer-${rescue.id}`,
+      name: rescue.responder,
+      lat: coords.lat + 0.002, // Offset slightly for visibility
+      lng: coords.lng + 0.002,
+      status: rescue.status === 'en-route' ? 'En Route' : 
+              rescue.status === 'on-site' ? 'On Site' : 'Assigned',
+      phone: rescue.phone,
+    } : null,
+    center: [coords.lat, coords.lng] as [number, number],
+  };
+}
 
 export default function RescuesPage() {
   const [filter, setFilter] = useState<(typeof filters)[number]>("all");
@@ -30,6 +90,9 @@ export default function RescuesPage() {
     if (filter === "closed") return rescues.filter((r) => r.status === "closed" || r.status === "released");
     return rescues;
   }, [filter]);
+
+  // Get map data for the selected rescue
+  const mapData = useMemo(() => getRescueMapData(selected), [selected]);
 
   return (
     <div className="mx-auto max-w-7xl px-5 py-10">
@@ -104,14 +167,16 @@ export default function RescuesPage() {
               </div>
               <h2 className="mt-3 text-2xl font-bold">{selected.species}</h2>
 
-              <div className="mt-4 scale-pattern relative h-44 overflow-hidden rounded-lg border border-border/70 bg-secondary/40">
-                <span
-                  className="absolute grid h-8 w-8 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-destructive/25 text-sm"
-                  style={{ left: `${selected.coords.x}%`, top: `${selected.coords.y}%` }}
-                >
-                  <span className="h-2.5 w-2.5 animate-ping rounded-full bg-destructive" />
-                </span>
-                <span className="absolute bottom-2 left-3 text-[11px] uppercase tracking-wider text-muted-foreground">
+              <div className="mt-4 relative h-[280px] overflow-hidden rounded-lg border border-border/70 bg-secondary/40">
+                <RescueMap
+                  rescues={[mapData.rescue]}
+                  rescuers={mapData.rescuer ? [mapData.rescuer] : []}
+                  center={mapData.center}
+                  zoom={15}
+                  selectedRescueId={selected.id}
+                  showAccuracyCircle={false}
+                />
+                <span className="absolute bottom-2 left-3 text-[11px] uppercase tracking-wider text-white bg-black/60 px-2 py-1 rounded backdrop-blur-sm z-[1000]">
                   {selected.district} sector map
                 </span>
               </div>

@@ -3,6 +3,26 @@
 # ===================================================================
 
 """
+Stripe connection status for development testing
+"""
+type StripeConnectionStatus {
+  """Whether Stripe is successfully connected"""
+  connected: Boolean!
+  
+  """Stripe mode: test, live, or unknown"""
+  mode: String!
+  
+  """Stripe account ID (if connected)"""
+  accountId: String
+  
+  """Whether Stripe is in live mode"""
+  livemode: Boolean!
+  
+  """Human-readable status message"""
+  message: String!
+}
+
+"""
 Donation transaction
 """
 type Donation {

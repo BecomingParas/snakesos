@@ -38,31 +38,34 @@ export function SignupForm() {
 
   const onSubmit = async (data: SignupFormData) => {
     try {
-      const result = await signup({
+      await signup({
         name: data.name,
         email: data.email,
         password: data.password,
       })
 
       toast.success('Account created successfully!', {
-        description: 'Welcome to SnakeSOS',
+        description: 'Please check your email for verification code',
       })
       
-      router.push(`/dashboard/${result.user.role.toLowerCase()}`)
+      // Redirect to login page where unverified users will be handled
+      router.push('/login')
     } catch (error: unknown) {
-      // Handle duplicate email error
+      // Handle duplicate email error - check message content
       if (
         typeof error === 'object' &&
         error !== null &&
-        'code' in error &&
-        error.code === 'CONFLICT' &&
         'message' in error &&
         typeof error.message === 'string' &&
-        error.message.toLowerCase().includes('email')
+        (error.message.toLowerCase().includes('already exists') ||
+         error.message.toLowerCase().includes('already registered'))
       ) {
         setError('email', {
           type: 'server',
           message: 'This email is already registered',
+        })
+        toast.error('Email already exists', {
+          description: 'Please use a different email or try logging in',
         })
         return
       }
@@ -83,22 +86,14 @@ export function SignupForm() {
             setActiveTab('signin')
             router.push('/login')
           }}
-          className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all ${
-            activeTab === 'signin'
-              ? 'bg-slate-900 text-white shadow-sm'
-              : 'text-slate-700 hover:text-slate-900'
-          }`}
+          className="flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all signin-button"
         >
           Sign in
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('signup')}
-          className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all ${
-            activeTab === 'signup'
-              ? 'bg-slate-900 text-white shadow-sm'
-              : 'text-slate-700 hover:text-slate-900'
-          }`}
+          className="flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all signup-button"
         >
           Create account
         </button>
@@ -116,9 +111,7 @@ export function SignupForm() {
             autoComplete="name"
             aria-invalid={Boolean(errors.name)}
             aria-describedby={errors.name ? 'name-error' : undefined}
-            className={`h-9 bg-white border-slate-300 focus:bg-white text-sm text-slate-900 placeholder:text-slate-400 ${
-              errors.name ? 'border-red-500' : ''
-            }`}
+            className="h-9 bg-white border-slate-300 focus:bg-white text-sm text-slate-900 placeholder:text-slate-400"
             {...register('name')}
           />
           {errors.name?.message && (
@@ -139,9 +132,7 @@ export function SignupForm() {
             autoComplete="email"
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? 'email-error' : undefined}
-            className={`h-9 bg-white border-slate-300 focus:bg-white text-sm text-slate-900 placeholder:text-slate-400 ${
-              errors.email ? 'border-red-500' : ''
-            }`}
+            className="h-9 bg-white border-slate-300 focus:bg-white text-sm text-slate-900 placeholder:text-slate-400"
             {...register('email')}
           />
           {errors.email?.message && (
@@ -161,9 +152,7 @@ export function SignupForm() {
             autoComplete="new-password"
             aria-invalid={Boolean(errors.password)}
             aria-describedby={errors.password ? 'password-error' : undefined}
-            className={`h-9 bg-white border-slate-300 focus:bg-white text-sm text-slate-900 placeholder:text-slate-400 ${
-              errors.password ? 'border-red-500' : ''
-            }`}
+            className="h-9 bg-white border-slate-300 focus:bg-white text-sm text-slate-900 placeholder:text-slate-400"
             {...register('password')}
           />
           {errors.password?.message && (
@@ -183,9 +172,7 @@ export function SignupForm() {
             autoComplete="new-password"
             aria-invalid={Boolean(errors.confirmPassword)}
             aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
-            className={`h-9 bg-white border-slate-300 focus:bg-white text-sm text-slate-900 placeholder:text-slate-400 ${
-              errors.confirmPassword ? 'border-red-500' : ''
-            }`}
+            className="h-9 bg-white border-slate-300 focus:bg-white text-sm text-slate-900 placeholder:text-slate-400"
             {...register('confirmPassword')}
           />
           {errors.confirmPassword?.message && (

@@ -6,6 +6,9 @@ const nextConfig = {
     unoptimized: true,
     remotePatterns: [],
   },
+  devIndicators: {
+    buildActivity: false, // Hide the build indicator in development
+  },
 };
 
 export default nextConfig;

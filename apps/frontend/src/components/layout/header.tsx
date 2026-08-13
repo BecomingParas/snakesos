@@ -13,7 +13,7 @@ const links = [
   { href: "/identify", label: "AI ID" },
   { href: "/gallery", label: "Gallery" },
   { href: "/volunteers", label: "Volunteers" },
-  { href: "/support", label: "Donate" },
+  { href: "/donate", label: "Donate" },
 ] as const;
 
 export function Header() {

@@ -1,10 +1,20 @@
 'use client'
 
 import { useState } from "react";
-import { Copy, Heart, Check } from "lucide-react";
+import { Copy, Heart, Check, CreditCard, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
+// Stripe donation amounts (in USD for international donors)
+const DONATION_AMOUNTS = [
+  { value: 500, label: "$5", npr: "Rs. 650" },
+  { value: 1000, label: "$10", npr: "Rs. 1,300" },
+  { value: 2500, label: "$25", npr: "Rs. 3,250" },
+  { value: 5000, label: "$50", npr: "Rs. 6,500" },
+  { value: 10000, label: "$100", npr: "Rs. 13,000" },
+];
 
 const donationImpacts = [
   {
@@ -51,7 +61,163 @@ const paymentMethods = [
     logo: "/wallets/bank.jpg",
     recommended: false,
   },
+  {
+    id: "stripe",
+    label: "Credit/Debit Card",
+    subtitle: "via Stripe",
+    logo: null,
+    recommended: false,
+    comingSoon: false,
+  },
 ];
+
+// Stripe Payment Section Component
+function StripePaymentSection() {
+  const [selectedAmount, setSelectedAmount] = useState(1000); // $10 default
+  const [customAmount, setCustomAmount] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleDonate = async () => {
+    const amount = customAmount ? parseInt(customAmount) * 100 : selectedAmount;
+    
+    if (amount < 100) {
+      toast.error("Minimum donation is $1");
+      return;
+    }
+
+    setIsProcessing(true);
+    toast.loading("Redirecting to Stripe Checkout...");
+
+    try {
+      // Call backend to create checkout session
+      const response = await fetch("/api/stripe/create-checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount }),
+      });
+
+      const { url } = await response.json();
+      
+      if (url) {
+        // Redirect to Stripe Checkout
+        window.location.href = url;
+      } else {
+        throw new Error("Failed to create checkout session");
+      }
+    } catch (error) {
+      console.error("Stripe checkout error:", error);
+      toast.dismiss();
+      toast.error("Payment processing failed. Please try again.");
+      setIsProcessing(false);
+    }
+  };
+
+  return (
+    <div>
+      <div className="mb-6 flex items-center gap-3">
+        <div className="grid h-12 w-12 place-items-center rounded-lg bg-primary/20">
+          <CreditCard className="h-6 w-6 text-primary" />
+        </div>
+        <div>
+          <h3 className="font-display text-xl font-bold">Donate via Credit/Debit Card</h3>
+          <p className="text-sm text-muted-foreground">Secure payment powered by Stripe</p>
+        </div>
+      </div>
+
+      {/* Preset Amounts */}
+      <div className="mb-6">
+        <p className="mb-3 text-sm font-semibold text-muted-foreground">Select Amount</p>
+        <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
+          {DONATION_AMOUNTS.map((amount) => (
+            <button
+              key={amount.value}
+              onClick={() => {
+                setSelectedAmount(amount.value);
+                setCustomAmount("");
+              }}
+              className={cn(
+                "rounded-lg border p-3 text-center transition-all",
+                selectedAmount === amount.value && !customAmount
+                  ? "border-primary bg-primary/10 ring-2 ring-primary/50"
+                  : "border-border/70 hover:border-primary/40"
+              )}
+            >
+              <div className="font-bold">{amount.label}</div>
+              <div className="text-xs text-muted-foreground">{amount.npr}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Custom Amount */}
+      <div className="mb-6">
+        <p className="mb-3 text-sm font-semibold text-muted-foreground">Or Enter Custom Amount (USD)</p>
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+            <input
+              type="number"
+              min="1"
+              placeholder="Enter amount"
+              value={customAmount}
+              onChange={(e) => setCustomAmount(e.target.value)}
+              className="w-full rounded-lg border border-border/70 bg-background px-4 py-2 pl-7 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/50"
+            />
+          </div>
+        </div>
+        {customAmount && parseInt(customAmount) > 0 && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            ≈ Rs. {(parseInt(customAmount) * 130).toLocaleString()}
+          </p>
+        )}
+      </div>
+
+      {/* Donate Button */}
+      <Button
+        onClick={handleDonate}
+        disabled={isProcessing}
+        className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+        size="lg"
+      >
+        {isProcessing ? (
+          <>
+            <Loader2 className="h-5 w-5 animate-spin" />
+            Processing...
+          </>
+        ) : (
+          <>
+            <CreditCard className="h-5 w-5" />
+            Donate {customAmount ? `$${customAmount}` : `$${selectedAmount / 100}`}
+          </>
+        )}
+      </Button>
+
+      {/* Info */}
+      <div className="mt-6 space-y-3 rounded-md border border-border/70 bg-secondary/40 p-4 text-sm">
+        <div className="flex gap-2">
+          <span className="text-success">✓</span>
+          <p className="text-muted-foreground">Secure payment processed by Stripe</p>
+        </div>
+        <div className="flex gap-2">
+          <span className="text-success">✓</span>
+          <p className="text-muted-foreground">All major credit and debit cards accepted</p>
+        </div>
+        <div className="flex gap-2">
+          <span className="text-success">✓</span>
+          <p className="text-muted-foreground">Instant email receipt after donation</p>
+        </div>
+      </div>
+
+      {/* Test Mode Notice */}
+      <div className="mt-4 rounded-md border border-warning/40 bg-warning/10 p-3">
+        <p className="text-xs font-semibold text-warning">🧪 Test Mode Active</p>
+        <p className="mt-1 text-xs text-foreground/80">
+          Use test card: <code className="rounded bg-muted px-1">4242 4242 4242 4242</code> with any future date and CVC.
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export default function SupportPage() {
   const [selectedMethod, setSelectedMethod] = useState("esewa");
@@ -114,18 +280,30 @@ export default function SupportPage() {
               {paymentMethods.map((method) => (
                 <button
                   key={method.id}
-                  onClick={() => setSelectedMethod(method.id)}
+                  onClick={() => !method.comingSoon && setSelectedMethod(method.id)}
+                  disabled={method.comingSoon}
                   className={cn(
                     "flex w-full items-center gap-3 rounded-lg border p-4 text-left transition-all",
-                    selectedMethod === method.id
+                    method.comingSoon && "cursor-not-allowed opacity-50",
+                    !method.comingSoon && selectedMethod === method.id
                       ? "border-primary bg-primary/5 shadow-lg ring-2 ring-primary/50"
                       : "border-border/70 bg-card hover:border-primary/30"
                   )}
                 >
-                  <div className="h-10 w-10 overflow-hidden rounded-lg bg-white p-1">
-                    <div className="h-full w-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-xs font-bold">
-                      {method.label[0]}
-                    </div>
+                  <div className="h-10 w-10 overflow-hidden rounded-lg bg-white p-1 shrink-0">
+                    {method.logo ? (
+                      <Image
+                        src={method.logo}
+                        alt={method.label}
+                        width={40}
+                        height={40}
+                        className="h-full w-full object-contain"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-xs font-bold">
+                        💳
+                      </div>
+                    )}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
@@ -135,10 +313,15 @@ export default function SupportPage() {
                           •
                         </span>
                       )}
+                      {method.comingSoon && (
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
+                          SOON
+                        </span>
+                      )}
                     </div>
                     <p className="text-xs text-muted-foreground">{method.subtitle}</p>
                   </div>
-                  {selectedMethod === method.id && (
+                  {!method.comingSoon && selectedMethod === method.id && (
                     <Check className="h-5 w-5 text-primary" />
                   )}
                 </button>
@@ -148,6 +331,10 @@ export default function SupportPage() {
 
           {/* Payment Instructions */}
           <div className="rounded-lg border border-border/70 bg-card p-6 lg:p-8">
+            {selectedMethod === "stripe" && (
+              <StripePaymentSection />
+            )}
+
             {selectedMethod === "esewa" && (
               <div>
                 <div className="mb-6 flex items-center gap-3">

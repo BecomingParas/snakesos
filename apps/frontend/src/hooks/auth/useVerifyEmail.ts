@@ -1,5 +1,5 @@
 /**
- * useVerifyEmail Hook - Handles email verification with token
+ * useVerifyEmail Hook - Handles email verification with OTP code
  */
 
 import { useMutation } from '@apollo/client/react';
@@ -21,11 +21,11 @@ export interface VerifyEmailResult {
 export function useVerifyEmail() {
   const [verifyEmailMutation, { loading, error }] = useMutation(VERIFY_EMAIL_MUTATION);
 
-  const verifyEmail = async (token: string): Promise<VerifyEmailResult> => {
+  const verifyEmail = async (email: string, code: string): Promise<VerifyEmailResult> => {
     try {
       const result = await verifyEmailMutation({
         variables: {
-          input: { token },
+          input: { email: email.toLowerCase(), code },
         },
       });
 

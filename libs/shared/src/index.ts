@@ -16,6 +16,9 @@ export * from './lib/constants/index.js';
 // Utilities
 export * from './lib/utils/index.js';
 
+// Email Service
+export * from './lib/email/index.js';
+
 // Database utilities (legacy)
 export * from './lib/db.js';
 

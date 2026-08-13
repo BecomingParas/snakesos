@@ -33,6 +33,11 @@ export default function DashboardLayout({
     if (!loading && (error || !user)) {
       router.replace('/login?redirect=/dashboard')
     }
+    
+    // If user exists but email not verified, redirect to verification page
+    if (!loading && user && !user.emailVerified) {
+      router.replace(`/verify-email?email=${encodeURIComponent(user.email)}`)
+    }
   }, [user, loading, error, router])
 
   const toggleTheme = () => {

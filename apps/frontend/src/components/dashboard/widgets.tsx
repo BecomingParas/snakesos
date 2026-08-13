@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
+import dynamic from 'next/dynamic';
 import {
   Area,
   AreaChart,
@@ -20,6 +21,22 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import type { MapMarker, SeriesPoint, StatDef } from "@/lib/dashboard-data";
 import { getIcon } from "./icons";
+
+// Dynamic import for Leaflet map
+const RescueMap = dynamic(
+  () => import('@/components/map/RescueMap').then(mod => ({ default: mod.RescueMap })),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="h-[400px] flex items-center justify-center bg-secondary/40 rounded-xl border border-border/70">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-sm text-muted-foreground">Loading map...</p>
+        </div>
+      </div>
+    ),
+  }
+);
 
 export function StatisticsCard({ stat, loading }: { stat: StatDef; loading?: boolean }) {
   const Icon = getIcon(stat.icon);
@@ -359,6 +376,59 @@ const markerTone: Record<MapMarker["priority"], string> = {
   LOW: "bg-primary",
 };
 
+// NEW: Live Field Map with Leaflet
+export function LiveFieldMap({
+  markers,
+  onMarkerClick,
+}: {
+  markers: MapMarker[];
+  onMarkerClick?: (m: MapMarker) => void;
+}) {
+  // Convert MapMarkers to rescue format for RescueMap component
+  // Map percentage-based x,y coordinates to actual Nepal lat/lng
+  const rescues = markers.map(marker => {
+    // Normalize x (0-100) and y (0-100) to Nepal's geographic bounds
+    // Nepal bounds: Lat 26.3-30.4, Lng 80.0-88.2
+    const latRange = 30.4 - 26.3; // 4.1 degrees
+    const lngRange = 88.2 - 80.0; // 8.2 degrees
+    
+    // Convert percentage coordinates to actual coordinates
+    // x = longitude (west to east), y = latitude (north to south, inverted)
+    const lat = 26.3 + (latRange * (1 - marker.y / 100)); // Invert y for north-south
+    const lng = 80.0 + (lngRange * (marker.x / 100));
+    
+    return {
+      id: marker.id,
+      lat,
+      lng,
+      address: marker.label,
+      municipality: marker.label.split('·')[1]?.trim() || marker.label,
+      status: marker.status,
+      priority: marker.priority === 'EMERGENCY' ? 'CRITICAL' : marker.priority,
+      name: `${marker.type} request`,
+      phone: '+977-9800000000',
+      snakeDescription: marker.label.split('·')[0]?.trim() || 'Snake sighting',
+    };
+  });
+
+  return (
+    <div className="relative w-full" style={{ height: '400px' }}>
+      <RescueMap
+        rescues={rescues}
+        rescuers={[]}
+        center={[27.7172, 85.324]} // Kathmandu center
+        zoom={7} // Show most of Nepal
+        showAccuracyCircle={false}
+        onRescueClick={(rescueId) => {
+          const marker = markers.find(m => m.id === rescueId);
+          if (marker && onMarkerClick) onMarkerClick(marker);
+        }}
+      />
+    </div>
+  );
+}
+
+// LEGACY: Keep old InteractiveMap for backward compatibility
 export function InteractiveMap({
   markers,
   onMarkerClick,

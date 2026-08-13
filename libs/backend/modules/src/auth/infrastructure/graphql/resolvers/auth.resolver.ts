@@ -20,6 +20,7 @@ import {
   ForgotPasswordUseCase,
   ResetPasswordUseCase,
   VerifyEmailUseCase,
+  ResendVerificationUseCase,
   ChangePasswordUseCase,
 } from '../../../application/use-cases/index.js';
 import { AuthValidator } from '../../validators/auth.validator.js';
@@ -48,7 +49,7 @@ export const authResolvers = {
     /**
      * Login mutation
      */
-    login: async (_parent: any, args: { input: any }, context: GraphQLContext) => {
+    login: async (_parent: any, args: { input: any }) => {
       // 1. Validate input
       const input = AuthValidator.validateLogin(args.input);
 
@@ -64,7 +65,7 @@ export const authResolvers = {
     /**
      * Register mutation
      */
-    register: async (_parent: any, args: { input: any }, context: GraphQLContext) => {
+    register: async (_parent: any, args: { input: any }) => {
       // 1. Validate input
       const input = AuthValidator.validateRegister(args.input);
 
@@ -117,31 +118,28 @@ export const authResolvers = {
     /**
      * Forgot password mutation
      */
-    forgotPassword: async (_parent: any, args: { input: { email: string } }) => {
-      const authService = new AuthService();
-      const forgotPasswordUseCase = new ForgotPasswordUseCase(authService);
+    forgotPassword: async (_parent: any, args: { email: string }) => {
+      const forgotPasswordUseCase = new ForgotPasswordUseCase();
       
-      const result = await forgotPasswordUseCase.execute(args.input);
+      const result = await forgotPasswordUseCase.execute({ email: args.email });
       return result;
     },
 
     /**
      * Reset password mutation
      */
-    resetPassword: async (_parent: any, args: { input: { token: string; newPassword: string } }) => {
-      const authService = new AuthService();
-      const resetPasswordUseCase = new ResetPasswordUseCase(authService);
+    resetPassword: async (_parent: any, args: { input: { email: string; code: string; newPassword: string } }) => {
+      const resetPasswordUseCase = new ResetPasswordUseCase();
       
       const result = await resetPasswordUseCase.execute(args.input);
-      return result;
+      return result.success;
     },
 
     /**
      * Verify email mutation
      */
-    verifyEmail: async (_parent: any, args: { input: { token: string } }) => {
-      const authService = new AuthService();
-      const verifyEmailUseCase = new VerifyEmailUseCase(authService);
+    verifyEmail: async (_parent: any, args: { input: { email: string; code: string } }) => {
+      const verifyEmailUseCase = new VerifyEmailUseCase();
       
       const result = await verifyEmailUseCase.execute(args.input);
       return result;
@@ -151,13 +149,10 @@ export const authResolvers = {
      * Resend verification email mutation
      */
     resendVerification: async (_parent: any, args: { input: { email: string } }) => {
-      const authService = new AuthService();
-      const result = await authService.sendVerificationEmail(args.input.email);
+      const resendVerificationUseCase = new ResendVerificationUseCase();
+      const result = await resendVerificationUseCase.execute(args.input);
       
-      return {
-        success: result.success,
-        message: result.message || 'Verification email sent',
-      };
+      return result.success;
     },
 
     /**

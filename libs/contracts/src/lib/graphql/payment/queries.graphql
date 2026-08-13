@@ -4,6 +4,12 @@
 
 extend type Query {
   """
+  Check Stripe connection status (DEVELOPMENT ONLY)
+  This query is only available in non-production environments
+  """
+  stripeConnectionStatus: StripeConnectionStatus!
+  
+  """
   Get donation by ID
   """
   donation(id: ID!): Donation @auth(requires: [ADMIN, SUPER_ADMIN])

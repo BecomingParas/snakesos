@@ -9,7 +9,7 @@ import {
   Radio,
 } from 'lucide-react'
 import { useDashboardStats } from '@/hooks/dashboard'
-import { StatisticsCard, ChartCard, SectionPanel, InteractiveMap } from '@/components/dashboard/widgets'
+import { StatisticsCard, ChartCard, SectionPanel, LiveFieldMap } from '@/components/dashboard/widgets'
 import { DataTable } from '@/components/dashboard/data-table'
 import type { SeriesPoint, StatDef, TableDef } from '@/lib/dashboard-data'
 import { markers, activityFeed } from '@/lib/dashboard-data'
@@ -184,7 +184,7 @@ export default function AdminDashboard() {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <SectionPanel title="Live field map" description="Call-outs, handlers and sightings">
-            <InteractiveMap markers={markers} onMarkerClick={(m) => console.log('Marker clicked:', m)} />
+            <LiveFieldMap markers={markers} onMarkerClick={(m) => console.log('Marker clicked:', m)} />
           </SectionPanel>
         </div>
 

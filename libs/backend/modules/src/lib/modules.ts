@@ -11,3 +11,6 @@ export * from '../rescue/index.js';
 
 // Analytics Module
 export * from '../analytics/index.js';
+
+// Payments Module (Development Testing Only)
+export * from '../payments/index.js';

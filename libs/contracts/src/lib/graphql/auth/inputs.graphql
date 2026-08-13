@@ -61,18 +61,20 @@ input PasswordResetRequestInput {
 }
 
 """
-Input for password reset confirmation
+Input for password reset confirmation using email + OTP code
 """
-input PasswordResetConfirmInput {
-  token: String!
+input ResetPasswordInput {
+  email: Email!
+  code: String!
   newPassword: String!
 }
 
 """
-Input for email verification
+Input for email verification using OTP code only
 """
 input VerifyEmailInput {
-  token: String!
+  email: Email!
+  code: String!
 }
 
 """

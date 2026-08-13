@@ -19,6 +19,7 @@ import {
   MapPin,
   UserCheck,
   Bell,
+  Map,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -28,7 +29,7 @@ interface SidebarProps {
   role: 'CITIZEN' | 'ADMIN' | 'SUPER_ADMIN' | 'DISTRICT_COORDINATOR' | 'VERIFIED_RESCUER' | 'VOLUNTEER'
 }
 
-export function Sidebar({ role, userName }: SidebarProps) {
+export function Sidebar({ role }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false)
   const pathname = usePathname()
 
@@ -42,6 +43,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
         { href: '', label: 'Overview', icon: LayoutDashboard },
         { href: '/requests/new', label: 'New request', icon: FileText },
         { href: '/requests', label: 'My requests', icon: List },
+        { href: '/map', label: 'Track Rescue', icon: Map },
         { href: '/emergency', label: 'Emergency', icon: AlertCircle },
         { href: '/snake-info', label: 'Snake info', icon: Info },
         { href: '/donate', label: 'Donate', icon: Heart },
@@ -55,6 +57,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
       links: [
         { href: '', label: 'Overview', icon: LayoutDashboard },
         { href: '/rescues', label: 'Rescue requests', icon: Activity },
+        { href: '/map', label: 'Live Field Map', icon: Map },
         { href: '/volunteers', label: 'Volunteers', icon: Users },
         { href: '/users', label: 'Users', icon: UserCheck },
         { href: '/analytics', label: 'Analytics', icon: BarChart3 },
@@ -98,6 +101,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
       links: [
         { href: '', label: 'Overview', icon: LayoutDashboard },
         { href: '/active', label: 'Active Rescues', icon: Activity },
+        { href: '/map', label: 'Track Rescues', icon: Map },
         { href: '/history', label: 'History', icon: List },
         { href: '/schedule', label: 'Schedule', icon: MapPin },
         { href: '/profile', label: 'Profile', icon: Settings },
@@ -110,6 +114,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
       links: [
         { href: '', label: 'Overview', icon: LayoutDashboard },
         { href: '/active', label: 'Active Rescues', icon: Activity },
+        { href: '/map', label: 'Track Rescues', icon: Map },
         { href: '/history', label: 'History', icon: List },
         { href: '/profile', label: 'Profile', icon: Settings },
       ],

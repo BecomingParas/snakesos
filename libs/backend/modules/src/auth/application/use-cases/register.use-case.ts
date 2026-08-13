@@ -4,7 +4,7 @@
  */
 
 import { prisma } from '@snake-rescue/database';
-import { ConflictError } from '@snake-rescue/shared';
+import { ConflictError, getEmailService, generateVerifyEmail } from '@snake-rescue/shared';
 import type { RegisterInput, RegisterResponse } from '../dto/index.js';
 import * as bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
@@ -49,15 +49,61 @@ export class RegisterUseCase {
       }
     });
 
-    // Create session (7 days expiry)
+    // Generate 6-digit verification code
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const verificationToken = randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    // Create verification record
+    await prisma.verification.create({
+      data: {
+        identifier: email,
+        token: verificationToken,
+        code: verificationCode,
+        type: 'email',
+        expiresAt,
+      }
+    });
+
+    // Send verification email
+    console.log('🔍 DEBUG: About to send verification email');
+    console.log('🔍 DEBUG: Email:', email);
+    console.log('🔍 DEBUG: Verification Code:', verificationCode);
+    
+    const emailService = getEmailService();
+    console.log('🔍 DEBUG: Email service obtained');
+    
+    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}&code=${verificationCode}`;
+    console.log('🔍 DEBUG: Verification URL:', verificationUrl);
+    
+    try {
+      const emailSent = await emailService.sendEmail({
+        to: email,
+        subject: 'Verify Your Email - SnakeSOS',
+        html: generateVerifyEmail({
+          userName: name,
+          verificationUrl,
+          verificationCode,
+          expiresIn: '24 hours',
+        }),
+        text: `Hi ${name}, Please verify your email using this code: ${verificationCode} or visit: ${verificationUrl}`,
+      });
+      
+      console.log('🔍 DEBUG: Email sent result:', emailSent);
+    } catch (emailError) {
+      console.error('❌ ERROR sending verification email:', emailError);
+      // Don't fail registration if email fails
+    }
+
+    // Create session (7 days expiry) - but user can't access dashboard until verified
     const sessionToken = `${user.id}_${Date.now()}_${randomBytes(8).toString('hex')}`;
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+    const sessionExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
     const session = await prisma.session.create({
       data: {
         userId: user.id,
         token: sessionToken,
-        expiresAt,
+        expiresAt: sessionExpiresAt,
         ipAddress: null,
         userAgent: null,
       }

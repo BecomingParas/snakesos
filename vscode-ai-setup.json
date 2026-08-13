@@ -1,0 +1,109 @@
+{
+  "comment": "VS Code AI Extension Configuration for OpenRouter + NVIDIA Nemotron",
+  
+  "continue": {
+    "comment": "Configuration for Continue extension (https://marketplace.visualstudio.com/items?itemName=Continue.continue)",
+    "path": "~/.continue/config.json",
+    "config": {
+      "models": [
+        {
+          "title": "Nemotron Ultra 1M (Free)",
+          "provider": "openai",
+          "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+          "apiBase": "https://openrouter.ai/api/v1",
+          "apiKey": "YOUR_OPENROUTER_API_KEY",
+          "contextLength": 1000000,
+          "description": "Best for complex codebases and long sessions"
+        },
+        {
+          "title": "Nemotron Lightning 1M (Free)",
+          "provider": "openai",
+          "model": "nvidia/nemotron-3.5-lightning:free",
+          "apiBase": "https://openrouter.ai/api/v1",
+          "apiKey": "YOUR_OPENROUTER_API_KEY",
+          "contextLength": 1000000,
+          "description": "Fastest response times"
+        },
+        {
+          "title": "Nemotron Super (Free)",
+          "provider": "openai",
+          "model": "nvidia/nemotron-3-super-120b-a12b:free",
+          "apiBase": "https://openrouter.ai/api/v1",
+          "apiKey": "YOUR_OPENROUTER_API_KEY",
+          "contextLength": 262144,
+          "description": "Balanced performance"
+        }
+      ],
+      "tabAutocompleteModel": {
+        "title": "Nemotron Lightning (Autocomplete)",
+        "provider": "openai",
+        "model": "nvidia/nemotron-3.5-lightning:free",
+        "apiBase": "https://openrouter.ai/api/v1",
+        "apiKey": "YOUR_OPENROUTER_API_KEY"
+      }
+    }
+  },
+
+  "cline": {
+    "comment": "Configuration for Cline extension (formerly Claude Dev)",
+    "settings": {
+      "apiProvider": "OpenRouter",
+      "apiKey": "YOUR_OPENROUTER_API_KEY",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "baseUrl": "https://openrouter.ai/api/v1"
+    }
+  },
+
+  "cursor": {
+    "comment": "Configuration for Cursor IDE",
+    "settings": {
+      "provider": "OpenAI Compatible",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "apiKey": "YOUR_OPENROUTER_API_KEY",
+      "model": "nvidia/nemotron-3-ultra-550b-a55b:free"
+    }
+  },
+
+  "github-copilot-chat": {
+    "comment": "Note: GitHub Copilot doesn't support custom models, but you can use OpenRouter via API",
+    "alternative": "Use Continue or Cline instead for OpenRouter integration"
+  },
+
+  "recommended_models_by_task": {
+    "code_generation": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "quick_questions": "nvidia/nemotron-3.5-lightning:free",
+    "code_review": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "refactoring": "nvidia/nemotron-3-super-120b-a12b:free",
+    "debugging": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "documentation": "nvidia/nemotron-3.5-lightning:free",
+    "test_generation": "nvidia/nemotron-3-super-120b-a12b:free",
+    "chat_autocomplete": "nvidia/nemotron-3.5-lightning:free"
+  },
+
+  "installation_steps": {
+    "continue": [
+      "1. Install Continue extension from VS Code marketplace",
+      "2. Open Command Palette (Ctrl+Shift+P)",
+      "3. Run 'Continue: Open config.json'",
+      "4. Copy the 'config' section above into the file",
+      "5. Replace YOUR_OPENROUTER_API_KEY with your actual key",
+      "6. Save and reload VS Code"
+    ],
+    "cline": [
+      "1. Install Cline extension from VS Code marketplace",
+      "2. Click the Cline icon in the sidebar",
+      "3. Go to Settings",
+      "4. Select 'OpenRouter' as API Provider",
+      "5. Enter your OpenRouter API key",
+      "6. Select model: nvidia/nemotron-3-ultra-550b-a55b:free"
+    ]
+  },
+
+  "security_notes": [
+    "NEVER commit your API key to version control",
+    "Store API key in environment variables or VS Code settings (encrypted)",
+    "Use different keys for different projects if possible",
+    "Rotate keys regularly",
+    "Monitor usage at https://openrouter.ai/dashboard"
+  ]
+}

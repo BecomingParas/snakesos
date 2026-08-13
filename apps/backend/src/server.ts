@@ -12,6 +12,7 @@ import {
   rescueQueryResolvers, 
   rescueMutationResolvers,
   analyticsResolvers,
+  paymentsResolvers,
 } from '@snake-rescue/modules';
 import { config } from './config/index.js';
 
@@ -27,6 +28,7 @@ export async function setupApolloServer(app: Express) {
     rescueQueryResolvers,
     rescueMutationResolvers,
     analyticsResolvers,
+    paymentsResolvers,
   ];
 
   // Create Apollo Server with schema and resolvers

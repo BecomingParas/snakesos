@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, Mail } from 'lucide-react'
+import { Loader2, Mail, KeyRound, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { useForgotPassword } from '@/hooks/auth'
 import { forgotPasswordSchema, type ForgotPasswordFormData } from '@/schemas/auth'
@@ -13,17 +13,16 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { getUserFriendlyErrorMessage } from '@/lib/graphql'
+import { TwoColumnAuthLayout } from '@/components/auth/two-column-layout'
 
 export function ForgotPasswordForm() {
   const router = useRouter()
-  const [isSuccess, setIsSuccess] = useState(false)
   const { forgotPassword, loading: isSubmitting } = useForgotPassword()
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    getValues,
   } = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
     mode: 'onChange',
@@ -35,10 +34,12 @@ export function ForgotPasswordForm() {
   const onSubmit = async (data: ForgotPasswordFormData) => {
     try {
       await forgotPassword(data.email)
-      setIsSuccess(true)
-      toast.success('Reset link sent!', {
-        description: 'Check your email for password reset instructions',
+      
+      // Redirect directly to reset password page with email (no success page)
+      toast.success('Request received!', {
+        description: 'Enter your new password',
       })
+      router.push(`/reset-password?email=${encodeURIComponent(data.email)}`)
     } catch (error: any) {
       toast.error('Request failed', {
         description: getUserFriendlyErrorMessage(error),
@@ -46,74 +47,67 @@ export function ForgotPasswordForm() {
     }
   }
 
-  if (isSuccess) {
-    return (
-      <div className="text-center space-y-4">
-        <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-          <Mail className="h-8 w-8 text-primary" />
-        </div>
-        
-        <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">
-            We've sent a password reset link to:
-          </p>
-          <p className="font-medium">{getValues('email')}</p>
-        </div>
-
-        <p className="text-sm text-muted-foreground">
-          Click the link in the email to reset your password. If you don't see
-          the email, check your spam folder.
-        </p>
-
-        <div className="space-y-2 pt-4">
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => router.push('/login')}
-          >
-            Back to Sign In
-          </Button>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="email">
-          Email Address <span className="text-destructive">*</span>
-        </Label>
-        <Input
-          id="email"
-          type="email"
-          placeholder="you@example.com"
-          autoComplete="email"
-          aria-invalid={Boolean(errors.email)}
-          aria-describedby={errors.email ? 'email-error' : undefined}
-          className={errors.email ? 'border-destructive' : ''}
-          {...register('email')}
-        />
-        {errors.email?.message && (
-          <p id="email-error" role="alert" className="text-sm text-destructive">
-            {errors.email.message}
+    <TwoColumnAuthLayout title="Forgot Password">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+            <KeyRound className="h-8 w-8 text-blue-600" />
+          </div>
+          
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+            Forgot Password?
+          </h1>
+          
+          <p className="mt-2 text-sm text-slate-600">
+            Enter your email address and we'll send you a link to reset your password
           </p>
-        )}
-      </div>
+        </div>
 
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        Send Reset Link
-      </Button>
+        {/* Form */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-slate-700 font-medium">
+              Email Address
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              autoComplete="email"
+              aria-invalid={Boolean(errors.email)}
+              aria-describedby={errors.email ? 'email-error' : undefined}
+              className={`h-11 ${errors.email ? 'border-red-500' : ''}`}
+              {...register('email')}
+            />
+            {errors.email?.message && (
+              <p id="email-error" role="alert" className="text-sm text-red-600">
+                {errors.email.message}
+              </p>
+            )}
+          </div>
 
-      <div className="text-center pt-4">
-        <Link
-          href="/login"
-          className="text-sm text-primary hover:underline"
-        >
-          ← Back to Sign In
-        </Link>
+          <Button 
+            type="submit" 
+            className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium" 
+            disabled={isSubmitting}
+          >
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Send Reset Link
+          </Button>
+        </form>
+
+        {/* Back to Login */}
+        <div className="text-center pt-4 border-t">
+          <Link 
+            href="/login" 
+            className="text-sm text-slate-600 hover:text-slate-900 font-medium"
+          >
+            ← Back to Sign In
+          </Link>
+        </div>
       </div>
-    </form>
+    </TwoColumnAuthLayout>
   )
 }

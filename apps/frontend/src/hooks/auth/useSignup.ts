@@ -75,12 +75,20 @@ export function useSignup() {
             timezone: input.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
           },
         },
+        // Don't throw on GraphQL errors - let us handle them
+        errorPolicy: 'all',
       });
 
       console.group('[GRAPHQL] useSignup - Response Received');
       console.log('result.data:', result.data ? 'present' : 'null');
       console.log('result.error:', result.error);
       console.groupEnd();
+
+      // Check for GraphQL error first
+      if (result.error) {
+        console.log('GraphQL error detected:', result.error);
+        throw result.error;
+      }
 
       const responseData = result.data as { register?: SignupResult } | undefined;
 

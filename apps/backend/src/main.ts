@@ -68,7 +68,13 @@ async function bootstrap() {
     });
 
   } catch (error) {
-    logger.error({ msg: 'Failed to start server', error });
+    // Log the actual error message and stack trace
+    if (error instanceof Error) {
+      logger.error(`Failed to start server: ${error.message}`);
+      logger.error(`Stack trace: ${error.stack}`);
+    } else {
+      logger.error(`Failed to start server: ${String(error)}`);
+    }
     process.exit(1);
   }
 }

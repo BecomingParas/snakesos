@@ -38,6 +38,17 @@ export function LoginForm() {
     try {
       const result = await login(data)
       
+      // Check if email is verified
+      if (!result.user.emailVerified) {
+        toast.warning('Email not verified', {
+          description: 'Please verify your email to continue. Sending verification code...',
+        })
+        
+        // Redirect to verify-email page with auto-resend
+        router.push(`/verify-email?email=${encodeURIComponent(data.email)}&resend=true`)
+        return
+      }
+      
       toast.success('Welcome back!', {
         description: 'You have successfully signed in',
       })

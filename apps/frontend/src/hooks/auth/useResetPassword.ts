@@ -1,5 +1,5 @@
 /**
- * useResetPassword Hook - Handles password reset with token
+ * useResetPassword Hook - Handles password reset with email + OTP code
  */
 
 import { useMutation } from '@apollo/client/react';
@@ -7,7 +7,8 @@ import { RESET_PASSWORD_MUTATION } from '@/lib/graphql/mutations';
 import { handleGraphQLError } from '@/lib/graphql';
 
 export interface ResetPasswordInput {
-  token: string;
+  email: string;
+  code: string;
   newPassword: string;
 }
 
@@ -19,7 +20,8 @@ export function useResetPassword() {
       const result = await resetPasswordMutation({
         variables: {
           input: {
-            token: input.token,
+            email: input.email,
+            code: input.code,
             newPassword: input.newPassword,
           },
         },

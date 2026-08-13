@@ -143,12 +143,14 @@ model Verification {
   id         String   @id @default(uuid())
   identifier String   // email or phone
   token      String   @unique
+  code       String?  // 6-digit verification code
   type       String   // "email", "password-reset"
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   
   @@index([token])
   @@index([identifier])
+  @@index([code])
   @@map("verifications")
 }
 
