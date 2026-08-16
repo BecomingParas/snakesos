@@ -7,6 +7,10 @@ import { GraphQLContext } from '@snake-rescue/core';
 import { prisma, RescueRepository } from '@snake-rescue/database';
 import { CreateRescueUseCase } from '../../../application/use-cases/create-rescue.use-case.js';
 import { AssignVolunteerUseCase } from '../../../application/use-cases/assign-volunteer.use-case.js';
+import { AcceptRescueUseCase } from '../../../application/use-cases/accept-rescue.use-case.js';
+import { UpdateRescueStatusUseCase } from '../../../application/use-cases/update-status.use-case.js';
+import { CompleteRescueUseCase } from '../../../application/use-cases/complete-rescue.use-case.js';
+import { CancelRescueUseCase } from '../../../application/use-cases/cancel-rescue.use-case.js';
 import { RescueValidator } from '../../validators/rescue.validator.js';
 
 export const rescueMutationResolvers = {
@@ -52,5 +56,136 @@ export const rescueMutationResolvers = {
       return result;
     },
 
+    /**
+     * Volunteer accepts rescue assignment
+     */
+    acceptRescue: async (_parent: any, args: { input: any }, context: GraphQLContext) => {
+      context.requireAuth();
+      context.requireRole(['VOLUNTEER', 'VERIFIED_RESCUER', 'DISTRICT_COORDINATOR']);
+
+      // Get volunteer profile
+      const volunteer = await prisma.volunteer.findUnique({
+        where: { userId: context.user.id },
+      });
+
+      if (!volunteer) {
+        throw new Error('Volunteer profile not found');
+      }
+
+      const rescueRepository = new RescueRepository(prisma);
+      const useCase = new AcceptRescueUseCase(rescueRepository);
+      
+      return await useCase.execute(
+        {
+          rescueId: args.input.rescueId,
+          volunteerId: volunteer.id,
+          estimatedArrivalTime: args.input.estimatedArrivalTime,
+          notes: args.input.notes,
+        },
+        context.user.id
+      );
+    },
+
+    /**
+     * Update rescue progress (generic status update)
+     */
+    updateRescueProgress: async (_parent: any, args: { input: any }, context: GraphQLContext) => {
+      context.requireAuth();
+      context.requireRole(['VOLUNTEER', 'VERIFIED_RESCUER', 'ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR']);
+
+      const rescueRepository = new RescueRepository(prisma);
+      const useCase = new UpdateRescueStatusUseCase(rescueRepository);
+      
+      return await useCase.execute(
+        {
+          rescueId: args.input.rescueId,
+          status: args.input.status,
+          notes: args.input.notes,
+          location: args.input.location,
+          metadata: args.input.metadata,
+        },
+        context.user.id
+      );
+    },
+
+    /**
+     * Mark rescue as completed
+     */
+    completeRescue: async (_parent: any, args: { input: any }, context: GraphQLContext) => {
+      context.requireAuth();
+      context.requireRole(['VOLUNTEER', 'VERIFIED_RESCUER']);
+
+      // Get volunteer profile
+      const volunteer = await prisma.volunteer.findUnique({
+        where: { userId: context.user.id },
+      });
+
+      if (!volunteer) {
+        throw new Error('Volunteer profile not found');
+      }
+
+      const rescueRepository = new RescueRepository(prisma);
+      const useCase = new CompleteRescueUseCase(rescueRepository);
+      
+      return await useCase.execute(
+        {
+          rescueId: args.input.rescueId,
+          volunteerId: volunteer.id,
+          outcome: args.input.outcome,
+          rescueReport: args.input.rescueReport,
+          rescueImages: args.input.rescueImages,
+          speciesId: args.input.speciesId,
+          notes: args.input.notes,
+          location: args.input.location,
+        },
+        context.user.id
+      );
+    },
+
+    /**
+     * Cancel rescue request
+     */
+    cancelRescue: async (
+      _parent: any,
+      args: { rescueId: string; reason: string },
+      context: GraphQLContext
+    ) => {
+      context.requireAuth();
+
+      const isAdmin = ['ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR'].includes(context.user.role);
+      const cancelledBy = isAdmin ? 'ADMIN' : 'CITIZEN';
+
+      const rescueRepository = new RescueRepository(prisma);
+      const useCase = new CancelRescueUseCase(rescueRepository);
+      
+      return await useCase.execute(
+        {
+          rescueId: args.rescueId,
+          reason: args.reason || 'No reason provided',
+          cancelledBy,
+        },
+        context.user.id,
+        context.user.role
+      );
+    },
+
+    /**
+     * Add timeline event to rescue
+     */
+    addRescueTimelineEvent: async (_parent: any, args: { input: any }, context: GraphQLContext) => {
+      context.requireAuth();
+
+      const rescueRepository = new RescueRepository(prisma);
+      
+      return await rescueRepository.addTimelineEvent({
+        rescueId: args.input.rescueId,
+        event: args.input.event,
+        description: args.input.description,
+        userId: context.user.id,
+        lat: args.input.location?.lat,
+        lng: args.input.location?.lng,
+        metadata: args.input.metadata,
+      });
+    },
   },
 };

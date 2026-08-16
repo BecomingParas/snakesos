@@ -1372,6 +1372,11 @@ type Mutation {
   cancelTrainingEnrollment(trainingId: ID!): Training!
 
   """
+  Change password (requires current password)
+  """
+  changePassword(input: ChangePasswordInput!): Boolean!
+
+  """
   Mark rescue as completed
   """
   completeRescue(input: CompleteRescueInput!): RescueRequest!
@@ -1415,6 +1420,11 @@ type Mutation {
   Delete AI identification
   """
   deleteAIIdentification(id: ID!): SuccessResponse!
+
+  """
+  Delete user account (soft delete)
+  """
+  deleteAccount(password: String!): Boolean!
 
   """
   Delete a blog post (soft delete)
@@ -1467,6 +1477,11 @@ type Mutation {
   enrollInTraining(trainingId: ID!): Training!
 
   """
+  Request password reset email
+  """
+  forgotPassword(email: String!): PasswordResetTokenPayload!
+
+  """
   Generate donation receipt
   """
   generateDonationReceipt(donationId: ID!): Donation!
@@ -1497,6 +1512,16 @@ type Mutation {
   likeGalleryImage(id: ID!): GalleryImage!
 
   """
+  Login with email and password
+  """
+  login(input: LoginInput!): AuthPayload!
+
+  """
+  Logout current user (invalidates refresh token)
+  """
+  logout: Boolean!
+
+  """
   Mark all notifications as read
   """
   markAllNotificationsAsRead: SuccessResponse!
@@ -1510,6 +1535,11 @@ type Mutation {
   Mark notification as read
   """
   markNotificationAsRead(id: ID!): Notification!
+
+  """
+  Login with OAuth provider (Google)
+  """
+  oauthLogin(input: OAuthLoginInput!): AuthPayload!
 
   """
   Process payment (callback from gateway)
@@ -1549,9 +1579,19 @@ type Mutation {
   refreshAnalyticsCache: SuccessResponse!
 
   """
+  Refresh access token using refresh token cookie
+  """
+  refreshToken: AuthPayload!
+
+  """
   Refund donation (admin)
   """
   refundDonation(input: RefundDonationInput!): Donation!
+
+  """
+  Register a new user account
+  """
+  register(input: RegisterInput!): AuthPayload!
 
   """
   Reopen cancelled/closed rescue
@@ -1565,6 +1605,16 @@ type Mutation {
     identificationId: ID!
     provider: AIProvider!
   ): AIIdentification!
+
+  """
+  Resend email verification
+  """
+  resendVerification(input: ResendVerificationInput!): Boolean!
+
+  """
+  Reset password with token
+  """
+  resetPassword(input: ResetPasswordInput!): Boolean!
 
   """
   Respond to a contact message
@@ -1634,6 +1684,11 @@ type Mutation {
   updatePaymentGateway(input: UpdatePaymentGatewayInput!): PaymentGatewayConfig!
 
   """
+  Update user profile
+  """
+  updateProfile(input: UpdateProfileInput!): User!
+
+  """
   Update rescue progress (volunteer)
   """
   updateRescueProgress(input: UpdateRescueProgressInput!): RescueRequest!
@@ -1679,6 +1734,11 @@ type Mutation {
   Verify donation (admin)
   """
   verifyDonation(donationId: ID!, notes: String): Donation!
+
+  """
+  Verify email address with token
+  """
+  verifyEmail(input: VerifyEmailInput!): EmailVerificationPayload!
 
   """
   Verify completed rescue (admin)
@@ -1990,14 +2050,6 @@ input PaginationInput {
 }
 
 """
-Input for password reset confirmation
-"""
-input PasswordResetConfirmInput {
-  newPassword: String!
-  token: String!
-}
-
-"""
 Input for password reset request
 """
 input PasswordResetRequestInput {
@@ -2167,6 +2219,11 @@ type Query {
   ): BlogPostConnection!
 
   """
+  Check if email is available for registration
+  """
+  checkEmailAvailability(email: Email!): Boolean!
+
+  """
   Get CMS statistics
   """
   cmsStats: CMSStats!
@@ -2251,6 +2308,16 @@ type Query {
   Get geographic heatmap data
   """
   geographicHeatmap(input: GeographicHeatmapInput): [GeographicHeatmap!]!
+
+  """
+  Get current authenticated user
+  """
+  me: User
+
+  """
+  Get activity logs for current user
+  """
+  myActivityLogs(pagination: PaginationInput): ActivityLogConnection!
 
   """
   Get assigned rescues (volunteer view)
@@ -2405,6 +2472,11 @@ type Query {
   ): SnakeSpeciesConnection!
 
   """
+  Search users by name or email
+  """
+  searchUsers(pagination: PaginationInput, query: String!): UserConnection!
+
+  """
   Search volunteers
   """
   searchVolunteers(
@@ -2440,6 +2512,12 @@ type Query {
   ): SnakeSpeciesConnection!
 
   """
+  Check Stripe connection status (DEVELOPMENT ONLY)
+  This query is only available in non-production environments
+  """
+  stripeConnectionStatus: StripeConnectionStatus!
+
+  """
   Get training session by ID
   """
   training(id: ID!): Training
@@ -2467,6 +2545,25 @@ type Query {
   Get upcoming training sessions (public)
   """
   upcomingTrainings(pagination: PaginationInput): TrainingConnection!
+
+  """
+  Get user by ID (admin or self only)
+  """
+  user(id: ID!): User
+
+  """
+  Get user profile by ID (public)
+  """
+  userProfile(id: ID!): UserProfile
+
+  """
+  List all users (admin only)
+  """
+  users(
+    filter: UserFilterInput
+    pagination: PaginationInput
+    sort: UserSortInput
+  ): UserConnection!
 
   """
   Get venomous snake species
@@ -2849,6 +2946,16 @@ input ResendVerificationInput {
 }
 
 """
+Input for password reset
+"""
+input ResetPasswordInput {
+  code: String!
+  email: Email!
+  newPassword: String!
+  token: String!
+}
+
+"""
 Input for responding to a contact message
 """
 input RespondToMessageInput {
@@ -3039,6 +3146,36 @@ type SpeciesIdentificationCount {
   averageConfidence: Float!
   count: Int!
   species: SnakeSpecies!
+}
+
+"""
+Stripe connection status for development testing
+"""
+type StripeConnectionStatus {
+  """
+  Stripe account ID (if connected)
+  """
+  accountId: String
+
+  """
+  Whether Stripe is successfully connected
+  """
+  connected: Boolean!
+
+  """
+  Whether Stripe is in live mode
+  """
+  livemode: Boolean!
+
+  """
+  Human-readable status message
+  """
+  message: String!
+
+  """
+  Stripe mode: test, live, or unknown
+  """
+  mode: String!
 }
 
 """
@@ -3498,6 +3635,17 @@ input UpdatePaymentGatewayInput {
 }
 
 """
+Input for profile update
+"""
+input UpdateProfileInput {
+  avatar: String
+  language: String
+  name: String
+  phone: Phone
+  timezone: String
+}
+
+"""
 Input for updating rescue progress
 """
 input UpdateRescueProgressInput {
@@ -3711,6 +3859,15 @@ type User {
 }
 
 """
+Paginated connection for users
+"""
+type UserConnection {
+  edges: [User!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+"""
 Filter input for user queries
 """
 input UserFilterInput {
@@ -3872,10 +4029,11 @@ enum VenomType {
 }
 
 """
-Input for email verification
+Input for email verification using OTP code only
 """
 input VerifyEmailInput {
-  token: String!
+  code: String!
+  email: Email!
 }
 
 """

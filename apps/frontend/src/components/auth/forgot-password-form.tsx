@@ -1,11 +1,10 @@
 'use client'
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, Mail, KeyRound, AlertCircle } from 'lucide-react'
+import { Loader2,  KeyRound,  } from 'lucide-react'
 import { toast } from 'sonner'
 import { useForgotPassword } from '@/hooks/auth'
 import { forgotPasswordSchema, type ForgotPasswordFormData } from '@/schemas/auth'

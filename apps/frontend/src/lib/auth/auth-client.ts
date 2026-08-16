@@ -57,7 +57,7 @@ export async function login(credentials: LoginCredentials): Promise<AuthSession>
   const client = getApolloClient();
 
   try {
-    const { data, errors } = await client.mutate({
+    const result = await client.mutate<{ login: AuthSession }>({
       mutation: LOGIN_MUTATION,
       variables: {
         input: {
@@ -67,9 +67,11 @@ export async function login(credentials: LoginCredentials): Promise<AuthSession>
       },
     });
 
-    if (errors && errors.length > 0) {
-      throw new Error(errors[0].message || 'Login failed');
+    if (!result.data?.login) {
+      throw new Error('Login failed - no data returned');
     }
+
+    const { data } = result;
 
     if (!data?.login) {
       throw new Error('Login failed - no data returned');
@@ -98,7 +100,7 @@ export async function register(data: RegisterData): Promise<AuthPayload> {
   const client = getApolloClient();
 
   try {
-    const { data: result, errors } = await client.mutate({
+    const result = await client.mutate<{ register: AuthPayload }>({
       mutation: REGISTER_MUTATION,
       variables: {
         input: {
@@ -112,21 +114,17 @@ export async function register(data: RegisterData): Promise<AuthPayload> {
       },
     });
 
-    if (errors && errors.length > 0) {
-      throw new Error(errors[0].message || 'Registration failed');
-    }
-
-    if (!result?.register) {
+    if (!result.data?.register) {
       throw new Error('Registration failed - no data returned');
     }
 
     // Store access token
-    const { accessToken } = result.register;
+    const { accessToken } = result.data.register;
     if (typeof window !== 'undefined') {
       localStorage.setItem('auth-token', accessToken);
     }
 
-    return result.register;
+    return result.data.register;
   } catch (error) {
     console.error('Registration error:', error);
     throw error instanceof Error ? error : new Error('Registration failed');
@@ -191,20 +189,16 @@ export async function requestPasswordReset(email: string): Promise<{ message: st
   const client = getApolloClient();
 
   try {
-    const { data, errors } = await client.mutate({
+    const result = await client.mutate<{ forgotPassword: { message: string; expiresAt: string } }>({
       mutation: FORGOT_PASSWORD_MUTATION,
       variables: { email },
     });
 
-    if (errors && errors.length > 0) {
-      throw new Error(errors[0].message || 'Password reset request failed');
-    }
-
-    if (!data?.forgotPassword) {
+    if (!result.data?.forgotPassword) {
       throw new Error('Password reset request failed - no data returned');
     }
 
-    return data.forgotPassword;
+    return result.data.forgotPassword;
   } catch (error) {
     console.error('Password reset request error:', error);
     throw error instanceof Error ? error : new Error('Password reset request failed');
@@ -218,7 +212,7 @@ export async function resetPassword(token: string, newPassword: string): Promise
   const client = getApolloClient();
 
   try {
-    const { data, errors } = await client.mutate({
+    const result = await client.mutate<{ resetPassword: boolean }>({
       mutation: RESET_PASSWORD_MUTATION,
       variables: {
         input: {
@@ -228,11 +222,7 @@ export async function resetPassword(token: string, newPassword: string): Promise
       },
     });
 
-    if (errors && errors.length > 0) {
-      throw new Error(errors[0].message || 'Password reset failed');
-    }
-
-    return data?.resetPassword || false;
+    return result.data?.resetPassword || false;
   } catch (error) {
     console.error('Password reset error:', error);
     throw error instanceof Error ? error : new Error('Password reset failed');
@@ -246,22 +236,18 @@ export async function verifyEmail(token: string): Promise<{ success: boolean; me
   const client = getApolloClient();
 
   try {
-    const { data, errors } = await client.mutate({
+    const result = await client.mutate<{ verifyEmail: { success: boolean; message: string; user?: User } }>({
       mutation: VERIFY_EMAIL_MUTATION,
       variables: {
         input: { token },
       },
     });
 
-    if (errors && errors.length > 0) {
-      throw new Error(errors[0].message || 'Email verification failed');
-    }
-
-    if (!data?.verifyEmail) {
+    if (!result.data?.verifyEmail) {
       throw new Error('Email verification failed - no data returned');
     }
 
-    return data.verifyEmail;
+    return result.data.verifyEmail;
   } catch (error) {
     console.error('Email verification error:', error);
     throw error instanceof Error ? error : new Error('Email verification failed');

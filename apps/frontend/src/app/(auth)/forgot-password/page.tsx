@@ -5,6 +5,9 @@ export const metadata = {
   description: 'Reset your SnakeSOS password',
 }
 
+// Opt out of static generation since this page uses Apollo Client hooks
+export const dynamic = 'force-dynamic'
+
 export default function ForgotPasswordPage() {
   return <ForgotPasswordForm />
 }

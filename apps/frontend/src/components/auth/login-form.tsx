@@ -36,7 +36,10 @@ export function LoginForm() {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const result = await login(data)
+      const result = await login({
+        email: data.email,
+        password: data.password,
+      })
       
       // Check if email is verified
       if (!result.user.emailVerified) {

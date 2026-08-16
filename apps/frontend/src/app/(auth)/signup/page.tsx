@@ -6,6 +6,9 @@ export const metadata = {
   description: 'Create your SnakeSOS account',
 }
 
+// Opt out of static generation since this page uses Apollo Client hooks
+export const dynamic = 'force-dynamic'
+
 export default function SignupPage() {
   return (
     <TwoColumnAuthLayout

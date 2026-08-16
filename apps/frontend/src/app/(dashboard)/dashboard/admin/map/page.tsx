@@ -1,17 +1,18 @@
 /**
  * Admin Map Page
  * Track all rescues, rescuers, and monitor rescue operations
+ * ✅ INTEGRATED: GraphQL query for all active rescues
  */
 
 'use client';
 
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useQuery } from '@/lib/apollo';
 import { useUserLocation } from '@/hooks/useUserLocation';
-import { LIST_RESCUES_QUERY } from '@/lib/graphql/queries/rescue.queries';
+import { useActiveRescuesQuery } from '@/lib/graphql/hooks/rescue.hooks';
 import { MapPin, Users, AlertCircle, RefreshCw, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 // Dynamic import to avoid SSR issues
 const RescueMap = dynamic(
@@ -34,15 +35,21 @@ export default function AdminMapPage() {
   
   const { location, error: locationError, requestLocation } = useUserLocation();
   
-  const { data, loading, error, refetch } = useQuery(LIST_RESCUES_QUERY, {
+  // Fetch all active rescues using GraphQL hooks
+  const { data, loading, error, refetch } = useActiveRescuesQuery({
     variables: {
-      filter: { statuses: ['PENDING', 'ASSIGNED', 'IN_PROGRESS'] },
-      pagination: { page: 1, limit: 200 },
+      pagination: { limit: 200, page: 1 },
     },
     pollInterval: 30000, // Refresh every 30 seconds
+    fetchPolicy: 'cache-and-network',
   });
 
-  const rescues = (data as any)?.rescueRequests?.edges?.map((edge: any) => edge.node) || [];
+  const rescues = data?.activeRescues?.edges?.map(edge => edge.node) || [];
+  
+  // Show error toast
+  if (error) {
+    toast.error(`Failed to load rescues: ${error.message}`);
+  }
 
   // Calculate statistics
   const stats = {
@@ -61,7 +68,7 @@ export default function AdminMapPage() {
       name: r.assignedVolunteer?.user?.name || 'Active Rescuer',
       lat: r.lat || 0,
       lng: r.lng ? r.lng + 0.002 : 0.002, // Offset slightly for visibility
-      phone: r.assignedVolunteer?.user?.phone || r.phone,
+      phone: r.assignedVolunteer?.contact || r.phone, // Use 'contact' field
       status: 'En Route',
     }));
 

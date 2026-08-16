@@ -1,264 +1,504 @@
 'use client'
 
-import { 
-  MapPin, 
-  Clock, 
-  CheckCircle2,
-  AlertCircle,
-  Phone,
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import {
+  Activity,
+  CheckCircle,
+  Clock,
+  MapPin,
   Navigation,
-  Loader2
+  Phone,
+  XCircle,
+  AlertCircle,
+  TrendingUp,
+  Award,
+  Loader2,
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import Link from 'next/link'
-import { useMyAssignedRescues, useCurrentUser } from '@/hooks/dashboard'
+import { Switch } from '@/components/ui/switch'
+import { cn } from '@/lib/utils'
+import { useMyAssignedRescuesQuery, useAcceptRescueMutation } from '@/lib/graphql/hooks/rescue.hooks'
+import { toast } from 'sonner'
+
+/**
+ * Rescuer Dashboard
+ * 
+ * Main dashboard for rescuers showing:
+ * - Availability toggle
+ * - Current active rescue
+ * - Pending assignments
+ * - Today's statistics
+ */
+
+// Mock data - TODO: Replace with GraphQL queries
+const mockVolunteer = {
+  id: 'vol-1',
+  name: 'Ram Prasad Sharma',
+  isAvailableNow: true,
+  totalRescues: 156,
+  completedRescues: 148,
+  rating: 4.8,
+  todayRescues: 3,
+}
+
+const mockActiveRescue = {
+  id: 'rescue-active-1',
+  referenceNumber: 'BR-2024-102',
+  status: 'IN_PROGRESS',
+  priority: 'HIGH',
+  municipality: 'Butwal',
+  ward: 12,
+  address: 'Traffic Chowk, Main Road',
+  snakeDescription: 'Large brown snake, approximately 4 feet',
+  createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+  acceptedAt: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
+  distance: 2.3,
+  citizenName: 'John Doe',
+  citizenPhone: '9841234567',
+}
+
+const mockPendingAssignments = [
+  {
+    id: 'rescue-pending-1',
+    referenceNumber: 'BR-2024-103',
+    status: 'ASSIGNED',
+    priority: 'MEDIUM',
+    municipality: 'Butwal',
+    address: 'Near City Mall',
+    snakeDescription: 'Small green snake in garden',
+    distance: 1.5,
+    createdAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
+  },
+  {
+    id: 'rescue-pending-2',
+    referenceNumber: 'BR-2024-104',
+    status: 'ASSIGNED',
+    priority: 'HIGH',
+    municipality: 'Butwal',
+    address: 'Hospital Road',
+    snakeDescription: 'Snake inside house, possibly venomous',
+    distance: 3.2,
+    createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+  },
+]
+
+const PRIORITY_COLORS = {
+  LOW: 'bg-gray-500',
+  MEDIUM: 'bg-yellow-500',
+  HIGH: 'bg-orange-500',
+  CRITICAL: 'bg-red-500',
+}
 
 export default function RescuerDashboard() {
-  const { user } = useCurrentUser()
-  const { rescues, totalCount, loading, error } = useMyAssignedRescues({
-    pagination: { first: 10 },
+  const router = useRouter()
+  const [isAvailable, setIsAvailable] = useState(mockVolunteer.isAvailableNow)
+  const [updatingAvailability, setUpdatingAvailability] = useState(false)
+  const [accepting, setAccepting] = useState<string | null>(null)
+
+  // Fetch assigned rescues
+  const { data, loading, refetch } = useMyAssignedRescuesQuery({
+    variables: {
+      filter: { statuses: ['ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'] }
+    },
+    pollInterval: 10000, // Real-time updates
+    fetchPolicy: 'cache-and-network',
   })
 
-  // Loading state
-  if (loading) {
-    return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
-          <p className="mt-4 text-sm text-muted-foreground">Loading your rescues...</p>
-        </div>
-      </div>
-    )
-  }
+  // Accept rescue mutation
+  const [acceptRescue] = useAcceptRescueMutation({
+    onCompleted: () => {
+      toast.success('Rescue accepted!')
+      refetch()
+      router.push('/dashboard/rescuer/active')
+    },
+    onError: (error) => {
+      toast.error(`Failed to accept: ${error.message}`)
+      setAccepting(null)
+    }
+  })
 
-  // Calculate stats
-  const monthlyRescues = rescues.filter(r => {
-    const createdDate = new Date(r.createdAt)
-    const now = new Date()
-    return createdDate.getMonth() === now.getMonth() && 
-           createdDate.getFullYear() === now.getFullYear()
+  // Extract rescues from GraphQL
+  const allRescues = data?.myAssignedRescues?.edges?.map(e => e.node) || []
+  const activeRescue = allRescues.find(r => ['ACCEPTED', 'IN_PROGRESS', 'ARRIVED'].includes(r.status))
+  const pendingAssignments = allRescues.filter(r => r.status === 'ASSIGNED')
+
+  // Calculate stats from real data
+  const todayRescues = allRescues.filter(r => {
+    const today = new Date().setHours(0, 0, 0, 0)
+    const rescueDate = new Date(r.createdAt).setHours(0, 0, 0, 0)
+    return rescueDate === today
   }).length
 
-  const volunteerProfile = user?.volunteerProfile
-  const completedRescues = volunteerProfile?.completedRescues || 0
-  const rating = volunteerProfile?.rating || 0
+  const handleAvailabilityToggle = async (checked: boolean) => {
+    setUpdatingAvailability(true)
+    try {
+      // TODO: Call GraphQL mutation to update availability
+      // await updateVolunteerAvailability({ available: checked })
+      await new Promise(resolve => setTimeout(resolve, 500))
+      setIsAvailable(checked)
+      toast.success(checked ? 'You are now online' : 'You are now offline')
+    } catch (error) {
+      console.error('Failed to update availability:', error)
+      toast.error('Failed to update availability')
+    } finally {
+      setUpdatingAvailability(false)
+    }
+  }
+
+  const handleAcceptRescue = async (rescueId: string) => {
+    setAccepting(rescueId)
+    try {
+      await acceptRescue({
+        variables: {
+          input: { rescueId }
+        }
+      })
+    } catch (error) {
+      console.error('Failed to accept rescue:', error)
+    }
+  }
+
+  const handleRejectRescue = async (rescueId: string) => {
+    // TODO: Implement reject mutation
+    toast.info('Reject functionality coming soon')
+    console.log('Rejecting rescue:', rescueId)
+  }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
-      {/* Header */}
-      <div className="mb-8 flex items-start justify-between">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="mx-auto max-w-7xl space-y-6">
+        
+        {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold">Rescuer Dashboard</h1>
-          <p className="text-muted-foreground">Your rescue assignments and status</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Rescuer Dashboard
+          </h1>
+          <p className="mt-1 text-gray-600 dark:text-gray-400">
+            Welcome back, {mockVolunteer.name}
+          </p>
         </div>
-        <div className="flex gap-2">
-          <Badge 
-            variant={volunteerProfile?.status === 'ACTIVE' ? 'default' : 'secondary'}
-            className="text-sm"
-          >
-            {volunteerProfile?.status === 'ACTIVE' ? '🟢' : '🔴'} {volunteerProfile?.status || 'INACTIVE'}
-          </Badge>
-        </div>
-      </div>
 
-      {/* Stats Grid */}
-      <div className="mb-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Rescues</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{completedRescues}</div>
-            <p className="text-xs text-muted-foreground">
-              All time
-            </p>
-          </CardContent>
-        </Card>
+        {/* Loading State */}
+        {loading && !data && (
+          <Card className="p-8 text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-2" />
+            <p className="text-gray-600 dark:text-gray-400">Loading your dashboard...</p>
+          </Card>
+        )}
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">This Month</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{monthlyRescues}</div>
-            <p className="text-xs text-success">
-              +2 from last month
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Your Rating</CardTitle>
-            <span className="text-lg">⭐</span>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{rating > 0 ? rating.toFixed(1) : 'N/A'}/5.0</div>
-            <p className="text-xs text-muted-foreground">
-              {rating > 0 ? 'Your rating' : 'No ratings yet'}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Assigned Now</CardTitle>
-            <AlertCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{rescues.length}</div>
-            <p className="text-xs text-destructive">
-              {rescues.filter(r => r.priority === 'CRITICAL').length} critical
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="mb-8">
-        <h2 className="mb-4 text-xl font-semibold">Quick Actions</h2>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Button className="h-auto flex-col gap-2 py-6" variant="destructive">
-            <AlertCircle className="h-8 w-8" />
-            <span>Mark Unavailable</span>
-          </Button>
-          <Button asChild variant="outline" className="h-auto flex-col gap-2 py-6">
-            <Link href="/rescues">
-              <MapPin className="h-8 w-8" />
-              <span>View All Rescues</span>
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="h-auto flex-col gap-2 py-6">
-            <Link href="/dashboard/rescuer/history">
-              <Clock className="h-8 w-8" />
-              <span>Rescue History</span>
-            </Link>
-          </Button>
-        </div>
-      </div>
-
-      {/* Assigned Rescues */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Assigned Rescues</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {rescues.length === 0 ? (
-            <div className="py-8 text-center text-muted-foreground">
-              <CheckCircle2 className="mx-auto mb-2 h-12 w-12 text-muted-foreground/50" />
-              <p>No rescues assigned right now</p>
-              <p className="text-sm">You'll be notified when a rescue is assigned</p>
+        {/* Availability Toggle */}
+        <Card className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div
+                className={cn(
+                  'flex h-12 w-12 items-center justify-center rounded-full',
+                  isAvailable ? 'bg-green-100' : 'bg-gray-100'
+                )}
+              >
+                <Activity
+                  className={cn('h-6 w-6', isAvailable ? 'text-green-600' : 'text-gray-400')}
+                />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold">
+                  {isAvailable ? 'You are Online' : 'You are Offline'}
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {isAvailable
+                    ? 'Ready to accept new rescue assignments'
+                    : 'Turn on availability to receive assignments'}
+                </p>
+              </div>
             </div>
-          ) : (
-            <div className="space-y-4">
-              {rescues.map((rescue) => {
-                const formatDate = (dateStr: string | null) => {
-                  if (!dateStr) return 'Unknown'
-                  const date = new Date(dateStr)
-                  if (isNaN(date.getTime())) return 'Invalid date'
-                  
-                  const now = new Date()
-                  const diffMs = now.getTime() - date.getTime()
-                  const diffMins = Math.floor(diffMs / 60000)
-                  const diffHours = Math.floor(diffMs / 3600000)
+            <Switch
+              checked={isAvailable}
+              onCheckedChange={handleAvailabilityToggle}
+              disabled={updatingAvailability}
+            />
+          </div>
+        </Card>
 
-                  if (diffMins < 1) return 'Just now'
-                  if (diffMins < 60) return `${diffMins} min ago`
-                  if (diffHours < 24) return `${diffHours} hours ago`
-                  const diffDays = Math.floor(diffHours / 24)
-                  return `${diffDays} days ago`
-                }
+        {/* Stats Grid */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Total Rescues</p>
+                <p className="mt-1 text-2xl font-bold">{mockVolunteer.totalRescues}</p>
+              </div>
+              <Activity className="h-8 w-8 text-primary" />
+            </div>
+          </Card>
 
-                const getPriorityBadge = (priority: string) => {
-                  if (priority === 'CRITICAL' || priority === 'HIGH') return 'destructive'
-                  return 'secondary'
-                }
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Success Rate</p>
+                <p className="mt-1 text-2xl font-bold">
+                  {Math.round((mockVolunteer.completedRescues / mockVolunteer.totalRescues) * 100)}%
+                </p>
+              </div>
+              <CheckCircle className="h-8 w-8 text-green-500" />
+            </div>
+          </Card>
 
-                return (
-                  <div
-                    key={rescue.id}
-                    className="rounded-lg border border-border p-4"
-                  >
-                    <div className="mb-3 flex items-start justify-between">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-sm font-semibold">
-                            {rescue.referenceNumber || rescue.id}
-                          </span>
-                          <Badge 
-                            variant={getPriorityBadge(rescue.priority)}
-                            className="text-xs"
-                          >
-                            {rescue.priority}
-                          </Badge>
-                          {rescue.isEmergency && (
-                            <Badge variant="destructive" className="text-xs">
-                              EMERGENCY
-                            </Badge>
-                          )}
-                        </div>
-                        <h3 className="mt-1 font-semibold">
-                          {rescue.snakeDescription || 'Snake Rescue'}
-                        </h3>
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        {formatDate(rescue.createdAt)}
-                      </span>
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Rating</p>
+                <p className="mt-1 text-2xl font-bold">⭐ {mockVolunteer.rating}</p>
+              </div>
+              <Award className="h-8 w-8 text-yellow-500" />
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Today</p>
+                <p className="mt-1 text-2xl font-bold">{todayRescues}</p>
+              </div>
+              <TrendingUp className="h-8 w-8 text-blue-500" />
+            </div>
+          </Card>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          
+          {/* Active Rescue */}
+          <div className="lg:col-span-2 space-y-6">
+            {activeRescue ? (
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold">Active Rescue</h2>
+                  <Badge className="bg-green-500 text-white">
+                    {activeRescue.status.replace('_', ' ')}
+                  </Badge>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-lg font-semibold">{activeRescue.referenceNumber}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {activeRescue.address}, {activeRescue.municipality}
+                      </p>
                     </div>
+                    <Badge className={cn('text-white', PRIORITY_COLORS[activeRescue.priority as keyof typeof PRIORITY_COLORS])}>
+                      {activeRescue.priority}
+                    </Badge>
+                  </div>
 
-                    <div className="mb-3 flex items-center gap-2 text-sm text-muted-foreground">
-                      <MapPin className="h-4 w-4" />
-                      <span>
-                        {rescue.address}, {rescue.municipality}
-                        {rescue.ward ? `-${rescue.ward}` : ''}
-                      </span>
+                  <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+                    <p className="text-sm font-medium text-gray-500 mb-1">Snake Description</p>
+                    <p>{activeRescue.snakeDescription || 'No description available'}</p>
+                  </div>
+
+                  <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-4 w-4" />
+                      <span>{Math.round((Date.now() - new Date(activeRescue.acceptedAt || activeRescue.assignedAt || activeRescue.createdAt).getTime()) / 60000)} min ago</span>
                     </div>
-
-                    {rescue.hasBite && (
-                      <div className="mb-3 rounded-md bg-destructive/10 p-2 text-sm font-medium text-destructive">
-                        ⚠️ Snakebite reported - Medical emergency
+                    {activeRescue.lat && activeRescue.lng && (
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-4 w-4" />
+                        <span>Location captured</span>
                       </div>
                     )}
-
-                    <div className="flex gap-2">
-                      {rescue.lat && rescue.lng ? (
-                        <Button size="sm" className="flex-1" asChild>
-                          <a 
-                            href={`https://www.google.com/maps/dir/?api=1&destination=${rescue.lat},${rescue.lng}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Navigation className="mr-2 h-4 w-4" />
-                            Navigate
-                          </a>
-                        </Button>
-                      ) : (
-                        <Button size="sm" className="flex-1" disabled>
-                          <Navigation className="mr-2 h-4 w-4" />
-                          No GPS
-                        </Button>
-                      )}
-                      <Button size="sm" variant="outline" asChild>
-                        <a href={`tel:${rescue.phone}`}>
-                          <Phone className="mr-2 h-4 w-4" />
-                          Call
-                        </a>
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        Details
-                      </Button>
-                    </div>
                   </div>
-                )
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <Button
+                      className="w-full"
+                      onClick={() => router.push('/dashboard/rescuer/active')}
+                    >
+                      <Navigation className="mr-2 h-4 w-4" />
+                      Continue Rescue
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => {
+                        if (activeRescue.user?.phone) {
+                          window.location.href = `tel:${activeRescue.user.phone}`
+                        }
+                      }}
+                    >
+                      <Phone className="mr-2 h-4 w-4" />
+                      Call Citizen
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ) : (
+              <Card className="p-12 text-center">
+                <Activity className="mx-auto h-12 w-12 text-gray-400" />
+                <h3 className="mt-4 text-lg font-semibold">No Active Rescue</h3>
+                <p className="mt-2 text-gray-600 dark:text-gray-400">
+                  {isAvailable
+                    ? 'Accept an assignment below to start a rescue'
+                    : 'Turn on availability to receive assignments'}
+                </p>
+              </Card>
+            )}
+
+            {/* Pending Assignments */}
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-6">Pending Assignments</h2>
+              
+              {pendingAssignments.length > 0 ? (
+                <div className="space-y-4">
+                  {pendingAssignments.map((assignment) => (
+                    <div
+                      key={assignment.id}
+                      className="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <p className="font-semibold">{assignment.referenceNumber}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {assignment.address}, {assignment.municipality}
+                          </p>
+                        </div>
+                        <Badge className={cn('text-white', PRIORITY_COLORS[assignment.priority as keyof typeof PRIORITY_COLORS])}>
+                          {assignment.priority}
+                        </Badge>
+                      </div>
+
+                      <p className="text-sm mb-3">{assignment.snakeDescription || 'No description available'}</p>
+
+                      <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4">
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          <span>{Math.round((Date.now() - new Date(assignment.createdAt).getTime()) / 60000)} min ago</span>
+                        </div>
+                        {assignment.lat && assignment.lng && (
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-4 w-4" />
+                            <span>GPS available</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        <Button
+                          onClick={() => handleAcceptRescue(assignment.id)}
+                          disabled={accepting === assignment.id}
+                          className="w-full bg-green-600 hover:bg-green-700"
+                        >
+                          {accepting === assignment.id ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Accepting...
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="mr-2 h-4 w-4" />
+                              Accept
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => handleRejectRescue(assignment.id)}
+                          disabled={accepting === assignment.id}
+                          className="w-full"
+                        >
+                          <XCircle className="mr-2 h-4 w-4" />
+                          Reject
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-8 text-center">
+                  <AlertCircle className="mx-auto h-8 w-8 text-gray-400" />
+                  <p className="mt-2 text-gray-600 dark:text-gray-400">
+                    No pending assignments
+                  </p>
+                </div>
+              )}
+            </Card>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            
+            {/* Quick Actions */}
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
+              <div className="space-y-2">
+                <Button
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={() => router.push('/dashboard/rescuer/assignments')}
+                >
+                  <Activity className="mr-2 h-4 w-4" />
+                  View All Assignments
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={() => router.push('/dashboard/rescuer/history')}
+                >
+                  <Clock className="mr-2 h-4 w-4" />
+                  Rescue History
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start"
+                  onClick={() => router.push('/dashboard/rescuer/map')}
+                >
+                  <MapPin className="mr-2 h-4 w-4" />
+                  Map View
+                </Button>
+              </div>
+            </Card>
+
+            {/* Emergency Contact */}
+            <Card className="p-6 border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950">
+              <h3 className="text-lg font-semibold mb-2 text-red-900 dark:text-red-100">
+                Emergency Support
+              </h3>
+              <p className="text-sm text-red-800 dark:text-red-200 mb-4">
+                Need help during a rescue? Contact our emergency line
+              </p>
+              <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+                <Phone className="mr-2 h-4 w-4" />
+                Call Emergency: 102
+              </Button>
+            </Card>
+
+            {/* Safety Tips */}
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-3">Safety Reminder</h3>
+              <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                <li className="flex gap-2">
+                  <span>•</span>
+                  <span>Always wear protective gear</span>
+                </li>
+                <li className="flex gap-2">
+                  <span>•</span>
+                  <span>Never handle venomous snakes without proper equipment</span>
+                </li>
+                <li className="flex gap-2">
+                  <span>•</span>
+                  <span>Update your status regularly</span>
+                </li>
+                <li className="flex gap-2">
+                  <span>•</span>
+                  <span>Contact support if unsure</span>
+                </li>
+              </ul>
+            </Card>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

@@ -16,9 +16,9 @@ import { markers, activityFeed } from '@/lib/dashboard-data'
 
 export default function CitizenDashboard() {
   const { requests, totalCount, loading } = useMyRescueRequests({
-    pagination: { first: 10 },
+    pagination: { limit: 10, page: 1 } ,
   })
-  const { user, loading: userLoading } = useCurrentUser()
+  const { loading: userLoading } = useCurrentUser()
 
   // Loading state
   if (loading || userLoading) {
@@ -31,9 +31,6 @@ export default function CitizenDashboard() {
       </div>
     )
   }
-
-  // Get user's first name
-  const firstName = user?.name?.split(' ')[0] || 'Friend'
 
   // Calculate stats
   const activeRequests = requests.filter(r => 

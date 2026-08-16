@@ -251,9 +251,9 @@ export type AssignRescueInput = {
 /** Authentication payload returned on successful login/register */
 export type AuthPayload = {
   __typename?: 'AuthPayload';
+  accessToken: Scalars['String']['output'];
   expiresIn: Scalars['Int']['output'];
   refreshToken: Scalars['String']['output'];
-  token: Scalars['String']['output'];
   user: User;
 };
 
@@ -1123,6 +1123,8 @@ export type Mutation = {
   cancelTraining: Training;
   /** Cancel training enrollment */
   cancelTrainingEnrollment: Training;
+  /** Change password (requires current password) */
+  changePassword: Scalars['Boolean']['output'];
   /** Mark rescue as completed */
   completeRescue: RescueRequest;
   /** Mark training as completed (admin) */
@@ -1141,6 +1143,8 @@ export type Mutation = {
   createTraining: Training;
   /** Delete AI identification */
   deleteAIIdentification: SuccessResponse;
+  /** Delete user account (soft delete) */
+  deleteAccount: Scalars['Boolean']['output'];
   /** Delete a blog post (soft delete) */
   deleteBlogPost: SuccessResponse;
   /** Delete contact message (soft delete) */
@@ -1161,6 +1165,8 @@ export type Mutation = {
   deleteVolunteer: SuccessResponse;
   /** Enroll in training session */
   enrollInTraining: Training;
+  /** Request password reset email */
+  forgotPassword: PasswordResetTokenPayload;
   /** Generate donation receipt */
   generateDonationReceipt: Donation;
   /** Identify snake from image using AI */
@@ -1173,12 +1179,18 @@ export type Mutation = {
   likeBlogPost: BlogPost;
   /** Like a gallery image */
   likeGalleryImage: GalleryImage;
+  /** Login with email and password */
+  login: AuthPayload;
+  /** Logout current user (invalidates refresh token) */
+  logout: Scalars['Boolean']['output'];
   /** Mark all notifications as read */
   markAllNotificationsAsRead: SuccessResponse;
   /** Mark message as read */
   markMessageAsRead: ContactMessage;
   /** Mark notification as read */
   markNotificationAsRead: Notification;
+  /** Login with OAuth provider (Google) */
+  oauthLogin: AuthPayload;
   /** Process payment (callback from gateway) */
   processPayment: Donation;
   /** Provide feedback on AI identification */
@@ -1191,12 +1203,20 @@ export type Mutation = {
   reactivateVolunteer: Volunteer;
   /** Refresh analytics cache */
   refreshAnalyticsCache: SuccessResponse;
+  /** Refresh access token using refresh token cookie */
+  refreshToken: AuthPayload;
   /** Refund donation (admin) */
   refundDonation: Donation;
+  /** Register a new user account */
+  register: AuthPayload;
   /** Reopen cancelled/closed rescue */
   reopenRescue: RescueRequest;
   /** Reprocess identification with different model */
   reprocessIdentification: AiIdentification;
+  /** Resend email verification */
+  resendVerification: Scalars['Boolean']['output'];
+  /** Reset password with token */
+  resetPassword: Scalars['Boolean']['output'];
   /** Respond to a contact message */
   respondToMessage: ContactMessage;
   /** Approve or reject volunteer application */
@@ -1223,6 +1243,8 @@ export type Mutation = {
   updateNotificationPreferences: NotificationPreferences;
   /** Update payment gateway configuration */
   updatePaymentGateway: PaymentGatewayConfig;
+  /** Update user profile */
+  updateProfile: User;
   /** Update rescue progress (volunteer) */
   updateRescueProgress: RescueRequest;
   /** Update a rescue request */
@@ -1241,6 +1263,8 @@ export type Mutation = {
   uploadGalleryImage: GalleryImage;
   /** Verify donation (admin) */
   verifyDonation: Donation;
+  /** Verify email address with token */
+  verifyEmail: EmailVerificationPayload;
   /** Verify completed rescue (admin) */
   verifyRescue: RescueRequest;
   /** Verify snake species (admin only) */
@@ -1318,6 +1342,10 @@ export type MutationCancelTrainingEnrollmentArgs = {
   trainingId: Scalars['ID']['input'];
 };
 
+export type MutationChangePasswordArgs = {
+  input: ChangePasswordInput;
+};
+
 export type MutationCompleteRescueArgs = {
   input: CompleteRescueInput;
 };
@@ -1352,6 +1380,10 @@ export type MutationCreateTrainingArgs = {
 
 export type MutationDeleteAiIdentificationArgs = {
   id: Scalars['ID']['input'];
+};
+
+export type MutationDeleteAccountArgs = {
+  password: Scalars['String']['input'];
 };
 
 export type MutationDeleteBlogPostArgs = {
@@ -1390,6 +1422,10 @@ export type MutationEnrollInTrainingArgs = {
   trainingId: Scalars['ID']['input'];
 };
 
+export type MutationForgotPasswordArgs = {
+  email: Scalars['String']['input'];
+};
+
 export type MutationGenerateDonationReceiptArgs = {
   donationId: Scalars['ID']['input'];
 };
@@ -1414,12 +1450,20 @@ export type MutationLikeGalleryImageArgs = {
   id: Scalars['ID']['input'];
 };
 
+export type MutationLoginArgs = {
+  input: LoginInput;
+};
+
 export type MutationMarkMessageAsReadArgs = {
   messageId: Scalars['ID']['input'];
 };
 
 export type MutationMarkNotificationAsReadArgs = {
   id: Scalars['ID']['input'];
+};
+
+export type MutationOauthLoginArgs = {
+  input: OAuthLoginInput;
 };
 
 export type MutationProcessPaymentArgs = {
@@ -1449,6 +1493,10 @@ export type MutationRefundDonationArgs = {
   input: RefundDonationInput;
 };
 
+export type MutationRegisterArgs = {
+  input: RegisterInput;
+};
+
 export type MutationReopenRescueArgs = {
   rescueId: Scalars['ID']['input'];
 };
@@ -1456,6 +1504,14 @@ export type MutationReopenRescueArgs = {
 export type MutationReprocessIdentificationArgs = {
   identificationId: Scalars['ID']['input'];
   provider: AiProvider;
+};
+
+export type MutationResendVerificationArgs = {
+  input: ResendVerificationInput;
+};
+
+export type MutationResetPasswordArgs = {
+  input: ResetPasswordInput;
 };
 
 export type MutationRespondToMessageArgs = {
@@ -1514,6 +1570,10 @@ export type MutationUpdatePaymentGatewayArgs = {
   input: UpdatePaymentGatewayInput;
 };
 
+export type MutationUpdateProfileArgs = {
+  input: UpdateProfileInput;
+};
+
 export type MutationUpdateRescueProgressArgs = {
   input: UpdateRescueProgressInput;
 };
@@ -1553,6 +1613,10 @@ export type MutationUploadGalleryImageArgs = {
 export type MutationVerifyDonationArgs = {
   donationId: Scalars['ID']['input'];
   notes?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type MutationVerifyEmailArgs = {
+  input: VerifyEmailInput;
 };
 
 export type MutationVerifyRescueArgs = {
@@ -1804,12 +1868,6 @@ export type PaginationInput = {
   page?: InputMaybe<Scalars['Int']['input']>;
 };
 
-/** Input for password reset confirmation */
-export type PasswordResetConfirmInput = {
-  newPassword: Scalars['String']['input'];
-  token: Scalars['String']['input'];
-};
-
 /** Input for password reset request */
 export type PasswordResetRequestInput = {
   email: Scalars['Email']['input'];
@@ -1908,6 +1966,8 @@ export type Query = {
   blogPost?: Maybe<BlogPost>;
   /** List blog posts */
   blogPosts: BlogPostConnection;
+  /** Check if email is available for registration */
+  checkEmailAvailability: Scalars['Boolean']['output'];
   /** Get CMS statistics */
   cmsStats: CmsStats;
   /** Get contact message by ID */
@@ -1936,6 +1996,10 @@ export type Query = {
   galleryImages: GalleryImageConnection;
   /** Get geographic heatmap data */
   geographicHeatmap: Array<GeographicHeatmap>;
+  /** Get current authenticated user */
+  me?: Maybe<User>;
+  /** Get activity logs for current user */
+  myActivityLogs: ActivityLogConnection;
   /** Get assigned rescues (volunteer view) */
   myAssignedRescues: RescueRequestConnection;
   /** Get my donations */
@@ -1984,6 +2048,8 @@ export type Query = {
   searchRescues: RescueRequestConnection;
   /** Search snake species */
   searchSnakeSpecies: SnakeSpeciesConnection;
+  /** Search users by name or email */
+  searchUsers: UserConnection;
   /** Search volunteers */
   searchVolunteers: VolunteerConnection;
   /** Get snake species by ID */
@@ -1994,6 +2060,11 @@ export type Query = {
   snakeSpeciesStats: SnakeSpeciesStats;
   /** Get snake species by danger level */
   snakesByDangerLevel: SnakeSpeciesConnection;
+  /**
+   * Check Stripe connection status (DEVELOPMENT ONLY)
+   * This query is only available in non-production environments
+   */
+  stripeConnectionStatus: StripeConnectionStatus;
   /** Get training session by ID */
   training?: Maybe<Training>;
   /** Get training statistics */
@@ -2004,6 +2075,12 @@ export type Query = {
   unreadNotificationsCount: Scalars['Int']['output'];
   /** Get upcoming training sessions (public) */
   upcomingTrainings: TrainingConnection;
+  /** Get user by ID (admin or self only) */
+  user?: Maybe<User>;
+  /** Get user profile by ID (public) */
+  userProfile?: Maybe<UserProfile>;
+  /** List all users (admin only) */
+  users: UserConnection;
   /** Get venomous snake species */
   venomousSnakes: SnakeSpeciesConnection;
   /** Get volunteer by ID */
@@ -2053,6 +2130,10 @@ export type QueryBlogPostsArgs = {
   filter?: InputMaybe<BlogPostFilterInput>;
   pagination?: InputMaybe<PaginationInput>;
   sort?: InputMaybe<BlogPostSortInput>;
+};
+
+export type QueryCheckEmailAvailabilityArgs = {
+  email: Scalars['Email']['input'];
 };
 
 export type QueryContactMessageArgs = {
@@ -2109,6 +2190,10 @@ export type QueryGalleryImagesArgs = {
 
 export type QueryGeographicHeatmapArgs = {
   input?: InputMaybe<GeographicHeatmapInput>;
+};
+
+export type QueryMyActivityLogsArgs = {
+  pagination?: InputMaybe<PaginationInput>;
 };
 
 export type QueryMyAssignedRescuesArgs = {
@@ -2203,6 +2288,11 @@ export type QuerySearchSnakeSpeciesArgs = {
   query: Scalars['String']['input'];
 };
 
+export type QuerySearchUsersArgs = {
+  pagination?: InputMaybe<PaginationInput>;
+  query: Scalars['String']['input'];
+};
+
 export type QuerySearchVolunteersArgs = {
   filter?: InputMaybe<VolunteerFilterInput>;
   pagination?: InputMaybe<PaginationInput>;
@@ -2235,6 +2325,20 @@ export type QueryTrainingsArgs = {
 
 export type QueryUpcomingTrainingsArgs = {
   pagination?: InputMaybe<PaginationInput>;
+};
+
+export type QueryUserArgs = {
+  id: Scalars['ID']['input'];
+};
+
+export type QueryUserProfileArgs = {
+  id: Scalars['ID']['input'];
+};
+
+export type QueryUsersArgs = {
+  filter?: InputMaybe<UserFilterInput>;
+  pagination?: InputMaybe<PaginationInput>;
+  sort?: InputMaybe<UserSortInput>;
 };
 
 export type QueryVenomousSnakesArgs = {
@@ -2565,6 +2669,14 @@ export type ResendVerificationInput = {
   email: Scalars['Email']['input'];
 };
 
+/** Input for password reset */
+export type ResetPasswordInput = {
+  code: Scalars['String']['input'];
+  email: Scalars['Email']['input'];
+  newPassword: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+};
+
 /** Input for responding to a contact message */
 export type RespondToMessageInput = {
   messageId: Scalars['ID']['input'];
@@ -2736,6 +2848,21 @@ export type SpeciesIdentificationCount = {
   averageConfidence: Scalars['Float']['output'];
   count: Scalars['Int']['output'];
   species: SnakeSpecies;
+};
+
+/** Stripe connection status for development testing */
+export type StripeConnectionStatus = {
+  __typename?: 'StripeConnectionStatus';
+  /** Stripe account ID (if connected) */
+  accountId?: Maybe<Scalars['String']['output']>;
+  /** Whether Stripe is successfully connected */
+  connected: Scalars['Boolean']['output'];
+  /** Whether Stripe is in live mode */
+  livemode: Scalars['Boolean']['output'];
+  /** Human-readable status message */
+  message: Scalars['String']['output'];
+  /** Stripe mode: test, live, or unknown */
+  mode: Scalars['String']['output'];
 };
 
 /** Input for submitting a contact message */
@@ -3128,6 +3255,15 @@ export type UpdatePaymentGatewayInput = {
   testMode?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+/** Input for profile update */
+export type UpdateProfileInput = {
+  avatar?: InputMaybe<Scalars['String']['input']>;
+  language?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  phone?: InputMaybe<Scalars['Phone']['input']>;
+  timezone?: InputMaybe<Scalars['String']['input']>;
+};
+
 /** Input for updating rescue progress */
 export type UpdateRescueProgressInput = {
   lat?: InputMaybe<Scalars['Latitude']['input']>;
@@ -3346,6 +3482,14 @@ export type UserRescueRequestsArgs = {
   pagination?: InputMaybe<PaginationInput>;
 };
 
+/** Paginated connection for users */
+export type UserConnection = {
+  __typename?: 'UserConnection';
+  edges: Array<User>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
 /** Filter input for user queries */
 export type UserFilterInput = {
   createdAfter?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3451,9 +3595,10 @@ export type VenomType =
   | 'NEUROTOXIC'
   | '%future added value';
 
-/** Input for email verification */
+/** Input for email verification using OTP code only */
 export type VerifyEmailInput = {
-  token: Scalars['String']['input'];
+  code: Scalars['String']['input'];
+  email: Scalars['Email']['input'];
 };
 
 /** Volunteer profile and information */
@@ -3719,6 +3864,20 @@ export type AssignRescueInput = {
   volunteerId: string | number;
 };
 
+/** Availability time preference */
+export type AvailabilityTime =
+  | 'ANYTIME'
+  | 'EVENINGS'
+  | 'WEEKDAYS'
+  | 'WEEKENDS'
+  | '%future added value';
+
+/** Input for changing password */
+export type ChangePasswordInput = {
+  currentPassword: string;
+  newPassword: string;
+};
+
 /** Input for completing a rescue */
 export type CompleteRescueInput = {
   outcome: RescueOutcome;
@@ -3768,42 +3927,6 @@ export type CreateRescueRequestInput = {
   ward?: number | null | undefined;
 };
 
-/** Input for creating snake species */
-export type CreateSnakeSpeciesInput = {
-  activeTime?: ActivityPattern | null | undefined;
-  aliases?: Array<string> | null | undefined;
-  altitudeRange?: string | null | undefined;
-  averageLength?: string | null | undefined;
-  behavior?: string | null | undefined;
-  color?: string | null | undefined;
-  conservationStatus?: ConservationStatus | null | undefined;
-  dangerLevel?: DangerLevel | null | undefined;
-  diet?: string | null | undefined;
-  distinctiveFeatures?: Array<string> | null | undefined;
-  emergencyAdvice?: string | null | undefined;
-  family?: string | null | undefined;
-  firstAidSteps?: Array<string> | null | undefined;
-  foundInNepal?: boolean | null | undefined;
-  genus?: string | null | undefined;
-  habitat?: string | null | undefined;
-  identificationGuide?: string | null | undefined;
-  imageUrl?: string | null | undefined;
-  images?: Array<string> | null | undefined;
-  localNames?: Array<string> | null | undefined;
-  maxLength?: string | null | undefined;
-  name: string;
-  nepaliName: string;
-  pattern?: string | null | undefined;
-  protected?: boolean | null | undefined;
-  regions?: Array<string> | null | undefined;
-  safetyTips?: string | null | undefined;
-  scientificName: string;
-  species?: string | null | undefined;
-  venomType?: VenomType | null | undefined;
-  venomous: boolean;
-  videoUrl?: string | null | undefined;
-};
-
 /** Danger level of snake species */
 export type DangerLevel =
   | 'HARMLESS'
@@ -3812,14 +3935,103 @@ export type DangerLevel =
   | 'MILDLY_VENOMOUS'
   | '%future added value';
 
-/** Input for searching nearby rescues */
-export type NearbyRescuesInput = {
-  lat: number;
-  lng: number;
-  radiusKm: number;
-  status?: RescueStatus | null | undefined;
-  withinHours?: number | null | undefined;
+/** Donation purpose */
+export type DonationPurpose =
+  | 'EDUCATION'
+  | 'EMERGENCY_FUND'
+  | 'EQUIPMENT'
+  | 'GENERAL'
+  | 'INFRASTRUCTURE'
+  | 'MEDICAL'
+  | 'RESEARCH'
+  | 'TRAINING'
+  | '%future added value';
+
+/** Experience level of volunteer */
+export type ExperienceLevel =
+  | 'BEGINNER'
+  | 'EXPERT'
+  | 'INTERMEDIATE'
+  | '%future added value';
+
+/** Category of gallery image */
+export type GalleryCategory =
+  | 'EDUCATION'
+  | 'EVENT'
+  | 'HABITAT'
+  | 'RESCUE'
+  | 'SPECIES'
+  | 'TRAINING'
+  | 'VOLUNTEER'
+  | '%future added value';
+
+/** User feedback on AI identification accuracy */
+export type IdentificationFeedback =
+  | 'CORRECT'
+  | 'INCORRECT'
+  | 'PARTIAL'
+  | 'UNSURE'
+  | '%future added value';
+
+/** Input for user login */
+export type LoginInput = {
+  email: string;
+  password: string;
 };
+
+/** Category of contact message */
+export type MessageCategory =
+  | 'COMPLAINT'
+  | 'DONATION'
+  | 'FEEDBACK'
+  | 'GENERAL'
+  | 'MEDIA'
+  | 'PARTNERSHIP'
+  | 'RESCUE'
+  | 'TECHNICAL'
+  | 'VOLUNTEER'
+  | '%future added value';
+
+/** Priority of contact message */
+export type MessagePriority =
+  | 'HIGH'
+  | 'LOW'
+  | 'NORMAL'
+  | 'URGENT'
+  | '%future added value';
+
+/** Status of contact message */
+export type MessageStatus =
+  | 'ARCHIVED'
+  | 'CLOSED'
+  | 'NEW'
+  | 'READ'
+  | 'RESPONDED'
+  | '%future added value';
+
+/** Priority level of notification */
+export type NotificationPriority =
+  | 'HIGH'
+  | 'LOW'
+  | 'NORMAL'
+  | 'URGENT'
+  | '%future added value';
+
+/** Type of notification */
+export type NotificationType =
+  | 'ANNOUNCEMENT'
+  | 'DONATION_RECEIVED'
+  | 'RESCUE_ACCEPTED'
+  | 'RESCUE_ASSIGNED'
+  | 'RESCUE_CANCELLED'
+  | 'RESCUE_COMPLETED'
+  | 'RESCUE_CREATED'
+  | 'SYSTEM_ALERT'
+  | 'TRAINING_REMINDER'
+  | 'TRAINING_SCHEDULED'
+  | 'VOLUNTEER_APPROVED'
+  | 'VOLUNTEER_REJECTED'
+  | '%future added value';
 
 /** Generic pagination input */
 export type PaginationInput = {
@@ -3827,6 +4039,57 @@ export type PaginationInput = {
   limit?: number | null | undefined;
   /** Page number (1-indexed) */
   page?: number | null | undefined;
+};
+
+/** Payment method */
+export type PaymentMethod =
+  | 'BANK_TRANSFER'
+  | 'CASH'
+  | 'ESEWA'
+  | 'FONEPAY'
+  | 'IME_PAY'
+  | 'KHALTI'
+  | 'PAYPAL'
+  | 'STRIPE'
+  | '%future added value';
+
+/** Payment status */
+export type PaymentStatus =
+  | 'CANCELLED'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'PENDING'
+  | 'PROCESSING'
+  | 'REFUNDED'
+  | '%future added value';
+
+/** Category of blog post */
+export type PostCategory =
+  | 'ANNOUNCEMENT'
+  | 'EDUCATION'
+  | 'EVENT'
+  | 'GUIDE'
+  | 'NEWS'
+  | 'RESEARCH'
+  | 'SUCCESS_STORY'
+  | '%future added value';
+
+/** Status of blog post */
+export type PostStatus =
+  | 'ARCHIVED'
+  | 'DRAFT'
+  | 'PUBLISHED'
+  | 'SCHEDULED'
+  | '%future added value';
+
+/** Input for user registration */
+export type RegisterInput = {
+  email: string;
+  language?: string | null | undefined;
+  name: string;
+  password: string;
+  phone?: string | null | undefined;
+  timezone?: string | null | undefined;
 };
 
 /** Outcome of a completed rescue */
@@ -3866,23 +4129,6 @@ export type RescueRequestFilterInput = {
   statuses?: Array<RescueStatus> | null | undefined;
 };
 
-/** Fields available for sorting rescues */
-export type RescueSortField =
-  | 'ASSIGNED_AT'
-  | 'COMPLETED_AT'
-  | 'CREATED_AT'
-  | 'MUNICIPALITY'
-  | 'PRIORITY'
-  | 'STATUS'
-  | 'UPDATED_AT'
-  | '%future added value';
-
-/** Sort input for rescue queries */
-export type RescueSortInput = {
-  field: RescueSortField;
-  order: SortOrder;
-};
-
 /** Source of rescue request */
 export type RescueSource =
   | 'APP'
@@ -3890,15 +4136,6 @@ export type RescueSource =
   | 'TELEGRAM'
   | 'WEB'
   | '%future added value';
-
-/** Input for rescue statistics */
-export type RescueStatsInput = {
-  endDate?: string | null | undefined;
-  municipality?: string | null | undefined;
-  speciesId?: string | number | null | undefined;
-  startDate?: string | null | undefined;
-  volunteerId?: string | number | null | undefined;
-};
 
 /** Status of a rescue request */
 export type RescueStatus =
@@ -3912,37 +4149,51 @@ export type RescueStatus =
   | 'PENDING'
   | '%future added value';
 
-/** Filter input for snake species queries */
-export type SnakeSpeciesFilterInput = {
-  dangerLevel?: DangerLevel | null | undefined;
-  dangerLevels?: Array<DangerLevel> | null | undefined;
-  family?: string | null | undefined;
-  foundInNepal?: boolean | null | undefined;
-  protected?: boolean | null | undefined;
-  region?: string | null | undefined;
-  search?: string | null | undefined;
-  venomous?: boolean | null | undefined;
-  verified?: boolean | null | undefined;
+/** Input for resending verification email */
+export type ResendVerificationInput = {
+  email: string;
 };
 
-/** Fields available for sorting snake species */
-export type SnakeSpeciesSortField =
-  | 'CREATED_AT'
-  | 'DANGER_LEVEL'
-  | 'IDENTIFICATION_COUNT'
-  | 'NAME'
-  | 'RESCUE_COUNT'
-  | 'SCIENTIFIC_NAME'
+/** Input for password reset */
+export type ResetPasswordInput = {
+  code: string;
+  email: string;
+  newPassword: string;
+  token: string;
+};
+
+/** Status of training session */
+export type TrainingStatus =
+  | 'CANCELLED'
+  | 'COMPLETED'
+  | 'ONGOING'
+  | 'POSTPONED'
+  | 'SCHEDULED'
   | '%future added value';
 
-/** Sort input for snake species queries */
-export type SnakeSpeciesSortInput = {
-  field: SnakeSpeciesSortField;
-  order: SortOrder;
-};
+/** Type of training */
+export type TrainingType =
+  | 'ADVANCED'
+  | 'BASIC'
+  | 'DOCUMENTATION'
+  | 'EQUIPMENT_HANDLING'
+  | 'FIRST_AID'
+  | 'REFRESHER'
+  | 'SAFETY_PROTOCOLS'
+  | 'SPECIES_IDENTIFICATION'
+  | '%future added value';
 
-/** Sort order */
-export type SortOrder = 'ASC' | 'DESC' | '%future added value';
+/** Trend direction */
+export type TrendDirection = 'DOWN' | 'STABLE' | 'UP' | '%future added value';
+
+/** Input for profile update */
+export type UpdateProfileInput = {
+  avatar?: string | null | undefined;
+  language?: string | null | undefined;
+  name?: string | null | undefined;
+  phone?: string | null | undefined;
+  timezone?: string | null | undefined;
+};
 
 /** Input for updating rescue progress */
 export type UpdateRescueProgressInput = {
@@ -3953,66 +4204,37 @@ export type UpdateRescueProgressInput = {
   status: RescueStatus;
 };
 
-/** Input for updating a rescue request */
-export type UpdateRescueRequestInput = {
-  address?: string | null | undefined;
-  biteDetails?: string | null | undefined;
-  emergencyDetails?: string | null | undefined;
-  hasBite?: boolean | null | undefined;
-  internalNotes?: string | null | undefined;
-  isEmergency?: boolean | null | undefined;
-  landmark?: string | null | undefined;
-  lat?: number | null | undefined;
-  lng?: number | null | undefined;
-  municipality?: string | null | undefined;
-  notes?: string | null | undefined;
-  priority?: RescuePriority | null | undefined;
-  snakeColor?: string | null | undefined;
-  snakeDescription?: string | null | undefined;
-  snakeImageUrl?: string | null | undefined;
-  snakeImages?: Array<string> | null | undefined;
-  snakeSize?: string | null | undefined;
-  speciesId?: string | number | null | undefined;
-  status?: RescueStatus | null | undefined;
-  stillPresent?: boolean | null | undefined;
-  ward?: number | null | undefined;
-};
+/** Upload source for identification */
+export type UploadSource =
+  | 'API'
+  | 'APP'
+  | 'TELEGRAM'
+  | 'WEB'
+  | '%future added value';
 
-/** Input for updating snake species */
-export type UpdateSnakeSpeciesInput = {
-  activeTime?: ActivityPattern | null | undefined;
-  aliases?: Array<string> | null | undefined;
-  altitudeRange?: string | null | undefined;
-  averageLength?: string | null | undefined;
-  behavior?: string | null | undefined;
-  color?: string | null | undefined;
-  conservationStatus?: ConservationStatus | null | undefined;
-  dangerLevel?: DangerLevel | null | undefined;
-  diet?: string | null | undefined;
-  distinctiveFeatures?: Array<string> | null | undefined;
-  emergencyAdvice?: string | null | undefined;
-  family?: string | null | undefined;
-  firstAidSteps?: Array<string> | null | undefined;
-  foundInNepal?: boolean | null | undefined;
-  genus?: string | null | undefined;
-  habitat?: string | null | undefined;
-  identificationGuide?: string | null | undefined;
-  imageUrl?: string | null | undefined;
-  images?: Array<string> | null | undefined;
-  localNames?: Array<string> | null | undefined;
-  maxLength?: string | null | undefined;
-  name?: string | null | undefined;
-  nepaliName?: string | null | undefined;
-  pattern?: string | null | undefined;
-  protected?: boolean | null | undefined;
-  regions?: Array<string> | null | undefined;
-  safetyTips?: string | null | undefined;
-  scientificName?: string | null | undefined;
-  species?: string | null | undefined;
-  venomType?: VenomType | null | undefined;
-  venomous?: boolean | null | undefined;
-  videoUrl?: string | null | undefined;
-};
+/** User role for role-based access control */
+export type UserRole =
+  /** Administrator with full system access */
+  | 'ADMIN'
+  /** Regular citizen who can submit rescue requests */
+  | 'CITIZEN'
+  /** District-level coordinator managing volunteers */
+  | 'DISTRICT_COORDINATOR'
+  /** Super administrator with system configuration access */
+  | 'SUPER_ADMIN'
+  /** Verified snake rescuer with full rescue capabilities */
+  | 'VERIFIED_RESCUER'
+  /** Approved volunteer (not yet verified) */
+  | 'VOLUNTEER'
+  | '%future added value';
+
+/** Vehicle availability */
+export type VehicleType =
+  | 'BIKE'
+  | 'BOTH'
+  | 'CAR'
+  | 'NONE'
+  | '%future added value';
 
 /** Venom type */
 export type VenomType =
@@ -4022,148 +4244,123 @@ export type VenomType =
   | 'NEUROTOXIC'
   | '%future added value';
 
-export type RescueBasicFieldsFragment = {
-  id: string;
-  name: string;
-  phone: string;
-  email: string | null;
-  municipality: string;
-  ward: number | null;
-  address: string;
-  landmark: string | null;
-  lat: number | null;
-  lng: number | null;
-  locationAccuracy: number | null;
-  snakeDescription: string | null;
-  snakeSize: string | null;
-  snakeColor: string | null;
-  snakeImageUrl: string | null;
-  snakeImages: Array<string>;
-  status: RescueStatus;
-  priority: RescuePriority;
-  stillPresent: boolean;
-  isEmergency: boolean;
-  hasBite: boolean;
-  notes: string | null;
-  referenceNumber: string | null;
-  createdAt: string;
-  updatedAt: string;
+/** Input for email verification using OTP code only */
+export type VerifyEmailInput = {
+  code: string;
+  email: string;
 };
 
-export type RescueDetailFieldsFragment = {
-  id: string;
-  name: string;
-  phone: string;
-  email: string | null;
-  municipality: string;
-  ward: number | null;
-  address: string;
-  landmark: string | null;
-  lat: number | null;
-  lng: number | null;
-  locationAccuracy: number | null;
-  snakeDescription: string | null;
-  snakeSize: string | null;
-  snakeColor: string | null;
-  snakeImageUrl: string | null;
-  snakeImages: Array<string>;
-  status: RescueStatus;
-  priority: RescuePriority;
-  stillPresent: boolean;
-  isEmergency: boolean;
-  hasBite: boolean;
-  notes: string | null;
-  referenceNumber: string | null;
-  createdAt: string;
-  updatedAt: string;
-  internalNotes: string | null;
-  assignedAt: string | null;
-  acceptedAt: string | null;
-  arrivedAt: string | null;
-  startedAt: string | null;
-  completedAt: string | null;
-  outcome: RescueOutcome | null;
-  rescueReport: string | null;
-  rescueImages: Array<string>;
-  rescueDuration: number | null;
-  verifiedAt: string | null;
-  emergencyDetails: string | null;
-  biteDetails: string | null;
-  source: RescueSource;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    phone: string | null;
-  } | null;
-  species: {
-    id: string;
-    name: string;
-    scientificName: string;
-    venomous: boolean;
-    dangerLevel: DangerLevel | null;
-  } | null;
-  aiIdentification: {
-    id: string;
-    confidence: number;
-    provider: AiProvider;
-  } | null;
-  assignedVolunteer: { id: string; name: string; email: string | null } | null;
-  assignedBy: { id: string; name: string } | null;
-  verifiedBy: { id: string; name: string } | null;
-  timeline: Array<{
-    id: string;
-    event: string;
-    description: string | null;
-    createdAt: string;
-  }>;
-};
+/** Status of volunteer application/account */
+export type VolunteerStatus =
+  | 'APPROVED'
+  | 'INACTIVE'
+  | 'PENDING'
+  | 'REJECTED'
+  | 'SUSPENDED'
+  | 'VERIFIED'
+  | '%future added value';
 
-export type RescueRequestsQueryVariables = Exact<{
-  pagination?: PaginationInput | null | undefined;
-  filter?: RescueRequestFilterInput | null | undefined;
-  sort?: RescueSortInput | null | undefined;
+export type CreateRescueRequestMutationVariables = Exact<{
+  input: CreateRescueRequestInput;
 }>;
 
-export type RescueRequestsQuery = {
-  rescueRequests: {
-    totalCount: number;
-    edges: Array<{
-      cursor: string;
-      node: {
-        id: string;
-        name: string;
-        phone: string;
-        email: string | null;
-        municipality: string;
-        ward: number | null;
-        address: string;
-        landmark: string | null;
-        lat: number | null;
-        lng: number | null;
-        locationAccuracy: number | null;
-        snakeDescription: string | null;
-        snakeSize: string | null;
-        snakeColor: string | null;
-        snakeImageUrl: string | null;
-        snakeImages: Array<string>;
-        status: RescueStatus;
-        priority: RescuePriority;
-        stillPresent: boolean;
-        isEmergency: boolean;
-        hasBite: boolean;
-        notes: string | null;
-        referenceNumber: string | null;
-        createdAt: string;
-        updatedAt: string;
-      };
-    }>;
-    pageInfo: {
-      hasNextPage: boolean;
-      hasPreviousPage: boolean;
-      startCursor: string | null;
-      endCursor: string | null;
-    };
+export type CreateRescueRequestMutation = {
+  createRescueRequest: {
+    id: string;
+    referenceNumber: string | null;
+    status: RescueStatus;
+    priority: RescuePriority;
+    municipality: string;
+    ward: number | null;
+    address: string;
+    landmark: string | null;
+    lat: number | null;
+    lng: number | null;
+    snakeDescription: string | null;
+    snakeSize: string | null;
+    snakeColor: string | null;
+    snakeImages: Array<string>;
+    isEmergency: boolean;
+    hasBite: boolean;
+    createdAt: string;
+    updatedAt: string;
+  };
+};
+
+export type AssignRescueMutationVariables = Exact<{
+  input: AssignRescueInput;
+}>;
+
+export type AssignRescueMutation = {
+  assignRescue: {
+    id: string;
+    referenceNumber: string | null;
+    status: RescueStatus;
+    assignedAt: string | null;
+    updatedAt: string;
+    assignedBy: { id: string; name: string } | null;
+    assignedVolunteer: { id: string; name: string } | null;
+  };
+};
+
+export type AcceptRescueMutationVariables = Exact<{
+  input: AcceptRescueInput;
+}>;
+
+export type AcceptRescueMutation = {
+  acceptRescue: {
+    id: string;
+    referenceNumber: string | null;
+    status: RescueStatus;
+    acceptedAt: string | null;
+    updatedAt: string;
+  };
+};
+
+export type UpdateRescueProgressMutationVariables = Exact<{
+  input: UpdateRescueProgressInput;
+}>;
+
+export type UpdateRescueProgressMutation = {
+  updateRescueProgress: {
+    id: string;
+    referenceNumber: string | null;
+    status: RescueStatus;
+    startedAt: string | null;
+    arrivedAt: string | null;
+    updatedAt: string;
+  };
+};
+
+export type CompleteRescueMutationVariables = Exact<{
+  input: CompleteRescueInput;
+}>;
+
+export type CompleteRescueMutation = {
+  completeRescue: {
+    id: string;
+    referenceNumber: string | null;
+    status: RescueStatus;
+    completedAt: string | null;
+    outcome: RescueOutcome | null;
+    rescueReport: string | null;
+    rescueImages: Array<string>;
+    updatedAt: string;
+    species: { id: string; name: string } | null;
+  };
+};
+
+export type CancelRescueMutationVariables = Exact<{
+  rescueId: string | number;
+  reason?: string | null | undefined;
+}>;
+
+export type CancelRescueMutation = {
+  cancelRescue: {
+    id: string;
+    referenceNumber: string | null;
+    status: RescueStatus;
+    updatedAt: string;
   };
 };
 
@@ -4174,74 +4371,61 @@ export type RescueRequestQueryVariables = Exact<{
 export type RescueRequestQuery = {
   rescueRequest: {
     id: string;
-    name: string;
-    phone: string;
-    email: string | null;
+    referenceNumber: string | null;
+    status: RescueStatus;
+    priority: RescuePriority;
     municipality: string;
     ward: number | null;
     address: string;
     landmark: string | null;
     lat: number | null;
     lng: number | null;
-    locationAccuracy: number | null;
     snakeDescription: string | null;
     snakeSize: string | null;
     snakeColor: string | null;
-    snakeImageUrl: string | null;
     snakeImages: Array<string>;
-    status: RescueStatus;
-    priority: RescuePriority;
-    stillPresent: boolean;
     isEmergency: boolean;
     hasBite: boolean;
-    notes: string | null;
-    referenceNumber: string | null;
-    createdAt: string;
-    updatedAt: string;
-    internalNotes: string | null;
     assignedAt: string | null;
     acceptedAt: string | null;
-    arrivedAt: string | null;
     startedAt: string | null;
+    arrivedAt: string | null;
     completedAt: string | null;
     outcome: RescueOutcome | null;
     rescueReport: string | null;
     rescueImages: Array<string>;
     rescueDuration: number | null;
-    verifiedAt: string | null;
-    emergencyDetails: string | null;
-    biteDetails: string | null;
-    source: RescueSource;
+    createdAt: string;
+    updatedAt: string;
     user: {
       id: string;
       name: string;
       email: string;
       phone: string | null;
     } | null;
+    assignedVolunteer: {
+      id: string;
+      name: string;
+      experience: ExperienceLevel;
+      experienceYears: number | null;
+      totalRescues: number;
+      rating: number | null;
+    } | null;
+    assignedBy: { id: string; name: string } | null;
     species: {
       id: string;
       name: string;
       scientificName: string;
       venomous: boolean;
-      dangerLevel: DangerLevel | null;
     } | null;
-    aiIdentification: {
-      id: string;
-      confidence: number;
-      provider: AiProvider;
-    } | null;
-    assignedVolunteer: {
-      id: string;
-      name: string;
-      email: string | null;
-    } | null;
-    assignedBy: { id: string; name: string } | null;
-    verifiedBy: { id: string; name: string } | null;
     timeline: Array<{
       id: string;
       event: string;
       description: string | null;
+      lat: number | null;
+      lng: number | null;
       createdAt: string;
+      user: { id: string; name: string } | null;
     }>;
   } | null;
 };
@@ -4258,75 +4442,15 @@ export type MyRescueRequestsQuery = {
       cursor: string;
       node: {
         id: string;
-        name: string;
-        phone: string;
-        email: string | null;
-        municipality: string;
-        ward: number | null;
-        address: string;
-        landmark: string | null;
-        lat: number | null;
-        lng: number | null;
-        locationAccuracy: number | null;
-        snakeDescription: string | null;
-        snakeSize: string | null;
-        snakeColor: string | null;
-        snakeImageUrl: string | null;
-        snakeImages: Array<string>;
+        referenceNumber: string | null;
         status: RescueStatus;
         priority: RescuePriority;
-        stillPresent: boolean;
+        municipality: string;
+        address: string;
+        snakeDescription: string | null;
         isEmergency: boolean;
-        hasBite: boolean;
-        notes: string | null;
-        referenceNumber: string | null;
         createdAt: string;
-        updatedAt: string;
-        internalNotes: string | null;
-        assignedAt: string | null;
-        acceptedAt: string | null;
-        arrivedAt: string | null;
-        startedAt: string | null;
-        completedAt: string | null;
-        outcome: RescueOutcome | null;
-        rescueReport: string | null;
-        rescueImages: Array<string>;
-        rescueDuration: number | null;
-        verifiedAt: string | null;
-        emergencyDetails: string | null;
-        biteDetails: string | null;
-        source: RescueSource;
-        user: {
-          id: string;
-          name: string;
-          email: string;
-          phone: string | null;
-        } | null;
-        species: {
-          id: string;
-          name: string;
-          scientificName: string;
-          venomous: boolean;
-          dangerLevel: DangerLevel | null;
-        } | null;
-        aiIdentification: {
-          id: string;
-          confidence: number;
-          provider: AiProvider;
-        } | null;
-        assignedVolunteer: {
-          id: string;
-          name: string;
-          email: string | null;
-        } | null;
-        assignedBy: { id: string; name: string } | null;
-        verifiedBy: { id: string; name: string } | null;
-        timeline: Array<{
-          id: string;
-          event: string;
-          description: string | null;
-          createdAt: string;
-        }>;
+        assignedVolunteer: { id: string; name: string } | null;
       };
     }>;
     pageInfo: {
@@ -4350,75 +4474,22 @@ export type MyAssignedRescuesQuery = {
       cursor: string;
       node: {
         id: string;
-        name: string;
-        phone: string;
-        email: string | null;
+        referenceNumber: string | null;
+        status: RescueStatus;
+        priority: RescuePriority;
         municipality: string;
         ward: number | null;
         address: string;
         landmark: string | null;
         lat: number | null;
         lng: number | null;
-        locationAccuracy: number | null;
         snakeDescription: string | null;
         snakeSize: string | null;
         snakeColor: string | null;
-        snakeImageUrl: string | null;
-        snakeImages: Array<string>;
-        status: RescueStatus;
-        priority: RescuePriority;
-        stillPresent: boolean;
         isEmergency: boolean;
-        hasBite: boolean;
-        notes: string | null;
-        referenceNumber: string | null;
-        createdAt: string;
-        updatedAt: string;
-        internalNotes: string | null;
         assignedAt: string | null;
         acceptedAt: string | null;
-        arrivedAt: string | null;
-        startedAt: string | null;
-        completedAt: string | null;
-        outcome: RescueOutcome | null;
-        rescueReport: string | null;
-        rescueImages: Array<string>;
-        rescueDuration: number | null;
-        verifiedAt: string | null;
-        emergencyDetails: string | null;
-        biteDetails: string | null;
-        source: RescueSource;
-        user: {
-          id: string;
-          name: string;
-          email: string;
-          phone: string | null;
-        } | null;
-        species: {
-          id: string;
-          name: string;
-          scientificName: string;
-          venomous: boolean;
-          dangerLevel: DangerLevel | null;
-        } | null;
-        aiIdentification: {
-          id: string;
-          confidence: number;
-          provider: AiProvider;
-        } | null;
-        assignedVolunteer: {
-          id: string;
-          name: string;
-          email: string | null;
-        } | null;
-        assignedBy: { id: string; name: string } | null;
-        verifiedBy: { id: string; name: string } | null;
-        timeline: Array<{
-          id: string;
-          event: string;
-          description: string | null;
-          createdAt: string;
-        }>;
+        user: { id: string; name: string; phone: string | null } | null;
       };
     }>;
     pageInfo: {
@@ -4430,1686 +4501,1170 @@ export type MyAssignedRescuesQuery = {
   };
 };
 
-export type NearbyRescuesQueryVariables = Exact<{
-  input: NearbyRescuesInput;
+export type ActiveRescuesQueryVariables = Exact<{
+  pagination?: PaginationInput | null | undefined;
 }>;
 
-export type NearbyRescuesQuery = {
-  nearbyRescues: Array<{
-    distance: number;
-    rescue: {
+export type ActiveRescuesQuery = {
+  activeRescues: {
+    totalCount: number;
+    edges: Array<{
+      cursor: string;
+      node: {
+        id: string;
+        referenceNumber: string | null;
+        status: RescueStatus;
+        priority: RescuePriority;
+        municipality: string;
+        ward: number | null;
+        address: string;
+        lat: number | null;
+        lng: number | null;
+        snakeDescription: string | null;
+        isEmergency: boolean;
+        createdAt: string;
+        assignedAt: string | null;
+        acceptedAt: string | null;
+        user: { id: string; name: string; phone: string | null } | null;
+        assignedVolunteer: { id: string; name: string } | null;
+      };
+    }>;
+    pageInfo: {
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+      startCursor: string | null;
+      endCursor: string | null;
+    };
+  };
+};
+
+export type AiIdentificationCoreFragment = {
+  id: string;
+  imageUrl: string;
+  imageThumbnail: string | null;
+  confidence: number;
+  provider: AiProvider;
+  model: string;
+  createdAt: string;
+};
+
+export type AiIdentificationWithSpeciesFragment = {
+  venomousDetected: boolean | null;
+  dangerAssessment: string | null;
+  id: string;
+  imageUrl: string;
+  imageThumbnail: string | null;
+  confidence: number;
+  provider: AiProvider;
+  model: string;
+  createdAt: string;
+  species: {
+    id: string;
+    name: string;
+    scientificName: string;
+    venomous: boolean;
+    dangerLevel: DangerLevel | null;
+    imageUrl: string | null;
+  } | null;
+};
+
+export type AiIdentificationWithAlternativesFragment = {
+  venomousDetected: boolean | null;
+  dangerAssessment: string | null;
+  id: string;
+  imageUrl: string;
+  imageThumbnail: string | null;
+  confidence: number;
+  provider: AiProvider;
+  model: string;
+  createdAt: string;
+  alternativeMatches: Array<{
+    confidence: number;
+    reasoning: string | null;
+    species: {
       id: string;
       name: string;
-      phone: string;
-      email: string | null;
-      municipality: string;
-      ward: number | null;
-      address: string;
-      landmark: string | null;
-      lat: number | null;
-      lng: number | null;
-      locationAccuracy: number | null;
-      snakeDescription: string | null;
-      snakeSize: string | null;
-      snakeColor: string | null;
-      snakeImageUrl: string | null;
-      snakeImages: Array<string>;
-      status: RescueStatus;
-      priority: RescuePriority;
-      stillPresent: boolean;
-      isEmergency: boolean;
-      hasBite: boolean;
-      notes: string | null;
-      referenceNumber: string | null;
-      createdAt: string;
-      updatedAt: string;
+      scientificName: string;
+      venomous: boolean;
+      dangerLevel: DangerLevel | null;
     };
   }>;
-};
-
-export type RescueStatsQueryVariables = Exact<{
-  input?: RescueStatsInput | null | undefined;
-}>;
-
-export type RescueStatsQuery = {
-  rescueStats: {
-    total: number;
-    pending: number;
-    inProgress: number;
-    completed: number;
-    cancelled: number;
-    averageResponseTime: number | null;
-    averageRescueTime: number | null;
-    successRate: number | null;
-  };
-};
-
-export type PendingRescuesCountQueryVariables = Exact<{ [key: string]: never }>;
-
-export type PendingRescuesCountQuery = { pendingRescuesCount: number };
-
-export type CreateRescueRequestMutationVariables = Exact<{
-  input: CreateRescueRequestInput;
-}>;
-
-export type CreateRescueRequestMutation = {
-  createRescueRequest: {
+  species: {
     id: string;
     name: string;
-    phone: string;
-    email: string | null;
-    municipality: string;
-    ward: number | null;
-    address: string;
-    landmark: string | null;
-    lat: number | null;
-    lng: number | null;
-    locationAccuracy: number | null;
-    snakeDescription: string | null;
-    snakeSize: string | null;
-    snakeColor: string | null;
-    snakeImageUrl: string | null;
-    snakeImages: Array<string>;
-    status: RescueStatus;
-    priority: RescuePriority;
-    stillPresent: boolean;
-    isEmergency: boolean;
-    hasBite: boolean;
-    notes: string | null;
-    referenceNumber: string | null;
-    createdAt: string;
-    updatedAt: string;
-    internalNotes: string | null;
-    assignedAt: string | null;
-    acceptedAt: string | null;
-    arrivedAt: string | null;
-    startedAt: string | null;
-    completedAt: string | null;
-    outcome: RescueOutcome | null;
-    rescueReport: string | null;
-    rescueImages: Array<string>;
-    rescueDuration: number | null;
-    verifiedAt: string | null;
-    emergencyDetails: string | null;
-    biteDetails: string | null;
-    source: RescueSource;
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      phone: string | null;
-    } | null;
+    scientificName: string;
+    venomous: boolean;
+    dangerLevel: DangerLevel | null;
+    imageUrl: string | null;
+  } | null;
+};
+
+export type AiIdentificationFullFragment = {
+  uploadSource: UploadSource;
+  promptUsed: string | null;
+  responseTime: number | null;
+  colorDetected: Array<string>;
+  sizeEstimate: string | null;
+  userFeedback: IdentificationFeedback | null;
+  venomousDetected: boolean | null;
+  dangerAssessment: string | null;
+  id: string;
+  imageUrl: string;
+  imageThumbnail: string | null;
+  confidence: number;
+  provider: AiProvider;
+  model: string;
+  createdAt: string;
+  user: { id: string; name: string; email: string } | null;
+  correctSpecies: { id: string; name: string; scientificName: string } | null;
+  alternativeMatches: Array<{
+    confidence: number;
+    reasoning: string | null;
     species: {
       id: string;
       name: string;
       scientificName: string;
       venomous: boolean;
       dangerLevel: DangerLevel | null;
-    } | null;
-    aiIdentification: {
-      id: string;
-      confidence: number;
-      provider: AiProvider;
-    } | null;
-    assignedVolunteer: {
-      id: string;
-      name: string;
-      email: string | null;
-    } | null;
-    assignedBy: { id: string; name: string } | null;
-    verifiedBy: { id: string; name: string } | null;
-    timeline: Array<{
-      id: string;
-      event: string;
-      description: string | null;
-      createdAt: string;
-    }>;
-  };
-};
-
-export type UpdateRescueRequestMutationVariables = Exact<{
-  id: string | number;
-  input: UpdateRescueRequestInput;
-}>;
-
-export type UpdateRescueRequestMutation = {
-  updateRescueRequest: {
+    };
+  }>;
+  species: {
     id: string;
     name: string;
-    phone: string;
-    email: string | null;
-    municipality: string;
-    ward: number | null;
-    address: string;
-    landmark: string | null;
-    lat: number | null;
-    lng: number | null;
-    locationAccuracy: number | null;
-    snakeDescription: string | null;
-    snakeSize: string | null;
-    snakeColor: string | null;
-    snakeImageUrl: string | null;
-    snakeImages: Array<string>;
-    status: RescueStatus;
-    priority: RescuePriority;
-    stillPresent: boolean;
-    isEmergency: boolean;
-    hasBite: boolean;
-    notes: string | null;
-    referenceNumber: string | null;
-    createdAt: string;
-    updatedAt: string;
-    internalNotes: string | null;
-    assignedAt: string | null;
-    acceptedAt: string | null;
-    arrivedAt: string | null;
-    startedAt: string | null;
-    completedAt: string | null;
-    outcome: RescueOutcome | null;
-    rescueReport: string | null;
-    rescueImages: Array<string>;
-    rescueDuration: number | null;
-    verifiedAt: string | null;
-    emergencyDetails: string | null;
-    biteDetails: string | null;
-    source: RescueSource;
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      phone: string | null;
-    } | null;
-    species: {
-      id: string;
-      name: string;
-      scientificName: string;
-      venomous: boolean;
-      dangerLevel: DangerLevel | null;
-    } | null;
-    aiIdentification: {
-      id: string;
-      confidence: number;
-      provider: AiProvider;
-    } | null;
-    assignedVolunteer: {
-      id: string;
-      name: string;
-      email: string | null;
-    } | null;
-    assignedBy: { id: string; name: string } | null;
-    verifiedBy: { id: string; name: string } | null;
-    timeline: Array<{
-      id: string;
-      event: string;
-      description: string | null;
-      createdAt: string;
-    }>;
-  };
+    scientificName: string;
+    venomous: boolean;
+    dangerLevel: DangerLevel | null;
+    imageUrl: string | null;
+  } | null;
 };
 
-export type AssignRescueMutationVariables = Exact<{
-  input: AssignRescueInput;
-}>;
+export type AiIdentificationListItemFragment = {
+  userFeedback: IdentificationFeedback | null;
+  id: string;
+  imageUrl: string;
+  imageThumbnail: string | null;
+  confidence: number;
+  provider: AiProvider;
+  model: string;
+  createdAt: string;
+  species: { id: string; name: string; venomous: boolean } | null;
+};
 
-export type AssignRescueMutation = {
-  assignRescue: {
+export type DashboardStatsOverviewFragment = {
+  totalRescues: number;
+  activeRescues: number;
+  completedRescues: number;
+  completionRate: number;
+  averageResponseTime: number;
+  totalVolunteers: number;
+  activeVolunteers: number;
+  totalUsers: number;
+  totalDonations: number;
+  totalDonationAmount: number;
+};
+
+export type TrendDataFieldsFragment = {
+  current: number;
+  previous: number;
+  change: number;
+  direction: TrendDirection;
+};
+
+export type TimeSeriesDataFragment = {
+  timestamp: string;
+  value: number;
+  label: string | null;
+};
+
+export type UserFieldsFragment = {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  phone: string | null;
+  emailVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type AuthPayloadFieldsFragment = {
+  accessToken: string;
+  user: {
     id: string;
+    email: string;
     name: string;
-    phone: string;
-    email: string | null;
-    municipality: string;
-    ward: number | null;
-    address: string;
-    landmark: string | null;
-    lat: number | null;
-    lng: number | null;
-    locationAccuracy: number | null;
-    snakeDescription: string | null;
-    snakeSize: string | null;
-    snakeColor: string | null;
-    snakeImageUrl: string | null;
-    snakeImages: Array<string>;
-    status: RescueStatus;
-    priority: RescuePriority;
-    stillPresent: boolean;
-    isEmergency: boolean;
-    hasBite: boolean;
-    notes: string | null;
-    referenceNumber: string | null;
+    role: UserRole;
+    phone: string | null;
+    emailVerified: boolean;
     createdAt: string;
     updatedAt: string;
-    internalNotes: string | null;
-    assignedAt: string | null;
-    acceptedAt: string | null;
-    arrivedAt: string | null;
-    startedAt: string | null;
-    completedAt: string | null;
-    outcome: RescueOutcome | null;
-    rescueReport: string | null;
-    rescueImages: Array<string>;
-    rescueDuration: number | null;
-    verifiedAt: string | null;
-    emergencyDetails: string | null;
-    biteDetails: string | null;
-    source: RescueSource;
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      phone: string | null;
-    } | null;
-    species: {
-      id: string;
-      name: string;
-      scientificName: string;
-      venomous: boolean;
-      dangerLevel: DangerLevel | null;
-    } | null;
-    aiIdentification: {
-      id: string;
-      confidence: number;
-      provider: AiProvider;
-    } | null;
-    assignedVolunteer: {
-      id: string;
-      name: string;
-      email: string | null;
-    } | null;
-    assignedBy: { id: string; name: string } | null;
-    verifiedBy: { id: string; name: string } | null;
-    timeline: Array<{
-      id: string;
-      event: string;
-      description: string | null;
-      createdAt: string;
-    }>;
   };
 };
 
-export type AcceptRescueMutationVariables = Exact<{
-  input: AcceptRescueInput;
+export type LoginMutationVariables = Exact<{
+  input: LoginInput;
 }>;
 
-export type AcceptRescueMutation = {
-  acceptRescue: {
-    id: string;
-    name: string;
-    phone: string;
-    email: string | null;
-    municipality: string;
-    ward: number | null;
-    address: string;
-    landmark: string | null;
-    lat: number | null;
-    lng: number | null;
-    locationAccuracy: number | null;
-    snakeDescription: string | null;
-    snakeSize: string | null;
-    snakeColor: string | null;
-    snakeImageUrl: string | null;
-    snakeImages: Array<string>;
-    status: RescueStatus;
-    priority: RescuePriority;
-    stillPresent: boolean;
-    isEmergency: boolean;
-    hasBite: boolean;
-    notes: string | null;
-    referenceNumber: string | null;
-    createdAt: string;
-    updatedAt: string;
-    internalNotes: string | null;
-    assignedAt: string | null;
-    acceptedAt: string | null;
-    arrivedAt: string | null;
-    startedAt: string | null;
-    completedAt: string | null;
-    outcome: RescueOutcome | null;
-    rescueReport: string | null;
-    rescueImages: Array<string>;
-    rescueDuration: number | null;
-    verifiedAt: string | null;
-    emergencyDetails: string | null;
-    biteDetails: string | null;
-    source: RescueSource;
+export type LoginMutation = {
+  login: {
+    accessToken: string;
     user: {
       id: string;
-      name: string;
       email: string;
+      name: string;
+      role: UserRole;
       phone: string | null;
-    } | null;
-    species: {
-      id: string;
-      name: string;
-      scientificName: string;
-      venomous: boolean;
-      dangerLevel: DangerLevel | null;
-    } | null;
-    aiIdentification: {
-      id: string;
-      confidence: number;
-      provider: AiProvider;
-    } | null;
-    assignedVolunteer: {
-      id: string;
-      name: string;
-      email: string | null;
-    } | null;
-    assignedBy: { id: string; name: string } | null;
-    verifiedBy: { id: string; name: string } | null;
-    timeline: Array<{
-      id: string;
-      event: string;
-      description: string | null;
-      createdAt: string;
-    }>;
-  };
-};
-
-export type UpdateRescueProgressMutationVariables = Exact<{
-  input: UpdateRescueProgressInput;
-}>;
-
-export type UpdateRescueProgressMutation = {
-  updateRescueProgress: {
-    id: string;
-    name: string;
-    phone: string;
-    email: string | null;
-    municipality: string;
-    ward: number | null;
-    address: string;
-    landmark: string | null;
-    lat: number | null;
-    lng: number | null;
-    locationAccuracy: number | null;
-    snakeDescription: string | null;
-    snakeSize: string | null;
-    snakeColor: string | null;
-    snakeImageUrl: string | null;
-    snakeImages: Array<string>;
-    status: RescueStatus;
-    priority: RescuePriority;
-    stillPresent: boolean;
-    isEmergency: boolean;
-    hasBite: boolean;
-    notes: string | null;
-    referenceNumber: string | null;
-    createdAt: string;
-    updatedAt: string;
-    internalNotes: string | null;
-    assignedAt: string | null;
-    acceptedAt: string | null;
-    arrivedAt: string | null;
-    startedAt: string | null;
-    completedAt: string | null;
-    outcome: RescueOutcome | null;
-    rescueReport: string | null;
-    rescueImages: Array<string>;
-    rescueDuration: number | null;
-    verifiedAt: string | null;
-    emergencyDetails: string | null;
-    biteDetails: string | null;
-    source: RescueSource;
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      phone: string | null;
-    } | null;
-    species: {
-      id: string;
-      name: string;
-      scientificName: string;
-      venomous: boolean;
-      dangerLevel: DangerLevel | null;
-    } | null;
-    aiIdentification: {
-      id: string;
-      confidence: number;
-      provider: AiProvider;
-    } | null;
-    assignedVolunteer: {
-      id: string;
-      name: string;
-      email: string | null;
-    } | null;
-    assignedBy: { id: string; name: string } | null;
-    verifiedBy: { id: string; name: string } | null;
-    timeline: Array<{
-      id: string;
-      event: string;
-      description: string | null;
-      createdAt: string;
-    }>;
-  };
-};
-
-export type CompleteRescueMutationVariables = Exact<{
-  input: CompleteRescueInput;
-}>;
-
-export type CompleteRescueMutation = {
-  completeRescue: {
-    id: string;
-    name: string;
-    phone: string;
-    email: string | null;
-    municipality: string;
-    ward: number | null;
-    address: string;
-    landmark: string | null;
-    lat: number | null;
-    lng: number | null;
-    locationAccuracy: number | null;
-    snakeDescription: string | null;
-    snakeSize: string | null;
-    snakeColor: string | null;
-    snakeImageUrl: string | null;
-    snakeImages: Array<string>;
-    status: RescueStatus;
-    priority: RescuePriority;
-    stillPresent: boolean;
-    isEmergency: boolean;
-    hasBite: boolean;
-    notes: string | null;
-    referenceNumber: string | null;
-    createdAt: string;
-    updatedAt: string;
-    internalNotes: string | null;
-    assignedAt: string | null;
-    acceptedAt: string | null;
-    arrivedAt: string | null;
-    startedAt: string | null;
-    completedAt: string | null;
-    outcome: RescueOutcome | null;
-    rescueReport: string | null;
-    rescueImages: Array<string>;
-    rescueDuration: number | null;
-    verifiedAt: string | null;
-    emergencyDetails: string | null;
-    biteDetails: string | null;
-    source: RescueSource;
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      phone: string | null;
-    } | null;
-    species: {
-      id: string;
-      name: string;
-      scientificName: string;
-      venomous: boolean;
-      dangerLevel: DangerLevel | null;
-    } | null;
-    aiIdentification: {
-      id: string;
-      confidence: number;
-      provider: AiProvider;
-    } | null;
-    assignedVolunteer: {
-      id: string;
-      name: string;
-      email: string | null;
-    } | null;
-    assignedBy: { id: string; name: string } | null;
-    verifiedBy: { id: string; name: string } | null;
-    timeline: Array<{
-      id: string;
-      event: string;
-      description: string | null;
-      createdAt: string;
-    }>;
-  };
-};
-
-export type CancelRescueMutationVariables = Exact<{
-  rescueId: string | number;
-  reason?: string | null | undefined;
-}>;
-
-export type CancelRescueMutation = {
-  cancelRescue: {
-    id: string;
-    name: string;
-    phone: string;
-    email: string | null;
-    municipality: string;
-    ward: number | null;
-    address: string;
-    landmark: string | null;
-    lat: number | null;
-    lng: number | null;
-    locationAccuracy: number | null;
-    snakeDescription: string | null;
-    snakeSize: string | null;
-    snakeColor: string | null;
-    snakeImageUrl: string | null;
-    snakeImages: Array<string>;
-    status: RescueStatus;
-    priority: RescuePriority;
-    stillPresent: boolean;
-    isEmergency: boolean;
-    hasBite: boolean;
-    notes: string | null;
-    referenceNumber: string | null;
-    createdAt: string;
-    updatedAt: string;
-    internalNotes: string | null;
-    assignedAt: string | null;
-    acceptedAt: string | null;
-    arrivedAt: string | null;
-    startedAt: string | null;
-    completedAt: string | null;
-    outcome: RescueOutcome | null;
-    rescueReport: string | null;
-    rescueImages: Array<string>;
-    rescueDuration: number | null;
-    verifiedAt: string | null;
-    emergencyDetails: string | null;
-    biteDetails: string | null;
-    source: RescueSource;
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      phone: string | null;
-    } | null;
-    species: {
-      id: string;
-      name: string;
-      scientificName: string;
-      venomous: boolean;
-      dangerLevel: DangerLevel | null;
-    } | null;
-    aiIdentification: {
-      id: string;
-      confidence: number;
-      provider: AiProvider;
-    } | null;
-    assignedVolunteer: {
-      id: string;
-      name: string;
-      email: string | null;
-    } | null;
-    assignedBy: { id: string; name: string } | null;
-    verifiedBy: { id: string; name: string } | null;
-    timeline: Array<{
-      id: string;
-      event: string;
-      description: string | null;
-      createdAt: string;
-    }>;
-  };
-};
-
-export type ReopenRescueMutationVariables = Exact<{
-  rescueId: string | number;
-}>;
-
-export type ReopenRescueMutation = {
-  reopenRescue: {
-    id: string;
-    name: string;
-    phone: string;
-    email: string | null;
-    municipality: string;
-    ward: number | null;
-    address: string;
-    landmark: string | null;
-    lat: number | null;
-    lng: number | null;
-    locationAccuracy: number | null;
-    snakeDescription: string | null;
-    snakeSize: string | null;
-    snakeColor: string | null;
-    snakeImageUrl: string | null;
-    snakeImages: Array<string>;
-    status: RescueStatus;
-    priority: RescuePriority;
-    stillPresent: boolean;
-    isEmergency: boolean;
-    hasBite: boolean;
-    notes: string | null;
-    referenceNumber: string | null;
-    createdAt: string;
-    updatedAt: string;
-    internalNotes: string | null;
-    assignedAt: string | null;
-    acceptedAt: string | null;
-    arrivedAt: string | null;
-    startedAt: string | null;
-    completedAt: string | null;
-    outcome: RescueOutcome | null;
-    rescueReport: string | null;
-    rescueImages: Array<string>;
-    rescueDuration: number | null;
-    verifiedAt: string | null;
-    emergencyDetails: string | null;
-    biteDetails: string | null;
-    source: RescueSource;
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      phone: string | null;
-    } | null;
-    species: {
-      id: string;
-      name: string;
-      scientificName: string;
-      venomous: boolean;
-      dangerLevel: DangerLevel | null;
-    } | null;
-    aiIdentification: {
-      id: string;
-      confidence: number;
-      provider: AiProvider;
-    } | null;
-    assignedVolunteer: {
-      id: string;
-      name: string;
-      email: string | null;
-    } | null;
-    assignedBy: { id: string; name: string } | null;
-    verifiedBy: { id: string; name: string } | null;
-    timeline: Array<{
-      id: string;
-      event: string;
-      description: string | null;
-      createdAt: string;
-    }>;
-  };
-};
-
-export type VerifyRescueMutationVariables = Exact<{
-  rescueId: string | number;
-  notes?: string | null | undefined;
-}>;
-
-export type VerifyRescueMutation = {
-  verifyRescue: {
-    id: string;
-    name: string;
-    phone: string;
-    email: string | null;
-    municipality: string;
-    ward: number | null;
-    address: string;
-    landmark: string | null;
-    lat: number | null;
-    lng: number | null;
-    locationAccuracy: number | null;
-    snakeDescription: string | null;
-    snakeSize: string | null;
-    snakeColor: string | null;
-    snakeImageUrl: string | null;
-    snakeImages: Array<string>;
-    status: RescueStatus;
-    priority: RescuePriority;
-    stillPresent: boolean;
-    isEmergency: boolean;
-    hasBite: boolean;
-    notes: string | null;
-    referenceNumber: string | null;
-    createdAt: string;
-    updatedAt: string;
-    internalNotes: string | null;
-    assignedAt: string | null;
-    acceptedAt: string | null;
-    arrivedAt: string | null;
-    startedAt: string | null;
-    completedAt: string | null;
-    outcome: RescueOutcome | null;
-    rescueReport: string | null;
-    rescueImages: Array<string>;
-    rescueDuration: number | null;
-    verifiedAt: string | null;
-    emergencyDetails: string | null;
-    biteDetails: string | null;
-    source: RescueSource;
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      phone: string | null;
-    } | null;
-    species: {
-      id: string;
-      name: string;
-      scientificName: string;
-      venomous: boolean;
-      dangerLevel: DangerLevel | null;
-    } | null;
-    aiIdentification: {
-      id: string;
-      confidence: number;
-      provider: AiProvider;
-    } | null;
-    assignedVolunteer: {
-      id: string;
-      name: string;
-      email: string | null;
-    } | null;
-    assignedBy: { id: string; name: string } | null;
-    verifiedBy: { id: string; name: string } | null;
-    timeline: Array<{
-      id: string;
-      event: string;
-      description: string | null;
-      createdAt: string;
-    }>;
-  };
-};
-
-export type RescueCreatedSubscriptionVariables = Exact<{
-  municipality?: string | null | undefined;
-}>;
-
-export type RescueCreatedSubscription = {
-  rescueCreated: {
-    id: string;
-    name: string;
-    phone: string;
-    email: string | null;
-    municipality: string;
-    ward: number | null;
-    address: string;
-    landmark: string | null;
-    lat: number | null;
-    lng: number | null;
-    locationAccuracy: number | null;
-    snakeDescription: string | null;
-    snakeSize: string | null;
-    snakeColor: string | null;
-    snakeImageUrl: string | null;
-    snakeImages: Array<string>;
-    status: RescueStatus;
-    priority: RescuePriority;
-    stillPresent: boolean;
-    isEmergency: boolean;
-    hasBite: boolean;
-    notes: string | null;
-    referenceNumber: string | null;
-    createdAt: string;
-    updatedAt: string;
-    internalNotes: string | null;
-    assignedAt: string | null;
-    acceptedAt: string | null;
-    arrivedAt: string | null;
-    startedAt: string | null;
-    completedAt: string | null;
-    outcome: RescueOutcome | null;
-    rescueReport: string | null;
-    rescueImages: Array<string>;
-    rescueDuration: number | null;
-    verifiedAt: string | null;
-    emergencyDetails: string | null;
-    biteDetails: string | null;
-    source: RescueSource;
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      phone: string | null;
-    } | null;
-    species: {
-      id: string;
-      name: string;
-      scientificName: string;
-      venomous: boolean;
-      dangerLevel: DangerLevel | null;
-    } | null;
-    aiIdentification: {
-      id: string;
-      confidence: number;
-      provider: AiProvider;
-    } | null;
-    assignedVolunteer: {
-      id: string;
-      name: string;
-      email: string | null;
-    } | null;
-    assignedBy: { id: string; name: string } | null;
-    verifiedBy: { id: string; name: string } | null;
-    timeline: Array<{
-      id: string;
-      event: string;
-      description: string | null;
-      createdAt: string;
-    }>;
-  };
-};
-
-export type RescueUpdatedSubscriptionVariables = Exact<{
-  rescueId?: string | number | null | undefined;
-}>;
-
-export type RescueUpdatedSubscription = {
-  rescueUpdated: {
-    id: string;
-    name: string;
-    phone: string;
-    email: string | null;
-    municipality: string;
-    ward: number | null;
-    address: string;
-    landmark: string | null;
-    lat: number | null;
-    lng: number | null;
-    locationAccuracy: number | null;
-    snakeDescription: string | null;
-    snakeSize: string | null;
-    snakeColor: string | null;
-    snakeImageUrl: string | null;
-    snakeImages: Array<string>;
-    status: RescueStatus;
-    priority: RescuePriority;
-    stillPresent: boolean;
-    isEmergency: boolean;
-    hasBite: boolean;
-    notes: string | null;
-    referenceNumber: string | null;
-    createdAt: string;
-    updatedAt: string;
-    internalNotes: string | null;
-    assignedAt: string | null;
-    acceptedAt: string | null;
-    arrivedAt: string | null;
-    startedAt: string | null;
-    completedAt: string | null;
-    outcome: RescueOutcome | null;
-    rescueReport: string | null;
-    rescueImages: Array<string>;
-    rescueDuration: number | null;
-    verifiedAt: string | null;
-    emergencyDetails: string | null;
-    biteDetails: string | null;
-    source: RescueSource;
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      phone: string | null;
-    } | null;
-    species: {
-      id: string;
-      name: string;
-      scientificName: string;
-      venomous: boolean;
-      dangerLevel: DangerLevel | null;
-    } | null;
-    aiIdentification: {
-      id: string;
-      confidence: number;
-      provider: AiProvider;
-    } | null;
-    assignedVolunteer: {
-      id: string;
-      name: string;
-      email: string | null;
-    } | null;
-    assignedBy: { id: string; name: string } | null;
-    verifiedBy: { id: string; name: string } | null;
-    timeline: Array<{
-      id: string;
-      event: string;
-      description: string | null;
-      createdAt: string;
-    }>;
-  };
-};
-
-export type RescueAssignedSubscriptionVariables = Exact<{
-  volunteerId: string | number;
-}>;
-
-export type RescueAssignedSubscription = {
-  rescueAssigned: {
-    assignedAt: string;
-    notes: string | null;
-    rescue: {
-      id: string;
-      name: string;
-      phone: string;
-      email: string | null;
-      municipality: string;
-      ward: number | null;
-      address: string;
-      landmark: string | null;
-      lat: number | null;
-      lng: number | null;
-      locationAccuracy: number | null;
-      snakeDescription: string | null;
-      snakeSize: string | null;
-      snakeColor: string | null;
-      snakeImageUrl: string | null;
-      snakeImages: Array<string>;
-      status: RescueStatus;
-      priority: RescuePriority;
-      stillPresent: boolean;
-      isEmergency: boolean;
-      hasBite: boolean;
-      notes: string | null;
-      referenceNumber: string | null;
+      emailVerified: boolean;
       createdAt: string;
       updatedAt: string;
-      internalNotes: string | null;
-      assignedAt: string | null;
-      acceptedAt: string | null;
-      arrivedAt: string | null;
-      startedAt: string | null;
-      completedAt: string | null;
-      outcome: RescueOutcome | null;
-      rescueReport: string | null;
-      rescueImages: Array<string>;
-      rescueDuration: number | null;
-      verifiedAt: string | null;
-      emergencyDetails: string | null;
-      biteDetails: string | null;
-      source: RescueSource;
-      user: {
-        id: string;
-        name: string;
-        email: string;
-        phone: string | null;
-      } | null;
-      species: {
-        id: string;
-        name: string;
-        scientificName: string;
-        venomous: boolean;
-        dangerLevel: DangerLevel | null;
-      } | null;
-      aiIdentification: {
-        id: string;
-        confidence: number;
-        provider: AiProvider;
-      } | null;
-      assignedVolunteer: {
-        id: string;
-        name: string;
-        email: string | null;
-      } | null;
-      assignedBy: { id: string; name: string } | null;
-      verifiedBy: { id: string; name: string } | null;
-      timeline: Array<{
-        id: string;
-        event: string;
-        description: string | null;
-        createdAt: string;
-      }>;
     };
-    volunteer: { id: string; name: string; email: string | null };
-    assignedBy: { id: string; name: string };
   };
 };
 
-export type RescueTimelineUpdatedSubscriptionVariables = Exact<{
-  rescueId: string | number;
+export type RegisterMutationVariables = Exact<{
+  input: RegisterInput;
 }>;
 
-export type RescueTimelineUpdatedSubscription = {
-  rescueTimelineUpdated: {
-    id: string;
-    event: string;
-    description: string | null;
-    createdAt: string;
-  };
-};
-
-export type NearbyRescuesUpdatedSubscriptionVariables = Exact<{
-  lat: number;
-  lng: number;
-  radiusKm: number;
-}>;
-
-export type NearbyRescuesUpdatedSubscription = {
-  nearbyRescuesUpdated: {
-    id: string;
-    name: string;
-    phone: string;
-    email: string | null;
-    municipality: string;
-    ward: number | null;
-    address: string;
-    landmark: string | null;
-    lat: number | null;
-    lng: number | null;
-    locationAccuracy: number | null;
-    snakeDescription: string | null;
-    snakeSize: string | null;
-    snakeColor: string | null;
-    snakeImageUrl: string | null;
-    snakeImages: Array<string>;
-    status: RescueStatus;
-    priority: RescuePriority;
-    stillPresent: boolean;
-    isEmergency: boolean;
-    hasBite: boolean;
-    notes: string | null;
-    referenceNumber: string | null;
-    createdAt: string;
-    updatedAt: string;
-  };
-};
-
-export type EmergencyRescueCreatedSubscriptionVariables = Exact<{
-  [key: string]: never;
-}>;
-
-export type EmergencyRescueCreatedSubscription = {
-  emergencyRescueCreated: {
-    id: string;
-    name: string;
-    phone: string;
-    email: string | null;
-    municipality: string;
-    ward: number | null;
-    address: string;
-    landmark: string | null;
-    lat: number | null;
-    lng: number | null;
-    locationAccuracy: number | null;
-    snakeDescription: string | null;
-    snakeSize: string | null;
-    snakeColor: string | null;
-    snakeImageUrl: string | null;
-    snakeImages: Array<string>;
-    status: RescueStatus;
-    priority: RescuePriority;
-    stillPresent: boolean;
-    isEmergency: boolean;
-    hasBite: boolean;
-    notes: string | null;
-    referenceNumber: string | null;
-    createdAt: string;
-    updatedAt: string;
-    internalNotes: string | null;
-    assignedAt: string | null;
-    acceptedAt: string | null;
-    arrivedAt: string | null;
-    startedAt: string | null;
-    completedAt: string | null;
-    outcome: RescueOutcome | null;
-    rescueReport: string | null;
-    rescueImages: Array<string>;
-    rescueDuration: number | null;
-    verifiedAt: string | null;
-    emergencyDetails: string | null;
-    biteDetails: string | null;
-    source: RescueSource;
+export type RegisterMutation = {
+  register: {
+    accessToken: string;
     user: {
       id: string;
-      name: string;
       email: string;
+      name: string;
+      role: UserRole;
       phone: string | null;
-    } | null;
-    species: {
-      id: string;
-      name: string;
-      scientificName: string;
-      venomous: boolean;
-      dangerLevel: DangerLevel | null;
-    } | null;
-    aiIdentification: {
-      id: string;
-      confidence: number;
-      provider: AiProvider;
-    } | null;
-    assignedVolunteer: {
-      id: string;
-      name: string;
-      email: string | null;
-    } | null;
-    assignedBy: { id: string; name: string } | null;
-    verifiedBy: { id: string; name: string } | null;
-    timeline: Array<{
-      id: string;
-      event: string;
-      description: string | null;
+      emailVerified: boolean;
       createdAt: string;
-    }>;
+      updatedAt: string;
+    };
   };
 };
 
-export type SnakeBasicFieldsFragment = {
+export type LogoutMutationVariables = Exact<{ [key: string]: never }>;
+
+export type LogoutMutation = { logout: boolean };
+
+export type RefreshTokenMutationVariables = Exact<{ [key: string]: never }>;
+
+export type RefreshTokenMutation = {
+  refreshToken: {
+    accessToken: string;
+    user: {
+      id: string;
+      email: string;
+      name: string;
+      role: UserRole;
+      phone: string | null;
+      emailVerified: boolean;
+      createdAt: string;
+      updatedAt: string;
+    };
+  };
+};
+
+export type ForgotPasswordMutationVariables = Exact<{
+  email: string;
+}>;
+
+export type ForgotPasswordMutation = {
+  forgotPassword: { message: string; expiresAt: string };
+};
+
+export type ResetPasswordMutationVariables = Exact<{
+  input: ResetPasswordInput;
+}>;
+
+export type ResetPasswordMutation = { resetPassword: boolean };
+
+export type VerifyEmailMutationVariables = Exact<{
+  input: VerifyEmailInput;
+}>;
+
+export type VerifyEmailMutation = {
+  verifyEmail: {
+    success: boolean;
+    message: string;
+    user: {
+      id: string;
+      email: string;
+      name: string;
+      role: UserRole;
+      phone: string | null;
+      emailVerified: boolean;
+      createdAt: string;
+      updatedAt: string;
+    } | null;
+  };
+};
+
+export type ResendVerificationMutationVariables = Exact<{
+  input: ResendVerificationInput;
+}>;
+
+export type ResendVerificationMutation = { resendVerification: boolean };
+
+export type ChangePasswordMutationVariables = Exact<{
+  input: ChangePasswordInput;
+}>;
+
+export type ChangePasswordMutation = { changePassword: boolean };
+
+export type UpdateProfileMutationVariables = Exact<{
+  input: UpdateProfileInput;
+}>;
+
+export type UpdateProfileMutation = {
+  updateProfile: {
+    id: string;
+    email: string;
+    name: string;
+    role: UserRole;
+    phone: string | null;
+    emailVerified: boolean;
+    createdAt: string;
+    updatedAt: string;
+  };
+};
+
+export type MeQueryVariables = Exact<{ [key: string]: never }>;
+
+export type MeQuery = {
+  me: {
+    id: string;
+    email: string;
+    name: string;
+    role: UserRole;
+    phone: string | null;
+    emailVerified: boolean;
+    createdAt: string;
+    updatedAt: string;
+  } | null;
+};
+
+export type BlogPostCoreFragment = {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  category: PostCategory;
+  status: PostStatus;
+  imageUrl: string | null;
+  publishedAt: string | null;
+  createdAt: string;
+};
+
+export type BlogPostWithAuthorFragment = {
+  tags: Array<string>;
+  views: number;
+  likes: number;
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  category: PostCategory;
+  status: PostStatus;
+  imageUrl: string | null;
+  publishedAt: string | null;
+  createdAt: string;
+  author: { id: string; name: string; avatar: string | null };
+};
+
+export type BlogPostFullFragment = {
+  content: string;
+  images: Array<string>;
+  videoUrl: string | null;
+  metaTitle: string | null;
+  metaDescription: string | null;
+  metaKeywords: Array<string>;
+  scheduledAt: string | null;
+  commentsEnabled: boolean;
+  commentCount: number;
+  shares: number;
+  updatedAt: string;
+  tags: Array<string>;
+  views: number;
+  likes: number;
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  category: PostCategory;
+  status: PostStatus;
+  imageUrl: string | null;
+  publishedAt: string | null;
+  createdAt: string;
+  author: { id: string; name: string; avatar: string | null };
+};
+
+export type BlogPostListItemFragment = {
+  tags: Array<string>;
+  views: number;
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  category: PostCategory;
+  status: PostStatus;
+  imageUrl: string | null;
+  publishedAt: string | null;
+  createdAt: string;
+  author: { id: string; name: string };
+};
+
+export type GalleryImageCoreFragment = {
+  id: string;
+  title: string | null;
+  imageUrl: string;
+  thumbnailUrl: string | null;
+  category: GalleryCategory | null;
+  isPublic: boolean;
+  isFeatured: boolean;
+  createdAt: string;
+};
+
+export type GalleryImageWithContextFragment = {
+  description: string | null;
+  tags: Array<string>;
+  id: string;
+  title: string | null;
+  imageUrl: string;
+  thumbnailUrl: string | null;
+  category: GalleryCategory | null;
+  isPublic: boolean;
+  isFeatured: boolean;
+  createdAt: string;
+  rescue: { id: string; referenceNumber: string | null } | null;
+  species: { id: string; name: string; scientificName: string } | null;
+};
+
+export type GalleryImageFullFragment = {
+  views: number;
+  likes: number;
+  fileSize: number | null;
+  dimensions: string | null;
+  format: string | null;
+  updatedAt: string;
+  description: string | null;
+  tags: Array<string>;
+  id: string;
+  title: string | null;
+  imageUrl: string;
+  thumbnailUrl: string | null;
+  category: GalleryCategory | null;
+  isPublic: boolean;
+  isFeatured: boolean;
+  createdAt: string;
+  uploader: { id: string; name: string; avatar: string | null } | null;
+  rescue: { id: string; referenceNumber: string | null } | null;
+  species: { id: string; name: string; scientificName: string } | null;
+};
+
+export type GalleryImageListItemFragment = {
+  views: number;
+  likes: number;
+  id: string;
+  title: string | null;
+  imageUrl: string;
+  thumbnailUrl: string | null;
+  category: GalleryCategory | null;
+  isPublic: boolean;
+  isFeatured: boolean;
+  createdAt: string;
+};
+
+export type ContactMessageCoreFragment = {
   id: string;
   name: string;
-  scientificName: string;
-  nepaliName: string;
-  localNames: Array<string>;
-  family: string | null;
-  venomous: boolean;
-  dangerLevel: DangerLevel | null;
-  venomType: VenomType | null;
-  conservationStatus: ConservationStatus | null;
-  behavior: string | null;
-  habitat: string | null;
-  foundInNepal: boolean;
-  regions: Array<string>;
-  imageUrl: string | null;
-  rescueCount: number;
-  identificationCount: number;
-  verified: boolean;
+  email: string;
+  subject: string;
+  category: MessageCategory;
+  status: MessageStatus;
+  priority: MessagePriority;
   createdAt: string;
+};
+
+export type ContactMessageWithDetailsFragment = {
+  phone: string | null;
+  message: string;
+  responded: boolean;
+  respondedAt: string | null;
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  category: MessageCategory;
+  status: MessageStatus;
+  priority: MessagePriority;
+  createdAt: string;
+};
+
+export type ContactMessageFullFragment = {
+  response: string | null;
+  ipAddress: string | null;
+  userAgent: string | null;
+  source: string;
+  updatedAt: string;
+  phone: string | null;
+  message: string;
+  responded: boolean;
+  respondedAt: string | null;
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  category: MessageCategory;
+  status: MessageStatus;
+  priority: MessagePriority;
+  createdAt: string;
+  assignedTo: { id: string; name: string; email: string } | null;
+};
+
+export type ContactMessageListItemFragment = {
+  responded: boolean;
+  id: string;
+  name: string;
+  email: string;
+  subject: string;
+  category: MessageCategory;
+  status: MessageStatus;
+  priority: MessagePriority;
+  createdAt: string;
+};
+
+export type NotificationCoreFragment = {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  read: boolean;
+  priority: NotificationPriority;
+  createdAt: string;
+};
+
+export type NotificationWithLinkFragment = {
+  link: string | null;
+  actionUrl: string | null;
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  read: boolean;
+  priority: NotificationPriority;
+  createdAt: string;
+};
+
+export type NotificationWithContextFragment = {
+  metadata: any;
+  link: string | null;
+  actionUrl: string | null;
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  read: boolean;
+  priority: NotificationPriority;
+  createdAt: string;
+  rescue: {
+    id: string;
+    referenceNumber: string | null;
+    status: RescueStatus;
+  } | null;
+};
+
+export type NotificationFullFragment = {
+  sentViaApp: boolean;
+  sentViaEmail: boolean;
+  sentViaSMS: boolean;
+  sentViaTelegram: boolean;
+  readAt: string | null;
+  expiresAt: string | null;
+  metadata: any;
+  link: string | null;
+  actionUrl: string | null;
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  read: boolean;
+  priority: NotificationPriority;
+  createdAt: string;
+  user: { id: string; name: string; email: string };
+  rescue: {
+    id: string;
+    referenceNumber: string | null;
+    status: RescueStatus;
+  } | null;
+};
+
+export type NotificationListItemFragment = {
+  link: string | null;
+  readAt: string | null;
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  read: boolean;
+  priority: NotificationPriority;
+  createdAt: string;
+};
+
+export type NotificationPreferencesFieldsFragment = {
+  userId: string;
+  enableApp: boolean;
+  enableEmail: boolean;
+  enableSMS: boolean;
+  enableTelegram: boolean;
+  rescueUpdates: boolean;
+  volunteerUpdates: boolean;
+  trainingReminders: boolean;
+  donationReceipts: boolean;
+  systemAnnouncements: boolean;
+  quietHoursStart: string | null;
+  quietHoursEnd: string | null;
+  timezone: string;
   updatedAt: string;
 };
 
-export type SnakeDetailFieldsFragment = {
+export type DonationCoreFragment = {
+  id: string;
+  donorName: string;
+  amount: number;
+  currency: string;
+  paymentMethod: PaymentMethod;
+  status: PaymentStatus;
+  anonymous: boolean;
+  createdAt: string;
+};
+
+export type DonationWithPaymentFragment = {
+  transactionId: string | null;
+  paymentGateway: string;
+  paidAt: string | null;
+  receiptNumber: string | null;
+  id: string;
+  donorName: string;
+  amount: number;
+  currency: string;
+  paymentMethod: PaymentMethod;
+  status: PaymentStatus;
+  anonymous: boolean;
+  createdAt: string;
+};
+
+export type DonationFullFragment = {
+  donorEmail: string | null;
+  donorPhone: string | null;
+  amountUSD: number | null;
+  gatewayResponse: any;
+  purpose: DonationPurpose | null;
+  campaign: string | null;
+  message: string | null;
+  receiptUrl: string | null;
+  invoiceUrl: string | null;
+  verifiedAt: string | null;
+  verificationNotes: string | null;
+  refundedAt: string | null;
+  refundReason: string | null;
+  refundAmount: number | null;
+  source: string;
+  updatedAt: string;
+  transactionId: string | null;
+  paymentGateway: string;
+  paidAt: string | null;
+  receiptNumber: string | null;
+  id: string;
+  donorName: string;
+  amount: number;
+  currency: string;
+  paymentMethod: PaymentMethod;
+  status: PaymentStatus;
+  anonymous: boolean;
+  createdAt: string;
+  donor: { id: string; name: string; email: string } | null;
+  verifiedBy: { id: string; name: string } | null;
+};
+
+export type DonationListItemFragment = {
+  purpose: DonationPurpose | null;
+  paidAt: string | null;
+  id: string;
+  donorName: string;
+  amount: number;
+  currency: string;
+  paymentMethod: PaymentMethod;
+  status: PaymentStatus;
+  anonymous: boolean;
+  createdAt: string;
+};
+
+export type PaymentGatewayConfigFieldsFragment = {
+  method: PaymentMethod;
+  enabled: boolean;
+  displayName: string;
+  description: string | null;
+  minAmount: number | null;
+  maxAmount: number | null;
+  currencies: Array<string>;
+  testMode: boolean;
+};
+
+export type RescueCoreFragment = {
+  id: string;
+  name: string;
+  phone: string;
+  municipality: string;
+  address: string;
+  status: RescueStatus;
+  priority: RescuePriority;
+  isEmergency: boolean;
+  createdAt: string;
+};
+
+export type RescueWithLocationFragment = {
+  ward: number | null;
+  landmark: string | null;
+  lat: number | null;
+  lng: number | null;
+  locationAccuracy: number | null;
+  id: string;
+  name: string;
+  phone: string;
+  municipality: string;
+  address: string;
+  status: RescueStatus;
+  priority: RescuePriority;
+  isEmergency: boolean;
+  createdAt: string;
+};
+
+export type RescueWithSnakeInfoFragment = {
+  snakeDescription: string | null;
+  snakeSize: string | null;
+  snakeColor: string | null;
+  snakeImageUrl: string | null;
+  snakeImages: Array<string>;
+  ward: number | null;
+  landmark: string | null;
+  lat: number | null;
+  lng: number | null;
+  locationAccuracy: number | null;
+  id: string;
+  name: string;
+  phone: string;
+  municipality: string;
+  address: string;
+  status: RescueStatus;
+  priority: RescuePriority;
+  isEmergency: boolean;
+  createdAt: string;
+  species: {
+    id: string;
+    name: string;
+    scientificName: string;
+    venomous: boolean;
+    dangerLevel: DangerLevel | null;
+  } | null;
+};
+
+export type RescueWithAssignmentFragment = {
+  assignedAt: string | null;
+  acceptedAt: string | null;
+  id: string;
+  name: string;
+  phone: string;
+  municipality: string;
+  address: string;
+  status: RescueStatus;
+  priority: RescuePriority;
+  isEmergency: boolean;
+  createdAt: string;
+  assignedVolunteer: {
+    id: string;
+    name: string;
+    contact: string;
+    currentLat: number | null;
+    currentLng: number | null;
+  } | null;
+};
+
+export type RescueFullFragment = {
+  email: string | null;
+  stillPresent: boolean;
+  notes: string | null;
+  internalNotes: string | null;
+  assignedAt: string | null;
+  acceptedAt: string | null;
+  arrivedAt: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  outcome: RescueOutcome | null;
+  rescueReport: string | null;
+  rescueImages: Array<string>;
+  rescueDuration: number | null;
+  verifiedAt: string | null;
+  emergencyDetails: string | null;
+  hasBite: boolean;
+  biteDetails: string | null;
+  source: RescueSource;
+  referenceNumber: string | null;
+  updatedAt: string;
+  snakeDescription: string | null;
+  snakeSize: string | null;
+  snakeColor: string | null;
+  snakeImageUrl: string | null;
+  snakeImages: Array<string>;
+  ward: number | null;
+  landmark: string | null;
+  lat: number | null;
+  lng: number | null;
+  locationAccuracy: number | null;
+  id: string;
+  name: string;
+  phone: string;
+  municipality: string;
+  address: string;
+  status: RescueStatus;
+  priority: RescuePriority;
+  isEmergency: boolean;
+  createdAt: string;
+  assignedVolunteer: {
+    id: string;
+    name: string;
+    contact: string;
+    vehicle: VehicleType;
+  } | null;
+  species: {
+    id: string;
+    name: string;
+    scientificName: string;
+    venomous: boolean;
+    dangerLevel: DangerLevel | null;
+  } | null;
+};
+
+export type TimelineEventFragment = {
+  id: string;
+  event: string;
+  description: string | null;
+  metadata: any;
+  lat: number | null;
+  lng: number | null;
+  createdAt: string;
+  user: { id: string; name: string } | null;
+};
+
+export type RescueListItemFragment = {
+  ward: number | null;
+  lat: number | null;
+  lng: number | null;
+  snakeImageUrl: string | null;
+  referenceNumber: string | null;
+  updatedAt: string;
+  id: string;
+  name: string;
+  phone: string;
+  municipality: string;
+  address: string;
+  status: RescueStatus;
+  priority: RescuePriority;
+  isEmergency: boolean;
+  createdAt: string;
+  species: { id: string; name: string; venomous: boolean } | null;
+  assignedVolunteer: { id: string; name: string } | null;
+};
+
+export type SnakeSpeciesCoreFragment = {
   id: string;
   name: string;
   scientificName: string;
   nepaliName: string;
-  localNames: Array<string>;
-  family: string | null;
   venomous: boolean;
   dangerLevel: DangerLevel | null;
-  venomType: VenomType | null;
-  conservationStatus: ConservationStatus | null;
-  behavior: string | null;
-  habitat: string | null;
-  foundInNepal: boolean;
-  regions: Array<string>;
   imageUrl: string | null;
-  rescueCount: number;
-  identificationCount: number;
-  verified: boolean;
-  createdAt: string;
-  updatedAt: string;
-  aliases: Array<string>;
-  genus: string | null;
-  species: string | null;
-  averageLength: string | null;
-  maxLength: string | null;
+};
+
+export type SnakeSpeciesIdentificationFragment = {
   color: string | null;
   pattern: string | null;
-  identificationGuide: string | null;
   distinctiveFeatures: Array<string>;
+  identificationGuide: string | null;
+  averageLength: string | null;
+  maxLength: string | null;
+  id: string;
+  name: string;
+  scientificName: string;
+  nepaliName: string;
+  venomous: boolean;
+  dangerLevel: DangerLevel | null;
+  imageUrl: string | null;
+};
+
+export type SnakeSpeciesSafetyFragment = {
+  venomType: VenomType | null;
+  safetyTips: string | null;
+  emergencyAdvice: string | null;
+  firstAidSteps: Array<string>;
+  id: string;
+  name: string;
+  scientificName: string;
+  nepaliName: string;
+  venomous: boolean;
+  dangerLevel: DangerLevel | null;
+  imageUrl: string | null;
+};
+
+export type SnakeSpeciesFullFragment = {
+  localNames: Array<string>;
+  aliases: Array<string>;
+  family: string | null;
+  genus: string | null;
+  species: string | null;
+  venomType: VenomType | null;
+  behavior: string | null;
+  habitat: string | null;
   activeTime: ActivityPattern | null;
   diet: string | null;
   safetyTips: string | null;
   emergencyAdvice: string | null;
   firstAidSteps: Array<string>;
+  foundInNepal: boolean;
+  regions: Array<string>;
   altitudeRange: string | null;
+  conservationStatus: ConservationStatus | null;
   protected: boolean;
   images: Array<string>;
   videoUrl: string | null;
-  verifiedBy: { id: string; name: string; email: string } | null;
+  rescueCount: number;
+  identificationCount: number;
+  verified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  color: string | null;
+  pattern: string | null;
+  distinctiveFeatures: Array<string>;
+  identificationGuide: string | null;
+  averageLength: string | null;
+  maxLength: string | null;
+  id: string;
+  name: string;
+  scientificName: string;
+  nepaliName: string;
+  venomous: boolean;
+  dangerLevel: DangerLevel | null;
+  imageUrl: string | null;
 };
 
-export type AllSnakeSpeciesQueryVariables = Exact<{
-  pagination?: PaginationInput | null | undefined;
-  filter?: SnakeSpeciesFilterInput | null | undefined;
-  sort?: SnakeSpeciesSortInput | null | undefined;
-}>;
-
-export type AllSnakeSpeciesQuery = {
-  allSnakeSpecies: {
-    totalCount: number;
-    edges: Array<{
-      cursor: string;
-      node: {
-        id: string;
-        name: string;
-        scientificName: string;
-        nepaliName: string;
-        localNames: Array<string>;
-        family: string | null;
-        venomous: boolean;
-        dangerLevel: DangerLevel | null;
-        venomType: VenomType | null;
-        conservationStatus: ConservationStatus | null;
-        behavior: string | null;
-        habitat: string | null;
-        foundInNepal: boolean;
-        regions: Array<string>;
-        imageUrl: string | null;
-        rescueCount: number;
-        identificationCount: number;
-        verified: boolean;
-        createdAt: string;
-        updatedAt: string;
-      };
-    }>;
-    pageInfo: {
-      hasNextPage: boolean;
-      hasPreviousPage: boolean;
-      startCursor: string | null;
-      endCursor: string | null;
-    };
-  };
+export type SnakeSpeciesListItemFragment = {
+  family: string | null;
+  regions: Array<string>;
+  rescueCount: number;
+  verified: boolean;
+  id: string;
+  name: string;
+  scientificName: string;
+  nepaliName: string;
+  venomous: boolean;
+  dangerLevel: DangerLevel | null;
+  imageUrl: string | null;
 };
 
-export type SnakeSpeciesQueryVariables = Exact<{
-  id: string | number;
-}>;
-
-export type SnakeSpeciesQuery = {
-  snakeSpecies: {
-    id: string;
-    name: string;
-    scientificName: string;
-    nepaliName: string;
-    localNames: Array<string>;
-    family: string | null;
-    venomous: boolean;
-    dangerLevel: DangerLevel | null;
-    venomType: VenomType | null;
-    conservationStatus: ConservationStatus | null;
-    behavior: string | null;
-    habitat: string | null;
-    foundInNepal: boolean;
-    regions: Array<string>;
-    imageUrl: string | null;
-    rescueCount: number;
-    identificationCount: number;
-    verified: boolean;
-    createdAt: string;
-    updatedAt: string;
-    aliases: Array<string>;
-    genus: string | null;
-    species: string | null;
-    averageLength: string | null;
-    maxLength: string | null;
-    color: string | null;
-    pattern: string | null;
-    identificationGuide: string | null;
-    distinctiveFeatures: Array<string>;
-    activeTime: ActivityPattern | null;
-    diet: string | null;
-    safetyTips: string | null;
-    emergencyAdvice: string | null;
-    firstAidSteps: Array<string>;
-    altitudeRange: string | null;
-    protected: boolean;
-    images: Array<string>;
-    videoUrl: string | null;
-    verifiedBy: { id: string; name: string; email: string } | null;
-  } | null;
+export type TrainingCoreFragment = {
+  id: string;
+  title: string;
+  type: TrainingType;
+  scheduledAt: string;
+  duration: number;
+  location: string;
+  status: TrainingStatus;
+  maxParticipants: number;
+  registeredCount: number;
+  availableSeats: number;
 };
 
-export type SearchSnakeSpeciesQueryVariables = Exact<{
-  query: string;
-  pagination?: PaginationInput | null | undefined;
-  filter?: SnakeSpeciesFilterInput | null | undefined;
-}>;
-
-export type SearchSnakeSpeciesQuery = {
-  searchSnakeSpecies: {
-    totalCount: number;
-    edges: Array<{
-      cursor: string;
-      node: {
-        id: string;
-        name: string;
-        scientificName: string;
-        nepaliName: string;
-        localNames: Array<string>;
-        family: string | null;
-        venomous: boolean;
-        dangerLevel: DangerLevel | null;
-        venomType: VenomType | null;
-        conservationStatus: ConservationStatus | null;
-        behavior: string | null;
-        habitat: string | null;
-        foundInNepal: boolean;
-        regions: Array<string>;
-        imageUrl: string | null;
-        rescueCount: number;
-        identificationCount: number;
-        verified: boolean;
-        createdAt: string;
-        updatedAt: string;
-      };
-    }>;
-    pageInfo: {
-      hasNextPage: boolean;
-      hasPreviousPage: boolean;
-      startCursor: string | null;
-      endCursor: string | null;
-    };
-  };
+export type TrainingWithDetailsFragment = {
+  description: string | null;
+  instructor: string | null;
+  materials: Array<string>;
+  certificate: string | null;
+  createdAt: string;
+  id: string;
+  title: string;
+  type: TrainingType;
+  scheduledAt: string;
+  duration: number;
+  location: string;
+  status: TrainingStatus;
+  maxParticipants: number;
+  registeredCount: number;
+  availableSeats: number;
 };
 
-export type VenomousSnakesQueryVariables = Exact<{
-  pagination?: PaginationInput | null | undefined;
-}>;
-
-export type VenomousSnakesQuery = {
-  venomousSnakes: {
-    totalCount: number;
-    edges: Array<{
-      cursor: string;
-      node: {
-        id: string;
-        name: string;
-        scientificName: string;
-        nepaliName: string;
-        localNames: Array<string>;
-        family: string | null;
-        venomous: boolean;
-        dangerLevel: DangerLevel | null;
-        venomType: VenomType | null;
-        conservationStatus: ConservationStatus | null;
-        behavior: string | null;
-        habitat: string | null;
-        foundInNepal: boolean;
-        regions: Array<string>;
-        imageUrl: string | null;
-        rescueCount: number;
-        identificationCount: number;
-        verified: boolean;
-        createdAt: string;
-        updatedAt: string;
-      };
-    }>;
-    pageInfo: {
-      hasNextPage: boolean;
-      hasPreviousPage: boolean;
-      startCursor: string | null;
-      endCursor: string | null;
-    };
-  };
+export type TrainingFullFragment = {
+  updatedAt: string;
+  description: string | null;
+  instructor: string | null;
+  materials: Array<string>;
+  certificate: string | null;
+  createdAt: string;
+  id: string;
+  title: string;
+  type: TrainingType;
+  scheduledAt: string;
+  duration: number;
+  location: string;
+  status: TrainingStatus;
+  maxParticipants: number;
+  registeredCount: number;
+  availableSeats: number;
+  participants: Array<{ id: string; name: string; email: string }>;
+  volunteers: Array<{ id: string; name: string; contact: string }>;
 };
 
-export type SnakeSpeciesByRegionQueryVariables = Exact<{
-  region: string;
-  pagination?: PaginationInput | null | undefined;
-}>;
-
-export type SnakeSpeciesByRegionQuery = {
-  snakeSpeciesByRegion: {
-    totalCount: number;
-    edges: Array<{
-      cursor: string;
-      node: {
-        id: string;
-        name: string;
-        scientificName: string;
-        nepaliName: string;
-        localNames: Array<string>;
-        family: string | null;
-        venomous: boolean;
-        dangerLevel: DangerLevel | null;
-        venomType: VenomType | null;
-        conservationStatus: ConservationStatus | null;
-        behavior: string | null;
-        habitat: string | null;
-        foundInNepal: boolean;
-        regions: Array<string>;
-        imageUrl: string | null;
-        rescueCount: number;
-        identificationCount: number;
-        verified: boolean;
-        createdAt: string;
-        updatedAt: string;
-      };
-    }>;
-    pageInfo: {
-      hasNextPage: boolean;
-      hasPreviousPage: boolean;
-      startCursor: string | null;
-      endCursor: string | null;
-    };
-  };
+export type TrainingListItemFragment = {
+  instructor: string | null;
+  id: string;
+  title: string;
+  type: TrainingType;
+  scheduledAt: string;
+  duration: number;
+  location: string;
+  status: TrainingStatus;
+  maxParticipants: number;
+  registeredCount: number;
+  availableSeats: number;
 };
 
-export type SnakeSpeciesStatsQueryVariables = Exact<{ [key: string]: never }>;
-
-export type SnakeSpeciesStatsQuery = {
-  snakeSpeciesStats: {
-    totalSpecies: number;
-    venomousCount: number;
-    harmlessCount: number;
-  };
+export type VolunteerCoreFragment = {
+  id: string;
+  name: string;
+  contact: string;
+  municipality: string;
+  status: VolunteerStatus;
+  experience: ExperienceLevel;
+  isAvailableNow: boolean;
+  totalRescues: number;
+  rating: number | null;
 };
 
-export type CreateSnakeSpeciesMutationVariables = Exact<{
-  input: CreateSnakeSpeciesInput;
-}>;
-
-export type CreateSnakeSpeciesMutation = {
-  createSnakeSpecies: {
-    id: string;
-    name: string;
-    scientificName: string;
-    nepaliName: string;
-    localNames: Array<string>;
-    family: string | null;
-    venomous: boolean;
-    dangerLevel: DangerLevel | null;
-    venomType: VenomType | null;
-    conservationStatus: ConservationStatus | null;
-    behavior: string | null;
-    habitat: string | null;
-    foundInNepal: boolean;
-    regions: Array<string>;
-    imageUrl: string | null;
-    rescueCount: number;
-    identificationCount: number;
-    verified: boolean;
-    createdAt: string;
-    updatedAt: string;
-    aliases: Array<string>;
-    genus: string | null;
-    species: string | null;
-    averageLength: string | null;
-    maxLength: string | null;
-    color: string | null;
-    pattern: string | null;
-    identificationGuide: string | null;
-    distinctiveFeatures: Array<string>;
-    activeTime: ActivityPattern | null;
-    diet: string | null;
-    safetyTips: string | null;
-    emergencyAdvice: string | null;
-    firstAidSteps: Array<string>;
-    altitudeRange: string | null;
-    protected: boolean;
-    images: Array<string>;
-    videoUrl: string | null;
-    verifiedBy: { id: string; name: string; email: string } | null;
-  };
+export type VolunteerWithLocationFragment = {
+  address: string;
+  ward: number | null;
+  currentLat: number | null;
+  currentLng: number | null;
+  assignedZone: string | null;
+  coverageRadius: number;
+  id: string;
+  name: string;
+  contact: string;
+  municipality: string;
+  status: VolunteerStatus;
+  experience: ExperienceLevel;
+  isAvailableNow: boolean;
+  totalRescues: number;
+  rating: number | null;
 };
 
-export type UpdateSnakeSpeciesMutationVariables = Exact<{
-  id: string | number;
-  input: UpdateSnakeSpeciesInput;
-}>;
-
-export type UpdateSnakeSpeciesMutation = {
-  updateSnakeSpecies: {
-    id: string;
-    name: string;
-    scientificName: string;
-    nepaliName: string;
-    localNames: Array<string>;
-    family: string | null;
-    venomous: boolean;
-    dangerLevel: DangerLevel | null;
-    venomType: VenomType | null;
-    conservationStatus: ConservationStatus | null;
-    behavior: string | null;
-    habitat: string | null;
-    foundInNepal: boolean;
-    regions: Array<string>;
-    imageUrl: string | null;
-    rescueCount: number;
-    identificationCount: number;
-    verified: boolean;
-    createdAt: string;
-    updatedAt: string;
-    aliases: Array<string>;
-    genus: string | null;
-    species: string | null;
-    averageLength: string | null;
-    maxLength: string | null;
-    color: string | null;
-    pattern: string | null;
-    identificationGuide: string | null;
-    distinctiveFeatures: Array<string>;
-    activeTime: ActivityPattern | null;
-    diet: string | null;
-    safetyTips: string | null;
-    emergencyAdvice: string | null;
-    firstAidSteps: Array<string>;
-    altitudeRange: string | null;
-    protected: boolean;
-    images: Array<string>;
-    videoUrl: string | null;
-    verifiedBy: { id: string; name: string; email: string } | null;
-  };
+export type VolunteerWithPerformanceFragment = {
+  completedRescues: number;
+  cancelledRescues: number;
+  successRate: number | null;
+  averageResponseTime: number | null;
+  averageRescueTime: number | null;
+  totalRatings: number;
+  id: string;
+  name: string;
+  contact: string;
+  municipality: string;
+  status: VolunteerStatus;
+  experience: ExperienceLevel;
+  isAvailableNow: boolean;
+  totalRescues: number;
+  rating: number | null;
 };
 
-export type VerifySnakeSpeciesMutationVariables = Exact<{
-  id: string | number;
-}>;
-
-export type VerifySnakeSpeciesMutation = {
-  verifySnakeSpecies: {
-    id: string;
-    name: string;
-    scientificName: string;
-    nepaliName: string;
-    localNames: Array<string>;
-    family: string | null;
-    venomous: boolean;
-    dangerLevel: DangerLevel | null;
-    venomType: VenomType | null;
-    conservationStatus: ConservationStatus | null;
-    behavior: string | null;
-    habitat: string | null;
-    foundInNepal: boolean;
-    regions: Array<string>;
-    imageUrl: string | null;
-    rescueCount: number;
-    identificationCount: number;
-    verified: boolean;
-    createdAt: string;
-    updatedAt: string;
-    aliases: Array<string>;
-    genus: string | null;
-    species: string | null;
-    averageLength: string | null;
-    maxLength: string | null;
-    color: string | null;
-    pattern: string | null;
-    identificationGuide: string | null;
-    distinctiveFeatures: Array<string>;
-    activeTime: ActivityPattern | null;
-    diet: string | null;
-    safetyTips: string | null;
-    emergencyAdvice: string | null;
-    firstAidSteps: Array<string>;
-    altitudeRange: string | null;
-    protected: boolean;
-    images: Array<string>;
-    videoUrl: string | null;
-    verifiedBy: { id: string; name: string; email: string } | null;
-  };
+export type VolunteerFullFragment = {
+  email: string | null;
+  dateOfBirth: string | null;
+  gender: string | null;
+  emergencyContact: string | null;
+  emergencyPhone: string | null;
+  experienceYears: number | null;
+  vehicle: VehicleType;
+  vehicleDetails: string | null;
+  skills: Array<string>;
+  certifications: Array<string>;
+  languages: Array<string>;
+  availableTime: AvailabilityTime;
+  availableDays: Array<string>;
+  emergencyAvailability: boolean;
+  lastLocationUpdate: string | null;
+  imageUrl: string | null;
+  bio: string | null;
+  verifiedAt: string | null;
+  trainingCompleted: boolean;
+  trainingDate: string | null;
+  certificationExpiry: string | null;
+  hasEquipment: boolean;
+  equipment: Array<string>;
+  completedRescues: number;
+  successRate: number | null;
+  averageResponseTime: number | null;
+  rating: number | null;
+  createdAt: string;
+  updatedAt: string;
+  address: string;
+  ward: number | null;
+  currentLat: number | null;
+  currentLng: number | null;
+  assignedZone: string | null;
+  coverageRadius: number;
+  id: string;
+  name: string;
+  contact: string;
+  municipality: string;
+  status: VolunteerStatus;
+  experience: ExperienceLevel;
+  isAvailableNow: boolean;
+  totalRescues: number;
 };
 
-export type DeleteSnakeSpeciesMutationVariables = Exact<{
-  id: string | number;
-}>;
-
-export type DeleteSnakeSpeciesMutation = {
-  deleteSnakeSpecies: { success: boolean; message: string | null };
+export type VolunteerForDispatchFragment = {
+  vehicle: VehicleType;
+  hasEquipment: boolean;
+  equipment: Array<string>;
+  isAvailableNow: boolean;
+  emergencyAvailability: boolean;
+  experienceYears: number | null;
+  rating: number | null;
+  successRate: number | null;
+  address: string;
+  ward: number | null;
+  currentLat: number | null;
+  currentLng: number | null;
+  assignedZone: string | null;
+  coverageRadius: number;
+  id: string;
+  name: string;
+  contact: string;
+  municipality: string;
+  status: VolunteerStatus;
+  experience: ExperienceLevel;
+  totalRescues: number;
 };
 
-export type SnakeSpeciesAddedSubscriptionVariables = Exact<{
-  [key: string]: never;
-}>;
-
-export type SnakeSpeciesAddedSubscription = {
-  snakeSpeciesAdded: {
-    id: string;
-    name: string;
-    scientificName: string;
-    nepaliName: string;
-    localNames: Array<string>;
-    family: string | null;
-    venomous: boolean;
-    dangerLevel: DangerLevel | null;
-    venomType: VenomType | null;
-    conservationStatus: ConservationStatus | null;
-    behavior: string | null;
-    habitat: string | null;
-    foundInNepal: boolean;
-    regions: Array<string>;
-    imageUrl: string | null;
-    rescueCount: number;
-    identificationCount: number;
-    verified: boolean;
-    createdAt: string;
-    updatedAt: string;
-    aliases: Array<string>;
-    genus: string | null;
-    species: string | null;
-    averageLength: string | null;
-    maxLength: string | null;
-    color: string | null;
-    pattern: string | null;
-    identificationGuide: string | null;
-    distinctiveFeatures: Array<string>;
-    activeTime: ActivityPattern | null;
-    diet: string | null;
-    safetyTips: string | null;
-    emergencyAdvice: string | null;
-    firstAidSteps: Array<string>;
-    altitudeRange: string | null;
-    protected: boolean;
-    images: Array<string>;
-    videoUrl: string | null;
-    verifiedBy: { id: string; name: string; email: string } | null;
-  };
-};
-
-export type SnakeSpeciesUpdatedSubscriptionVariables = Exact<{
-  id?: string | number | null | undefined;
-}>;
-
-export type SnakeSpeciesUpdatedSubscription = {
-  snakeSpeciesUpdated: {
-    id: string;
-    name: string;
-    scientificName: string;
-    nepaliName: string;
-    localNames: Array<string>;
-    family: string | null;
-    venomous: boolean;
-    dangerLevel: DangerLevel | null;
-    venomType: VenomType | null;
-    conservationStatus: ConservationStatus | null;
-    behavior: string | null;
-    habitat: string | null;
-    foundInNepal: boolean;
-    regions: Array<string>;
-    imageUrl: string | null;
-    rescueCount: number;
-    identificationCount: number;
-    verified: boolean;
-    createdAt: string;
-    updatedAt: string;
-    aliases: Array<string>;
-    genus: string | null;
-    species: string | null;
-    averageLength: string | null;
-    maxLength: string | null;
-    color: string | null;
-    pattern: string | null;
-    identificationGuide: string | null;
-    distinctiveFeatures: Array<string>;
-    activeTime: ActivityPattern | null;
-    diet: string | null;
-    safetyTips: string | null;
-    emergencyAdvice: string | null;
-    firstAidSteps: Array<string>;
-    altitudeRange: string | null;
-    protected: boolean;
-    images: Array<string>;
-    videoUrl: string | null;
-    verifiedBy: { id: string; name: string; email: string } | null;
-  };
+export type VolunteerListItemFragment = {
+  email: string | null;
+  vehicle: VehicleType;
+  verifiedAt: string | null;
+  createdAt: string;
+  id: string;
+  name: string;
+  contact: string;
+  municipality: string;
+  status: VolunteerStatus;
+  experience: ExperienceLevel;
+  isAvailableNow: boolean;
+  totalRescues: number;
+  rating: number | null;
 };

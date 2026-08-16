@@ -72,12 +72,49 @@ const PRIORITY_STYLES = {
   EMERGENCY: 'bg-red-600/10 text-red-600 border-red-600/20',
 }
 
+interface GetRescueRequestsQuery {
+  rescueRequests: {
+    edges: Array<{
+      node: {
+        id: string
+        referenceNumber: string
+        status: string
+        priority: string
+        species: {
+          name: string
+          scientificName: string
+        }
+        snakeDescription: string
+        municipality: string
+        ward: string | null
+        user: {
+          name: string
+        }
+        assignedVolunteer: {
+          user: {
+            name: string
+          }
+        } | null
+        updatedAt: string
+        createdAt: string
+      }
+    }>
+    pageInfo: {
+      hasNextPage: boolean
+      hasPreviousPage: boolean
+      startCursor: string | null
+      endCursor: string | null
+    }
+    totalCount: number
+  } | null
+}
+
 export default function RescueRequestsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 10
 
-  const { data, loading, error } = useQuery(GET_RESCUE_REQUESTS, {
+  const { data, loading, error } = useQuery<GetRescueRequestsQuery>(GET_RESCUE_REQUESTS, {
     variables: {
       pagination: {
         limit: pageSize,

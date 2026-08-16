@@ -1,18 +1,19 @@
 /**
  * Rescuer Map Page
  * Track assigned rescue requests and navigate to locations
+ * ✅ INTEGRATED: GraphQL query for assigned rescues
  */
 
 'use client';
 
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useQuery } from '@/lib/apollo';
 import { useUserLocation } from '@/hooks/useUserLocation';
-import { LIST_RESCUES_QUERY } from '@/lib/graphql/queries/rescue.queries';
+import { useMyAssignedRescuesQuery } from '@/lib/graphql/hooks/rescue.hooks';
 import { Navigation, Phone, AlertCircle, RefreshCw, MapPin, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDistance, calculateDistance, estimateTravelTime } from '@/lib/map/distance';
+import { toast } from 'sonner';
 
 // Dynamic import to avoid SSR issues
 const RescueMap = dynamic(
@@ -35,32 +36,46 @@ export default function RescuerMapPage() {
   
   const { location, error: locationError, requestLocation } = useUserLocation();
   
-  // Only show assigned and in-progress rescues for this rescuer
-  const { data, loading, error, refetch } = useQuery(LIST_RESCUES_QUERY, {
+  // Only show assigned and in-progress rescues for this rescuer using GraphQL hooks
+  const { data, loading, error, refetch } = useMyAssignedRescuesQuery({
     variables: {
-      filter: { statuses: ['ASSIGNED', 'IN_PROGRESS'] },
-      pagination: { page: 1, limit: 50 },
+      filter: { statuses: ['ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'] },
+      pagination: { limit: 50, page: 1 },
     },
     pollInterval: 15000, // Refresh every 15 seconds for real-time updates
+    fetchPolicy: 'cache-and-network',
   });
 
-  const rescues = (data as any)?.rescueRequests?.edges?.map((edge: any) => edge.node) || [];
+  const rescues = data?.myAssignedRescues?.edges?.map(edge => edge.node) || [];
+  
+  // Define rescue type for better type safety
+  type RescueWithDistance = typeof rescues[0] & { 
+    distance: number | null;
+    phone?: string;
+    name?: string;
+    snakeDescription?: string;
+  };
+  
+  // Show error toast
+  if (error) {
+    toast.error(`Failed to load rescues: ${error.message}`);
+  }
 
   // Sort rescues by distance
-  const sortedRescues = location
+  const sortedRescues: RescueWithDistance[] = location
     ? rescues
-        .map((r: any) => ({
+        .map((r) => ({
           ...r,
           distance: r.lat && r.lng
             ? calculateDistance(location.latitude, location.longitude, r.lat, r.lng)
             : null,
         }))
-        .sort((a: any, b: any) => {
+        .sort((a, b) => {
           if (a.distance === null) return 1;
           if (b.distance === null) return -1;
           return a.distance - b.distance;
         })
-    : rescues;
+    : rescues.map((r) => ({ ...r, distance: null }));
 
   const handleRescueClick = (rescueId: string) => {
     setSelectedRescueId(rescueId);
@@ -115,7 +130,7 @@ export default function RescuerMapPage() {
             <div>
               <p className="text-xs text-slate-600 uppercase">In Progress</p>
               <p className="text-2xl font-bold text-purple-600">
-                {sortedRescues.filter((r: any) => r.status === 'IN_PROGRESS').length}
+                {sortedRescues.filter((r) => r.status === 'IN_PROGRESS').length}
               </p>
             </div>
             <Clock className="h-8 w-8 text-purple-600" />
@@ -127,7 +142,7 @@ export default function RescuerMapPage() {
             <div>
               <p className="text-xs text-slate-600 uppercase">Critical</p>
               <p className="text-2xl font-bold text-red-600">
-                {sortedRescues.filter((r: any) => r.priority === 'CRITICAL').length}
+                {sortedRescues.filter((r) => r.priority === 'CRITICAL').length}
               </p>
             </div>
             <AlertCircle className="h-8 w-8 text-red-600" />
@@ -159,7 +174,7 @@ export default function RescuerMapPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {sortedRescues.map((rescue: any) => {
+              {sortedRescues.map((rescue) => {
                 const isSelected = selectedRescueId === rescue.id;
                 const priorityColors: Record<string, string> = {
                   CRITICAL: 'border-red-600 bg-red-50',
@@ -265,7 +280,7 @@ export default function RescuerMapPage() {
               </div>
             ) : (
               <RescueMap
-                rescues={sortedRescues.map((r: any) => ({
+                rescues={sortedRescues.map((r) => ({
                   id: r.id,
                   lat: r.lat || 0,
                   lng: r.lng || 0,

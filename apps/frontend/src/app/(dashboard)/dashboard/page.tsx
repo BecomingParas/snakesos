@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { useCurrentUser } from '@/hooks/dashboard'
 
+// Force dynamic rendering for authenticated pages
+export const dynamic = 'force-dynamic'
+
 /**
  * Dashboard Auto-Router
  * Redirects to role-specific dashboard based on user role

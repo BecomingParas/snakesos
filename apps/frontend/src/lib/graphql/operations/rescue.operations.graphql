@@ -1,0 +1,297 @@
+# ===================================================================
+# RESCUE OPERATIONS - Queries and Mutations for Apollo Client
+# ===================================================================
+
+# ===================================================================
+# MUTATIONS
+# ===================================================================
+
+mutation CreateRescueRequest($input: CreateRescueRequestInput!) {
+  createRescueRequest(input: $input) {
+    id
+    referenceNumber
+    status
+    priority
+    municipality
+    ward
+    address
+    landmark
+    lat
+    lng
+    snakeDescription
+    snakeSize
+    snakeColor
+    snakeImages
+    isEmergency
+    hasBite
+    createdAt
+    updatedAt
+  }
+}
+
+mutation AssignRescue($input: AssignRescueInput!) {
+  assignRescue(input: $input) {
+    id
+    referenceNumber
+    status
+    assignedAt
+    assignedBy {
+      id
+      name
+    }
+    assignedVolunteer {
+      id
+      name
+    }
+    updatedAt
+  }
+}
+
+mutation AcceptRescue($input: AcceptRescueInput!) {
+  acceptRescue(input: $input) {
+    id
+    referenceNumber
+    status
+    acceptedAt
+    updatedAt
+  }
+}
+
+mutation UpdateRescueProgress($input: UpdateRescueProgressInput!) {
+  updateRescueProgress(input: $input) {
+    id
+    referenceNumber
+    status
+    startedAt
+    arrivedAt
+    updatedAt
+  }
+}
+
+mutation CompleteRescue($input: CompleteRescueInput!) {
+  completeRescue(input: $input) {
+    id
+    referenceNumber
+    status
+    completedAt
+    outcome
+    rescueReport
+    rescueImages
+    species {
+      id
+      name
+    }
+    updatedAt
+  }
+}
+
+mutation CancelRescue($rescueId: ID!, $reason: String) {
+  cancelRescue(rescueId: $rescueId, reason: $reason) {
+    id
+    referenceNumber
+    status
+    updatedAt
+  }
+}
+
+# ===================================================================
+# QUERIES
+# ===================================================================
+
+query RescueRequest($id: ID!) {
+  rescueRequest(id: $id) {
+    id
+    referenceNumber
+    status
+    priority
+    municipality
+    ward
+    address
+    landmark
+    lat
+    lng
+    snakeDescription
+    snakeSize
+    snakeColor
+    snakeImages
+    isEmergency
+    hasBite
+    assignedAt
+    acceptedAt
+    startedAt
+    arrivedAt
+    completedAt
+    outcome
+    rescueReport
+    rescueImages
+    rescueDuration
+    createdAt
+    updatedAt
+    
+    # Relations
+    user {
+      id
+      name
+      email
+      phone
+    }
+    
+    assignedVolunteer {
+      id
+      name
+      experience
+      experienceYears
+      totalRescues
+      rating
+    }
+    
+    assignedBy {
+      id
+      name
+    }
+    
+    species {
+      id
+      name
+      scientificName
+      venomous
+    }
+    
+    timeline {
+      id
+      event
+      description
+      user {
+        id
+        name
+      }
+      lat
+      lng
+      createdAt
+    }
+  }
+}
+
+query MyRescueRequests(
+  $pagination: PaginationInput
+  $filter: RescueRequestFilterInput
+) {
+  myRescueRequests(
+    pagination: $pagination
+    filter: $filter
+  ) {
+    edges {
+      node {
+        id
+        referenceNumber
+        status
+        priority
+        municipality
+        address
+        snakeDescription
+        isEmergency
+        createdAt
+        assignedVolunteer {
+          id
+          name
+        }
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+query MyAssignedRescues(
+  $pagination: PaginationInput
+  $filter: RescueRequestFilterInput
+) {
+  myAssignedRescues(
+    pagination: $pagination
+    filter: $filter
+  ) {
+    edges {
+      node {
+        id
+        referenceNumber
+        status
+        priority
+        municipality
+        ward
+        address
+        landmark
+        lat
+        lng
+        snakeDescription
+        snakeSize
+        snakeColor
+        isEmergency
+        assignedAt
+        acceptedAt
+        user {
+          id
+          name
+          phone
+        }
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}
+
+query ActiveRescues(
+  $pagination: PaginationInput
+) {
+  activeRescues(
+    pagination: $pagination
+  ) {
+    edges {
+      node {
+        id
+        referenceNumber
+        status
+        priority
+        municipality
+        ward
+        address
+        lat
+        lng
+        snakeDescription
+        isEmergency
+        createdAt
+        assignedAt
+        acceptedAt
+        user {
+          id
+          name
+          phone
+        }
+        assignedVolunteer {
+          id
+          name
+        }
+      }
+      cursor
+    }
+    pageInfo {
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    totalCount
+  }
+}

@@ -1,20 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-// Validate Stripe key is present
-if (!process.env.STRIPE_SECRET_KEY) {
-  console.error('STRIPE_SECRET_KEY is not set in environment variables');
-  throw new Error('Stripe is not configured. Please check environment variables.');
-}
+// Lazy initialize Stripe only when the route is called
+let stripe: Stripe | null = null;
 
-// Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2026-07-29.dahlia',
-  typescript: true,
-});
+function getStripe() {
+  if (!stripe && process.env.STRIPE_SECRET_KEY) {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2026-07-29.dahlia',
+      typescript: true,
+    });
+  }
+  return stripe;
+}
 
 export async function POST(request: NextRequest) {
   try {
+    const stripeClient = getStripe();
+    
+    if (!stripeClient) {
+      return NextResponse.json(
+        { error: 'Stripe is not configured' },
+        { status: 503 }
+      );
+    }
+    
     const { amount } = await request.json();
 
     // Validate amount
@@ -26,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create Stripe Checkout Session
-    const session = await stripe.checkout.sessions.create({
+    const session = await stripeClient.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
         {

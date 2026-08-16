@@ -161,4 +161,87 @@ export class RescueRepository extends BaseRepository<
       orderBy: { createdAt: 'desc' },
     });
   }
+
+  /**
+   * Add timeline event to rescue
+   */
+  async addTimelineEvent(data: {
+    rescueId: string;
+    event: string;
+    description: string;
+    userId?: string;
+    lat?: number;
+    lng?: number;
+    metadata?: Record<string, any>;
+  }) {
+    return this.prisma.rescueTimeline.create({
+      data: {
+        rescueId: data.rescueId,
+        event: data.event,
+        description: data.description,
+        userId: data.userId,
+        lat: data.lat,
+        lng: data.lng,
+        metadata: data.metadata as any,
+      },
+    });
+  }
+
+  /**
+   * Create notifications
+   */
+  async createNotifications(
+    notifications: Array<{
+      userId: string;
+      type: string;
+      title: string;
+      message: string;
+      rescueId: string;
+      priority?: string;
+    }>
+  ) {
+    return this.prisma.notification.createMany({
+      data: notifications.map((n) => ({
+        userId: n.userId,
+        type: n.type as any, // Type assertion for notification type enum
+        title: n.title,
+        message: n.message,
+        rescueId: n.rescueId,
+        priority: n.priority || 'NORMAL',
+      })),
+    });
+  }
+
+  /**
+   * Get volunteer by ID
+   */
+  async getVolunteerById(volunteerId: string) {
+    return this.prisma.volunteer.findUnique({
+      where: { id: volunteerId },
+    });
+  }
+
+  /**
+   * Update volunteer
+   */
+  async updateVolunteer(volunteerId: string, data: any) {
+    return this.prisma.volunteer.update({
+      where: { id: volunteerId },
+      data,
+    });
+  }
+
+  /**
+   * Increment species rescue count
+   */
+  async incrementSpeciesRescueCount(speciesId: string) {
+    return this.prisma.snakeSpecies.update({
+      where: { id: speciesId },
+      data: {
+        rescueCount: {
+          increment: 1,
+        },
+      },
+    });
+  }
 }

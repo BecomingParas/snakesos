@@ -268,9 +268,9 @@ export type AssignRescueInput = {
 /** Authentication payload returned on successful login/register */
 export type AuthPayload = {
   __typename?: 'AuthPayload';
+  accessToken: Scalars['String']['output'];
   expiresIn: Scalars['Int']['output'];
   refreshToken: Scalars['String']['output'];
-  token: Scalars['String']['output'];
   user: User;
 };
 
@@ -1140,6 +1140,8 @@ export type Mutation = {
   cancelTraining: Training;
   /** Cancel training enrollment */
   cancelTrainingEnrollment: Training;
+  /** Change password (requires current password) */
+  changePassword: Scalars['Boolean']['output'];
   /** Mark rescue as completed */
   completeRescue: RescueRequest;
   /** Mark training as completed (admin) */
@@ -1158,6 +1160,8 @@ export type Mutation = {
   createTraining: Training;
   /** Delete AI identification */
   deleteAIIdentification: SuccessResponse;
+  /** Delete user account (soft delete) */
+  deleteAccount: Scalars['Boolean']['output'];
   /** Delete a blog post (soft delete) */
   deleteBlogPost: SuccessResponse;
   /** Delete contact message (soft delete) */
@@ -1178,6 +1182,8 @@ export type Mutation = {
   deleteVolunteer: SuccessResponse;
   /** Enroll in training session */
   enrollInTraining: Training;
+  /** Request password reset email */
+  forgotPassword: PasswordResetTokenPayload;
   /** Generate donation receipt */
   generateDonationReceipt: Donation;
   /** Identify snake from image using AI */
@@ -1190,12 +1196,18 @@ export type Mutation = {
   likeBlogPost: BlogPost;
   /** Like a gallery image */
   likeGalleryImage: GalleryImage;
+  /** Login with email and password */
+  login: AuthPayload;
+  /** Logout current user (invalidates refresh token) */
+  logout: Scalars['Boolean']['output'];
   /** Mark all notifications as read */
   markAllNotificationsAsRead: SuccessResponse;
   /** Mark message as read */
   markMessageAsRead: ContactMessage;
   /** Mark notification as read */
   markNotificationAsRead: Notification;
+  /** Login with OAuth provider (Google) */
+  oauthLogin: AuthPayload;
   /** Process payment (callback from gateway) */
   processPayment: Donation;
   /** Provide feedback on AI identification */
@@ -1208,12 +1220,20 @@ export type Mutation = {
   reactivateVolunteer: Volunteer;
   /** Refresh analytics cache */
   refreshAnalyticsCache: SuccessResponse;
+  /** Refresh access token using refresh token cookie */
+  refreshToken: AuthPayload;
   /** Refund donation (admin) */
   refundDonation: Donation;
+  /** Register a new user account */
+  register: AuthPayload;
   /** Reopen cancelled/closed rescue */
   reopenRescue: RescueRequest;
   /** Reprocess identification with different model */
   reprocessIdentification: AiIdentification;
+  /** Resend email verification */
+  resendVerification: Scalars['Boolean']['output'];
+  /** Reset password with token */
+  resetPassword: Scalars['Boolean']['output'];
   /** Respond to a contact message */
   respondToMessage: ContactMessage;
   /** Approve or reject volunteer application */
@@ -1240,6 +1260,8 @@ export type Mutation = {
   updateNotificationPreferences: NotificationPreferences;
   /** Update payment gateway configuration */
   updatePaymentGateway: PaymentGatewayConfig;
+  /** Update user profile */
+  updateProfile: User;
   /** Update rescue progress (volunteer) */
   updateRescueProgress: RescueRequest;
   /** Update a rescue request */
@@ -1258,6 +1280,8 @@ export type Mutation = {
   uploadGalleryImage: GalleryImage;
   /** Verify donation (admin) */
   verifyDonation: Donation;
+  /** Verify email address with token */
+  verifyEmail: EmailVerificationPayload;
   /** Verify completed rescue (admin) */
   verifyRescue: RescueRequest;
   /** Verify snake species (admin only) */
@@ -1335,6 +1359,10 @@ export type MutationCancelTrainingEnrollmentArgs = {
   trainingId: Scalars['ID']['input'];
 };
 
+export type MutationChangePasswordArgs = {
+  input: ChangePasswordInput;
+};
+
 export type MutationCompleteRescueArgs = {
   input: CompleteRescueInput;
 };
@@ -1369,6 +1397,10 @@ export type MutationCreateTrainingArgs = {
 
 export type MutationDeleteAiIdentificationArgs = {
   id: Scalars['ID']['input'];
+};
+
+export type MutationDeleteAccountArgs = {
+  password: Scalars['String']['input'];
 };
 
 export type MutationDeleteBlogPostArgs = {
@@ -1407,6 +1439,10 @@ export type MutationEnrollInTrainingArgs = {
   trainingId: Scalars['ID']['input'];
 };
 
+export type MutationForgotPasswordArgs = {
+  email: Scalars['String']['input'];
+};
+
 export type MutationGenerateDonationReceiptArgs = {
   donationId: Scalars['ID']['input'];
 };
@@ -1431,12 +1467,20 @@ export type MutationLikeGalleryImageArgs = {
   id: Scalars['ID']['input'];
 };
 
+export type MutationLoginArgs = {
+  input: LoginInput;
+};
+
 export type MutationMarkMessageAsReadArgs = {
   messageId: Scalars['ID']['input'];
 };
 
 export type MutationMarkNotificationAsReadArgs = {
   id: Scalars['ID']['input'];
+};
+
+export type MutationOauthLoginArgs = {
+  input: OAuthLoginInput;
 };
 
 export type MutationProcessPaymentArgs = {
@@ -1466,6 +1510,10 @@ export type MutationRefundDonationArgs = {
   input: RefundDonationInput;
 };
 
+export type MutationRegisterArgs = {
+  input: RegisterInput;
+};
+
 export type MutationReopenRescueArgs = {
   rescueId: Scalars['ID']['input'];
 };
@@ -1473,6 +1521,14 @@ export type MutationReopenRescueArgs = {
 export type MutationReprocessIdentificationArgs = {
   identificationId: Scalars['ID']['input'];
   provider: AiProvider;
+};
+
+export type MutationResendVerificationArgs = {
+  input: ResendVerificationInput;
+};
+
+export type MutationResetPasswordArgs = {
+  input: ResetPasswordInput;
 };
 
 export type MutationRespondToMessageArgs = {
@@ -1531,6 +1587,10 @@ export type MutationUpdatePaymentGatewayArgs = {
   input: UpdatePaymentGatewayInput;
 };
 
+export type MutationUpdateProfileArgs = {
+  input: UpdateProfileInput;
+};
+
 export type MutationUpdateRescueProgressArgs = {
   input: UpdateRescueProgressInput;
 };
@@ -1570,6 +1630,10 @@ export type MutationUploadGalleryImageArgs = {
 export type MutationVerifyDonationArgs = {
   donationId: Scalars['ID']['input'];
   notes?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type MutationVerifyEmailArgs = {
+  input: VerifyEmailInput;
 };
 
 export type MutationVerifyRescueArgs = {
@@ -1821,12 +1885,6 @@ export type PaginationInput = {
   page?: InputMaybe<Scalars['Int']['input']>;
 };
 
-/** Input for password reset confirmation */
-export type PasswordResetConfirmInput = {
-  newPassword: Scalars['String']['input'];
-  token: Scalars['String']['input'];
-};
-
 /** Input for password reset request */
 export type PasswordResetRequestInput = {
   email: Scalars['Email']['input'];
@@ -1925,6 +1983,8 @@ export type Query = {
   blogPost?: Maybe<BlogPost>;
   /** List blog posts */
   blogPosts: BlogPostConnection;
+  /** Check if email is available for registration */
+  checkEmailAvailability: Scalars['Boolean']['output'];
   /** Get CMS statistics */
   cmsStats: CmsStats;
   /** Get contact message by ID */
@@ -1953,6 +2013,10 @@ export type Query = {
   galleryImages: GalleryImageConnection;
   /** Get geographic heatmap data */
   geographicHeatmap: Array<GeographicHeatmap>;
+  /** Get current authenticated user */
+  me?: Maybe<User>;
+  /** Get activity logs for current user */
+  myActivityLogs: ActivityLogConnection;
   /** Get assigned rescues (volunteer view) */
   myAssignedRescues: RescueRequestConnection;
   /** Get my donations */
@@ -2001,6 +2065,8 @@ export type Query = {
   searchRescues: RescueRequestConnection;
   /** Search snake species */
   searchSnakeSpecies: SnakeSpeciesConnection;
+  /** Search users by name or email */
+  searchUsers: UserConnection;
   /** Search volunteers */
   searchVolunteers: VolunteerConnection;
   /** Get snake species by ID */
@@ -2011,6 +2077,11 @@ export type Query = {
   snakeSpeciesStats: SnakeSpeciesStats;
   /** Get snake species by danger level */
   snakesByDangerLevel: SnakeSpeciesConnection;
+  /**
+   * Check Stripe connection status (DEVELOPMENT ONLY)
+   * This query is only available in non-production environments
+   */
+  stripeConnectionStatus: StripeConnectionStatus;
   /** Get training session by ID */
   training?: Maybe<Training>;
   /** Get training statistics */
@@ -2021,6 +2092,12 @@ export type Query = {
   unreadNotificationsCount: Scalars['Int']['output'];
   /** Get upcoming training sessions (public) */
   upcomingTrainings: TrainingConnection;
+  /** Get user by ID (admin or self only) */
+  user?: Maybe<User>;
+  /** Get user profile by ID (public) */
+  userProfile?: Maybe<UserProfile>;
+  /** List all users (admin only) */
+  users: UserConnection;
   /** Get venomous snake species */
   venomousSnakes: SnakeSpeciesConnection;
   /** Get volunteer by ID */
@@ -2070,6 +2147,10 @@ export type QueryBlogPostsArgs = {
   filter?: InputMaybe<BlogPostFilterInput>;
   pagination?: InputMaybe<PaginationInput>;
   sort?: InputMaybe<BlogPostSortInput>;
+};
+
+export type QueryCheckEmailAvailabilityArgs = {
+  email: Scalars['Email']['input'];
 };
 
 export type QueryContactMessageArgs = {
@@ -2126,6 +2207,10 @@ export type QueryGalleryImagesArgs = {
 
 export type QueryGeographicHeatmapArgs = {
   input?: InputMaybe<GeographicHeatmapInput>;
+};
+
+export type QueryMyActivityLogsArgs = {
+  pagination?: InputMaybe<PaginationInput>;
 };
 
 export type QueryMyAssignedRescuesArgs = {
@@ -2220,6 +2305,11 @@ export type QuerySearchSnakeSpeciesArgs = {
   query: Scalars['String']['input'];
 };
 
+export type QuerySearchUsersArgs = {
+  pagination?: InputMaybe<PaginationInput>;
+  query: Scalars['String']['input'];
+};
+
 export type QuerySearchVolunteersArgs = {
   filter?: InputMaybe<VolunteerFilterInput>;
   pagination?: InputMaybe<PaginationInput>;
@@ -2252,6 +2342,20 @@ export type QueryTrainingsArgs = {
 
 export type QueryUpcomingTrainingsArgs = {
   pagination?: InputMaybe<PaginationInput>;
+};
+
+export type QueryUserArgs = {
+  id: Scalars['ID']['input'];
+};
+
+export type QueryUserProfileArgs = {
+  id: Scalars['ID']['input'];
+};
+
+export type QueryUsersArgs = {
+  filter?: InputMaybe<UserFilterInput>;
+  pagination?: InputMaybe<PaginationInput>;
+  sort?: InputMaybe<UserSortInput>;
 };
 
 export type QueryVenomousSnakesArgs = {
@@ -2582,6 +2686,14 @@ export type ResendVerificationInput = {
   email: Scalars['Email']['input'];
 };
 
+/** Input for password reset */
+export type ResetPasswordInput = {
+  code: Scalars['String']['input'];
+  email: Scalars['Email']['input'];
+  newPassword: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+};
+
 /** Input for responding to a contact message */
 export type RespondToMessageInput = {
   messageId: Scalars['ID']['input'];
@@ -2753,6 +2865,21 @@ export type SpeciesIdentificationCount = {
   averageConfidence: Scalars['Float']['output'];
   count: Scalars['Int']['output'];
   species: SnakeSpecies;
+};
+
+/** Stripe connection status for development testing */
+export type StripeConnectionStatus = {
+  __typename?: 'StripeConnectionStatus';
+  /** Stripe account ID (if connected) */
+  accountId?: Maybe<Scalars['String']['output']>;
+  /** Whether Stripe is successfully connected */
+  connected: Scalars['Boolean']['output'];
+  /** Whether Stripe is in live mode */
+  livemode: Scalars['Boolean']['output'];
+  /** Human-readable status message */
+  message: Scalars['String']['output'];
+  /** Stripe mode: test, live, or unknown */
+  mode: Scalars['String']['output'];
 };
 
 /** Input for submitting a contact message */
@@ -3145,6 +3272,15 @@ export type UpdatePaymentGatewayInput = {
   testMode?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+/** Input for profile update */
+export type UpdateProfileInput = {
+  avatar?: InputMaybe<Scalars['String']['input']>;
+  language?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  phone?: InputMaybe<Scalars['Phone']['input']>;
+  timezone?: InputMaybe<Scalars['String']['input']>;
+};
+
 /** Input for updating rescue progress */
 export type UpdateRescueProgressInput = {
   lat?: InputMaybe<Scalars['Latitude']['input']>;
@@ -3363,6 +3499,14 @@ export type UserRescueRequestsArgs = {
   pagination?: InputMaybe<PaginationInput>;
 };
 
+/** Paginated connection for users */
+export type UserConnection = {
+  __typename?: 'UserConnection';
+  edges: Array<User>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
 /** Filter input for user queries */
 export type UserFilterInput = {
   createdAfter?: InputMaybe<Scalars['DateTime']['input']>;
@@ -3468,9 +3612,10 @@ export type VenomType =
   | 'NEUROTOXIC'
   | '%future added value';
 
-/** Input for email verification */
+/** Input for email verification using OTP code only */
 export type VerifyEmailInput = {
-  token: Scalars['String']['input'];
+  code: Scalars['String']['input'];
+  email: Scalars['Email']['input'];
 };
 
 /** Volunteer profile and information */
@@ -4058,7 +4203,6 @@ export type ResolversTypes = ResolversObject<{
   PageInfo: ResolverTypeWrapper<PageInfo>;
   PageView: ResolverTypeWrapper<PageView>;
   PaginationInput: PaginationInput;
-  PasswordResetConfirmInput: PasswordResetConfirmInput;
   PasswordResetRequestInput: PasswordResetRequestInput;
   PasswordResetTokenPayload: ResolverTypeWrapper<PasswordResetTokenPayload>;
   PaymentGatewayConfig: ResolverTypeWrapper<PaymentGatewayConfig>;
@@ -4126,6 +4270,7 @@ export type ResolversTypes = ResolversObject<{
   RescueStatus: RescueStatus;
   RescueTimeline: ResolverTypeWrapper<RescueTimelineModel>;
   ResendVerificationInput: ResendVerificationInput;
+  ResetPasswordInput: ResetPasswordInput;
   RespondToMessageInput: RespondToMessageInput;
   ResponseTimeAnalysis: ResolverTypeWrapper<ResponseTimeAnalysis>;
   ResponseTimeByPriority: ResolverTypeWrapper<ResponseTimeByPriority>;
@@ -4157,6 +4302,7 @@ export type ResolversTypes = ResolversObject<{
     }
   >;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  StripeConnectionStatus: ResolverTypeWrapper<StripeConnectionStatus>;
   SubmitContactMessageInput: SubmitContactMessageInput;
   Subscription: ResolverTypeWrapper<Record<PropertyKey, never>>;
   SuccessResponse: ResolverTypeWrapper<SuccessResponse>;
@@ -4199,6 +4345,7 @@ export type ResolversTypes = ResolversObject<{
   UpdateMessageStatusInput: UpdateMessageStatusInput;
   UpdateNotificationPreferencesInput: UpdateNotificationPreferencesInput;
   UpdatePaymentGatewayInput: UpdatePaymentGatewayInput;
+  UpdateProfileInput: UpdateProfileInput;
   UpdateRescueProgressInput: UpdateRescueProgressInput;
   UpdateRescueRequestInput: UpdateRescueRequestInput;
   UpdateSnakeSpeciesInput: UpdateSnakeSpeciesInput;
@@ -4210,6 +4357,9 @@ export type ResolversTypes = ResolversObject<{
   UploadGalleryImageInput: UploadGalleryImageInput;
   UploadSource: UploadSource;
   User: ResolverTypeWrapper<UserModel>;
+  UserConnection: ResolverTypeWrapper<
+    Omit<UserConnection, 'edges'> & { edges: Array<ResolversTypes['User']> }
+  >;
   UserFilterInput: UserFilterInput;
   UserProfile: ResolverTypeWrapper<
     Omit<UserProfile, 'volunteerProfile'> & {
@@ -4444,7 +4594,6 @@ export type ResolversParentTypes = ResolversObject<{
   PageInfo: PageInfo;
   PageView: PageView;
   PaginationInput: PaginationInput;
-  PasswordResetConfirmInput: PasswordResetConfirmInput;
   PasswordResetRequestInput: PasswordResetRequestInput;
   PasswordResetTokenPayload: PasswordResetTokenPayload;
   PaymentGatewayConfig: PaymentGatewayConfig;
@@ -4494,6 +4643,7 @@ export type ResolversParentTypes = ResolversObject<{
   RescueStatsInput: RescueStatsInput;
   RescueTimeline: RescueTimelineModel;
   ResendVerificationInput: ResendVerificationInput;
+  ResetPasswordInput: ResetPasswordInput;
   RespondToMessageInput: RespondToMessageInput;
   ResponseTimeAnalysis: ResponseTimeAnalysis;
   ResponseTimeByPriority: ResponseTimeByPriority;
@@ -4516,6 +4666,7 @@ export type ResolversParentTypes = ResolversObject<{
     species: ResolversParentTypes['SnakeSpecies'];
   };
   String: Scalars['String']['output'];
+  StripeConnectionStatus: StripeConnectionStatus;
   SubmitContactMessageInput: SubmitContactMessageInput;
   Subscription: Record<PropertyKey, never>;
   SuccessResponse: SuccessResponse;
@@ -4551,6 +4702,7 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateMessageStatusInput: UpdateMessageStatusInput;
   UpdateNotificationPreferencesInput: UpdateNotificationPreferencesInput;
   UpdatePaymentGatewayInput: UpdatePaymentGatewayInput;
+  UpdateProfileInput: UpdateProfileInput;
   UpdateRescueProgressInput: UpdateRescueProgressInput;
   UpdateRescueRequestInput: UpdateRescueRequestInput;
   UpdateSnakeSpeciesInput: UpdateSnakeSpeciesInput;
@@ -4561,6 +4713,9 @@ export type ResolversParentTypes = ResolversObject<{
   Upload: Scalars['Upload']['output'];
   UploadGalleryImageInput: UploadGalleryImageInput;
   User: UserModel;
+  UserConnection: Omit<UserConnection, 'edges'> & {
+    edges: Array<ResolversParentTypes['User']>;
+  };
   UserFilterInput: UserFilterInput;
   UserProfile: Omit<UserProfile, 'volunteerProfile'> & {
     volunteerProfile?: Maybe<ResolversParentTypes['Volunteer']>;
@@ -4846,9 +5001,9 @@ export type AuthPayloadResolvers<
   ParentType extends
     ResolversParentTypes['AuthPayload'] = ResolversParentTypes['AuthPayload'],
 > = ResolversObject<{
+  accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   expiresIn?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
 }>;
 
@@ -5675,6 +5830,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationCancelTrainingEnrollmentArgs, 'trainingId'>
   >;
+  changePassword?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationChangePasswordArgs, 'input'>
+  >;
   completeRescue?: Resolver<
     ResolversTypes['RescueRequest'],
     ParentType,
@@ -5728,6 +5889,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationDeleteAiIdentificationArgs, 'id'>
+  >;
+  deleteAccount?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationDeleteAccountArgs, 'password'>
   >;
   deleteBlogPost?: Resolver<
     ResolversTypes['SuccessResponse'],
@@ -5788,6 +5955,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationEnrollInTrainingArgs, 'trainingId'>
   >;
+  forgotPassword?: Resolver<
+    ResolversTypes['PasswordResetTokenPayload'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationForgotPasswordArgs, 'email'>
+  >;
   generateDonationReceipt?: Resolver<
     ResolversTypes['Donation'],
     ParentType,
@@ -5824,6 +5997,13 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationLikeGalleryImageArgs, 'id'>
   >;
+  login?: Resolver<
+    ResolversTypes['AuthPayload'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationLoginArgs, 'input'>
+  >;
+  logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   markAllNotificationsAsRead?: Resolver<
     ResolversTypes['SuccessResponse'],
     ParentType,
@@ -5840,6 +6020,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationMarkNotificationAsReadArgs, 'id'>
+  >;
+  oauthLogin?: Resolver<
+    ResolversTypes['AuthPayload'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationOauthLoginArgs, 'input'>
   >;
   processPayment?: Resolver<
     ResolversTypes['Donation'],
@@ -5879,11 +6065,22 @@ export type MutationResolvers<
     ParentType,
     ContextType
   >;
+  refreshToken?: Resolver<
+    ResolversTypes['AuthPayload'],
+    ParentType,
+    ContextType
+  >;
   refundDonation?: Resolver<
     ResolversTypes['Donation'],
     ParentType,
     ContextType,
     RequireFields<MutationRefundDonationArgs, 'input'>
+  >;
+  register?: Resolver<
+    ResolversTypes['AuthPayload'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationRegisterArgs, 'input'>
   >;
   reopenRescue?: Resolver<
     ResolversTypes['RescueRequest'],
@@ -5899,6 +6096,18 @@ export type MutationResolvers<
       MutationReprocessIdentificationArgs,
       'identificationId' | 'provider'
     >
+  >;
+  resendVerification?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationResendVerificationArgs, 'input'>
+  >;
+  resetPassword?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationResetPasswordArgs, 'input'>
   >;
   respondToMessage?: Resolver<
     ResolversTypes['ContactMessage'],
@@ -5978,6 +6187,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationUpdatePaymentGatewayArgs, 'input'>
   >;
+  updateProfile?: Resolver<
+    ResolversTypes['User'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateProfileArgs, 'input'>
+  >;
   updateRescueProgress?: Resolver<
     ResolversTypes['RescueRequest'],
     ParentType,
@@ -6031,6 +6246,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationVerifyDonationArgs, 'donationId'>
+  >;
+  verifyEmail?: Resolver<
+    ResolversTypes['EmailVerificationPayload'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationVerifyEmailArgs, 'input'>
   >;
   verifyRescue?: Resolver<
     ResolversTypes['RescueRequest'],
@@ -6401,6 +6622,12 @@ export type QueryResolvers<
     ContextType,
     Partial<QueryBlogPostsArgs>
   >;
+  checkEmailAvailability?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<QueryCheckEmailAvailabilityArgs, 'email'>
+  >;
   cmsStats?: Resolver<ResolversTypes['CMSStats'], ParentType, ContextType>;
   contactMessage?: Resolver<
     Maybe<ResolversTypes['ContactMessage']>,
@@ -6478,6 +6705,13 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     Partial<QueryGeographicHeatmapArgs>
+  >;
+  me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  myActivityLogs?: Resolver<
+    ResolversTypes['ActivityLogConnection'],
+    ParentType,
+    ContextType,
+    Partial<QueryMyActivityLogsArgs>
   >;
   myAssignedRescues?: Resolver<
     ResolversTypes['RescueRequestConnection'],
@@ -6619,6 +6853,12 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QuerySearchSnakeSpeciesArgs, 'query'>
   >;
+  searchUsers?: Resolver<
+    ResolversTypes['UserConnection'],
+    ParentType,
+    ContextType,
+    RequireFields<QuerySearchUsersArgs, 'query'>
+  >;
   searchVolunteers?: Resolver<
     ResolversTypes['VolunteerConnection'],
     ParentType,
@@ -6648,6 +6888,11 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QuerySnakesByDangerLevelArgs, 'dangerLevel'>
   >;
+  stripeConnectionStatus?: Resolver<
+    ResolversTypes['StripeConnectionStatus'],
+    ParentType,
+    ContextType
+  >;
   training?: Resolver<
     Maybe<ResolversTypes['Training']>,
     ParentType,
@@ -6675,6 +6920,24 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     Partial<QueryUpcomingTrainingsArgs>
+  >;
+  user?: Resolver<
+    Maybe<ResolversTypes['User']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryUserArgs, 'id'>
+  >;
+  userProfile?: Resolver<
+    Maybe<ResolversTypes['UserProfile']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryUserProfileArgs, 'id'>
+  >;
+  users?: Resolver<
+    ResolversTypes['UserConnection'],
+    ParentType,
+    ContextType,
+    Partial<QueryUsersArgs>
   >;
   venomousSnakes?: Resolver<
     ResolversTypes['SnakeSpeciesConnection'],
@@ -7344,6 +7607,22 @@ export type SpeciesIdentificationCountResolvers<
   species?: Resolver<ResolversTypes['SnakeSpecies'], ParentType, ContextType>;
 }>;
 
+export type StripeConnectionStatusResolvers<
+  ContextType = GraphQLContext,
+  ParentType extends
+    ResolversParentTypes['StripeConnectionStatus'] = ResolversParentTypes['StripeConnectionStatus'],
+> = ResolversObject<{
+  accountId?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  connected?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  livemode?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  mode?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+}>;
+
 export type SubscriptionResolvers<
   ContextType = GraphQLContext,
   ParentType extends
@@ -7835,6 +8114,16 @@ export type UserResolvers<
     ParentType,
     ContextType
   >;
+}>;
+
+export type UserConnectionResolvers<
+  ContextType = GraphQLContext,
+  ParentType extends
+    ResolversParentTypes['UserConnection'] = ResolversParentTypes['UserConnection'],
+> = ResolversObject<{
+  edges?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
 export type UserProfileResolvers<
@@ -8337,6 +8626,7 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   SpeciesByDangerLevel?: SpeciesByDangerLevelResolvers<ContextType>;
   SpeciesByFamily?: SpeciesByFamilyResolvers<ContextType>;
   SpeciesIdentificationCount?: SpeciesIdentificationCountResolvers<ContextType>;
+  StripeConnectionStatus?: StripeConnectionStatusResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   SuccessResponse?: SuccessResponseResolvers<ContextType>;
   TimeSeriesPoint?: TimeSeriesPointResolvers<ContextType>;
@@ -8351,6 +8641,7 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   UnreadCountEvent?: UnreadCountEventResolvers<ContextType>;
   Upload?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
+  UserConnection?: UserConnectionResolvers<ContextType>;
   UserProfile?: UserProfileResolvers<ContextType>;
   UserStatusChangeEvent?: UserStatusChangeEventResolvers<ContextType>;
   ValidationError?: ValidationErrorResolvers<ContextType>;

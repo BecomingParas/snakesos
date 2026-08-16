@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, createContext, useContext } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -25,13 +25,32 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
+// Create context for sidebar collapse state
+export const SidebarContext = createContext<{
+  collapsed: boolean
+  setCollapsed: (collapsed: boolean) => void
+}>({
+  collapsed: false,
+  setCollapsed: () => {},
+})
+
+export const useSidebar = () => useContext(SidebarContext)
+
 interface SidebarProps {
   role: 'CITIZEN' | 'ADMIN' | 'SUPER_ADMIN' | 'DISTRICT_COORDINATOR' | 'VERIFIED_RESCUER' | 'VOLUNTEER'
 }
 
 export function Sidebar({ role }: SidebarProps) {
-  const [collapsed, setCollapsed] = useState(false)
+  const { collapsed, setCollapsed } = useSidebar()
   const pathname = usePathname()
+
+  // Update CSS variable when collapsed state changes
+  if (typeof document !== 'undefined') {
+    document.documentElement.style.setProperty(
+      '--sidebar-width',
+      collapsed ? '70px' : '280px'
+    )
+  }
 
   // Role-specific configuration
   const roleConfig = {
@@ -40,13 +59,12 @@ export function Sidebar({ role }: SidebarProps) {
       subtitle: 'Public reporter',
       basePath: '/dashboard/citizen',
       links: [
-        { href: '', label: 'Overview', icon: LayoutDashboard },
-        { href: '/requests/new', label: 'New request', icon: FileText },
-        { href: '/requests', label: 'My requests', icon: List },
+        { href: '', label: 'Dashboard', icon: LayoutDashboard },
+        { href: '/request', label: 'Request Rescue', icon: FileText },
+        { href: '/requests', label: 'My Requests', icon: List },
         { href: '/map', label: 'Track Rescue', icon: Map },
+        { href: '/notifications', label: 'Notifications', icon: Bell },
         { href: '/emergency', label: 'Emergency', icon: AlertCircle },
-        { href: '/snake-info', label: 'Snake info', icon: Info },
-        { href: '/donate', label: 'Donate', icon: Heart },
         { href: '/profile', label: 'Profile', icon: Settings },
       ],
     },
@@ -55,14 +73,14 @@ export function Sidebar({ role }: SidebarProps) {
       subtitle: 'System administrator',
       basePath: '/dashboard/admin',
       links: [
-        { href: '', label: 'Overview', icon: LayoutDashboard },
-        { href: '/rescues', label: 'Rescue requests', icon: Activity },
-        { href: '/map', label: 'Live Field Map', icon: Map },
-        { href: '/volunteers', label: 'Volunteers', icon: Users },
+        { href: '', label: 'Dashboard', icon: LayoutDashboard },
+        { href: '/command', label: 'Command Center', icon: Activity },
+        { href: '/rescues', label: 'All Rescues', icon: List },
+        { href: '/map', label: 'Live Map', icon: Map },
+        { href: '/rescuers', label: 'Rescuers', icon: Users },
         { href: '/users', label: 'Users', icon: UserCheck },
         { href: '/analytics', label: 'Analytics', icon: BarChart3 },
-        { href: '/coverage', label: 'Coverage', icon: MapPin },
-        { href: '/alerts', label: 'Alerts', icon: Bell },
+        { href: '/notifications', label: 'Notifications', icon: Bell },
         { href: '/settings', label: 'Settings', icon: Settings },
       ],
     },
@@ -71,13 +89,14 @@ export function Sidebar({ role }: SidebarProps) {
       subtitle: 'Full system access',
       basePath: '/dashboard/admin',
       links: [
-        { href: '', label: 'Overview', icon: LayoutDashboard },
-        { href: '/rescues', label: 'Rescue requests', icon: Activity },
-        { href: '/volunteers', label: 'Volunteers', icon: Users },
+        { href: '', label: 'Dashboard', icon: LayoutDashboard },
+        { href: '/command', label: 'Command Center', icon: Activity },
+        { href: '/rescues', label: 'All Rescues', icon: List },
+        { href: '/map', label: 'Live Map', icon: Map },
+        { href: '/rescuers', label: 'Rescuers', icon: Users },
         { href: '/users', label: 'Users', icon: UserCheck },
         { href: '/analytics', label: 'Analytics', icon: BarChart3 },
-        { href: '/coverage', label: 'Coverage', icon: MapPin },
-        { href: '/alerts', label: 'Alerts', icon: Bell },
+        { href: '/notifications', label: 'Notifications', icon: Bell },
         { href: '/settings', label: 'Settings', icon: Settings },
       ],
     },
@@ -86,11 +105,12 @@ export function Sidebar({ role }: SidebarProps) {
       subtitle: 'District coordinator',
       basePath: '/dashboard/admin',
       links: [
-        { href: '', label: 'Overview', icon: LayoutDashboard },
-        { href: '/rescues', label: 'Rescue requests', icon: Activity },
-        { href: '/volunteers', label: 'Volunteers', icon: Users },
+        { href: '', label: 'Dashboard', icon: LayoutDashboard },
+        { href: '/command', label: 'Command Center', icon: Activity },
+        { href: '/rescues', label: 'Rescues', icon: List },
+        { href: '/map', label: 'Live Map', icon: Map },
+        { href: '/rescuers', label: 'Rescuers', icon: Users },
         { href: '/analytics', label: 'Analytics', icon: BarChart3 },
-        { href: '/coverage', label: 'Coverage', icon: MapPin },
         { href: '/profile', label: 'Profile', icon: Settings },
       ],
     },
@@ -99,11 +119,12 @@ export function Sidebar({ role }: SidebarProps) {
       subtitle: 'Verified rescuer',
       basePath: '/dashboard/rescuer',
       links: [
-        { href: '', label: 'Overview', icon: LayoutDashboard },
-        { href: '/active', label: 'Active Rescues', icon: Activity },
-        { href: '/map', label: 'Track Rescues', icon: Map },
+        { href: '', label: 'Dashboard', icon: LayoutDashboard },
+        { href: '/assignments', label: 'Assignments', icon: FileText },
+        { href: '/active', label: 'Active Rescue', icon: Activity },
+        { href: '/map', label: 'Map', icon: Map },
         { href: '/history', label: 'History', icon: List },
-        { href: '/schedule', label: 'Schedule', icon: MapPin },
+        { href: '/notifications', label: 'Notifications', icon: Bell },
         { href: '/profile', label: 'Profile', icon: Settings },
       ],
     },
@@ -112,10 +133,12 @@ export function Sidebar({ role }: SidebarProps) {
       subtitle: 'Community volunteer',
       basePath: '/dashboard/rescuer',
       links: [
-        { href: '', label: 'Overview', icon: LayoutDashboard },
-        { href: '/active', label: 'Active Rescues', icon: Activity },
-        { href: '/map', label: 'Track Rescues', icon: Map },
+        { href: '', label: 'Dashboard', icon: LayoutDashboard },
+        { href: '/assignments', label: 'Assignments', icon: FileText },
+        { href: '/active', label: 'Active Rescue', icon: Activity },
+        { href: '/map', label: 'Map', icon: Map },
         { href: '/history', label: 'History', icon: List },
+        { href: '/notifications', label: 'Notifications', icon: Bell },
         { href: '/profile', label: 'Profile', icon: Settings },
       ],
     },

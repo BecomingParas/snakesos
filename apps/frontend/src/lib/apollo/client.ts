@@ -8,7 +8,6 @@ import {
   InMemoryCache,
   HttpLink,
   ApolloLink,
-  from,
 } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
 import { createFragmentRegistry } from '@apollo/client/cache';
@@ -21,70 +20,82 @@ const IS_BROWSER = typeof window !== 'undefined';
 
 /**
  * Create HTTP Link for GraphQL requests
+ * IMPORTANT: This must only be called client-side
  */
-const httpLink = new HttpLink({
-  uri: API_URL,
-  credentials: 'include', // Send cookies for auth
-  fetchOptions: {
-    mode: 'cors',
-  },
-});
+function createHttpLink() {
+  return new HttpLink({
+    uri: API_URL,
+    credentials: 'include', // Send cookies for auth
+    fetchOptions: {
+      mode: 'cors',
+    },
+  });
+}
 
 /**
  * Error Link - Handles GraphQL and Network errors
+ * Lazily initialized to prevent SSR issues with React context
  */
-const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
-  if (graphQLErrors) {
-    graphQLErrors.forEach(({ message, locations, path, extensions }) => {
-      console.error(
-        `[GraphQL Error]: Message: ${message}, Location: ${JSON.stringify(
-          locations
-        )}, Path: ${path}`,
-        extensions
-      );
+function createErrorLink() {
+  return onError((errorResponse) => {
+    const { graphQLErrors, networkError, operation } = errorResponse as any;
+    
+    if (graphQLErrors) {
+      graphQLErrors.forEach(({ message, locations, path, extensions }: any) => {
+        console.error(
+          `[GraphQL Error]: Message: ${message}, Location: ${JSON.stringify(
+            locations
+          )}, Path: ${path}`,
+          extensions
+        );
 
-      // Handle specific error codes
-      if (extensions?.code === 'UNAUTHENTICATED') {
-        // Redirect to login if unauthenticated
-        if (IS_BROWSER) {
-          window.location.href = '/login';
+        // Handle specific error codes
+        if (extensions?.code === 'UNAUTHENTICATED') {
+          // Redirect to login if unauthenticated
+          if (IS_BROWSER) {
+            window.location.href = '/login';
+          }
         }
-      }
-    });
-  }
+      });
+    }
 
-  if (networkError) {
-    console.error(`[Network Error]: ${networkError.message}`);
-    console.error('Operation:', operation.operationName);
-  }
-});
+    if (networkError) {
+      console.error(`[Network Error]: ${networkError.message}`);
+      console.error('Operation:', operation?.operationName);
+    }
+  });
+}
 
 /**
  * Auth Link - Adds authentication headers
+ * IMPORTANT: This must only be called client-side
  */
-const authLink = new ApolloLink((operation, forward) => {
-  // Get auth token from localStorage or cookies
-  const token = IS_BROWSER ? localStorage.getItem('auth-token') : null;
+function createAuthLink() {
+  return new ApolloLink((operation, forward) => {
+    // Get auth token from localStorage or cookies
+    const token = IS_BROWSER ? localStorage.getItem('auth-token') : null;
 
-  // Add authorization header if token exists
-  if (token) {
-    operation.setContext(({ headers = {} }) => ({
-      headers: {
-        ...headers,
-        authorization: `Bearer ${token}`,
-      },
-    }));
-  }
+    // Add authorization header if token exists
+    if (token) {
+      operation.setContext(({ headers = {} }) => ({
+        headers: {
+          ...headers,
+          authorization: `Bearer ${token}`,
+        },
+      }));
+    }
 
-  return forward(operation);
-});
+    return forward(operation);
+  });
+}
 
 /**
  * Create Apollo Client Instance
+ * Works in both browser and SSR/build contexts.
  */
 export function createApolloClient() {
   return new ApolloClient({
-    link: from([errorLink, authLink, httpLink]),
+    link: ApolloLink.from([createErrorLink(), createAuthLink(), createHttpLink()]),
     cache: new InMemoryCache({
       // possibleTypes: possibleTypesResult.possibleTypes, // Uncomment if using unions/interfaces
       fragments: createFragmentRegistry(),
@@ -102,21 +113,17 @@ export function createApolloClient() {
         },
       },
     }),
+    ssrMode: !IS_BROWSER,
     defaultOptions: {
       watchQuery: {
         fetchPolicy: 'cache-and-network',
-        errorPolicy: 'all',
       },
       query: {
         fetchPolicy: 'network-only',
-        errorPolicy: 'all',
-      },
-      mutate: {
-        errorPolicy: 'all',
       },
     },
     devtools: {
-      enabled: process.env.NODE_ENV === 'development',
+      enabled: IS_BROWSER && process.env.NODE_ENV === 'development',
     },
   });
 }
@@ -124,7 +131,7 @@ export function createApolloClient() {
 /**
  * Singleton Apollo Client for Client-Side
  */
-let apolloClient: ApolloClient<any> | null = null;
+let apolloClient: ReturnType<typeof createApolloClient> | null = null;
 
 export function getApolloClient() {
   if (!apolloClient) {

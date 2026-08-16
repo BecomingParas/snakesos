@@ -28,7 +28,7 @@ export interface User {
 }
 
 export function useAuth() {
-  const { data, loading, error, refetch } = useQuery(GET_ME_QUERY, {
+  const { data, loading, error, refetch } = useQuery<{ me: User }>(GET_ME_QUERY, {
     fetchPolicy: 'cache-and-network',
   });
 

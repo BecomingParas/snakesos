@@ -1,18 +1,19 @@
 /**
  * Citizen Map Page
  * Track own rescue requests and assigned rescuer location in real-time
+ * ✅ INTEGRATED: GraphQL query for rescue requests
  */
 
 'use client';
 
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useQuery } from '@/lib/apollo';
 import { useWatchUserLocation } from '@/hooks/useUserLocation';
-import { LIST_RESCUES_QUERY } from '@/lib/graphql/queries/rescue.queries';
+import { useMyRescueRequestsQuery } from '@/lib/graphql/hooks/rescue.hooks';
 import { MapPin, Phone, AlertCircle, RefreshCw, Clock, Navigation2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDistance, calculateDistance, estimateTravelTime } from '@/lib/map/distance';
+import { toast } from 'sonner';
 
 // Dynamic import to avoid SSR issues
 const RescueMap = dynamic(
@@ -36,29 +37,34 @@ export default function CitizenMapPage() {
   // Use watch location for real-time updates
   const { location, error: locationError, requestLocation } = useWatchUserLocation();
   
-  // Fetch user's own rescue requests
-  const { data, loading, error, refetch } = useQuery(LIST_RESCUES_QUERY, {
+  // Fetch user's own rescue requests using GraphQL hooks
+  const { data, loading, error, refetch } = useMyRescueRequestsQuery({
     variables: {
       filter: { 
-        // Filter by current user (this should be implemented in the backend)
-        statuses: ['PENDING', 'ASSIGNED', 'IN_PROGRESS']
+        statuses: ['PENDING', 'ASSIGNED', 'ACCEPTED', 'IN_PROGRESS']
       },
-      pagination: { page: 1, limit: 20 },
+      pagination: { limit: 20, page: 1 },
     },
     pollInterval: 10000, // Refresh every 10 seconds for real-time tracking
+    fetchPolicy: 'cache-and-network',
   });
 
-  const rescues = (data as any)?.rescueRequests?.edges?.map((edge: any) => edge.node) || [];
+  const rescues = data?.myRescueRequests?.edges?.map(edge => edge.node) || [];
+  
+  // Show error toast
+  if (error) {
+    toast.error(`Failed to load rescues: ${error.message}`);
+  }
 
   // Mock rescuer location (replace with actual GraphQL query for assigned rescuer)
   const activeRescue = rescues.find((r: any) => r.status === 'IN_PROGRESS' || r.status === 'ASSIGNED');
   const mockRescuers = activeRescue && activeRescue.assignedVolunteer
     ? [{
         id: activeRescue.assignedVolunteer?.id || '',
-        name: activeRescue.assignedVolunteer?.user?.name || 'Assigned Rescuer',
+        name: activeRescue.assignedVolunteer?.name || 'Assigned Rescuer',
         lat: activeRescue.lat ? activeRescue.lat + 0.003 : 0, // Mock location near rescue
         lng: activeRescue.lng ? activeRescue.lng + 0.003 : 0,
-        phone: activeRescue.assignedVolunteer?.user?.phone || '+977-9800000000',
+        phone: activeRescue.assignedVolunteer?.contact || '+977-9800000000', // Use 'contact' field
         status: 'En Route',
       }]
     : [];

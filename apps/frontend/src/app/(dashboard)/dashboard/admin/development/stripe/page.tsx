@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { useQuery } from '@apollo/client';
+import { useQuery } from '@/lib/apollo/hooks';
 import { STRIPE_CONNECTION_STATUS } from '@/lib/graphql/queries/payments.queries';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, CheckCircle2, RefreshCw, CreditCard } from 'lucide-react';
@@ -13,9 +12,18 @@ import { toast } from 'sonner';
  * Does NOT process payments or collect card information
  */
 export default function StripeDevelopmentPage() {
-  const [manualRefresh, setManualRefresh] = useState(0);
-  
-  const { data, loading, error, refetch } = useQuery(STRIPE_CONNECTION_STATUS, {
+  // Define the expected type for the query result
+  interface StripeConnectionStatusQuery {
+    stripeConnectionStatus: {
+      connected: boolean;
+      mode: string;
+      accountId: string;
+      livemode: boolean;
+      message: string;
+    };
+  }
+
+  const { data, loading, error, refetch } = useQuery<StripeConnectionStatusQuery>(STRIPE_CONNECTION_STATUS, {
     fetchPolicy: 'network-only',
     notifyOnNetworkStatusChange: true,
   });
@@ -24,10 +32,10 @@ export default function StripeDevelopmentPage() {
     try {
       toast.loading('Testing Stripe connection...');
       await refetch();
-      setManualRefresh((prev) => prev + 1);
       toast.dismiss();
       
-      if (data?.stripeConnectionStatus?.connected) {
+      // Now data is properly typed
+      if (data?.stripeConnectionStatus.connected) {
         toast.success('Stripe connection successful!');
       } else {
         toast.error('Stripe connection failed');
@@ -39,6 +47,7 @@ export default function StripeDevelopmentPage() {
     }
   };
 
+  // Simplified status assignment with optional chaining
   const status = data?.stripeConnectionStatus;
 
   return (

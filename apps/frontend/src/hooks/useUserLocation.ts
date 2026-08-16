@@ -87,7 +87,7 @@ export function useWatchUserLocation(): UseUserLocationReturn {
     if (!navigator.geolocation) {
       setError('Geolocation is not supported by your browser');
       setLoading(false);
-      return;
+      return undefined;
     }
 
     const watchId = navigator.geolocation.watchPosition(

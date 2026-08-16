@@ -1,7 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { PaymentMethodSelector, PaymentMethod } from '@/components/payment';
+import { PaymentMethod, PaymentMethodSelector } from '@/components/payment';
+
+// Force this page to be dynamically rendered, not statically generated
+export const dynamic = 'force-dynamic';
 
 export default function DonatePage() {
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>();

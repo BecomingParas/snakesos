@@ -27,7 +27,7 @@ export function ResetPasswordForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ResetPasswordFormData & { code: string }>({
+  } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
     mode: 'onChange',
     defaultValues: {
@@ -37,7 +37,7 @@ export function ResetPasswordForm() {
     },
   })
 
-  const onSubmit = async (data: ResetPasswordFormData & { code: string }) => {
+  const onSubmit = async (data: ResetPasswordFormData) => {
     if (!email) {
       toast.error('Invalid request', {
         description: 'Email is missing from the reset link',

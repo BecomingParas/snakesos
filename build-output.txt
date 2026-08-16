@@ -1,0 +1,48 @@
+yarn run v1.22.22
+$ nx build frontend
+(node:25128) [DEP0180] DeprecationWarning: fs.Stats constructor is deprecated.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+
+[2m> [22m[2mnx run[22m frontend:build
+
+[1m[33mThe `@nx/next:build` executor is deprecated and will be removed in Nx v24. Run `nx g @nx/next:convert-to-inferred` to migrate to the `@nx/next/plugin` inferred targets. See https://nx.dev/docs/guides/tasks--caching/convert-to-inferred for details.[39m[22m
+[33m[1m⚠[22m[39m You are using a non-standard "NODE_ENV" value in your environment. This creates inconsistencies in the project and is strongly advised against. Read more: https://nextjs.org/docs/messages/non-standard-node-env
+[1m[38;2;173;127;168m▲ Next.js 16.1.7[39m[22m (Turbopack)
+- Environments: .env.local
+[37m[1m [22m[39m Creating an optimized production build ...
+[32m[1m✓[22m[39m Compiled successfully in 3.6s
+[37m[1m [22m[39m Running TypeScript ...
+[33m[1m⚠[22m[39m TypeScript project references are not fully supported. Attempting to build in incremental mode.
+[31mFailed to compile.
+[39m
+[36m./src/app/(dashboard)/dashboard/citizen/request/page.tsx[39m:[33m8[39m:[33m3[39m
+[31m[1mType error[22m[39m: 'FileText' is declared but its value is never read.
+[0m [90m  6 |[39m   [33mMapPin[39m[33m,[39m 
+ [90m  7 |[39m   [33mCamera[39m[33m,[39m 
+[31m[1m>[22m[39m[90m  8 |[39m   [33mFileText[39m[33m,[39m 
+ [90m    |[39m   [31m[1m^[22m[39m
+ [90m  9 |[39m   [33mCheckCircle[39m[33m,[39m 
+ [90m 10 |[39m   [33mArrowLeft[39m[33m,[39m 
+ [90m 11 |[39m   [33mArrowRight[39m[33m,[39m[0m
+Next.js build worker exited with code: 1 and signal: null
+[1m[31mBuild process exited due to code 1  [39m[22m
+
+[2m[31m[39m[22m
+
+[7m[1m[31m NX [39m[22m[27m  [31mRunning target [1mbuild[22m for project frontend failed[39m
+
+[2mFailed tasks:[22m
+
+[2m-[22m frontend:build
+
+[2mHint: run the command with[22m --verbose [2mfor more details.[22m
+
+  Run duration:      14.2s
+  Critical path:     14.1s (1 task)
+  Recoverable time:  <1ms
+
+  Recommendations:
+    - Speed up or split the longest tasks on the critical path:
+        frontend:build    14.1s
+error Command failed with exit code 1.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.

@@ -9,6 +9,8 @@
     "isolatedModules": true,
     "resolveJsonModule": true,
     "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "incremental": true,
     "baseUrl": ".",
     "paths": {

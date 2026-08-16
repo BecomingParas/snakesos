@@ -42,12 +42,9 @@ export interface UseCurrentUserOptions {
 export function useCurrentUser(options: UseCurrentUserOptions = {}) {
   const { skip = false } = options;
 
-  const { data, loading, error, refetch } = useQuery(GET_ME, {
+  const { data, loading, error, refetch } = useQuery<{ me: CurrentUser }>(GET_ME, {
     skip,
     fetchPolicy: 'cache-and-network',
-    onError: (err) => {
-      handleGraphQLError(err);
-    },
   });
 
   return {

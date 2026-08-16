@@ -51,10 +51,8 @@ export interface RescueRequest {
 }
 
 export interface PaginationInput {
-  first?: number;
-  after?: string;
-  last?: number;
-  before?: string;
+  limit?: number;
+  page?: number;
 }
 
 export interface RescueRequestFilterInput {
@@ -75,16 +73,26 @@ export interface UseMyRescueRequestsOptions {
   skip?: boolean;
 }
 
+interface MyRescueRequestsData {
+  myRescueRequests: {
+    edges: Array<{ node: RescueRequest }>;
+    pageInfo: {
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+      startCursor?: string;
+      endCursor?: string;
+    };
+    totalCount: number;
+  };
+}
+
 export function useMyRescueRequests(options: UseMyRescueRequestsOptions = {}) {
   const { pagination, filter, skip = false } = options;
 
-  const { data, loading, error, refetch, fetchMore } = useQuery(GET_MY_RESCUE_REQUESTS, {
+  const { data, loading, error, refetch, fetchMore } = useQuery<MyRescueRequestsData>(GET_MY_RESCUE_REQUESTS, {
     variables: { pagination, filter },
     skip,
     fetchPolicy: 'cache-and-network',
-    onError: (err) => {
-      handleGraphQLError(err);
-    },
   });
 
   const requests = data?.myRescueRequests?.edges?.map((edge: { node: RescueRequest }) => edge.node) || [];

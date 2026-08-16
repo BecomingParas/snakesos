@@ -74,15 +74,16 @@ export const rescueQueryResolvers = {
     myRescueRequests: async (
       _parent: any,
       args: {
-        pagination?: { first?: number; after?: string };
+        pagination?: { limit?: number; page?: number };
         filter?: any;
       },
       context: GraphQLContext
     ) => {
       context.requireAuth();
 
-      const limit = args.pagination?.first || 10;
-      const cursor = args.pagination?.after;
+      const limit = args.pagination?.limit || 10;
+      const page = args.pagination?.page || 1;
+      const skip = (page - 1) * limit;
 
       // Build where clause
       const where: any = {
@@ -93,40 +94,40 @@ export const rescueQueryResolvers = {
         where.status = { in: args.filter.status };
       }
 
-      if (cursor) {
-        where.id = { lt: cursor };
-      }
-
-      const rescues = await prisma.rescueRequest.findMany({
-        where,
-        take: limit + 1,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          assignedVolunteer: {
-            include: {
-              user: {
-                select: {
-                  id: true,
-                  name: true,
-                  phone: true,
+      const [rescues, totalCount] = await Promise.all([
+        prisma.rescueRequest.findMany({
+          where,
+          take: limit,
+          skip,
+          orderBy: { createdAt: 'desc' },
+          include: {
+            assignedVolunteer: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    phone: true,
+                  },
                 },
               },
             },
           },
-        },
-      });
+        }),
+        prisma.rescueRequest.count({ where }),
+      ]);
 
-      const hasNextPage = rescues.length > limit;
-      const edges = rescues.slice(0, limit);
+      const hasNextPage = skip + limit < totalCount;
+      const hasPreviousPage = page > 1;
 
       return {
-        edges: edges.map((rescue) => ({
+        edges: rescues.map((rescue) => ({
           node: rescue,
           cursor: rescue.id,
         })),
         pageInfo: {
           hasNextPage,
-          hasPreviousPage: false,
+          hasPreviousPage,
           startCursor: edges[0]?.id,
           endCursor: edges[edges.length - 1]?.id,
         },
@@ -140,7 +141,7 @@ export const rescueQueryResolvers = {
     myAssignedRescues: async (
       _parent: any,
       args: {
-        pagination?: { first?: number; after?: string };
+        pagination?: { limit?: number; page?: number };
         filter?: any;
       },
       context: GraphQLContext
@@ -166,39 +167,40 @@ export const rescueQueryResolvers = {
         };
       }
 
-      const limit = args.pagination?.first || 10;
-      const cursor = args.pagination?.after;
+      const limit = args.pagination?.limit || 10;
+      const page = args.pagination?.page || 1;
+      const skip = (page - 1) * limit;
 
       const where: any = {
         assignedTo: volunteer.id,
         status: { in: ['ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'] },
       };
 
-      if (cursor) {
-        where.id = { lt: cursor };
-      }
+      const [rescues, totalCount] = await Promise.all([
+        prisma.rescueRequest.findMany({
+          where,
+          take: limit,
+          skip,
+          orderBy: { createdAt: 'desc' },
+        }),
+        prisma.rescueRequest.count({ where }),
+      ]);
 
-      const rescues = await prisma.rescueRequest.findMany({
-        where,
-        take: limit + 1,
-        orderBy: { createdAt: 'desc' },
-      });
-
-      const hasNextPage = rescues.length > limit;
-      const edges = rescues.slice(0, limit);
+      const hasNextPage = skip + limit < totalCount;
+      const hasPreviousPage = page > 1;
 
       return {
-        edges: edges.map((rescue) => ({
+        edges: rescues.map((rescue) => ({
           node: rescue,
           cursor: rescue.id,
         })),
         pageInfo: {
           hasNextPage,
-          hasPreviousPage: false,
-          startCursor: edges[0]?.id,
-          endCursor: edges[edges.length - 1]?.id,
+          hasPreviousPage,
+          startCursor: rescues[0]?.id,
+          endCursor: rescues[rescues.length - 1]?.id,
         },
-        totalCount: await prisma.rescueRequest.count({ where }),
+        totalCount,
       };
     },
 
@@ -207,46 +209,48 @@ export const rescueQueryResolvers = {
      */
     activeRescues: async (
       _parent: any,
-      args: { pagination?: { first?: number; after?: string } },
+      args: { pagination?: { limit?: number; page?: number } },
       context: GraphQLContext
     ) => {
       context.requireAuth();
       context.requireRole(['ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR']);
 
-      const limit = args.pagination?.first || 10;
-      const cursor = args.pagination?.after;
+      const limit = args.pagination?.limit || 10;
+      const page = args.pagination?.page || 1;
+      const skip = (page - 1) * limit;
 
       const where: any = {
         status: { in: ['PENDING', 'ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'] },
       };
 
-      if (cursor) {
-        where.id = { lt: cursor };
-      }
-
-      const rescues = await prisma.rescueRequest.findMany({
-        where,
-        take: limit + 1,
-        orderBy: { priority: 'desc' },
-        include: {
-          assignedVolunteer: {
-            include: {
-              user: true,
+      const [rescues, totalCount] = await Promise.all([
+        prisma.rescueRequest.findMany({
+          where,
+          take: limit,
+          skip,
+          orderBy: { priority: 'desc' },
+          include: {
+            assignedVolunteer: {
+              include: {
+                user: true,
+              },
             },
           },
-        },
-      });
+        }),
+        prisma.rescueRequest.count({ where }),
+      ]);
 
-      const hasNextPage = rescues.length > limit;
-      const edges = rescues.slice(0, limit);
+      const hasNextPage = skip + limit < totalCount;
+      const hasPreviousPage = page > 1;
 
       return {
-        edges: edges.map((rescue) => ({
+        edges: rescues.map((rescue) => ({
           node: rescue,
           cursor: rescue.id,
         })),
         pageInfo: {
           hasNextPage,
+          hasPreviousPage,
           hasPreviousPage: false,
           startCursor: edges[0]?.id,
           endCursor: edges[edges.length - 1]?.id,

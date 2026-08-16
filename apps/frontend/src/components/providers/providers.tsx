@@ -1,16 +1,16 @@
 'use client'
 
 import { ApolloProvider } from '@apollo/client/react'
-import { Toaster } from '@/components/ui/sonner'
-import { createApolloClient } from '@/lib/apollo/client'
+import { getApolloClient } from '@/lib/apollo/client'
+import { type ReactNode } from 'react'
 
-const apolloClient = createApolloClient()
+/**
+ * App-wide Providers Component
+ *
+ * Always wraps the app with Apollo Provider so GraphQL hooks work during SSR/build.
+ */
+export function Providers({ children }: { children: ReactNode }) {
+  const apolloClient = getApolloClient()
 
-export function Providers({ children }: { children: React.ReactNode }) {
-  return (
-    <ApolloProvider client={apolloClient}>
-      {children}
-      <Toaster />
-    </ApolloProvider>
-  )
+  return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>
 }

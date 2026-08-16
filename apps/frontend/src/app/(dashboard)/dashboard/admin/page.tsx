@@ -9,6 +9,8 @@ import {
   Radio,
 } from 'lucide-react'
 import { useDashboardStats } from '@/hooks/dashboard'
+import { useResponsive } from '@/hooks/use-responsive'
+import { AdminDashboardMobile } from './AdminDashboardMobile'
 import { StatisticsCard, ChartCard, SectionPanel, LiveFieldMap } from '@/components/dashboard/widgets'
 import { DataTable } from '@/components/dashboard/data-table'
 import type { SeriesPoint, StatDef, TableDef } from '@/lib/dashboard-data'
@@ -30,6 +32,7 @@ const TONE_CLASS = {
 
 export default function AdminDashboard() {
   const { stats, loading, error } = useDashboardStats()
+  const { isMobile } = useResponsive()
 
   if (loading) {
     return (
@@ -55,6 +58,13 @@ export default function AdminDashboard() {
       </div>
     )
   }
+
+  // Mobile view
+  if (isMobile) {
+    return <AdminDashboardMobile stats={stats} />
+  }
+
+  // Desktop view continues below...
 
   const formatResponseTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60)

@@ -15,16 +15,26 @@ export interface UseMyAssignedRescuesOptions {
   skip?: boolean;
 }
 
+interface MyAssignedRescuesData {
+  myAssignedRescues: {
+    edges: Array<{ node: RescueRequest }>;
+    pageInfo: {
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+      startCursor?: string;
+      endCursor?: string;
+    };
+    totalCount: number;
+  };
+}
+
 export function useMyAssignedRescues(options: UseMyAssignedRescuesOptions = {}) {
   const { pagination, filter, skip = false } = options;
 
-  const { data, loading, error, refetch, fetchMore } = useQuery(GET_MY_ASSIGNED_RESCUES, {
+  const { data, loading, error, refetch, fetchMore } = useQuery<MyAssignedRescuesData>(GET_MY_ASSIGNED_RESCUES, {
     variables: { pagination, filter },
     skip,
     fetchPolicy: 'cache-and-network',
-    onError: (err) => {
-      handleGraphQLError(err);
-    },
   });
 
   const rescues = data?.myAssignedRescues?.edges?.map((edge: { node: RescueRequest }) => edge.node) || [];

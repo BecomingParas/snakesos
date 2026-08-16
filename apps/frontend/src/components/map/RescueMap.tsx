@@ -10,6 +10,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-le
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { formatDistance, calculateDistance, estimateTravelTime } from '@/lib/map/distance';
+import { isValidCoordinate, filterValidCoordinates } from '@/lib/map/coordinates';
 
 // Fix for default marker icons in Next.js/Webpack
 if (typeof window !== 'undefined') {
@@ -116,6 +117,14 @@ export function RescueMap({
   const [mapCenter, setMapCenter] = useState<[number, number]>(center);
   const [mapZoom, setMapZoom] = useState(zoom);
 
+  // Filter out rescues and rescuers with invalid coordinates
+  const validRescues = filterValidCoordinates(rescues);
+  const validRescuers = filterValidCoordinates(rescuers);
+
+  // Show warning if some items were filtered out
+  const invalidRescueCount = rescues.length - validRescues.length;
+  const invalidRescuerCount = rescuers.length - validRescuers.length;
+
   // Update center when prop changes (e.g., different rescue selected)
   // Use JSON.stringify to compare array values, not references
   useEffect(() => {
@@ -142,7 +151,29 @@ export function RescueMap({
   }, [userLocation]);
 
   return (
-    <MapContainer
+    <>
+      {/* Warning banner for invalid coordinates */}
+      {(invalidRescueCount > 0 || invalidRescuerCount > 0) && (
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[1000] max-w-md">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg shadow-lg p-3 text-sm">
+            <p className="text-yellow-800 font-medium">
+              ⚠️ Some locations have invalid coordinates
+            </p>
+            {invalidRescueCount > 0 && (
+              <p className="text-yellow-700 text-xs mt-1">
+                {invalidRescueCount} rescue{invalidRescueCount > 1 ? 's' : ''} not shown
+              </p>
+            )}
+            {invalidRescuerCount > 0 && (
+              <p className="text-yellow-700 text-xs">
+                {invalidRescuerCount} rescuer{invalidRescuerCount > 1 ? 's' : ''} not shown
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      <MapContainer
       center={mapCenter}
       zoom={mapZoom}
       style={{ height: '100%', width: '100%', borderRadius: '8px' }}
@@ -216,7 +247,7 @@ export function RescueMap({
       )}
 
       {/* Rescuer Markers */}
-      {rescuers.map((rescuer) => (
+      {validRescuers.map((rescuer) => (
         <Marker
           key={`rescuer-${rescuer.id}`}
           position={[rescuer.lat, rescuer.lng]}
@@ -259,7 +290,7 @@ export function RescueMap({
       ))}
 
       {/* Rescue Request Markers */}
-      {rescues.map((rescue) => {
+      {validRescues.map((rescue) => {
         const isSelected = selectedRescueId === rescue.id;
         const priorityColor = getPriorityColor(rescue.priority);
         const statusBadge = getStatusBadgeColor(rescue.status);
@@ -357,6 +388,7 @@ export function RescueMap({
         );
       })}
     </MapContainer>
+    </>
   );
 }
 

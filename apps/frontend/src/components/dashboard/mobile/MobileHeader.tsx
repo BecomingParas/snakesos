@@ -1,0 +1,125 @@
+'use client'
+
+import { Bell, Menu } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+
+interface MobileHeaderProps {
+  title: string
+  user: {
+    name: string
+    email: string
+    role: string
+  }
+  onMenuClick?: () => void
+  onNotificationClick?: () => void
+  onProfileClick?: () => void
+  onLogoutClick?: () => void
+  notificationCount?: number
+  showMenu?: boolean
+}
+
+export function MobileHeader({
+  title,
+  user,
+  onMenuClick,
+  onNotificationClick,
+  onProfileClick,
+  onLogoutClick,
+  notificationCount = 0,
+  showMenu = true,
+}: MobileHeaderProps) {
+  const initials = user.name
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
+
+  return (
+    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="flex h-14 items-center justify-between px-4">
+        {/* Left: Menu + Title */}
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          {showMenu && onMenuClick && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onMenuClick}
+              className="h-9 w-9 shrink-0"
+            >
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          )}
+          <h1 className="text-base font-semibold truncate">{title}</h1>
+        </div>
+
+        {/* Right: Notifications + Profile */}
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Notifications */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onNotificationClick}
+            className="h-9 w-9 relative"
+          >
+            <Bell className="h-5 w-5" />
+            {notificationCount > 0 && (
+              <span className="absolute top-1 right-1 h-4 w-4 rounded-full bg-destructive text-[10px] font-bold text-white flex items-center justify-center">
+                {notificationCount > 9 ? '9+' : notificationCount}
+              </span>
+            )}
+            <span className="sr-only">Notifications</span>
+          </Button>
+
+          {/* User Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-9 w-9 rounded-full p-0">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+                    {initials}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">{user.name}</p>
+                  <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                  <p className="text-xs leading-none text-muted-foreground mt-1">
+                    Role: {user.role}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {onProfileClick && (
+                <DropdownMenuItem onClick={onProfileClick}>
+                  Profile
+                </DropdownMenuItem>
+              )}
+              {onLogoutClick && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={onLogoutClick}>
+                    Log out
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+    </header>
+  )
+}
