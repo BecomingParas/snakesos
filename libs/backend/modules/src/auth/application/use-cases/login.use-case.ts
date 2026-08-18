@@ -16,11 +16,16 @@ export class LoginUseCase {
   async execute(input: LoginInput): Promise<LoginResponse> {
     const { email, password } = input;
 
+    console.log('[LOGIN] Attempting login for:', email);
+
     // Find user
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
+      console.log('[LOGIN] User not found:', email);
       throw new AuthenticationError('Invalid email or password');
     }
+
+    console.log('[LOGIN] User found:', user.id, user.email);
 
     // Find credential account
     const account = await prisma.account.findFirst({
@@ -31,11 +36,16 @@ export class LoginUseCase {
     });
 
     if (!account || !account.password) {
+      console.log('[LOGIN] Account not found or no password for user:', user.id);
       throw new AuthenticationError('Invalid email or password');
     }
 
+    console.log('[LOGIN] Account found, verifying password...');
+
     // Verify password manually using bcrypt
     const isPasswordValid = await bcrypt.compare(password, account.password);
+    console.log('[LOGIN] Password valid:', isPasswordValid);
+    
     if (!isPasswordValid) {
       throw new AuthenticationError('Invalid email or password');
     }

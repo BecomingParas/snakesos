@@ -461,14 +461,14 @@ export default function RescuerDashboard() {
             </Card>
 
             {/* Emergency Contact */}
-            <Card className="p-6 border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950">
+            <Card className="p-6 border-2 border-red-600 bg-red-100 dark:border-red-600 dark:bg-red-950 shadow-elevated">
               <h3 className="text-lg font-semibold mb-2 text-red-900 dark:text-red-100">
                 Emergency Support
               </h3>
-              <p className="text-sm text-red-800 dark:text-red-200 mb-4">
+              <p className="text-sm text-red-800 dark:text-red-200 mb-4 font-medium">
                 Need help during a rescue? Contact our emergency line
               </p>
-              <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
+              <Button className="w-full bg-red-600 hover:bg-red-700 text-white shadow-lg">
                 <Phone className="mr-2 h-4 w-4" />
                 Call Emergency: 102
               </Button>

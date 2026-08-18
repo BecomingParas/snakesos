@@ -19,6 +19,7 @@ export interface VerifyEmailResponse {
     id: string;
     email: string;
     name: string;
+    role: string;
     emailVerified: boolean;
   };
 }
@@ -32,6 +33,26 @@ export class VerifyEmailUseCase {
       throw new BadRequestError('Email and verification code are required');
     }
 
+    console.log('🔍 DEBUG: Verifying email');
+    console.log('🔍 DEBUG: Email (input):', email);
+    console.log('🔍 DEBUG: Email (lowercase):', email.toLowerCase());
+    console.log('🔍 DEBUG: Code:', code);
+
+    // Check what verification records exist for this email
+    const allVerificationsForEmail = await prisma.verification.findMany({
+      where: {
+        identifier: email.toLowerCase(),
+        type: 'email',
+      },
+    });
+    
+    console.log('🔍 DEBUG: All email verifications for this email:', allVerificationsForEmail.map(v => ({
+      code: v.code,
+      expiresAt: v.expiresAt,
+      createdAt: v.createdAt,
+      expired: v.expiresAt < new Date()
+    })));
+
     // Find verification record by email and code (OTP only method)
     const verification = await prisma.verification.findFirst({
       where: {
@@ -42,8 +63,15 @@ export class VerifyEmailUseCase {
     });
 
     if (!verification) {
+      console.log('❌ DEBUG: No verification found with this code');
       throw new NotFoundError('Invalid verification code');
     }
+    
+    console.log('✅ DEBUG: Verification found:', {
+      code: verification.code,
+      expiresAt: verification.expiresAt,
+      expired: verification.expiresAt < new Date()
+    });
 
     // Check if expired
     if (verification.expiresAt < new Date()) {
@@ -68,6 +96,7 @@ export class VerifyEmailUseCase {
           id: user.id,
           email: user.email,
           name: user.name,
+          role: user.role,
           emailVerified: true,
         },
       };
@@ -108,6 +137,7 @@ export class VerifyEmailUseCase {
         id: updatedUser.id,
         email: updatedUser.email,
         name: updatedUser.name,
+        role: updatedUser.role,
         emailVerified: true,
       },
     };

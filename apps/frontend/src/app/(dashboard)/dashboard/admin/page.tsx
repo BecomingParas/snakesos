@@ -24,7 +24,7 @@ const TONE_ICON = {
 } as const
 
 const TONE_CLASS = {
-  error: 'text-destructive bg-destructive/10',
+  error: 'text-destructive bg-red-200 dark:bg-destructive/10',
   warning: 'text-warning bg-warning/10',
   success: 'text-success bg-success/10',
   info: 'text-muted-foreground bg-muted',
@@ -48,10 +48,10 @@ export default function AdminDashboard() {
   if (error || !stats) {
     return (
       <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 lg:px-8">
-        <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-6 text-center">
+        <div className="rounded-lg border-2 border-destructive bg-red-100 dark:bg-destructive/10 p-6 text-center shadow-elevated">
           <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-destructive" />
-          <h2 className="mb-2 text-xl font-semibold">Failed to Load Dashboard</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="mb-2 text-xl font-semibold text-destructive-foreground dark:text-foreground">Failed to Load Dashboard</h2>
+          <p className="text-sm text-red-800 dark:text-muted-foreground font-medium">
             {error?.message || 'Unable to fetch dashboard statistics'}
           </p>
         </div>

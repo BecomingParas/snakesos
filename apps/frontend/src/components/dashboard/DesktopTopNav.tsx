@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, Search, Siren, LogOut, User } from 'lucide-react'
+import { Bell, Search, Phone, LogOut, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -53,10 +53,10 @@ export function DesktopTopNav({ user, onLogout }: DesktopTopNavProps) {
         <Button
           size="sm"
           variant="destructive"
-          className="h-10 shadow-md hover:shadow-lg transition-all"
+          className="h-10 bg-red-600 hover:bg-red-700 dark:bg-destructive dark:hover:bg-destructive/90 text-white shadow-md hover:shadow-lg transition-all font-bold"
           onClick={() => toast.error('Emergency dispatch alerted', { description: 'Hotline 1166 notified' })}
         >
-          <Siren className="mr-2 h-4 w-4" />
+          <Phone className="mr-2 h-4 w-4" />
           Emergency
         </Button>
 

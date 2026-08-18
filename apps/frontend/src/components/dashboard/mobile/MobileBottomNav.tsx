@@ -87,7 +87,7 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
 
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border/50 md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-50 md:mobile-glass-nav bg-background/95 backdrop-blur-md border-t border-border/40 md:hidden"
       style={{
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
@@ -111,9 +111,9 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
             >
               {item.isEmergency ? (
                 <div className="relative">
-                  <div className="absolute inset-0 bg-destructive/20 rounded-full animate-pulse" />
-                  <div className="relative bg-destructive rounded-full p-2">
-                    <Icon className="h-5 w-5 text-white" />
+                  <div className="absolute inset-0 bg-red-500/30 dark:bg-destructive/20 rounded-full animate-pulse" />
+                  <div className="relative bg-red-600 dark:bg-destructive rounded-full p-2 shadow-lg">
+                    <Icon className="h-5 w-5 text-white drop-shadow-sm" />
                   </div>
                 </div>
               ) : (
@@ -121,7 +121,7 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
               )}
               <span className={cn(
                 'text-[10px] font-medium',
-                item.isEmergency && 'text-destructive font-bold'
+                item.isEmergency && 'text-red-600 dark:text-destructive font-extrabold drop-shadow-sm'
               )}>
                 {item.label}
               </span>

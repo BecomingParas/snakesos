@@ -14,14 +14,12 @@ import {
   Phone,
   Calendar,
   Loader2,
-  CheckCircle,
-  XCircle,
 } from 'lucide-react'
-import { useUsersQuery, useUpdateUserStatusMutation } from '@/lib/graphql/hooks/user.hooks'
+import { useUsersQuery } from '@/lib/graphql/hooks/user.hooks'
 import { toast } from 'sonner'
 
 /**
- * Admin Users Management Page - NOW WITH GRAPHQL INTEGRATION ✅
+ * Admin Citizens Management Page - NOW WITH GRAPHQL INTEGRATION ✅
  */
 
 const roleColors = {
@@ -44,53 +42,32 @@ export default function AdminUsersPage() {
       pagination: { limit: 200, page: 1 },
       filter: {
         role: roleFilter !== 'all' ? roleFilter : undefined,
-        isActive: statusFilter === 'active' ? true : statusFilter === 'inactive' ? false : undefined,
+        status: statusFilter === 'active' ? 'ACTIVE' : statusFilter === 'inactive' ? 'INACTIVE' : undefined,
         search: searchTerm || undefined,
       }
     },
     fetchPolicy: 'cache-and-network',
   })
 
-  // Update user status mutation
-  const [updateStatus, { loading: updatingStatus }] = useUpdateUserStatusMutation({
-    onCompleted: () => {
-      toast.success('User status updated successfully!')
-      refetch()
-    },
-    onError: (error) => {
-      toast.error(`Failed to update status: ${error.message}`)
-    },
-  })
+  // Debug logging
+  console.log('Users Query Debug:', { data, loading, error, users: data?.users })
 
 
-  const users = data?.users?.edges?.map(e => e.node) || []
+  const users = data?.users?.edges || []
 
   // Calculate stats
   const stats = useMemo(() => {
     return {
       total: users.length,
-      active: users.filter(u => u.isActive).length,
+      active: users.filter(u => u.status === 'ACTIVE').length,
       citizens: users.filter(u => u.role === 'CITIZEN').length,
       rescuers: users.filter(u => u.role === 'VERIFIED_RESCUER' || u.role === 'VOLUNTEER').length,
     }
   }, [users])
 
-  const handleToggleStatus = async (userId: string, currentStatus: boolean) => {
-    await updateStatus({
-      variables: {
-        input: {
-          userId,
-          isActive: !currentStatus,
-        }
-      }
-    })
-  }
-
   if (error) {
     toast.error(`Failed to load users: ${error.message}`)
   }
-
-  const isUpdating = updatingStatus
 
   return (
     <div className="p-6 space-y-6">
@@ -98,10 +75,10 @@ export default function AdminUsersPage() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
             <Users className="h-8 w-8" />
-            Users Management
+            Citizens Management
           </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
-            Manage all users and their permissions
+            Manage all citizens and their account status
           </p>
         </div>
       </div>
@@ -213,7 +190,6 @@ export default function AdminUsersPage() {
                   <th className="p-4 font-semibold">Role</th>
                   <th className="p-4 font-semibold">Status</th>
                   <th className="p-4 font-semibold">Joined</th>
-                  <th className="p-4 font-semibold">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -254,10 +230,10 @@ export default function AdminUsersPage() {
                     </td>
                     <td className="p-4">
                       <div className="space-y-1">
-                        <Badge className={user.isActive ? 'bg-green-500' : 'bg-gray-500'}>
-                          {user.isActive ? 'Active' : 'Inactive'}
+                        <Badge className={user.status === 'ACTIVE' ? 'bg-green-500' : 'bg-gray-500'}>
+                          {user.status}
                         </Badge>
-                        {user.isEmailVerified && (
+                        {user.emailVerified && (
                           <Badge variant="outline" className="ml-2 text-xs border-green-500 text-green-700">
                             ✓ Verified
                           </Badge>
@@ -268,19 +244,6 @@ export default function AdminUsersPage() {
                       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                         <Calendar className="h-3 w-3" />
                         <span>{new Date(user.createdAt).toLocaleDateString()}</span>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleToggleStatus(user.id, user.isActive)}
-                          disabled={isUpdating}
-                        >
-                          {isUpdating ? <Loader2 className="h-3 w-3 animate-spin" /> : 
-                           user.isActive ? <XCircle className="h-3 w-3" /> : <CheckCircle className="h-3 w-3" />}
-                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -294,9 +257,9 @@ export default function AdminUsersPage() {
       {!loading && users.length === 0 && (
         <Card className="p-12 text-center">
           <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No users found</h3>
+          <h3 className="text-lg font-semibold mb-2">No citizens found</h3>
           <p className="text-gray-600 dark:text-gray-400">
-            {searchTerm ? 'Try adjusting your search or filters' : 'No users registered yet'}
+            {searchTerm ? 'Try adjusting your search or filters' : 'No citizens registered yet'}
           </p>
         </Card>
       )}

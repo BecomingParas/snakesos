@@ -5,7 +5,7 @@
 
 import { prisma } from '@snake-rescue/database';
 import { NotFoundError, BadRequestError } from '@snake-rescue/shared';
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 export interface ResetPasswordInput {
   email: string;
@@ -59,14 +59,33 @@ export class ResetPasswordUseCase {
       throw new NotFoundError('User not found');
     }
 
-    // Hash new password
+    // Hash new password using bcryptjs (same as login)
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    // Update user password
+    // Find credential account (Better Auth pattern)
+    const account = await prisma.account.findFirst({
+      where: {
+        userId: user.id,
+        providerId: 'credential',
+      },
+    });
+
+    if (!account) {
+      throw new NotFoundError('Credential account not found');
+    }
+
+    // Update account password (where login checks it)
+    await prisma.account.update({
+      where: { id: account.id },
+      data: {
+        password: hashedPassword,
+      },
+    });
+
+    // Also update user table fields (for legacy compatibility)
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        password: hashedPassword,
         passwordResetToken: null,
         passwordResetExpiry: null,
       },

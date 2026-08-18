@@ -161,11 +161,11 @@ export default function CitizenDashboard() {
 
       {/* Emergency Banner */}
       <SectionPanel title="Need Emergency Help?" description="">
-        <div className="rounded-xl border-2 border-destructive/50 bg-destructive/10 p-6">
+        <div className="rounded-xl border-2 border-destructive bg-destructive/20 dark:bg-destructive/10 p-6 shadow-elevated">
           <div className="flex items-start gap-4">
-            <AlertCircle className="h-8 w-8 shrink-0 text-destructive" />
+            <AlertCircle className="h-8 w-8 shrink-0 text-destructive dark:text-destructive" />
             <div className="flex-1">
-              <p className="mb-4 text-sm">
+              <p className="mb-4 text-sm text-destructive-foreground dark:text-foreground font-medium">
                 If you've spotted a snake or need immediate rescue assistance, submit a request now.
               </p>
               <div className="flex flex-wrap gap-2">
@@ -175,7 +175,7 @@ export default function CitizenDashboard() {
                     Request Emergency Rescue
                   </Link>
                 </Button>
-                <Button asChild variant="outline">
+                <Button asChild variant="outline" className="border-destructive/50 hover:bg-destructive/10">
                   <a href="tel:9816482570">
                     <Phone className="mr-2 h-4 w-4" />
                     Call Hotline: 9816482570

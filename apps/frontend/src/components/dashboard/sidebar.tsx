@@ -75,7 +75,7 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/rescues', label: 'All Rescues', icon: List },
         { href: '/map', label: 'Live Map', icon: Map },
         { href: '/rescuers', label: 'Rescuers', icon: Users },
-        { href: '/users', label: 'Users', icon: UserCheck },
+        { href: '/users', label: 'Citizens', icon: UserCheck },
         { href: '/analytics', label: 'Analytics', icon: BarChart3 },
         { href: '/notifications', label: 'Notifications', icon: Bell },
         { href: '/settings', label: 'Settings', icon: Settings },
@@ -91,7 +91,7 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/rescues', label: 'All Rescues', icon: List },
         { href: '/map', label: 'Live Map', icon: Map },
         { href: '/rescuers', label: 'Rescuers', icon: Users },
-        { href: '/users', label: 'Users', icon: UserCheck },
+        { href: '/users', label: 'Citizens', icon: UserCheck },
         { href: '/analytics', label: 'Analytics', icon: BarChart3 },
         { href: '/notifications', label: 'Notifications', icon: Bell },
         { href: '/settings', label: 'Settings', icon: Settings },
@@ -163,21 +163,31 @@ export function Sidebar({ role }: SidebarProps) {
         {/* Header */}
         <div className={cn('border-b border-border/20 p-4', collapsed && 'px-2')}>
           {!collapsed ? (
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 shadow-sm">
-                <LayoutDashboard className="h-5 w-5 text-primary" />
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 shadow-sm overflow-hidden">
+                <img 
+                  src="/snakesoslogo.png" 
+                  alt="SnakeSOS Logo" 
+                  className="h-9 w-9 object-contain transition-transform group-hover:scale-105"
+                />
               </div>
               <div className="min-w-0 flex-1">
-                <h2 className="truncate text-sm font-bold text-foreground">{config.title}</h2>
+                <h2 className="truncate text-sm font-bold text-foreground">
+                  Snake<span className="text-primary">SOS</span>
+                </h2>
                 <p className="truncate text-xs text-muted-foreground font-medium">{config.subtitle}</p>
               </div>
-            </div>
+            </Link>
           ) : (
-            <div className="flex justify-center">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 shadow-sm">
-                <LayoutDashboard className="h-5 w-5 text-primary" />
+            <Link href="/" className="flex justify-center group">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 shadow-sm overflow-hidden">
+                <img 
+                  src="/snakesoslogo.png" 
+                  alt="SnakeSOS Logo" 
+                  className="h-9 w-9 object-contain transition-transform group-hover:scale-105"
+                />
               </div>
-            </div>
+            </Link>
           )}
         </div>
 
@@ -188,6 +198,7 @@ export function Sidebar({ role }: SidebarProps) {
               const Icon = link.icon
               const active = isActive(link.href)
               const fullPath = `${config.basePath}${link.href}`
+              const isEmergency = link.label === 'Emergency'
 
               if (index === 1 && !collapsed) {
                 return (
@@ -217,14 +228,18 @@ export function Sidebar({ role }: SidebarProps) {
                   href={fullPath}
                   className={cn(
                     'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all',
-                    active
+                    isEmergency
+                      ? active
+                        ? 'bg-red-600/15 dark:bg-destructive/15 text-red-700 dark:text-destructive shadow-sm'
+                        : 'text-red-600 dark:text-destructive hover:bg-red-600/10 dark:hover:bg-destructive/10 hover:text-red-700 dark:hover:text-destructive'
+                      : active
                       ? 'bg-primary/10 text-primary shadow-sm'
                       : 'text-foreground hover:bg-secondary/50 hover:text-foreground',
                     collapsed && 'justify-center px-2'
                   )}
                   title={collapsed ? link.label : undefined}
                 >
-                  <Icon className="h-5 w-5 shrink-0" />
+                  <Icon className={cn('h-5 w-5 shrink-0', isEmergency && 'animate-pulse')} />
                   {!collapsed && <span className="truncate">{link.label}</span>}
                 </Link>
               )

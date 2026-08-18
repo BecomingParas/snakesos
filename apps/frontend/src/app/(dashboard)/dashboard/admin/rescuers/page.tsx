@@ -17,9 +17,8 @@ import {
   Mail,
   Loader2,
   CheckCircle,
-  XCircle,
 } from 'lucide-react'
-import { useVolunteersQuery, useUpdateVolunteerStatusMutation } from '@/lib/graphql/hooks/volunteer.hooks'
+import { useVolunteersQuery } from '@/lib/graphql/hooks/volunteer.hooks'
 import { toast } from 'sonner'
 
 /**
@@ -33,27 +32,16 @@ export default function AdminRescuersPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
 
   // Fetch volunteers
-  const { data, loading, error, refetch } = useVolunteersQuery({
+  const { data, loading, error } = useVolunteersQuery({
     variables: {
       pagination: { limit: 100, page: 1 } ,
       filter: {
-        verificationStatus: statusFilter === 'verified' ? 'VERIFIED' : statusFilter === 'pending' ? 'PENDING' : undefined,
+        status: statusFilter === 'verified' ? 'VERIFIED' : statusFilter === 'pending' ? 'PENDING' : undefined,
         isAvailableNow: statusFilter === 'available' ? true : statusFilter === 'busy' ? false : undefined,
       }
     },
     fetchPolicy: 'cache-and-network',
     pollInterval: 30000, // Poll every 30 seconds
-  })
-
-  // Update volunteer status mutation
-  const [updateStatus, { loading: updating }] = useUpdateVolunteerStatusMutation({
-    onCompleted: () => {
-      toast.success('Rescuer status updated successfully!')
-      refetch()
-    },
-    onError: (error) => {
-      toast.error(`Failed to update status: ${error.message}`)
-    },
   })
 
   const volunteers = data?.volunteers?.edges?.map(e => e.node) || []
@@ -76,32 +64,14 @@ export default function AdminRescuersPage() {
     return {
       total: volunteers.length,
       available: volunteers.filter(v => v.isAvailableNow).length,
-      verified: volunteers.filter(v => v.verificationStatus === 'VERIFIED').length,
-      pending: volunteers.filter(v => v.verificationStatus === 'PENDING').length,
+      verified: volunteers.filter(v => v.status === 'VERIFIED').length,
+      pending: volunteers.filter(v => v.status === 'PENDING').length,
     }
   }, [volunteers])
 
   const handleVerify = async (volunteerId: string) => {
-    await updateStatus({
-      variables: {
-        input: {
-          volunteerId,
-          verificationStatus: 'VERIFIED',
-          isActive: true,
-        }
-      }
-    })
-  }
-
-  const handleToggleActive = async (volunteerId: string, currentStatus: boolean) => {
-    await updateStatus({
-      variables: {
-        input: {
-          volunteerId,
-          isActive: !currentStatus,
-        }
-      }
-    })
+    // TODO: Implement with proper verifyVolunteer mutation
+    toast.info('Volunteer verification feature coming soon')
   }
 
   if (error) {
@@ -285,17 +255,16 @@ export default function AdminRescuersPage() {
                   <Badge 
                     variant="outline" 
                     className={`text-xs ${
-                      volunteer.verificationStatus === 'VERIFIED' ? 'border-green-500 text-green-700' :
-                      volunteer.verificationStatus === 'PENDING' ? 'border-yellow-500 text-yellow-700' :
+                      volunteer.status === 'VERIFIED' ? 'border-green-500 text-green-700' :
+                      volunteer.status === 'PENDING' ? 'border-yellow-500 text-yellow-700' :
+                      volunteer.status === 'APPROVED' ? 'border-blue-500 text-blue-700' :
                       'border-red-500 text-red-700'
                     }`}
                   >
-                    {volunteer.verificationStatus === 'VERIFIED' ? '✓ Verified' : 
-                     volunteer.verificationStatus === 'PENDING' ? '⏳ Pending' : 
-                     '✗ Rejected'}
-                  </Badge>
-                  <Badge variant="outline" className="text-xs">
-                    {volunteer.isActive ? 'Active' : 'Inactive'}
+                    {volunteer.status === 'VERIFIED' ? '✓ Verified' : 
+                     volunteer.status === 'PENDING' ? '⏳ Pending' :
+                     volunteer.status === 'APPROVED' ? '✓ Approved' :
+                     '✗ Suspended'}
                   </Badge>
                   {volunteer.successRate && volunteer.successRate >= 90 && (
                     <Badge variant="outline" className="text-xs border-purple-500 text-purple-700">
@@ -306,29 +275,17 @@ export default function AdminRescuersPage() {
 
                 {/* Actions */}
                 <div className="flex gap-2">
-                  {volunteer.verificationStatus === 'PENDING' && (
+                  {volunteer.status === 'PENDING' && (
                     <Button 
                       variant="default" 
                       size="sm" 
                       className="flex-1 bg-green-600 hover:bg-green-700"
                       onClick={() => handleVerify(volunteer.id)}
-                      disabled={updating}
                     >
-                      {updating ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle className="h-4 w-4 mr-1" />}
+                      <CheckCircle className="h-4 w-4 mr-1" />
                       Verify
                     </Button>
                   )}
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="flex-1"
-                    onClick={() => handleToggleActive(volunteer.id, volunteer.isActive)}
-                    disabled={updating}
-                  >
-                    {updating ? <Loader2 className="h-4 w-4 animate-spin" /> : 
-                     volunteer.isActive ? <XCircle className="h-4 w-4 mr-1" /> : <CheckCircle className="h-4 w-4 mr-1" />}
-                    {volunteer.isActive ? 'Deactivate' : 'Activate'}
-                  </Button>
                 </div>
               </div>
             </Card>

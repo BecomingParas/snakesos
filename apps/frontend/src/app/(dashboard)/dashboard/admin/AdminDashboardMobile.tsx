@@ -72,15 +72,15 @@ export function AdminDashboardMobile({ stats }: AdminDashboardMobileProps) {
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* SOS Emergency Card - HIGHEST PRIORITY */}
-        <Card className="p-4 bg-destructive/10 border-destructive/50">
+        <Card className="p-4 bg-red-100 dark:bg-destructive/10 border-2 border-red-600 dark:border-destructive shadow-elevated">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <div className="h-10 w-10 rounded-full bg-destructive/20 flex items-center justify-center">
-                <Siren className="h-5 w-5 text-destructive" />
+              <div className="h-10 w-10 rounded-full bg-red-600 dark:bg-destructive flex items-center justify-center shadow-sm">
+                <Siren className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold">Emergency Dispatch</h3>
-                <p className="text-xs text-muted-foreground">Immediate response required</p>
+                <h3 className="font-semibold text-red-900 dark:text-foreground">Emergency Dispatch</h3>
+                <p className="text-xs text-red-700 dark:text-muted-foreground font-medium">Immediate response required</p>
               </div>
             </div>
           </div>

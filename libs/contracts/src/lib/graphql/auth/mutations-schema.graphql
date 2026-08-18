@@ -67,10 +67,11 @@ extend type Mutation {
 }
 
 """
-Input for password reset
+Input for password reset with OTP code
 """
 input ResetPasswordInput {
-  token: String!
+  email: Email!
+  code: String!
   newPassword: String!
 }
 

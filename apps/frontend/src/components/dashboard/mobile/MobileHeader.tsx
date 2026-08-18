@@ -45,23 +45,21 @@ export function MobileHeader({
     .slice(0, 2)
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full md:mobile-glass-header border-b border-border/40 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
       <div className="flex h-14 items-center justify-between px-4">
-        {/* Left: Menu + Title */}
-        <div className="flex items-center gap-3 min-w-0 flex-1">
-          {showMenu && onMenuClick && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onMenuClick}
-              className="h-9 w-9 shrink-0"
-            >
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Open menu</span>
-            </Button>
-          )}
-          <h1 className="text-base font-semibold truncate">{title}</h1>
-        </div>
+        {/* Left: Logo + Title */}
+        <a href="/" className="flex items-center gap-2 min-w-0 group">
+          <div className="h-8 w-8 rounded-lg overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
+            <img 
+              src="/snakesoslogo.png" 
+              alt="SnakeSOS Logo" 
+              className="h-7 w-7 object-contain transition-transform group-hover:scale-105"
+            />
+          </div>
+          <span className="text-sm font-bold truncate">
+            Snake<span className="text-primary">SOS</span>
+          </span>
+        </a>
 
         {/* Right: Notifications + Profile */}
         <div className="flex items-center gap-2 shrink-0">

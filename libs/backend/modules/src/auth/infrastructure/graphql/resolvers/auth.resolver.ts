@@ -43,6 +43,159 @@ export const authResolvers = {
 
       return user;
     },
+
+    /**
+     * Get all users (Admin only)
+     */
+    users: async (
+      _parent: any,
+      args: {
+        pagination?: { limit?: number; page?: number };
+        filter?: {
+          role?: string;
+          status?: string;
+          emailVerified?: boolean;
+          search?: string;
+        };
+      },
+      context: GraphQLContext
+    ) => {
+      // Require admin access
+      context.requireAuth();
+      context.requireRole(['ADMIN', 'SUPER_ADMIN']);
+
+      const { pagination, filter } = args;
+      const limit = pagination?.limit || 50;
+      const page = pagination?.page || 1;
+      const skip = (page - 1) * limit;
+
+      // Build where clause
+      const where: any = {};
+      
+      if (filter?.role) {
+        where.role = filter.role;
+      }
+      
+      if (filter?.status) {
+        where.status = filter.status;
+      }
+      
+      if (filter?.emailVerified !== undefined) {
+        where.emailVerified = filter.emailVerified;
+      }
+      
+      if (filter?.search) {
+        where.OR = [
+          { name: { contains: filter.search, mode: 'insensitive' } },
+          { email: { contains: filter.search, mode: 'insensitive' } },
+          { phone: { contains: filter.search } },
+        ];
+      }
+
+      // Fetch users and total count
+      const [users, totalCount] = await Promise.all([
+        prisma.user.findMany({
+          where,
+          skip,
+          take: limit,
+          orderBy: { createdAt: 'desc' },
+        }),
+        prisma.user.count({ where }),
+      ]);
+
+      // Build connection response
+      return {
+        edges: users,
+        pageInfo: {
+          hasNextPage: skip + users.length < totalCount,
+          hasPreviousPage: page > 1,
+          startCursor: users.length > 0 ? users[0].id : null,
+          endCursor: users.length > 0 ? users[users.length - 1].id : null,
+        },
+        totalCount,
+      };
+    },
+
+    /**
+     * Get all volunteers (Admin/Coordinator only)
+     */
+    volunteers: async (
+      _parent: any,
+      args: {
+        pagination?: { limit?: number; page?: number };
+        filter?: {
+          status?: string;
+          experience?: string;
+          municipality?: string;
+          isAvailableNow?: boolean;
+        };
+      },
+      context: GraphQLContext
+    ) => {
+      try {
+        // Require admin/coordinator access
+        context.requireAuth();
+        context.requireRole(['ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR']);
+
+        const { pagination, filter } = args;
+        const limit = pagination?.limit || 50;
+        const page = pagination?.page || 1;
+        const skip = (page - 1) * limit;
+
+        // Build where clause
+        const where: any = {};
+        
+        if (filter?.status) {
+          where.status = filter.status;
+        }
+        
+        if (filter?.experience) {
+          where.experience = filter.experience;
+        }
+        
+        if (filter?.municipality) {
+          where.municipality = { contains: filter.municipality, mode: 'insensitive' };
+        }
+        
+        if (filter?.isAvailableNow !== undefined) {
+          where.isAvailableNow = filter.isAvailableNow;
+        }
+
+        // Fetch volunteers and total count
+        const [volunteers, totalCount] = await Promise.all([
+          prisma.volunteer.findMany({
+            where,
+            skip,
+            take: limit,
+            orderBy: { createdAt: 'desc' },
+            include: {
+              user: true,
+            },
+          }),
+          prisma.volunteer.count({ where }),
+        ]);
+
+        // Build connection response with edge structure
+        const result = {
+          edges: volunteers.map((volunteer) => ({
+            node: volunteer,
+            cursor: volunteer.id,
+          })),
+          pageInfo: {
+            hasNextPage: skip + volunteers.length < totalCount,
+            hasPreviousPage: page > 1,
+            startCursor: volunteers.length > 0 ? volunteers[0].id : null,
+            endCursor: volunteers.length > 0 ? volunteers[volunteers.length - 1].id : null,
+          },
+          totalCount,
+        };
+
+        return result;
+      } catch (error) {
+        console.error('Error fetching volunteers:', error);
+        throw error;
+      }
+    },
   },
 
   Mutation: {

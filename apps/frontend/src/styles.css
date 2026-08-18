@@ -14,36 +14,36 @@
 
 @layer base {
   /* ============================================================================
-     LIGHT THEME (Default)
-     Professional, clean wildlife rescue platform aesthetic
+     LIGHT THEME (Default) - PREMIUM GLASSY VERSION
+     Professional, colorful wildlife rescue platform aesthetic
      ============================================================================ */
 
   :root {
-    /* Base */
-    --background: 0 0% 100%;
+    /* Base - Soft neutral with subtle warmth */
+    --background: 210 20% 98%;
     --foreground: 222 47% 11%;
     
-    /* Cards & Surfaces */
+    /* Cards & Surfaces - Premium glass effect */
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
     
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
     
-    /* Brand - Professional Rescue Green */
+    /* Brand - Professional Rescue Green (unchanged) */
     --primary: 145 63% 49%;
     --primary-foreground: 0 0% 100%;
     
-    /* Secondary */
-    --secondary: 210 40% 96%;
+    /* Secondary - Softer */
+    --secondary: 210 30% 97%;
     --secondary-foreground: 222 47% 11%;
     
-    /* Muted */
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    /* Muted - More elegant */
+    --muted: 210 30% 96%;
+    --muted-foreground: 215 18% 45%;
     
-    /* Accent */
-    --accent: 210 40% 96%;
+    /* Accent - Subtle teal tint */
+    --accent: 180 30% 96%;
     --accent-foreground: 222 47% 11%;
     
     /* Destructive - Emergency */
@@ -62,26 +62,33 @@
     --info: 221 83% 53%;
     --info-foreground: 0 0% 100%;
     
-    /* Border & Input */
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
+    /* Border & Input - More subtle */
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
     --ring: 145 63% 49%;
     
-    /* Chart Colors */
+    /* Chart Colors - Richer palette */
     --chart-1: 145 63% 49%;
     --chart-2: 38 92% 50%;
     --chart-3: 0 84% 60%;
     --chart-4: 221 83% 53%;
     --chart-5: 262 83% 58%;
     
-    /* Sidebar - Light elevated surface */
-    --sidebar-background: 0 0% 98%;
+    /* Chart color references for Recharts */
+    --color-chart-1: hsl(145 63% 49%);
+    --color-chart-2: hsl(38 92% 50%);
+    --color-chart-3: hsl(0 84% 60%);
+    --color-chart-4: hsl(221 83% 53%);
+    --color-chart-5: hsl(262 83% 58%);
+    
+    /* Sidebar - Soft elevated surface with glass */
+    --sidebar-background: 210 25% 97%;
     --sidebar-foreground: 222 47% 11%;
     --sidebar-primary: 145 63% 49%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent: 210 30% 95%;
     --sidebar-accent-foreground: 222 47% 11%;
-    --sidebar-border: 220 13% 91%;
+    --sidebar-border: 220 15% 90%;
     --sidebar-ring: 145 63% 49%;
     
     /* Rescue-specific Status Colors */
@@ -98,10 +105,32 @@
     --status-offline: 215 16% 47%;
     
     --radius: 0.5rem;
+    
+    /* Expose theme colors for JavaScript/Recharts access */
+    --color-background: hsl(210 20% 98%);
+    --color-foreground: hsl(222 47% 11%);
+    --color-card: hsl(0 0% 100%);
+    --color-card-foreground: hsl(222 47% 11%);
+    --color-popover: hsl(0 0% 100%);
+    --color-popover-foreground: hsl(222 47% 11%);
+    --color-primary: hsl(145 63% 49%);
+    --color-primary-foreground: hsl(0 0% 100%);
+    --color-secondary: hsl(210 30% 97%);
+    --color-secondary-foreground: hsl(222 47% 11%);
+    --color-muted: hsl(210 30% 96%);
+    --color-muted-foreground: hsl(215 18% 45%);
+    --color-accent: hsl(180 30% 96%);
+    --color-destructive: hsl(0 84% 60%);
+    --color-border: hsl(214 20% 88%);
+    --color-input: hsl(214 20% 88%);
+    --color-ring: hsl(145 63% 49%);
+    --color-success: hsl(145 63% 49%);
+    --color-warning: hsl(38 92% 50%);
+    --color-info: hsl(221 83% 53%);
   }
 
   /* ============================================================================
-     DARK THEME
+     DARK THEME (UNCHANGED - Preserving existing dark mode exactly)
      Professional dark mode for wildlife rescue operations
      Elevated surfaces with proper contrast and visibility
      ============================================================================ */
@@ -162,6 +191,13 @@
     --chart-4: 221 83% 53%;
     --chart-5: 262 83% 58%;
     
+    /* Chart color references for Recharts */
+    --color-chart-1: hsl(145 63% 49%);
+    --color-chart-2: hsl(38 92% 50%);
+    --color-chart-3: hsl(0 84% 60%);
+    --color-chart-4: hsl(221 83% 53%);
+    --color-chart-5: hsl(262 83% 58%);
+    
     /* Sidebar - Dark elevated surface */
     --sidebar-background: 222 47% 11%;
     --sidebar-foreground: 210 40% 98%;
@@ -184,6 +220,28 @@
     --status-rejected: 0 84% 60%;
     --status-available: 145 63% 49%;
     --status-offline: 215 20% 65%;
+    
+    /* Expose theme colors for JavaScript/Recharts access */
+    --color-background: hsl(222 47% 11%);
+    --color-foreground: hsl(210 40% 98%);
+    --color-card: hsl(217 33% 17%);
+    --color-card-foreground: hsl(210 40% 98%);
+    --color-popover: hsl(224 71% 4%);
+    --color-popover-foreground: hsl(210 40% 98%);
+    --color-primary: hsl(145 63% 49%);
+    --color-primary-foreground: hsl(222 47% 11%);
+    --color-secondary: hsl(217 33% 17%);
+    --color-secondary-foreground: hsl(210 40% 98%);
+    --color-muted: hsl(217 33% 17%);
+    --color-muted-foreground: hsl(215 20% 65%);
+    --color-accent: hsl(217 33% 17%);
+    --color-destructive: hsl(0 63% 31%);
+    --color-border: hsl(217 33% 22%);
+    --color-input: hsl(217 33% 22%);
+    --color-ring: hsl(145 63% 49%);
+    --color-success: hsl(145 63% 42%);
+    --color-warning: hsl(38 92% 50%);
+    --color-info: hsl(221 83% 53%);
   }
 }
 
@@ -197,6 +255,44 @@
     color: hsl(var(--foreground));
     font-family: Inter, sans-serif;
     scroll-behavior: smooth;
+  }
+  
+  /* Chart color CSS variables for JavaScript access */
+  :root {
+    --color-background: hsl(var(--background));
+    --color-foreground: hsl(var(--foreground));
+    --color-card: hsl(var(--card));
+    --color-primary: hsl(var(--primary));
+    --color-secondary: hsl(var(--secondary));
+    --color-muted: hsl(var(--muted));
+    --color-muted-foreground: hsl(var(--muted-foreground));
+    --color-border: hsl(var(--border));
+    --color-popover: hsl(var(--popover));
+  }
+  
+  .dark {
+    --color-background: hsl(var(--background));
+    --color-foreground: hsl(var(--foreground));
+    --color-card: hsl(var(--card));
+    --color-primary: hsl(var(--primary));
+    --color-secondary: hsl(var(--secondary));
+    --color-muted: hsl(var(--muted));
+    --color-muted-foreground: hsl(var(--muted-foreground));
+    --color-border: hsl(var(--border));
+    --color-popover: hsl(var(--popover));
+  }
+  
+  /* ============================================================================
+     PREMIUM LIGHT BACKGROUND (Light mode only)
+     Subtle ambient glow effect with emerald and blue tints
+     ============================================================================ */
+  body:not(.dark) {
+    position: relative;
+    background: 
+      radial-gradient(ellipse 80% 50% at 50% -20%, hsl(145 50% 90% / 0.15), transparent),
+      radial-gradient(ellipse 60% 50% at 100% 50%, hsl(200 60% 90% / 0.12), transparent),
+      radial-gradient(ellipse 60% 50% at 0% 100%, hsl(180 50% 92% / 0.1), transparent),
+      hsl(var(--background));
   }
 }
 
@@ -219,11 +315,11 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: hsl(var(--muted-foreground));
+  background-color: hsl(var(--muted-foreground) / 0.5);
 }
 
 /* ============================================================================
-   GLASS EFFECTS (Theme-aware)
+   ENHANCED GLASS EFFECTS (Light mode premium, Dark mode unchanged)
    ============================================================================ */
 
 .glass {
@@ -232,7 +328,19 @@
   border: 1px solid hsl(var(--border) / 0.5);
 }
 
-.glass-card {
+/* Premium glass for light mode cards */
+:not(.dark) .glass-card {
+  backdrop-filter: blur(12px) saturate(180%);
+  background-color: hsl(0 0% 100% / 0.7);
+  border: 1px solid hsl(var(--border) / 0.5);
+  box-shadow: 
+    0 1px 2px hsl(0 0% 0% / 0.02),
+    0 4px 8px hsl(0 0% 0% / 0.03),
+    0 8px 16px hsl(0 0% 0% / 0.04);
+}
+
+/* Dark mode glass unchanged */
+.dark .glass-card {
   backdrop-filter: blur(16px);
   background-color: hsl(var(--card) / 0.85);
   border: 1px solid hsl(var(--border) / 0.6);
@@ -270,6 +378,69 @@
   100% {
     box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
   }
+}
+
+/* ============================================================================
+   PREMIUM SHADOWS (Light mode only)
+   ============================================================================ */
+
+/* Soft elevation for stat cards */
+:not(.dark) .shadow-soft {
+  box-shadow: 
+    0 1px 2px hsl(0 0% 0% / 0.03),
+    0 2px 4px hsl(0 0% 0% / 0.03),
+    0 4px 8px hsl(0 0% 0% / 0.04);
+}
+
+/* Medium elevation for important cards */
+:not(.dark) .shadow-float {
+  box-shadow: 
+    0 2px 4px hsl(0 0% 0% / 0.03),
+    0 4px 8px hsl(0 0% 0% / 0.04),
+    0 8px 16px hsl(0 0% 0% / 0.05);
+}
+
+/* Strong elevation for modals/dialogs */
+:not(.dark) .shadow-elevated {
+  box-shadow: 
+    0 4px 8px hsl(0 0% 0% / 0.04),
+    0 8px 16px hsl(0 0% 0% / 0.06),
+    0 16px 32px hsl(0 0% 0% / 0.08);
+}
+
+/* ============================================================================
+   COLORFUL ICON CONTAINERS (Light mode)
+   ============================================================================ */
+
+/* Icon backgrounds with subtle color tints */
+:not(.dark) .icon-emerald {
+  background: linear-gradient(135deg, hsl(145 60% 95%), hsl(145 50% 92%));
+  color: hsl(145 63% 45%);
+}
+
+:not(.dark) .icon-blue {
+  background: linear-gradient(135deg, hsl(221 70% 95%), hsl(221 60% 92%));
+  color: hsl(221 83% 48%);
+}
+
+:not(.dark) .icon-violet {
+  background: linear-gradient(135deg, hsl(262 70% 95%), hsl(262 60% 92%));
+  color: hsl(262 83% 53%);
+}
+
+:not(.dark) .icon-amber {
+  background: linear-gradient(135deg, hsl(38 80% 95%), hsl(38 70% 90%));
+  color: hsl(38 92% 45%);
+}
+
+:not(.dark) .icon-rose {
+  background: linear-gradient(135deg, hsl(0 70% 95%), hsl(0 60% 92%));
+  color: hsl(0 84% 55%);
+}
+
+:not(.dark) .icon-teal {
+  background: linear-gradient(135deg, hsl(180 60% 95%), hsl(180 50% 92%));
+  color: hsl(180 70% 40%);
 }
 
 /* ============================================================================
@@ -312,7 +483,56 @@
   }
   
   * {
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.22s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   }
 }
 
+/* ============================================================================
+   MOBILE PREMIUM GLASS (Apple-inspired Material)
+   iOS-like translucent surfaces for mobile components
+   ============================================================================ */
+
+/* Mobile glass header (light mode) */
+@media (max-width: 768px) {
+  :not(.dark) .mobile-glass-header {
+    backdrop-filter: blur(20px) saturate(180%);
+    background-color: hsl(0 0% 100% / 0.72);
+    border-bottom: 1px solid hsl(var(--border) / 0.4);
+    box-shadow: 0 1px 0 hsl(0 0% 0% / 0.03);
+  }
+  
+  /* Mobile glass cards (light mode) */
+  :not(.dark) .mobile-glass-card {
+    backdrop-filter: blur(16px) saturate(160%);
+    background-color: hsl(0 0% 100% / 0.65);
+    border: 1px solid hsl(var(--border) / 0.3);
+    box-shadow: 
+      0 1px 2px hsl(0 0% 0% / 0.02),
+      0 2px 6px hsl(0 0% 0% / 0.03),
+      0 4px 12px hsl(0 0% 0% / 0.04);
+  }
+  
+  /* Mobile bottom nav glass (light mode) */
+  :not(.dark) .mobile-glass-nav {
+    backdrop-filter: blur(24px) saturate(180%);
+    background-color: hsl(0 0% 100% / 0.75);
+    border-top: 1px solid hsl(var(--border) / 0.35);
+    box-shadow: 0 -1px 0 hsl(0 0% 0% / 0.02), 0 -2px 8px hsl(0 0% 0% / 0.03);
+  }
+  
+  /* Mobile touch states */
+  :not(.dark) .mobile-touch-active:active {
+    transform: scale(0.98);
+    opacity: 0.92;
+    transition: transform 0.1s ease, opacity 0.1s ease;
+  }
+  
+  /* Preserve dark mode mobile styling */
+  .dark .mobile-glass-header,
+  .dark .mobile-glass-card,
+  .dark .mobile-glass-nav {
+    backdrop-filter: blur(20px);
+    background-color: hsl(var(--card) / 0.85);
+    border-color: hsl(var(--border) / 0.5);
+  }
+}

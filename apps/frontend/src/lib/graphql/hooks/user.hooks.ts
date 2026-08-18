@@ -165,19 +165,16 @@ const GET_USERS = gql`
   query GetUsers($pagination: PaginationInput, $filter: UserFilterInput) {
     users(pagination: $pagination, filter: $filter) {
       edges {
-        node {
-          id
-          name
-          email
-          phone
-          role
-          isActive
-          isEmailVerified
-          lastLoginAt
-          createdAt
-          updatedAt
-        }
-        cursor
+        id
+        name
+        email
+        phone
+        role
+        status
+        emailVerified
+        lastLoginAt
+        createdAt
+        updatedAt
       }
       pageInfo {
         hasNextPage

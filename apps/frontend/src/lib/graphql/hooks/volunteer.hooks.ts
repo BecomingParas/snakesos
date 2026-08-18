@@ -22,13 +22,12 @@ export interface Volunteer {
   experienceYears?: number;
   municipality: string;
   ward?: number;
-  specialization?: string;
+  skills: string[];
   totalRescues: number;
   completedRescues: number;
   rating?: number;
   isAvailableNow: boolean;
-  verificationStatus: string;
-  isActive: boolean;
+  status: string;
   successRate?: number;
   createdAt: string;
   updatedAt: string;
@@ -40,13 +39,13 @@ export interface VolunteerProfile {
   experienceYears?: number;
   municipality: string;
   ward?: number;
-  specialization?: string;
+  skills: string[];
   totalRescues: number;
   completedRescues: number;
   rating?: number;
   successRate?: number;
   isAvailableNow: boolean;
-  verificationStatus: string;
+  status: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -56,14 +55,13 @@ export interface UpdateVolunteerProfileInput {
   experienceYears?: number;
   municipality?: string;
   ward?: number;
-  specialization?: string;
+  skills?: string[];
   isAvailableNow?: boolean;
 }
 
 export interface UpdateVolunteerStatusInput {
   volunteerId: string;
-  verificationStatus?: string;
-  isActive?: boolean;
+  status?: string;
 }
 
 export interface VolunteerConnection {
@@ -86,10 +84,10 @@ export interface PaginationInput {
 }
 
 export interface VolunteerFilterInput {
-  verificationStatus?: string;
-  isActive?: boolean;
+  status?: string;
   isAvailableNow?: boolean;
   municipality?: string;
+  experience?: string;
   search?: string;
 }
 
@@ -105,7 +103,7 @@ const UPDATE_VOLUNTEER_PROFILE = gql`
       experienceYears
       municipality
       ward
-      specialization
+      skills
       isAvailableNow
       updatedAt
     }
@@ -116,8 +114,7 @@ const UPDATE_VOLUNTEER_STATUS = gql`
   mutation UpdateVolunteerStatus($input: UpdateVolunteerStatusInput!) {
     updateVolunteerStatus(input: $input) {
       id
-      verificationStatus
-      isActive
+      status
       updatedAt
     }
   }
@@ -135,13 +132,13 @@ const GET_MY_VOLUNTEER_PROFILE = gql`
       experienceYears
       municipality
       ward
-      specialization
+      skills
       totalRescues
       completedRescues
       rating
       successRate
       isAvailableNow
-      verificationStatus
+      status
       createdAt
       updatedAt
     }
@@ -164,14 +161,13 @@ const GET_VOLUNTEERS = gql`
           experienceYears
           municipality
           ward
-          specialization
+          skills
           totalRescues
           completedRescues
           rating
           successRate
           isAvailableNow
-          verificationStatus
-          isActive
+          status
           createdAt
           updatedAt
         }

@@ -2,11 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Phone } from "lucide-react";
+import { Menu, Phone, LayoutDashboard, User, LogOut, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
+import { useCurrentUser } from "@/hooks/dashboard";
+import { useLogout } from "@/hooks/auth/useLogout";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const links = [
   { href: "/", label: "Home" },
@@ -21,21 +30,42 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [nepali, setNepali] = useState(false);
   const pathname = usePathname();
+  
+  // Get actual auth state
+  const { user, loading } = useCurrentUser({ skip: false });
+  const { logout: performLogout } = useLogout();
+  
+  const isLoggedIn = !!user;
+  
+  const handleLogout = async () => {
+    await performLogout();
+    window.location.href = '/';
+  };
+  
+  // Generate user initials from name
+  const getUserInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/20 bg-background/60 backdrop-blur-2xl shadow-sm">
-      <div className="mx-auto flex h-[72px] max-w-[1400px] items-center gap-4 px-5">
-        <Link href="/" className="flex items-center gap-2 group">
+      <div className="mx-auto flex h-[72px] max-w-[1400px] items-center gap-4 px-2 sm:px-5">
+        <Link href="/" className="flex items-center gap-1 group">
           <img 
             src="/snakesoslogo.png" 
             alt="SnakeSOS Logo" 
-            className="h-20 w-20 object-contain transition-transform group-hover:scale-105"
+            className="h-16 w-16 sm:h-20 sm:w-20 object-contain transition-transform group-hover:scale-105"
           />
           <span className="leading-tight">
-            <span className="block text-[19px] font-extrabold tracking-tight text-foreground">
+            <span className="block text-[17px] sm:text-[19px] font-extrabold tracking-tight text-foreground">
               Snake<span className="text-primary">SOS</span>
             </span>
-            <span className="block text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+            <span className="block text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
               24/7 wildlife rescue
             </span>
           </span>
@@ -62,22 +92,97 @@ export function Header() {
         </nav>
 
         <div className="ml-auto flex items-center gap-2 lg:ml-0">
-          <ThemeToggle />
-          <button
-            type="button"
-            onClick={() => setNepali((v) => !v)}
-            aria-label="Toggle language"
-            className="hidden h-10 w-11 place-items-center rounded-lg border border-border/30 bg-secondary/40 text-sm font-semibold text-foreground transition-all hover:bg-secondary/60 hover:border-border/50 sm:grid"
-          >
-            {nepali ? "EN" : "ने"}
-          </button>
-          <Button asChild size="sm" variant="ghost" className="hover:bg-secondary/50">
-            <Link href="/login">Sign in</Link>
-          </Button>
-          <Button asChild variant="destructive" className="h-10 rounded-lg px-4 font-semibold shadow-md hover:shadow-lg transition-all">
-            <Link href="/emergency">
+          {/* Language and Sign in side by side - Desktop only */}
+          <div className="hidden lg:flex items-center gap-2">
+            {/* Theme Toggle - Desktop only */}
+            <ThemeToggle />
+            
+            <button
+              type="button"
+              onClick={() => setNepali((v) => !v)}
+              aria-label="Toggle language"
+              className="h-9 w-9 grid place-items-center rounded-lg border border-border/30 bg-secondary/40 text-sm font-semibold text-foreground transition-all hover:bg-secondary/60 hover:border-border/50"
+            >
+              {nepali ? "EN" : "ने"}
+            </button>
+            
+            {/* User Avatar Dropdown or Sign in Button */}
+            {isLoggedIn && user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="h-9 w-9 grid place-items-center rounded-lg border border-border/30 bg-secondary/40 text-sm font-semibold text-foreground transition-all hover:bg-secondary/60 hover:border-border/50">
+                    {user.avatar ? (
+                      <img src={user.avatar} alt={user.name} className="h-full w-full rounded-lg object-cover" />
+                    ) : (
+                      getUserInitials(user.name)
+                    )}
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64 rounded-lg bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-border/40 shadow-2xl">
+                  {/* User Info Section */}
+                  <div className="flex items-center gap-3 p-3 border-b border-border/20 bg-transparent">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary font-bold">
+                      {user.avatar ? (
+                        <img src={user.avatar} alt={user.name} className="h-full w-full rounded-full object-cover" />
+                      ) : (
+                        getUserInitials(user.name)
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm truncate">{user.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                      <span className="inline-block mt-0.5 px-2 py-0.5 rounded text-[10px] font-medium bg-primary/10 text-primary uppercase">
+                        {user.role.replace('_', ' ')}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Menu Items */}
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2.5">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
+                        <LayoutDashboard className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <span className="font-medium">Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link href="/profile" className="flex items-center gap-3 px-3 py-2.5">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
+                        <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <span className="font-medium">Profile Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuSeparator />
+                  
+                  <DropdownMenuItem 
+                    onClick={handleLogout}
+                    className="cursor-pointer focus:bg-destructive/10 focus:text-destructive"
+                  >
+                    <div className="flex items-center gap-3 px-3 py-2.5 w-full">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+                        <LogOut className="h-4 w-4 text-red-600 dark:text-red-400" />
+                      </div>
+                      <span className="font-medium text-destructive">Sign Out</span>
+                    </div>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button asChild size="sm" variant="outline" className="h-9 border-border/40 hover:bg-secondary/50 hover:border-border/60 transition-all">
+                <Link href="/login">Sign in</Link>
+              </Button>
+            )}
+          </div>
+          
+          {/* Emergency Button */}
+          <Button asChild variant="destructive" className="h-9 rounded-lg px-4 font-semibold bg-red-600 hover:bg-red-700 dark:bg-destructive dark:hover:bg-destructive/90 text-white shadow-md hover:shadow-lg transition-all">
+            <Link href="/emergency" className="flex items-center gap-2">
               <Phone className="h-4 w-4" />
-              Emergency
+              <span className="hidden sm:inline">Emergency</span>
             </Link>
           </Button>
         </div>
@@ -91,27 +196,128 @@ export function Header() {
         </button>
       </div>
 
-      <div className={cn("border-t border-border/20 bg-background/40 backdrop-blur-xl lg:hidden", open ? "block" : "hidden")}>
-        <nav className="mx-auto grid max-w-7xl gap-1 px-5 py-3">
-          {links.map((l) => {
-            const isActive = pathname === l.href;
-            return (
-              <Link
-                key={l.href}
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className={cn(
-                  "rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                  isActive 
-                    ? "bg-primary/10 text-primary" 
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                )}
+      <div className={cn("border-t border-border/20 bg-background/95 backdrop-blur-xl lg:hidden", open ? "block" : "hidden")}>
+        <div className="mx-auto max-w-7xl">
+          {/* Navigation Links */}
+          <nav className="flex flex-col px-5 py-4">
+            <div className="space-y-1 mb-3">
+              {links.map((l) => {
+                const isActive = pathname === l.href;
+                return (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "block rounded-lg px-4 py-3 text-base font-medium transition-colors",
+                      isActive 
+                        ? "bg-primary/10 text-primary" 
+                        : "text-foreground hover:text-foreground hover:bg-secondary/50"
+                    )}
+                  >
+                    {l.label}
+                  </Link>
+                );
+              })}
+            </div>
+            
+            {/* Settings Section - Theme and Language */}
+            <div className="space-y-1 mb-3 pt-2 border-t border-border/20">
+              {/* Theme Toggle */}
+              <button
+                onClick={() => {
+                  const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+                  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                  document.documentElement.classList.remove(currentTheme);
+                  document.documentElement.classList.add(newTheme);
+                  localStorage.setItem('theme', newTheme);
+                }}
+                className="flex w-full items-center justify-between rounded-lg px-4 py-3 text-base font-medium text-foreground hover:bg-secondary/50 transition-colors"
               >
-                {l.label}
-              </Link>
-            );
-          })}
-        </nav>
+                <span>Theme</span>
+                <span className="text-sm text-muted-foreground">Light / Dark</span>
+              </button>
+              
+              {/* Language Toggle */}
+              <button
+                onClick={() => setNepali((v) => !v)}
+                className="flex w-full items-center justify-between rounded-lg px-4 py-3 text-base font-medium text-foreground hover:bg-secondary/50 transition-colors"
+              >
+                <span>Language</span>
+                <span className="text-sm text-muted-foreground">{nepali ? "English" : "नेपाली"}</span>
+              </button>
+            </div>
+            
+            {/* Logged Out State */}
+            {!isLoggedIn && (
+              <div className="space-y-2 pt-3 border-t border-border/20">
+                <Button asChild variant="outline" size="lg" className="w-full justify-center border-border/40 hover:bg-secondary/50">
+                  <Link href="/login" onClick={() => setOpen(false)}>Login</Link>
+                </Button>
+                <Button asChild size="lg" className="w-full justify-center bg-primary hover:bg-primary/90">
+                  <Link href="/register" onClick={() => setOpen(false)}>Sign Up</Link>
+                </Button>
+              </div>
+            )}
+            
+            {/* Logged In State */}
+            {isLoggedIn && user && (
+              <div className="space-y-3 pt-3 border-t border-border/20">
+                {/* User Profile Card */}
+                <div className="flex items-center gap-3 rounded-lg bg-secondary/30 p-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-lg">
+                    {user.avatar ? (
+                      <img src={user.avatar} alt={user.name} className="h-full w-full rounded-full object-cover" />
+                    ) : (
+                      getUserInitials(user.name)
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-sm truncate">{user.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                    <span className="inline-block mt-0.5 px-2 py-0.5 rounded text-[10px] font-medium bg-primary/10 text-primary uppercase">
+                      {user.role.replace('_', ' ')}
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Menu Items */}
+                <Link
+                  href="/dashboard"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-foreground hover:bg-secondary/50 transition-colors"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
+                    <LayoutDashboard className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  Dashboard
+                </Link>
+                <Link
+                  href="/profile"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-foreground hover:bg-secondary/50 transition-colors"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
+                    <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  Profile Settings
+                </Link>
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    handleLogout();
+                  }}
+                  className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                >
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+                    <LogOut className="h-4 w-4 text-red-600 dark:text-red-400" />
+                  </div>
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </nav>
+        </div>
       </div>
     </header>
   );

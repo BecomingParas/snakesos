@@ -28,7 +28,7 @@ export function DashboardNav() {
       { href: '/dashboard/admin', label: 'Overview', icon: LayoutDashboard },
       { href: '/dashboard/admin/rescues', label: 'Rescues', icon: MapPin },
       { href: '/dashboard/admin/volunteers', label: 'Volunteers', icon: Users },
-      { href: '/dashboard/admin/users', label: 'Users', icon: Users },
+      { href: '/dashboard/admin/users', label: 'Citizens', icon: Users },
       { href: '/dashboard/admin/settings', label: 'Settings', icon: Settings },
     ],
     VERIFIED_RESCUER: [

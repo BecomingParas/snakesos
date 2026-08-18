@@ -48,20 +48,27 @@ export function VerifyEmailClient() {
   }, [shouldAutoResend, email])
 
   const handleCodeChange = (index: number, value: string) => {
-    if (value.length > 1) {
-      // Handle paste
-      const pastedCode = value.slice(0, 6).split('')
-      const newCode = [...code]
+    // Only allow digits
+    const sanitizedValue = value.replace(/[^0-9]/g, '')
+    
+    if (sanitizedValue.length > 1) {
+      // Handle paste - extract only digits and take first 6
+      const pastedCode = sanitizedValue.slice(0, 6).split('')
+      const newCode = ['', '', '', '', '', '']
+      
+      // Fill from the beginning when pasting
       pastedCode.forEach((char, i) => {
-        if (index + i < 6) {
-          newCode[index + i] = char
+        if (i < 6) {
+          newCode[i] = char
         }
       })
       setCode(newCode)
       
-      // Focus last filled input
-      const lastIndex = Math.min(index + pastedCode.length - 1, 5)
-      inputRefs.current[lastIndex]?.focus()
+      // Focus last filled input or last input if all filled
+      const lastIndex = Math.min(pastedCode.length - 1, 5)
+      setTimeout(() => {
+        inputRefs.current[lastIndex]?.focus()
+      }, 0)
       
       // Auto-verify if all 6 digits are filled
       if (newCode.every(digit => digit !== '')) {
@@ -71,17 +78,44 @@ export function VerifyEmailClient() {
     }
 
     const newCode = [...code]
-    newCode[index] = value
+    newCode[index] = sanitizedValue
     setCode(newCode)
 
     // Move to next input
-    if (value && index < 5) {
+    if (sanitizedValue && index < 5) {
       inputRefs.current[index + 1]?.focus()
     }
 
     // Auto-verify when all 6 digits are entered
     if (newCode.every(digit => digit !== '')) {
       handleVerify(newCode.join(''))
+    }
+  }
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault()
+    const pastedData = e.clipboardData.getData('text')
+    const digits = pastedData.replace(/[^0-9]/g, '').slice(0, 6)
+    
+    if (digits.length > 0) {
+      const newCode = ['', '', '', '', '', '']
+      digits.split('').forEach((char, i) => {
+        if (i < 6) {
+          newCode[i] = char
+        }
+      })
+      setCode(newCode)
+      
+      // Focus last filled input
+      const lastIndex = Math.min(digits.length - 1, 5)
+      setTimeout(() => {
+        inputRefs.current[lastIndex]?.focus()
+      }, 0)
+      
+      // Auto-verify if all 6 digits are pasted
+      if (newCode.every(digit => digit !== '')) {
+        handleVerify(newCode.join(''))
+      }
     }
   }
 
@@ -180,6 +214,15 @@ export function VerifyEmailClient() {
       subtitle={`We've sent a 6-digit code to ${email}`}
     >
       <div className="space-y-6">
+        {/* Instruction */}
+        <div className="flex items-start gap-3 p-4 rounded-lg bg-muted/50 border border-border">
+          <Mail className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+          <div className="text-sm text-muted-foreground">
+            <p className="font-medium text-foreground mb-1">Check your email</p>
+            <p>Enter the 6-digit code we sent to your email. You can paste the entire code or type it digit by digit.</p>
+          </div>
+        </div>
+
         <div className="flex justify-center gap-2">
           {code.map((digit, index) => (
             <input
@@ -187,13 +230,15 @@ export function VerifyEmailClient() {
               ref={el => { inputRefs.current[index] = el }}
               type="text"
               inputMode="numeric"
-              maxLength={1}
+              maxLength={6}
               value={digit}
               onChange={e => handleCodeChange(index, e.target.value)}
               onKeyDown={e => handleKeyDown(index, e)}
+              onPaste={handlePaste}
               className="h-14 w-14 rounded-lg border-2 border-input bg-background text-center text-2xl font-semibold text-foreground transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
               disabled={isVerifying}
               autoFocus={index === 0}
+              aria-label={`Digit ${index + 1}`}
             />
           ))}
         </div>

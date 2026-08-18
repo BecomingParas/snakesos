@@ -46,19 +46,40 @@ export function StatisticsCard({ stat, loading }: { stat: StatDef; loading?: boo
 
   if (loading) return <Skeleton className="h-28 w-full rounded-xl" />;
 
+  // Icon color mapping for light mode
+  const iconColorClasses: Record<string, string> = {
+    siren: 'icon-rose',
+    clock: 'icon-amber',
+    map: 'icon-blue',
+    wallet: 'icon-emerald',
+    shield: 'icon-teal',
+    heart: 'icon-rose',
+    users: 'icon-violet',
+    activity: 'icon-blue',
+  };
+
+  const iconClass = iconColorClasses[stat.icon] || 'icon-emerald';
+
   return (
-    <div className="rounded-xl border border-border/70 bg-card/60 p-4 backdrop-blur-sm transition-colors hover:border-primary/40">
-      <div className="flex items-start justify-between gap-3">
-        <p className="text-xs uppercase tracking-wider text-muted-foreground">{stat.label}</p>
-        <span className="grid h-8 w-8 place-items-center rounded-md bg-primary/15">
-          <Icon className="h-4 w-4 text-primary" />
+    <div className="group relative rounded-xl border border-border/40 bg-white/70 dark:bg-card/60 p-5 backdrop-blur-md transition-all hover:border-primary/30 hover:shadow-float dark:hover:border-primary/40">
+      {/* Subtle gradient overlay for depth (light mode only) */}
+      <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/40 to-transparent opacity-60 dark:opacity-0" />
+      
+      <div className="relative flex items-start justify-between gap-3">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{stat.label}</p>
+        <span className={cn(
+          "grid h-9 w-9 place-items-center rounded-lg transition-transform group-hover:scale-110",
+          iconClass,
+          "dark:bg-primary/15"
+        )}>
+          <Icon className="h-4.5 w-4.5" />
         </span>
       </div>
-      <p className="mt-3 font-display text-2xl font-bold">{stat.value}</p>
+      <p className="relative mt-4 font-display text-3xl font-bold tracking-tight">{stat.value}</p>
       <p
         className={cn(
-          "mt-1 flex items-center gap-1 text-xs",
-          flat ? "text-muted-foreground" : up ? "text-success" : "text-destructive",
+          "relative mt-2 flex items-center gap-1.5 text-xs font-medium",
+          flat ? "text-muted-foreground" : up ? "text-success dark:text-success" : "text-destructive",
         )}
       >
         <Trend className="h-3.5 w-3.5" />
@@ -475,10 +496,15 @@ export function SectionPanel({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-border/70 bg-card/60 p-4 backdrop-blur-sm">
-      <h3 className="text-sm font-semibold">{title}</h3>
-      {description && <p className="mb-3 text-xs text-muted-foreground">{description}</p>}
-      <div className="mt-3">{children}</div>
+    <div className="group relative rounded-xl border border-border/40 bg-white/70 dark:bg-card/60 p-5 backdrop-blur-md shadow-soft hover:shadow-float transition-all">
+      {/* Subtle top gradient (light mode) */}
+      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-primary/3 to-transparent rounded-t-xl opacity-70 dark:opacity-0" />
+      
+      <div className="relative">
+        <h3 className="text-sm font-semibold tracking-tight">{title}</h3>
+        {description && <p className="mb-4 text-xs text-muted-foreground mt-1">{description}</p>}
+        <div className="mt-4">{children}</div>
+      </div>
     </div>
   );
 }
