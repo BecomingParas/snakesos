@@ -199,7 +199,7 @@ export default function AdminSettingsPage() {
                   id="targetResponse"
                   type="number"
                   value={settings.targetResponseTime}
-                  onChange={(e) => setSettings({...settings, targetResponseTime: parseInt(e.target.value)})}
+                  onChange={(e) => setSettings({...settings, targetResponseTime: parseInt(e.target.value) || 0})}
                 />
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   Ideal time for rescuer to accept assignment
@@ -211,7 +211,7 @@ export default function AdminSettingsPage() {
                   id="maxResponse"
                   type="number"
                   value={settings.maxResponseTime}
-                  onChange={(e) => setSettings({...settings, maxResponseTime: parseInt(e.target.value)})}
+                  onChange={(e) => setSettings({...settings, maxResponseTime: parseInt(e.target.value) || 0})}
                 />
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   Triggers alerts if exceeded
@@ -345,7 +345,7 @@ export default function AdminSettingsPage() {
                   id="defaultRadius"
                   type="number"
                   value={settings.defaultRadius}
-                  onChange={(e) => setSettings({...settings, defaultRadius: parseInt(e.target.value)})}
+                  onChange={(e) => setSettings({...settings, defaultRadius: parseInt(e.target.value) || 0})}
                 />
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   Initial radius to search for available rescuers
@@ -357,7 +357,7 @@ export default function AdminSettingsPage() {
                   id="maxDistance"
                   type="number"
                   value={settings.maxAssignmentDistance}
-                  onChange={(e) => setSettings({...settings, maxAssignmentDistance: parseInt(e.target.value)})}
+                  onChange={(e) => setSettings({...settings, maxAssignmentDistance: parseInt(e.target.value) || 0})}
                 />
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   Maximum distance for assigning rescuers
@@ -369,7 +369,7 @@ export default function AdminSettingsPage() {
                   id="priorityThreshold"
                   type="number"
                   value={settings.priorityThreshold}
-                  onChange={(e) => setSettings({...settings, priorityThreshold: parseInt(e.target.value)})}
+                  onChange={(e) => setSettings({...settings, priorityThreshold: parseInt(e.target.value) || 0})}
                 />
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   Time before request becomes high priority
@@ -503,7 +503,7 @@ export default function AdminSettingsPage() {
                   id="sessionTimeout"
                   type="number"
                   value={settings.sessionTimeout}
-                  onChange={(e) => setSettings({...settings, sessionTimeout: parseInt(e.target.value)})}
+                  onChange={(e) => setSettings({...settings, sessionTimeout: parseInt(e.target.value) || 0})}
                 />
               </div>
               <div>
@@ -512,7 +512,7 @@ export default function AdminSettingsPage() {
                   id="passwordLength"
                   type="number"
                   value={settings.passwordMinLength}
-                  onChange={(e) => setSettings({...settings, passwordMinLength: parseInt(e.target.value)})}
+                  onChange={(e) => setSettings({...settings, passwordMinLength: parseInt(e.target.value) || 0})}
                 />
               </div>
               <div>
@@ -521,7 +521,7 @@ export default function AdminSettingsPage() {
                   id="maxAttempts"
                   type="number"
                   value={settings.maxLoginAttempts}
-                  onChange={(e) => setSettings({...settings, maxLoginAttempts: parseInt(e.target.value)})}
+                  onChange={(e) => setSettings({...settings, maxLoginAttempts: parseInt(e.target.value) || 0})}
                 />
               </div>
               <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">

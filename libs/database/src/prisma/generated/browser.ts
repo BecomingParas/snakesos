@@ -17,4 +17,123 @@ import * as Prisma from './internal/prismaNamespaceBrowser.js'
 export { Prisma }
 export * as $Enums from './enums.js'
 export * from './enums.js';
-
+/**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel
+/**
+ * Model Session
+ * 
+ */
+export type Session = Prisma.SessionModel
+/**
+ * Model Account
+ * 
+ */
+export type Account = Prisma.AccountModel
+/**
+ * Model Verification
+ * 
+ */
+export type Verification = Prisma.VerificationModel
+/**
+ * Model Role
+ * 
+ */
+export type Role = Prisma.RoleModel
+/**
+ * Model Permission
+ * 
+ */
+export type Permission = Prisma.PermissionModel
+/**
+ * Model RolePermission
+ * 
+ */
+export type RolePermission = Prisma.RolePermissionModel
+/**
+ * Model UserRoleAssignment
+ * 
+ */
+export type UserRoleAssignment = Prisma.UserRoleAssignmentModel
+/**
+ * Model RescueRequest
+ * 
+ */
+export type RescueRequest = Prisma.RescueRequestModel
+/**
+ * Model RescueTimeline
+ * 
+ */
+export type RescueTimeline = Prisma.RescueTimelineModel
+/**
+ * Model Volunteer
+ * 
+ */
+export type Volunteer = Prisma.VolunteerModel
+/**
+ * Model Training
+ * 
+ */
+export type Training = Prisma.TrainingModel
+/**
+ * Model SnakeSpecies
+ * 
+ */
+export type SnakeSpecies = Prisma.SnakeSpeciesModel
+/**
+ * Model AIIdentification
+ * 
+ */
+export type AIIdentification = Prisma.AIIdentificationModel
+/**
+ * Model BlogPost
+ * 
+ */
+export type BlogPost = Prisma.BlogPostModel
+/**
+ * Model GalleryImage
+ * 
+ */
+export type GalleryImage = Prisma.GalleryImageModel
+/**
+ * Model Donation
+ * 
+ */
+export type Donation = Prisma.DonationModel
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel
+/**
+ * Model ContactMessage
+ * 
+ */
+export type ContactMessage = Prisma.ContactMessageModel
+/**
+ * Model ActivityLog
+ * 
+ */
+export type ActivityLog = Prisma.ActivityLogModel
+/**
+ * Model Hospital
+ * 
+ */
+export type Hospital = Prisma.HospitalModel
+/**
+ * Model HospitalVerification
+ * 
+ */
+export type HospitalVerification = Prisma.HospitalVerificationModel
+/**
+ * Model HospitalReport
+ * 
+ */
+export type HospitalReport = Prisma.HospitalReportModel
+/**
+ * Model SystemSetting
+ * 
+ */
+export type SystemSetting = Prisma.SystemSettingModel

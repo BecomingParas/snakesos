@@ -4,8 +4,8 @@ import { cn } from "@/lib/utils";
 
 export function Footer() {
   return (
-    <footer className="mt-20 border-t border-border/70 bg-card/40">
-      <div className="mx-auto grid max-w-[1400px] gap-10 px-5 py-12 md:grid-cols-2 xl:grid-cols-4">
+    <footer className="mt-20 border-t border-border/30 bg-background/40 backdrop-blur-sm">
+      <div className="mx-auto grid max-w-[1400px] gap-10 px-5 py-16 md:grid-cols-2 xl:grid-cols-4">
         <div>
           <p className="flex items-center gap-2 font-display text-lg font-bold">
             <img 
@@ -22,7 +22,7 @@ export function Footer() {
             {['Facebook', 'Instagram', 'Youtube'].map((name, i) => (
               <span
                 key={i}
-                className="grid h-9 w-9 place-items-center rounded-lg border border-border/70 bg-secondary/60 text-muted-foreground text-xs"
+                className="grid h-10 w-10 place-items-center rounded-xl border border-border/30 bg-background/40 backdrop-blur-sm text-muted-foreground text-xs transition-all hover:border-accent/40 hover:text-accent hover:shadow-sm cursor-pointer"
                 title={name}
               >
                 {name[0]}
@@ -101,8 +101,8 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-border/70">
-        <div className="mx-auto flex max-w-[1400px] flex-col gap-2 px-5 py-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+      <div className="border-t border-border/30">
+        <div className="mx-auto flex max-w-[1400px] flex-col gap-2 px-5 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 SnakeSOS. All rights reserved. Rupandehi, Nepal.</p>
           <p>24/7 hotline 1166 · demo data only</p>
         </div>

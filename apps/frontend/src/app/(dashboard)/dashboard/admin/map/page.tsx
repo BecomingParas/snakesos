@@ -10,6 +10,7 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useUserLocation } from '@/hooks/useUserLocation';
 import { useActiveRescuesQuery } from '@/lib/graphql/hooks/rescue.hooks';
+import { useNearbyHospitals } from '@/lib/graphql/hooks/hospital.hooks';
 import { MapPin, Users, AlertCircle, RefreshCw, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -45,6 +46,19 @@ export default function AdminMapPage() {
   });
 
   const rescues = data?.activeRescues?.edges?.map(edge => edge.node) || [];
+  
+  // Fetch hospitals for admin overview (wider radius)
+  const { data: hospitalsData } = useNearbyHospitals(
+    location?.latitude || 27.7172, // Default to Kathmandu if no location
+    location?.longitude || 85.324,
+    {
+      radiusKm: 100,
+      antivenomRequired: false,
+      limit: 50,
+    }
+  );
+
+  const hospitals = hospitalsData?.nearbyHospitals || [];
   
   // Show error toast
   if (error) {
@@ -186,6 +200,7 @@ export default function AdminMapPage() {
                 snakeDescription: r.snakeDescription,
               }))}
               rescuers={mockRescuers}
+              hospitals={hospitals}
               userLocation={location}
               selectedRescueId={selectedRescueId}
               onRescueClick={handleRescueClick}
@@ -198,7 +213,7 @@ export default function AdminMapPage() {
       {/* Map Legend */}
       <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
         <h3 className="text-sm font-semibold text-slate-900 mb-3">Map Legend</h3>
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-sm">
+        <div className="grid grid-cols-2 md:grid-cols-7 gap-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-red-600 flex items-center justify-center text-white border-2 border-white shadow">🐍</div>
             <span className="text-slate-600">Critical</span>
@@ -218,6 +233,10 @@ export default function AdminMapPage() {
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center border-2 border-white shadow">👨‍⚕️</div>
             <span className="text-slate-600">Rescuer</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center border-2 border-white shadow text-xs">🏥</div>
+            <span className="text-slate-600">Hospital</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 rounded-full bg-blue-600 border-2 border-white shadow"></div>

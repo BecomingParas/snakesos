@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, createContext, useContext } from 'react'
+import {  createContext, useContext } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -8,15 +8,12 @@ import {
   FileText,
   List,
   AlertCircle,
-  Info,
-  Heart,
   Settings,
   ChevronLeft,
   ChevronRight,
   Activity,
   Users,
   BarChart3,
-  MapPin,
   UserCheck,
   Bell,
   Map,
@@ -157,27 +154,27 @@ export function Sidebar({ role }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'fixed left-0 top-0 z-40 h-screen border-r border-border/50 bg-[#0a1810] text-gray-200 transition-all duration-300',
+        'fixed left-0 top-0 z-40 h-screen border-r border-border/20 bg-background/60 backdrop-blur-2xl shadow-sm transition-all duration-300',
         collapsed ? 'w-[70px]' : 'w-[280px]'
       )}
     >
       <div className="flex h-full flex-col">
 
         {/* Header */}
-        <div className={cn('border-b border-border/30 p-4', collapsed && 'px-2')}>
+        <div className={cn('border-b border-border/20 p-4', collapsed && 'px-2')}>
           {!collapsed ? (
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 shadow-sm">
                 <LayoutDashboard className="h-5 w-5 text-primary" />
               </div>
               <div className="min-w-0 flex-1">
-                <h2 className="truncate text-sm font-semibold text-white">{config.title}</h2>
-                <p className="truncate text-xs text-gray-400">{config.subtitle}</p>
+                <h2 className="truncate text-sm font-bold text-foreground">{config.title}</h2>
+                <p className="truncate text-xs text-muted-foreground font-medium">{config.subtitle}</p>
               </div>
             </div>
           ) : (
             <div className="flex justify-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 shadow-sm">
                 <LayoutDashboard className="h-5 w-5 text-primary" />
               </div>
             </div>
@@ -195,16 +192,16 @@ export function Sidebar({ role }: SidebarProps) {
               if (index === 1 && !collapsed) {
                 return (
                   <div key={`group-${index}`}>
-                    <div className="mb-2 mt-4 px-3 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
+                    <div className="mb-2 mt-4 px-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                       Workspace
                     </div>
                     <Link
                       href={fullPath}
                       className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all',
                         active
-                          ? 'bg-primary/10 text-primary'
-                          : 'text-gray-300 hover:bg-white/5 hover:text-white'
+                          ? 'bg-primary/10 text-primary shadow-sm'
+                          : 'text-foreground hover:bg-secondary/50 hover:text-foreground'
                       )}
                     >
                       <Icon className="h-5 w-5 shrink-0" />
@@ -219,10 +216,10 @@ export function Sidebar({ role }: SidebarProps) {
                   key={link.href || 'overview'}
                   href={fullPath}
                   className={cn(
-                    'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                    'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all',
                     active
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-gray-300 hover:bg-white/5 hover:text-white',
+                      ? 'bg-primary/10 text-primary shadow-sm'
+                      : 'text-foreground hover:bg-secondary/50 hover:text-foreground',
                     collapsed && 'justify-center px-2'
                   )}
                   title={collapsed ? link.label : undefined}
@@ -236,13 +233,13 @@ export function Sidebar({ role }: SidebarProps) {
         </ScrollArea>
 
         {/* Collapse Button */}
-        <div className="border-t border-border/30 p-3">
+        <div className="border-t border-border/20 p-3">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setCollapsed(!collapsed)}
             className={cn(
-              'w-full text-gray-400 hover:bg-white/5 hover:text-white',
+              'w-full text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-all',
               collapsed ? 'justify-center px-2' : 'justify-start'
             )}
           >

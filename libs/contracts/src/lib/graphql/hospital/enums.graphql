@@ -1,0 +1,71 @@
+# ===================================================================
+# HOSPITAL ENUMS
+# ===================================================================
+
+enum AntivenomStatus {
+  AVAILABLE
+  LOW_STOCK
+  OUT_OF_STOCK
+  UNKNOWN
+  NOT_SUPPORTED
+}
+
+enum VerificationStatus {
+  VERIFIED
+  HISTORICAL
+  STALE
+  UNVERIFIED
+}
+
+enum HospitalStatus {
+  ACTIVE
+  INACTIVE
+  TEMPORARILY_CLOSED
+  PERMANENTLY_CLOSED
+}
+
+enum HospitalType {
+  GOVERNMENT
+  PRIVATE
+  ARMY
+  POLICE
+  NGO
+  COMMUNITY
+}
+
+enum TreatmentCenterType {
+  PRIMARY
+  DISTRICT
+  SPECIALIZED
+  REFERRAL
+}
+
+enum VerificationType {
+  PHONE_CALL
+  SITE_VISIT
+  OFFICIAL_DOCUMENT
+  HOSPITAL_REPORT
+  PROVINCIAL_HEALTH
+  EDCD_RECORD
+}
+
+enum HospitalReportType {
+  INCORRECT_INFO
+  OUTDATED_STATUS
+  CLOSED
+  WRONG_LOCATION
+  ANTIVENOM_STATUS_CHANGE
+  OTHER
+}
+
+enum HospitalReportStatus {
+  NEW
+  UNDER_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+enum SortDirection {
+  ASC
+  DESC
+}

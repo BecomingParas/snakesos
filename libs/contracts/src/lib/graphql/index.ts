@@ -24,6 +24,7 @@ import { paymentTypeDefs } from './payment/index.js';
 import { analyticsTypeDefs } from './analytics/index.js';
 import { trainingTypeDefs } from './training/index.js';
 import { contactTypeDefs } from './contact/index.js';
+import { hospitalTypeDefs } from './hospital/index.js';
 
 // Base GraphQL schema with Query, Mutation, Subscription types
 const baseSchema = `
@@ -55,6 +56,7 @@ export const graphqlSchema = [
   analyticsTypeDefs,
   trainingTypeDefs,
   contactTypeDefs,
+  hospitalTypeDefs,
 ].join('\n\n');
 
 // Export individual modules for selective imports
@@ -70,6 +72,7 @@ export * from './payment/index.js';
 export * from './analytics/index.js';
 export * from './training/index.js';
 export * from './contact/index.js';
+export * from './hospital/index.js';
 
 // Export combined schema as default
 export default graphqlSchema;
@@ -88,11 +91,12 @@ export const typesCount = {
   analytics: analyticsTypeDefs.split('type ').length - 1,
   training: trainingTypeDefs.split('type ').length - 1,
   contact: contactTypeDefs.split('type ').length - 1,
+  hospital: hospitalTypeDefs.split('type ').length - 1,
 };
 
 console.log('✅ GraphQL Contract Loaded:', {
   totalTypes: Object.values(typesCount).reduce((a, b) => a + b, 0),
   modules: Object.keys(typesCount),
   version: '1.0.0',
-  modulesCount: 11,
+  modulesCount: 12,
 });

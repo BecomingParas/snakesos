@@ -1,1 +1,44 @@
-{"name": "frontend","$schema": "../../node_modules/nx/schemas/project-schema.json","sourceRoot": "apps/frontend/src","projectType": "application","targets": {"serve": {"executor": "@nx/next:server","options": {"buildTarget": "frontend:build","dev": true,"port": 4200}},"build": {"executor": "@nx/next:build","outputs": ["{options.outputPath}"],"options": {"outputPath": "apps/frontend/.next"}},"export": {"executor": "@nx/next:export","options": {"buildTarget": "frontend:build","outputPath": "dist/apps/frontend-export"}},"lint": {"executor": "@nx/eslint:lint","options": {"lintFilePatterns": ["apps/frontend/**/*.ts","apps/frontend/**/*.tsx","apps/frontend/**/*.js","apps/frontend/**/*.jsx"]}}}}
+{
+    "name":  "frontend",
+    "$schema":  "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot":  "apps/frontend/src",
+    "projectType":  "application",
+    "targets":  {
+                    "serve":  {
+                                  "executor":  "@nx/next:server",
+                                  "options":  {
+                                                  "buildTarget":  "frontend:build",
+                                                  "dev":  true,
+                                                  "port":  4200,
+                                                  "hostname":  "0.0.0.0"
+                                              }
+                              },
+                    "build":  {
+                                  "executor":  "@nx/next:build",
+                                  "outputs":  [
+                                                  "{options.outputPath}"
+                                              ],
+                                  "options":  {
+                                                  "outputPath":  "apps/frontend/.next"
+                                              }
+                              },
+                    "export":  {
+                                   "executor":  "@nx/next:export",
+                                   "options":  {
+                                                   "buildTarget":  "frontend:build",
+                                                   "outputPath":  "dist/apps/frontend-export"
+                                               }
+                               },
+                    "lint":  {
+                                 "executor":  "@nx/eslint:lint",
+                                 "options":  {
+                                                 "lintFilePatterns":  [
+                                                                          "apps/frontend/**/*.ts",
+                                                                          "apps/frontend/**/*.tsx",
+                                                                          "apps/frontend/**/*.js",
+                                                                          "apps/frontend/**/*.jsx"
+                                                                      ]
+                                             }
+                             }
+                }
+}

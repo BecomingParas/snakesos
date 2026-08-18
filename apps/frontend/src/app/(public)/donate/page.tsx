@@ -233,35 +233,41 @@ export default function SupportPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="px-5 py-16 text-center animate-in fade-in slide-in-from-top-4 duration-700">
-        <div className="mx-auto mb-6 grid h-16 w-16 place-items-center rounded-full border-2 border-destructive/40 bg-destructive/15">
-          <Heart className="h-8 w-8 text-destructive" />
+      <section className="relative px-5 py-20 lg:py-28 text-center overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute inset-0 bg-gradient-to-b from-accent/5 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="relative">
+          <div className="mx-auto mb-6 grid h-20 w-20 place-items-center rounded-2xl border border-accent/30 bg-accent/10 backdrop-blur-sm shadow-lg">
+            <Heart className="h-10 w-10 text-accent" />
+          </div>
+          <h1 className="font-display text-5xl lg:text-6xl font-bold tracking-tight">
+            Support Our Mission
+          </h1>
+          <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+            Your donation funds rescue equipment, volunteer training, and wildlife education in Rupandehi District.
+          </p>
         </div>
-        <h1 className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">
-          Support Our Mission
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
-          Your donation funds rescue equipment, volunteer training, and wildlife education in Rupandehi District.
-        </p>
       </section>
 
       <div className="mx-auto max-w-6xl px-5 pb-16">
         {/* Donation Impact Cards */}
-        <div className="mb-12 animate-in fade-in slide-in-from-top-6 duration-700 delay-150">
-          <h2 className="mb-6 text-center font-display text-2xl font-bold">
+        <div className="mb-16">
+          <h2 className="mb-8 text-center font-display text-3xl font-bold">
             Your Donation Impact
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {donationImpacts.map((impact, idx) => (
               <div
                 key={idx}
-                className="group cursor-pointer rounded-lg border border-border/70 bg-card p-6 transition-all hover:border-primary/40 hover:shadow-lg"
+                className="group cursor-pointer rounded-xl border border-border/30 bg-background/60 backdrop-blur-xl p-6 transition-all hover:shadow-lg hover:-translate-y-1 hover:border-accent/50"
               >
-                <div className="mb-3 text-4xl">{impact.icon}</div>
-                <div className="font-display text-xl font-bold text-primary">
+                <div className="mb-4 text-5xl">{impact.icon}</div>
+                <div className="font-display text-2xl font-bold text-accent">
                   {impact.amount}
                 </div>
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   {impact.description}
                 </p>
               </div>
@@ -270,10 +276,10 @@ export default function SupportPage() {
         </div>
 
         {/* Payment Section */}
-        <div className="grid gap-8 lg:grid-cols-[320px_1fr] animate-in fade-in slide-in-from-top-8 duration-700 delay-300">
+        <div className="grid gap-8 lg:grid-cols-[340px_1fr]">
           {/* Payment Method Selection */}
           <div>
-            <h2 className="mb-4 font-display text-xl font-bold">
+            <h2 className="mb-6 font-display text-xl font-bold">
               Choose Payment Method
             </h2>
             <div className="space-y-3">
@@ -283,11 +289,11 @@ export default function SupportPage() {
                   onClick={() => !method.comingSoon && setSelectedMethod(method.id)}
                   disabled={method.comingSoon}
                   className={cn(
-                    "flex w-full items-center gap-3 rounded-lg border p-4 text-left transition-all",
+                    "flex w-full items-center gap-3 rounded-xl border p-4 text-left transition-all",
                     method.comingSoon && "cursor-not-allowed opacity-50",
                     !method.comingSoon && selectedMethod === method.id
-                      ? "border-primary bg-primary/5 shadow-lg ring-2 ring-primary/50"
-                      : "border-border/70 bg-card hover:border-primary/30"
+                      ? "border-accent/60 bg-accent/10 shadow-md ring-2 ring-accent/30"
+                      : "border-border/30 bg-background/40 backdrop-blur-sm hover:border-accent/40 hover:shadow-sm"
                   )}
                 >
                   <div className="h-10 w-10 overflow-hidden rounded-lg bg-white p-1 shrink-0">
@@ -330,7 +336,7 @@ export default function SupportPage() {
           </div>
 
           {/* Payment Instructions */}
-          <div className="rounded-lg border border-border/70 bg-card p-6 lg:p-8">
+          <div className="rounded-2xl border border-border/30 bg-background/60 backdrop-blur-2xl shadow-md p-6 lg:p-8">
             {selectedMethod === "stripe" && (
               <StripePaymentSection />
             )}
@@ -538,10 +544,10 @@ export default function SupportPage() {
         </div>
 
         {/* Thank You Section */}
-        <div className="mt-16 rounded-md border border-border/70 bg-card p-8 text-center lg:p-12 animate-in fade-in slide-in-from-top-10 duration-700 delay-500">
-          <div className="mb-4 text-5xl">🙏</div>
-          <h2 className="font-display text-2xl font-bold">Thank You for Your Support</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+        <div className="mt-20 rounded-2xl border border-border/30 bg-background/60 backdrop-blur-2xl shadow-lg p-10 text-center lg:p-16">
+          <div className="mb-5 text-6xl">🙏</div>
+          <h2 className="font-display text-3xl font-bold">Thank You for Your Support</h2>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
             Every donation — no matter the size — directly supports snake rescue operations, wildlife education, and community awareness across Rupandehi District. You are a hero to both humans and wildlife.
           </p>
         </div>

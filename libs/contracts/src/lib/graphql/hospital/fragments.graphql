@@ -1,0 +1,98 @@
+# ===================================================================
+# HOSPITAL FRAGMENTS
+# ===================================================================
+
+fragment HospitalBasic on Hospital {
+  id
+  name
+  address
+  municipality
+  district
+  province
+  latitude
+  longitude
+  phone
+  emergencyPhone
+}
+
+fragment HospitalCapability on Hospital {
+  emergencyAvailable
+  emergency24x7
+  snakebiteTreatmentAvailable
+  treatmentCenterType
+  antivenomStatus
+  antivenomLastVerifiedAt
+  antivenomVerificationFreshness
+  ventilatorAvailable
+  icuAvailable
+  ambulanceAvailable
+}
+
+fragment HospitalFull on Hospital {
+  ...HospitalBasic
+  ...HospitalCapability
+  email
+  ward
+  antivenomStockQuantity
+  antivenomStockPublic
+  bloodBankAvailable
+  source
+  sourceYear
+  sourceUrl
+  verificationStatus
+  officialTreatmentCenter
+  status
+  hospitalType
+  bedCapacity
+  specializations
+  notes
+  markerColor
+  createdAt
+  updatedAt
+}
+
+fragment HospitalMapMarker on Hospital {
+  id
+  name
+  latitude
+  longitude
+  snakebiteTreatmentAvailable
+  antivenomStatus
+  antivenomVerificationFreshness
+  markerColor
+  distanceFromUser
+}
+
+fragment HospitalVerificationBasic on HospitalVerification {
+  id
+  hospitalId
+  verifiedBy
+  verificationType
+  snakebiteTreatment
+  antivenomStatus
+  antivenomQuantity
+  emergencyStatus
+  ventilatorStatus
+  verificationDate
+  nextVerificationDue
+}
+
+fragment HospitalVerificationFull on HospitalVerification {
+  ...HospitalVerificationBasic
+  notes
+  evidenceUrls
+  officialDocumentUrl
+  contactPerson
+  contactDesignation
+  contactPhone
+  createdAt
+}
+
+fragment NearestFacilityInfo on NearestFacility {
+  distance
+  travelTimeEstimate
+  recommendationReason
+  hospital {
+    ...HospitalFull
+  }
+}

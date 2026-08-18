@@ -3,7 +3,7 @@
  * Generic CRUD operations for all repositories
  */
 
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient, Prisma } from '../prisma/generated/client.js';
 
 export interface IBaseRepository<T> {
   findById(id: string): Promise<T | null>;

@@ -5,7 +5,6 @@
 
 import { prisma } from '@snake-rescue/database';
 import { getEmailService, generatePasswordReset } from '@snake-rescue/shared';
-import { NotFoundError } from '@snake-rescue/shared';
 import crypto from 'crypto';
 
 export interface ForgotPasswordInput {

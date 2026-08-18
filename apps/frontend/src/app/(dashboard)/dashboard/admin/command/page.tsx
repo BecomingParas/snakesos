@@ -45,10 +45,10 @@ const RescueMap = dynamic(
   { 
     ssr: false,
     loading: () => (
-      <div className="h-full flex items-center justify-center bg-slate-100">
+      <div className="h-full flex items-center justify-center bg-slate-50 dark:bg-slate-900">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-slate-600">Loading map...</p>
+          <p className="text-slate-600 dark:text-slate-400">Loading map...</p>
         </div>
       </div>
     ),
@@ -267,12 +267,12 @@ export default function AdminCommandCenter() {
   }
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] flex flex-col bg-gray-50 dark:bg-gray-900">
+    <div className="h-[calc(100vh-3.5rem)] flex flex-col bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 dark:from-slate-950 dark:via-blue-950/30 dark:to-indigo-950/20">
       {loading && !data ? (
         <div className="flex justify-center items-center h-full">
           <div className="text-center">
             <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
-            <p className="text-gray-600 dark:text-gray-400">Loading command center...</p>
+            <p className="text-slate-600 dark:text-slate-400">Loading command center...</p>
           </div>
         </div>
       ) : isMobile ? (
@@ -302,14 +302,14 @@ export default function AdminCommandCenter() {
         >
         
         {/* LEFT PANEL: Request Queue - ALWAYS VISIBLE */}
-        <div className="border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex flex-col overflow-hidden">
+        <div className="border-r border-slate-200/60 dark:border-white/10 bg-white/80 dark:bg-slate-950/40 backdrop-blur-2xl flex flex-col overflow-hidden shadow-xl">
           {/* Header */}
-          <div className="p-4 border-b border-gray-200 dark:border-gray-800">
-                <h2 className="text-lg font-semibold mb-3">Rescue Queue</h2>
+          <div className="p-5 border-b border-slate-200/60 dark:border-white/10 bg-gradient-to-br from-white/90 to-slate-50/90 dark:from-white/5 dark:to-transparent backdrop-blur-xl">
+                <h2 className="text-lg font-bold mb-4 text-slate-900 dark:text-white">Rescue Queue</h2>
                 
                 {/* Filters */}
-                <div className="space-y-2">
-                  <p className="text-xs font-medium text-gray-500">Filter by Status</p>
+                <div className="space-y-3">
+                  <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Filter by Status</p>
                   <div className="flex flex-wrap gap-2">
                     {['PENDING', 'ASSIGNED', 'IN_PROGRESS'].map(status => {
                       const config = STATUS_CONFIG[status as keyof typeof STATUS_CONFIG]
@@ -318,10 +318,10 @@ export default function AdminCommandCenter() {
                           key={status}
                           onClick={() => toggleStatusFilter(status)}
                           className={cn(
-                            'px-2 py-1 text-xs rounded-md transition-colors',
+                            'px-3 py-1.5 text-xs font-medium rounded-full transition-all',
                             statusFilter.includes(status)
-                              ? `${config.color} text-white`
-                              : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+                              ? `${config.color} text-white shadow-md backdrop-blur-sm`
+                              : 'bg-white/80 dark:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-300/50 dark:border-white/20 hover:bg-slate-100 dark:hover:bg-white/20 backdrop-blur-sm'
                           )}
                         >
                           {config.label}
@@ -343,16 +343,16 @@ export default function AdminCommandCenter() {
                   key={rescue.id}
                   onClick={() => handleRescueSelect(rescue)}
                   className={cn(
-                    'p-4 border-b border-gray-200 dark:border-gray-800 cursor-pointer transition-colors',
+                    'p-4 border-b border-slate-200/50 dark:border-white/10 cursor-pointer transition-all',
                     isSelected
-                      ? 'bg-primary/10 border-l-4 border-l-primary'
-                      : 'hover:bg-gray-50 dark:hover:bg-gray-900'
+                      ? 'bg-gradient-to-r from-blue-500/10 to-indigo-500/10 dark:from-blue-500/10 dark:to-indigo-500/10 border-l-4 border-l-blue-500 backdrop-blur-xl shadow-md'
+                      : 'hover:bg-white/60 dark:hover:bg-white/5 backdrop-blur-sm'
                   )}
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div>
-                      <p className="font-semibold text-sm">{rescue.referenceNumber}</p>
-                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                      <p className="font-semibold text-sm text-slate-900 dark:text-white">{rescue.referenceNumber}</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-400">
                         {rescue.address}
                       </p>
                     </div>
@@ -370,7 +370,7 @@ export default function AdminCommandCenter() {
                     </Badge>
                   </div>
 
-                  <div className="flex items-center gap-3 text-xs text-gray-600 dark:text-gray-400">
+                  <div className="flex items-center gap-3 text-xs text-slate-600 dark:text-slate-400">
                     <div className="flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       <span>{Math.round((Date.now() - new Date(rescue.createdAt).getTime()) / 60000)}m</span>
@@ -382,7 +382,7 @@ export default function AdminCommandCenter() {
                   </div>
 
                   {rescue.assignedVolunteer && (
-                    <div className="mt-2 flex items-center gap-1 text-xs text-gray-700 dark:text-gray-300">
+                    <div className="mt-2 flex items-center gap-1 text-xs text-slate-700 dark:text-slate-300">
                       <User className="h-3 w-3" />
                       <span>{rescue.assignedVolunteer.name}</span>
                     </div>
@@ -392,10 +392,15 @@ export default function AdminCommandCenter() {
             })}
 
             {filteredRescues.length === 0 && (
-              <div className="p-8 text-center">
-                <CheckCircle className="mx-auto h-8 w-8 text-gray-400" />
-                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              <div className="p-10 text-center">
+                <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500/20 to-blue-500/20 backdrop-blur-xl flex items-center justify-center mb-4">
+                  <CheckCircle className="h-8 w-8 text-emerald-500" />
+                </div>
+                <p className="mt-2 text-sm font-medium text-slate-700 dark:text-slate-300">
                   No rescues match the filter
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Try changing your filter settings
                 </p>
               </div>
             )}
@@ -405,13 +410,13 @@ export default function AdminCommandCenter() {
         {/* CENTER PANEL: Map */}
         <div className="relative overflow-hidden min-w-0">
           {filteredRescues.length === 0 ? (
-            <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800 flex items-center justify-center">
+            <div className="absolute inset-0 bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
               <div className="text-center">
-                <MapPin className="mx-auto h-12 w-12 text-gray-400" />
-                <p className="mt-2 text-gray-600 dark:text-gray-400">
+                <MapPin className="mx-auto h-12 w-12 text-slate-400 dark:text-slate-600" />
+                <p className="mt-2 text-slate-700 dark:text-slate-400">
                   No Active Rescues
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-slate-500 dark:text-slate-500">
                   Map will show rescue locations when requests are active
                 </p>
               </div>
@@ -464,61 +469,61 @@ export default function AdminCommandCenter() {
         </div>
 
         {/* RIGHT PANEL: Selected Rescue Details */}
-        <div className="border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 overflow-y-auto min-w-0">
+        <div className="border-l border-slate-200/60 dark:border-white/10 bg-white/80 dark:bg-slate-950/40 backdrop-blur-2xl overflow-y-auto min-w-0 shadow-xl">
           {selectedRescue ? (
-            <div className="p-6 space-y-6">
+            <div className="p-6 space-y-5">
               {/* Header */}
-              <div>
-                <h2 className="text-xl font-semibold mb-2">{selectedRescue.referenceNumber}</h2>
-                <div className="flex items-center gap-2">
-                  <Badge className={cn('text-white', STATUS_CONFIG[selectedRescue.status as keyof typeof STATUS_CONFIG].color)}>
+              <div className="bg-gradient-to-br from-white/90 to-slate-50/90 dark:from-white/10 dark:to-transparent backdrop-blur-xl rounded-2xl p-5 border border-slate-200/60 dark:border-white/20 shadow-lg">
+                <h2 className="text-2xl font-bold mb-3 text-slate-900 dark:text-white">{selectedRescue.referenceNumber}</h2>
+                <div className="flex items-center gap-3">
+                  <Badge className={cn('text-xs text-white font-medium px-3 py-1 rounded-full shadow-sm', STATUS_CONFIG[selectedRescue.status as keyof typeof STATUS_CONFIG].color)}>
                     {STATUS_CONFIG[selectedRescue.status as keyof typeof STATUS_CONFIG].label}
                   </Badge>
-                  <Badge className={cn('text-white', PRIORITY_CONFIG[selectedRescue.priority as keyof typeof PRIORITY_CONFIG].color)}>
+                  <Badge className={cn('text-xs text-white font-medium px-3 py-1 rounded-full shadow-sm', PRIORITY_CONFIG[selectedRescue.priority as keyof typeof PRIORITY_CONFIG].color)}>
                     {selectedRescue.priority}
                   </Badge>
                   {selectedRescue.isEmergency && (
-                    <Badge className="bg-red-600 text-white">Emergency</Badge>
+                    <Badge className="bg-gradient-to-r from-red-500 to-pink-600 text-white text-xs font-medium px-3 py-1 rounded-full shadow-md">Emergency</Badge>
                   )}
                 </div>
               </div>
 
               {/* Location */}
-              <Card className="p-4">
-                <h3 className="font-semibold mb-2 flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
+              <Card className="p-5 bg-white/90 dark:bg-white/5 backdrop-blur-xl border-slate-200/60 dark:border-white/20 shadow-lg">
+                <h3 className="font-bold mb-3 flex items-center gap-2 text-slate-900 dark:text-white">
+                  <MapPin className="h-5 w-5 text-blue-500" />
                   Location
                 </h3>
-                <p className="text-sm">{selectedRescue.address}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-slate-700 dark:text-slate-300">{selectedRescue.address}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">
                   Ward {selectedRescue.ward}, {selectedRescue.municipality}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">{selectedRescue.distance || 0} km away</p>
+                <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">{selectedRescue.distance || 0} km away</p>
               </Card>
 
               {/* Snake Info */}
-              <Card className="p-4">
-                <h3 className="font-semibold mb-2">Snake Information</h3>
-                <p className="text-sm">{selectedRescue.snakeDescription}</p>
+              <Card className="p-5 bg-white/90 dark:bg-white/5 backdrop-blur-xl border-slate-200/60 dark:border-white/20 shadow-lg">
+                <h3 className="font-bold mb-3 text-slate-900 dark:text-white">Snake Information</h3>
+                <p className="text-sm text-slate-700 dark:text-slate-300">{selectedRescue.snakeDescription}</p>
               </Card>
 
               {/* Citizen Contact */}
-              <Card className="p-4">
-                <h3 className="font-semibold mb-2 flex items-center gap-2">
-                  <User className="h-4 w-4" />
+              <Card className="p-5 bg-white/90 dark:bg-white/5 backdrop-blur-xl border-slate-200/60 dark:border-white/20 shadow-lg">
+                <h3 className="font-bold mb-3 flex items-center gap-2 text-slate-900 dark:text-white">
+                  <User className="h-5 w-5 text-emerald-500" />
                   Citizen
                 </h3>
-                <p className="text-sm font-medium">{selectedRescue.user?.name || 'N/A'}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{selectedRescue.user?.phone || 'N/A'}</p>
+                <p className="text-sm font-medium text-slate-900 dark:text-white">{selectedRescue.user?.name || 'N/A'}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">{selectedRescue.user?.phone || 'N/A'}</p>
               </Card>
 
               {/* Assigned Rescuer */}
               {selectedRescue.assignedVolunteer && (
-                <Card className="p-4 border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950">
-                  <h3 className="font-semibold mb-2">Assigned Rescuer</h3>
-                  <p className="text-sm font-medium">{selectedRescue.assignedVolunteer.name}</p>
+                <Card className="p-5 border-blue-300/60 dark:border-blue-400/20 bg-gradient-to-br from-blue-50/90 to-indigo-50/90 dark:from-blue-500/10 dark:to-indigo-500/10 backdrop-blur-xl shadow-lg">
+                  <h3 className="font-bold mb-3 text-slate-900 dark:text-white">Assigned Rescuer</h3>
+                  <p className="text-sm font-medium text-slate-900 dark:text-white">{selectedRescue.assignedVolunteer.name}</p>
                   {selectedRescue.acceptedAt && (
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
                       Accepted: {new Date(selectedRescue.acceptedAt).toLocaleTimeString()}
                     </p>
                   )}
@@ -526,19 +531,19 @@ export default function AdminCommandCenter() {
               )}
 
               {/* Timeline */}
-              <Card className="p-4">
-                <h3 className="font-semibold mb-3">Timeline</h3>
+              <Card className="p-5 bg-white/90 dark:bg-white/5 backdrop-blur-xl border-slate-200/60 dark:border-white/20 shadow-lg">
+                <h3 className="font-bold mb-4 text-slate-900 dark:text-white">Timeline</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-gray-400" />
-                    <span className="text-gray-600 dark:text-gray-400">
+                    <Clock className="h-4 w-4 text-slate-400" />
+                    <span className="text-slate-600 dark:text-slate-400">
                       Created: {new Date(selectedRescue.createdAt).toLocaleString()}
                     </span>
                   </div>
                   {selectedRescue.assignedAt && (
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4 text-blue-500" />
-                      <span className="text-gray-600 dark:text-gray-400">
+                      <span className="text-slate-600 dark:text-slate-400">
                         Assigned: {new Date(selectedRescue.assignedAt).toLocaleString()}
                       </span>
                     </div>
@@ -546,7 +551,7 @@ export default function AdminCommandCenter() {
                   {selectedRescue.acceptedAt && (
                     <div className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-gray-600 dark:text-gray-400">
+                      <span className="text-slate-600 dark:text-slate-400">
                         Accepted: {new Date(selectedRescue.acceptedAt).toLocaleString()}
                       </span>
                     </div>
@@ -558,7 +563,7 @@ export default function AdminCommandCenter() {
               <div className="space-y-3">
                 {selectedRescue.status === 'PENDING' && (
                   <Button
-                    className="w-full"
+                    className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white shadow-lg backdrop-blur-sm border border-white/20"
                     onClick={() => setShowAssignModal(true)}
                   >
                     <User className="mr-2 h-4 w-4" />
@@ -568,7 +573,7 @@ export default function AdminCommandCenter() {
 
                 {selectedRescue.status === 'ASSIGNED' && (
                   <Button
-                    className="w-full"
+                    className="w-full bg-white/90 dark:bg-white/10 hover:bg-slate-50 dark:hover:bg-white/20 backdrop-blur-xl border-slate-300/60 dark:border-white/20 shadow-md text-slate-900 dark:text-white"
                     variant="outline"
                     onClick={() => setShowAssignModal(true)}
                   >
@@ -579,7 +584,7 @@ export default function AdminCommandCenter() {
 
                 {(selectedRescue.status === 'IN_PROGRESS' || selectedRescue.status === 'ACCEPTED') && (
                   <Button
-                    className="w-full"
+                    className="w-full bg-white/90 dark:bg-white/10 hover:bg-slate-50 dark:hover:bg-white/20 backdrop-blur-xl border-slate-300/60 dark:border-white/20 shadow-md text-slate-900 dark:text-white"
                     variant="outline"
                     onClick={() => setShowAssignModal(true)}
                   >
@@ -590,7 +595,7 @@ export default function AdminCommandCenter() {
 
                 <Button 
                   variant="outline" 
-                  className="w-full"
+                  className="w-full bg-white/90 dark:bg-white/10 hover:bg-slate-50 dark:hover:bg-white/20 backdrop-blur-xl border-slate-300/60 dark:border-white/20 shadow-md"
                   onClick={handleCallCitizen}
                 >
                   <Phone className="mr-2 h-4 w-4" />
@@ -600,7 +605,7 @@ export default function AdminCommandCenter() {
                 {selectedRescue.status !== 'COMPLETED' && selectedRescue.status !== 'CANCELLED' && (
                   <Button 
                     variant="destructive" 
-                    className="w-full"
+                    className="w-full bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white shadow-lg backdrop-blur-sm border border-red-400/30"
                     onClick={handleCancelRescue}
                     disabled={cancelling}
                   >
@@ -613,9 +618,14 @@ export default function AdminCommandCenter() {
           ) : (
             <div className="flex items-center justify-center h-full p-6 text-center">
               <div>
-                <AlertCircle className="mx-auto h-12 w-12 text-gray-400" />
-                <p className="mt-4 text-gray-600 dark:text-gray-400">
-                  Select a rescue from the queue to view details
+                <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-slate-500/20 to-blue-500/20 backdrop-blur-xl flex items-center justify-center mb-4">
+                  <AlertCircle className="h-10 w-10 text-slate-400 dark:text-slate-500" />
+                </div>
+                <p className="mt-4 font-medium text-slate-700 dark:text-slate-300">
+                  Select a rescue from the queue
+                </p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                  Click on any rescue to view details
                 </p>
               </div>
             </div>

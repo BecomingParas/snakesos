@@ -52,12 +52,12 @@ export default function EmergencyPage() {
         </a>
       </div>
 
-      <div className="mx-auto max-w-3xl px-5 pt-10 text-center">
-        <span className="inline-flex items-center gap-2 rounded-full border border-destructive/50 bg-destructive/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-destructive">
-          <span className="h-1.5 w-1.5 rounded-full bg-destructive" /> Emergency Request
+      <div className="mx-auto max-w-3xl px-5 pt-12 text-center">
+        <span className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/15 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-accent shadow-sm">
+          <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" /> Emergency Request
         </span>
-        <h1 className="mt-5 font-display text-4xl font-bold sm:text-5xl">Request Snake Rescue</h1>
-        <p className="mt-3 text-muted-foreground">
+        <h1 className="mt-6 font-display text-5xl lg:text-6xl font-bold">Request Snake Rescue</h1>
+        <p className="mt-4 text-lg text-muted-foreground">
           Our team responds within 30 minutes across Rupandehi District.
         </p>
 
@@ -97,8 +97,8 @@ export default function EmergencyPage() {
         </ol>
       </div>
 
-      <div className="mx-auto mt-8 max-w-xl px-5">
-        <div className="rounded-2xl border border-border/70 bg-card/70 p-6 text-left">
+      <div className="mx-auto mt-10 max-w-xl px-5">
+        <div className="rounded-2xl border border-border/30 bg-background/60 backdrop-blur-2xl shadow-lg p-7 text-left">
           {step === 0 && (
             <>
               <StepHead icon={User} title="Your Contact Details" sub="So our team can reach you" />
@@ -315,8 +315,8 @@ function SuccessCard({
   form: { phone: string; address: string; municipality: string };
 }) {
   return (
-    <div className="mx-auto max-w-lg px-5 py-12">
-      <div className="rounded-2xl border border-border/70 bg-card/70 p-7 text-center">
+    <div className="mx-auto max-w-lg px-5 py-16">
+      <div className="rounded-2xl border border-border/30 bg-background/60 backdrop-blur-2xl shadow-xl p-8 text-center">
         <span className="mx-auto grid h-20 w-20 place-items-center rounded-full border border-primary/40 bg-primary/15">
           <CheckCircle2 className="h-10 w-10 text-primary" />
         </span>

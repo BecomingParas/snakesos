@@ -9,6 +9,9 @@ export * from '../auth/index.js';
 // Rescue Module
 export * from '../rescue/index.js';
 
+// Hospital Module
+export * from '../hospital/index.js';
+
 // Analytics Module
 export * from '../analytics/index.js';
 

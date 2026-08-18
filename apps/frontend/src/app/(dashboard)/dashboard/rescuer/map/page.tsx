@@ -10,6 +10,7 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useUserLocation } from '@/hooks/useUserLocation';
 import { useMyAssignedRescuesQuery } from '@/lib/graphql/hooks/rescue.hooks';
+import { useNearbyHospitals } from '@/lib/graphql/hooks/hospital.hooks';
 import { Navigation, Phone, AlertCircle, RefreshCw, MapPin, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDistance, calculateDistance, estimateTravelTime } from '@/lib/map/distance';
@@ -47,6 +48,20 @@ export default function RescuerMapPage() {
   });
 
   const rescues = data?.myAssignedRescues?.edges?.map(edge => edge.node) || [];
+  
+  // Fetch nearby hospitals for reference during rescues
+  const { data: hospitalsData } = useNearbyHospitals(
+    location?.latitude,
+    location?.longitude,
+    {
+      radiusKm: 50,
+      antivenomRequired: false,
+      limit: 15,
+      skip: !location,
+    }
+  );
+
+  const nearbyHospitals = hospitalsData?.nearbyHospitals || [];
   
   // Define rescue type for better type safety
   type RescueWithDistance = typeof rescues[0] & { 
@@ -292,6 +307,7 @@ export default function RescuerMapPage() {
                   phone: r.phone,
                   snakeDescription: r.snakeDescription,
                 }))}
+                hospitals={nearbyHospitals}
                 userLocation={location}
                 selectedRescueId={selectedRescueId}
                 onRescueClick={handleRescueClick}

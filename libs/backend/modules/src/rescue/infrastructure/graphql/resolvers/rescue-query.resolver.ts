@@ -120,18 +120,20 @@ export const rescueQueryResolvers = {
       const hasNextPage = skip + limit < totalCount;
       const hasPreviousPage = page > 1;
 
+      const edges = rescues.map((rescue) => ({
+        node: rescue,
+        cursor: rescue.id,
+      }));
+
       return {
-        edges: rescues.map((rescue) => ({
-          node: rescue,
-          cursor: rescue.id,
-        })),
+        edges,
         pageInfo: {
           hasNextPage,
           hasPreviousPage,
-          startCursor: edges[0]?.id,
-          endCursor: edges[edges.length - 1]?.id,
+          startCursor: rescues[0]?.id || null,
+          endCursor: rescues[rescues.length - 1]?.id || null,
         },
-        totalCount: await prisma.rescueRequest.count({ where }),
+        totalCount,
       };
     },
 
@@ -197,8 +199,8 @@ export const rescueQueryResolvers = {
         pageInfo: {
           hasNextPage,
           hasPreviousPage,
-          startCursor: rescues[0]?.id,
-          endCursor: rescues[rescues.length - 1]?.id,
+          startCursor: rescues[0]?.id || null,
+          endCursor: rescues[rescues.length - 1]?.id || null,
         },
         totalCount,
       };
@@ -243,19 +245,20 @@ export const rescueQueryResolvers = {
       const hasNextPage = skip + limit < totalCount;
       const hasPreviousPage = page > 1;
 
+      const edges = rescues.map((rescue) => ({
+        node: rescue,
+        cursor: rescue.id,
+      }));
+
       return {
-        edges: rescues.map((rescue) => ({
-          node: rescue,
-          cursor: rescue.id,
-        })),
+        edges,
         pageInfo: {
           hasNextPage,
           hasPreviousPage,
-          hasPreviousPage: false,
-          startCursor: edges[0]?.id,
-          endCursor: edges[edges.length - 1]?.id,
+          startCursor: rescues[0]?.id || null,
+          endCursor: rescues[rescues.length - 1]?.id || null,
         },
-        totalCount: await prisma.rescueRequest.count({ where }),
+        totalCount,
       };
     },
   },

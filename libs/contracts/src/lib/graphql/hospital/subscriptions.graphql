@@ -1,0 +1,25 @@
+# ===================================================================
+# HOSPITAL SUBSCRIPTIONS
+# ===================================================================
+
+extend type Subscription {
+  # Subscribe to hospital updates (for map real-time updates)
+  hospitalUpdated(hospitalId: ID): Hospital!
+  
+  # Subscribe to antivenom status changes
+  antivenomStatusChanged(
+    hospitalId: ID
+    province: String
+  ): AntivenomStatusUpdate!
+  
+  # Subscribe to new hospital reports
+  hospitalReportCreated: HospitalReport!
+}
+
+type AntivenomStatusUpdate {
+  hospital: Hospital!
+  previousStatus: AntivenomStatus!
+  newStatus: AntivenomStatus!
+  verifiedAt: DateTime!
+  verifiedBy: String!
+}

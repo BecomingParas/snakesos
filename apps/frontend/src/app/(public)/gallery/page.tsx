@@ -56,14 +56,20 @@ export default function GalleryPage() {
 
   return (
     <div>
-      <section className="border-b border-border/70 bg-gradient-to-b from-primary/10 to-transparent px-5 py-16 text-center">
-        <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
-          <ImageIcon className="h-3.5 w-3.5" /> Rescue diaries
-        </span>
-        <h1 className="mt-5 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Photo Gallery</h1>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
-          Glimpses from our field operations, safe snake releases, and community awareness programs in Rupandehi.
-        </p>
+      <section className="relative px-5 py-20 lg:py-28 text-center overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute inset-0 bg-gradient-to-b from-accent/5 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="relative">
+          <span className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/15 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-accent shadow-sm">
+            <ImageIcon className="h-3.5 w-3.5" /> Rescue diaries
+          </span>
+          <h1 className="mt-6 font-display text-5xl lg:text-6xl font-bold tracking-tight">Photo Gallery</h1>
+          <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
+            Glimpses from our field operations, safe snake releases, and community awareness programs in Rupandehi.
+          </p>
+        </div>
       </section>
 
       <div className="mx-auto max-w-6xl px-5 py-10">
@@ -73,10 +79,10 @@ export default function GalleryPage() {
               key={c}
               onClick={() => setActive(c)}
               className={
-                "rounded-full border px-5 py-2 text-xs font-bold uppercase tracking-wider transition-colors " +
+                "rounded-full border px-6 py-2.5 text-xs font-bold uppercase tracking-wider transition-all " +
                 (active === c
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border/70 text-muted-foreground hover:text-foreground")
+                  ? "border-accent bg-accent text-accent-foreground shadow-md"
+                  : "border-border/30 bg-background/40 backdrop-blur-sm text-muted-foreground hover:text-foreground hover:border-accent/40")
               }
             >
               {c}
@@ -85,11 +91,11 @@ export default function GalleryPage() {
         </div>
 
         {list.length ? (
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {list.map((p) => (
               <figure
                 key={p.id}
-                className="group overflow-hidden rounded-xl border border-border/70 bg-card/60"
+                className="group overflow-hidden rounded-2xl border border-border/30 bg-background/60 backdrop-blur-xl shadow-md transition-all hover:shadow-lg hover:-translate-y-1"
               >
                 <div className="h-52 w-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
                   <span className="text-4xl">📸</span>

@@ -1,0 +1,161 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║                                                                      ║
+║               ✅ MOBILE ACCESS SETUP CHECKLIST                       ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+
+Print this or keep it open while setting up!
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  STEP 1: RUN SETUP SCRIPT                                       ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  [ ] Right-click Windows Start button
+  [ ] Click "Windows PowerShell (Admin)" or "Terminal (Admin)"
+  [ ] Type: cd ~/OneDrive/Desktop/snake-rescue
+  [ ] Press Enter
+  [ ] Type: Set-ExecutionPolicy Bypass -Scope Process -Force
+  [ ] Press Enter
+  [ ] Type: .\setup-mobile-access.ps1
+  [ ] Press Enter
+  [ ] Wait for "Setup Complete!" message
+  [ ] Write down the IP address shown: _________________
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  STEP 2: EDIT PROJECT.JSON                                      ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  [ ] Open file: apps/frontend/project.json
+  [ ] Find the "serve" section
+  [ ] Find where it says: "port": 4200
+  [ ] Add a comma after 4200
+  [ ] On the next line, add: "hostname": "0.0.0.0"
+  [ ] Save the file (Ctrl+S)
+
+  Should look like this:
+  ┌───────────────────────────────────────────────────────┐
+  │   "options": {                                        │
+  │     "buildTarget": "frontend:build",                  │
+  │     "dev": true,                                      │
+  │     "port": 4200,           ← comma here             │
+  │     "hostname": "0.0.0.0"   ← add this line          │
+  │   }                                                   │
+  └───────────────────────────────────────────────────────┘
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  STEP 3: START DEV SERVER                                       ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  [ ] Open your regular terminal (not admin)
+  [ ] Make sure you're in the project folder
+  [ ] Type: npm run dev
+  [ ] Press Enter
+  [ ] Wait for "ready" message
+  [ ] Leave this terminal window open!
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  STEP 4: TEST ON COMPUTER FIRST                                 ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  [ ] Open browser on your computer
+  [ ] Go to: http://localhost:4200
+  [ ] Does it work?
+      [ ] YES → Continue to Step 5
+      [ ] NO → Fix issues first, then retry
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  STEP 5: TEST ON MOBILE                                         ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  [ ] Pick up your mobile phone
+  [ ] Open Wi-Fi settings
+  [ ] Check you're on SAME Wi-Fi as computer
+      Wi-Fi Name: _________________________________
+  [ ] Open any browser (Chrome, Safari, etc.)
+  [ ] Type in address bar: http://192.168.1.65:4200
+  [ ] Press Go / Enter
+  [ ] Does it work?
+      [ ] YES → 🎉 Success!
+      [ ] NO → See troubleshooting below
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  IF IT DOESN'T WORK...                                          ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  Problem: Mobile browser says "Can't connect"
+  ──────────────────────────────────────────────
+  [ ] Both devices on same Wi-Fi? Double-check!
+  [ ] Dev server running? Look at terminal
+  [ ] Restart dev server:
+      [ ] Press Ctrl+C in terminal
+      [ ] Type: npm run dev
+      [ ] Wait for "ready"
+      [ ] Try mobile again
+
+  Problem: Setup script failed
+  ──────────────────────────────
+  [ ] Did you run PowerShell as Administrator?
+  [ ] Try running the script again
+  [ ] Or do manual firewall setup (see guide)
+
+  Problem: IP address changed
+  ──────────────────────────────
+  [ ] Run: ipconfig
+  [ ] Find new IPv4 Address
+  [ ] Use new IP in mobile browser
+
+  Problem: Wrong IP showing
+  ──────────────────────────────
+  [ ] Run: ipconfig
+  [ ] Look for "Wireless LAN adapter Wi-Fi"
+  [ ] Find "IPv4 Address" under that section
+  [ ] Should be like: 192.168.x.x or 10.x.x.x
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  ✅ SUCCESS! IT WORKS!                                          ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  Congratulations! 🎉 You can now:
+
+  [ ] Bookmark the mobile URL on your phone
+  [ ] Test the mobile interface
+  [ ] Share URL with team members (same Wi-Fi)
+  [ ] Save QUICK_REFERENCE.txt for future use
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  NOTES & REMINDERS                                              ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  • Setup is ONE-TIME only
+  • Daily: Just run npm run dev and use mobile URL
+  • If IP changes: Update URL with new IP
+  • Keep dev server running while testing
+  • Both devices MUST be on same Wi-Fi
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃  HELPFUL FILES                                                  ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+  START_HERE.md           → Simple guide
+  QUICK_REFERENCE.txt     → Quick commands
+  VISUAL_GUIDE.txt        → Step-by-step with visuals
+  MOBILE_ACCESS_GUIDE.md  → Detailed documentation
+
+
+══════════════════════════════════════════════════════════════════
+
+Date Completed: ___________________
+Your IP: ___________________
+Works? [ ] YES  [ ] NO
+Notes: _______________________________________________________
+_______________________________________________________________

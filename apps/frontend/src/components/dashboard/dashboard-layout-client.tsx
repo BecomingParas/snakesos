@@ -140,7 +140,7 @@ export function DashboardLayoutClient({
             />
 
             {/* Page Content */}
-            <div className="h-[calc(100vh-3.5rem)] overflow-auto">
+            <div className="h-[calc(100vh-4rem)] overflow-auto">
               {children}
             </div>
           </main>

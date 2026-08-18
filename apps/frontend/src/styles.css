@@ -1,125 +1,259 @@
 @import "tailwindcss";
 
-@theme {
-  /* Custom Colors */
-  --color-background: #0f1a1c;
-  --color-foreground: #FFFFFF;
-  --color-card: #182329;
-  --color-account-card: #11181d;
-  
-  --color-primary: #2ECC71;
-  --color-primary-hover: #27AE60;
-  
-  --color-warning: #F39C12;
-  --color-warning-card: #2e3225;
-  
-  --color-active-card: #0e2a25;
-  
-  --color-slate-dark: #121A1F;
-  --color-slate-light: #2C3E50;
-  
-  --color-border: #2a3a40;
-  --color-muted: #2C3E50;
-  --color-muted-foreground: #95A5A6;
-  
-  --color-destructive: #E74C3C;
-  --color-success: #2ECC71;
-  
-  /* Font Families */
-  --font-family-poppins: 'Poppins', sans-serif;
-  --font-family-inter: 'Inter', sans-serif;
-  --font-family-manrope: 'Manrope', sans-serif;
+/* ============================================================================
+   TAILWIND V4 - CLASS-BASED DARK MODE FIX
+   Makes dark: respond to .dark class instead of prefers-color-scheme media query
+   Required for next-themes compatibility with Tailwind v4
+   ============================================================================ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================================================
+   SNAKE RESCUE - DESIGN TOKENS
+   Comprehensive Light & Dark Theme System (Tailwind v4)
+   ============================================================================ */
+
+@layer base {
+  /* ============================================================================
+     LIGHT THEME (Default)
+     Professional, clean wildlife rescue platform aesthetic
+     ============================================================================ */
+
+  :root {
+    /* Base */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    
+    /* Cards & Surfaces */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    
+    /* Brand - Professional Rescue Green */
+    --primary: 145 63% 49%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Secondary */
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    
+    /* Muted */
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    
+    /* Accent */
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+    
+    /* Destructive - Emergency */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Success */
+    --success: 145 63% 49%;
+    --success-foreground: 0 0% 100%;
+    
+    /* Warning */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    
+    /* Info */
+    --info: 221 83% 53%;
+    --info-foreground: 0 0% 100%;
+    
+    /* Border & Input */
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 145 63% 49%;
+    
+    /* Chart Colors */
+    --chart-1: 145 63% 49%;
+    --chart-2: 38 92% 50%;
+    --chart-3: 0 84% 60%;
+    --chart-4: 221 83% 53%;
+    --chart-5: 262 83% 58%;
+    
+    /* Sidebar - Light elevated surface */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 145 63% 49%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 145 63% 49%;
+    
+    /* Rescue-specific Status Colors */
+    --status-emergency: 0 84% 60%;
+    --status-pending: 38 92% 50%;
+    --status-assigned: 221 83% 53%;
+    --status-enroute: 145 63% 49%;
+    --status-arrived: 199 89% 48%;
+    --status-rescued: 145 63% 49%;
+    --status-completed: 145 63% 49%;
+    --status-cancelled: 215 16% 47%;
+    --status-rejected: 0 84% 60%;
+    --status-available: 145 63% 49%;
+    --status-offline: 215 16% 47%;
+    
+    --radius: 0.5rem;
+  }
+
+  /* ============================================================================
+     DARK THEME
+     Professional dark mode for wildlife rescue operations
+     Elevated surfaces with proper contrast and visibility
+     ============================================================================ */
+
+  .dark {
+    /* Base - Professional dark neutral */
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    
+    /* Cards & Surfaces - Elevated dark surfaces */
+    --card: 217 33% 17%;
+    --card-foreground: 210 40% 98%;
+    
+    --popover: 224 71% 4%;
+    --popover-foreground: 210 40% 98%;
+    
+    /* Brand - Professional Rescue Green (adjusted for dark) */
+    --primary: 145 63% 49%;
+    --primary-foreground: 222 47% 11%;
+    
+    /* Secondary */
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    
+    /* Muted */
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    
+    /* Accent */
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    
+    /* Destructive - Emergency (slightly adjusted for dark) */
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    
+    /* Success */
+    --success: 145 63% 42%;
+    --success-foreground: 222 47% 11%;
+    
+    /* Warning */
+    --warning: 38 92% 50%;
+    --warning-foreground: 222 47% 11%;
+    
+    /* Info */
+    --info: 221 83% 53%;
+    --info-foreground: 210 40% 98%;
+    
+    /* Border & Input */
+    --border: 217 33% 22%;
+    --input: 217 33% 22%;
+    --ring: 145 63% 49%;
+    
+    /* Chart Colors (adjusted for dark background) */
+    --chart-1: 145 63% 49%;
+    --chart-2: 38 92% 50%;
+    --chart-3: 0 84% 60%;
+    --chart-4: 221 83% 53%;
+    --chart-5: 262 83% 58%;
+    
+    /* Sidebar - Dark elevated surface */
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 145 63% 49%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 217 33% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 22%;
+    --sidebar-ring: 145 63% 49%;
+    
+    /* Rescue-specific Status Colors (dark mode adjusted) */
+    --status-emergency: 0 84% 60%;
+    --status-pending: 38 92% 50%;
+    --status-assigned: 221 83% 53%;
+    --status-enroute: 145 63% 49%;
+    --status-arrived: 199 89% 48%;
+    --status-rescued: 145 63% 49%;
+    --status-completed: 145 63% 49%;
+    --status-cancelled: 215 20% 65%;
+    --status-rejected: 0 84% 60%;
+    --status-available: 145 63% 49%;
+    --status-offline: 215 20% 65%;
+  }
 }
 
-:root {
-  --background: #0f1a1c;
-  --foreground: #FFFFFF;
-  --card: #182329;
-  --account-card: #11181d;
-  --primary: #2ECC71;
-  --primary-hover: #27AE60;
-  --slate-dark: #121A1F;
-  --slate-light: #2C3E50;
-  --accent-muted: #95A5A6;
-  --warning: #F39C12;
-  --warning-card: #2e3225;
-  --active-card: #0e2a25;
-  --font-poppins: 'Poppins', sans-serif;
-  --font-inter: 'Inter', sans-serif;
-  --font-manrope: 'Manrope', sans-serif;
-  
-  /* Chart colors */
-  --color-chart-1: #2ECC71;
-  --color-chart-2: #F39C12;
-  --color-chart-3: #E74C3C;
-  --color-chart-4: #3498DB;
-  --color-chart-5: #9B59B6;
-  
-  /* Additional colors for widgets */
-  --color-popover: #182329;
-  --color-secondary: #2C3E50;
-  --color-accent: #3498DB;
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: Inter, sans-serif;
+    scroll-behavior: smooth;
+  }
 }
 
-/* Glassmorphism, smooth animations & premium layouts */
-.glass {
-  background: rgba(18, 26, 31, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
+/* ============================================================================
+   CUSTOM SCROLLBAR
+   ============================================================================ */
 
-.glass-card {
-  background: rgba(24, 34, 41, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.glass-emerald {
-  background: rgba(46, 204, 113, 0.08);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(46, 204, 113, 0.15);
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-inter);
-  scroll-behavior: smooth;
-}
-
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--slate-dark);
+  background-color: hsl(var(--background));
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--slate-light);
-  border-radius: 4px;
+  background-color: hsl(var(--muted));
+  border-radius: 0.25rem;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary);
+  background-color: hsl(var(--muted-foreground));
 }
 
-/* Leaflet Dark-Mode Tiles Custom Filter Overlay */
-.leaflet-dark-filter {
-  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) !important;
+/* ============================================================================
+   GLASS EFFECTS (Theme-aware)
+   ============================================================================ */
+
+.glass {
+  backdrop-filter: blur(24px);
+  background-color: hsl(var(--background) / 0.7);
+  border: 1px solid hsl(var(--border) / 0.5);
 }
 
-/* Glow effects */
+.glass-card {
+  backdrop-filter: blur(16px);
+  background-color: hsl(var(--card) / 0.85);
+  border: 1px solid hsl(var(--border) / 0.6);
+}
+
+.glass-emerald {
+  backdrop-filter: blur(12px);
+  background-color: hsl(var(--primary) / 0.08);
+  border: 1px solid hsl(var(--primary) / 0.15);
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
 .glow-primary {
-  box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+  box-shadow: 0 0 15px hsl(var(--primary) / 0.3);
 }
 
-.glow-red {
-  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+.glow-destructive {
+  box-shadow: 0 0 15px hsl(var(--destructive) / 0.4);
 }
 
 .pulse-border {
@@ -128,47 +262,57 @@ body {
 
 @keyframes pulse-border-anim {
   0% {
-    box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.4);
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
   }
   70% {
-    box-shadow: 0 0 0 8px rgba(46, 204, 113, 0);
+    box-shadow: 0 0 0 8px hsl(var(--primary) / 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
   }
 }
 
-/* Warning Box - Yellow/Orange Alert Style */
-.warning-box {
-  background-color: #2e3225;
-  border: 2px solid rgba(243, 156, 18, 0.5);
+/* ============================================================================
+   LEAFLET MAP DARK MODE FILTER
+   ============================================================================ */
+
+.dark .leaflet-container {
+  filter: brightness(0.9) invert(1) contrast(3) hue-rotate(200deg) saturate(0.4);
 }
 
+/* ============================================================================
+   PATTERN BACKGROUNDS
+   ============================================================================ */
 
-/* Map widget patterns */
 .scale-pattern {
   background-image: 
     repeating-linear-gradient(
       0deg,
-      rgba(255, 255, 255, 0.03) 0px,
-      rgba(255, 255, 255, 0.03) 1px,
+      hsl(var(--border) / 0.3) 0px,
+      hsl(var(--border) / 0.3) 1px,
       transparent 1px,
       transparent 20px
     ),
     repeating-linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0.03) 0px,
-      rgba(255, 255, 255, 0.03) 1px,
+      hsl(var(--border) / 0.3) 0px,
+      hsl(var(--border) / 0.3) 1px,
       transparent 1px,
       transparent 20px
     );
 }
 
-.surface-scale {
-  background: linear-gradient(
-    135deg,
-    rgba(46, 204, 113, 0.05) 0%,
-    rgba(24, 35, 41, 0.9) 50%,
-    rgba(46, 204, 113, 0.05) 100%
-  );
+/* ============================================================================
+   SMOOTH THEME TRANSITIONS
+   ============================================================================ */
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  
+  * {
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.22s ease;
+  }
 }
+

@@ -3,7 +3,7 @@
  * Database operations for User entity
  */
 
-import { PrismaClient, User, Prisma } from '@prisma/client';
+import { PrismaClient, User, Prisma } from '../prisma/generated/client.js';
 import { BaseRepository } from './base.repository.js';
 
 export class UserRepository extends BaseRepository<

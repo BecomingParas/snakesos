@@ -1,0 +1,155 @@
+# ===================================================================
+# HOSPITAL INPUTS
+# ===================================================================
+
+input CreateHospitalInput {
+  name: String!
+  address: String!
+  municipality: String!
+  ward: Int
+  district: String!
+  province: String!
+  
+  phone: String
+  email: String
+  emergencyPhone: String
+  
+  latitude: Float!
+  longitude: Float!
+  
+  emergencyAvailable: Boolean
+  emergency24x7: Boolean
+  
+  snakebiteTreatmentAvailable: Boolean
+  treatmentCenterType: TreatmentCenterType
+  
+  antivenomStatus: AntivenomStatus
+  
+  ventilatorAvailable: Boolean
+  icuAvailable: Boolean
+  ambulanceAvailable: Boolean
+  bloodBankAvailable: Boolean
+  
+  source: String
+  sourceYear: String
+  sourceUrl: String
+  officialTreatmentCenter: Boolean
+  
+  hospitalType: HospitalType
+  bedCapacity: Int
+  specializations: [String!]
+  
+  notes: String
+}
+
+input UpdateHospitalInput {
+  name: String
+  address: String
+  municipality: String
+  ward: Int
+  district: String
+  province: String
+  
+  phone: String
+  email: String
+  emergencyPhone: String
+  
+  latitude: Float
+  longitude: Float
+  
+  emergencyAvailable: Boolean
+  emergency24x7: Boolean
+  
+  snakebiteTreatmentAvailable: Boolean
+  treatmentCenterType: TreatmentCenterType
+  
+  ventilatorAvailable: Boolean
+  icuAvailable: Boolean
+  ambulanceAvailable: Boolean
+  bloodBankAvailable: Boolean
+  
+  hospitalType: HospitalType
+  bedCapacity: Int
+  specializations: [String!]
+  
+  status: HospitalStatus
+  
+  notes: String
+  internalNotes: String
+}
+
+input VerifyAntivenomInput {
+  hospitalId: ID!
+  antivenomStatus: AntivenomStatus!
+  antivenomQuantity: Int
+  verificationType: VerificationType!
+  notes: String
+  evidenceUrls: [String!]
+  contactPerson: String
+  contactDesignation: String
+  contactPhone: String
+}
+
+input VerifyHospitalCapabilityInput {
+  hospitalId: ID!
+  snakebiteTreatment: Boolean
+  antivenomStatus: AntivenomStatus
+  antivenomQuantity: Int
+  emergencyStatus: Boolean
+  ventilatorStatus: Boolean
+  verificationType: VerificationType!
+  notes: String
+  evidenceUrls: [String!]
+  officialDocumentUrl: String
+  contactPerson: String
+  contactDesignation: String
+  contactPhone: String
+  nextVerificationDue: DateTime
+}
+
+input HospitalFilterInput {
+  snakebiteTreatmentOnly: Boolean
+  antivenomStatus: AntivenomStatus
+  antivenomAvailable: Boolean
+  emergency24x7: Boolean
+  provinces: [String!]
+  districts: [String!]
+  municipalities: [String!]
+  hospitalTypes: [HospitalType!]
+  verificationStatus: VerificationStatus
+  status: HospitalStatus
+  officialOnly: Boolean
+}
+
+input HospitalLocationInput {
+  latitude: Float!
+  longitude: Float!
+  radiusKm: Float
+}
+
+input CreateHospitalReportInput {
+  hospitalId: ID!
+  reportType: HospitalReportType!
+  description: String!
+  reporterName: String
+  reporterEmail: String
+  reporterPhone: String
+}
+
+input ResolveHospitalReportInput {
+  reportId: ID!
+  resolution: String!
+}
+
+input HospitalSortInput {
+  field: HospitalSortField!
+  direction: SortDirection!
+}
+
+enum HospitalSortField {
+  NAME
+  CREATED_AT
+  UPDATED_AT
+  VERIFICATION_DATE
+  DISTANCE
+}

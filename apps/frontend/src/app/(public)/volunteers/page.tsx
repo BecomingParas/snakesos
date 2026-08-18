@@ -53,25 +53,31 @@ export default function VolunteersPage() {
 
   return (
     <div>
-      <section className="border-b border-border/70 bg-gradient-to-b from-primary/10 to-transparent px-5 py-16 text-center">
-        <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
-          <Users className="h-3.5 w-3.5" /> Join our team
-        </span>
-        <h1 className="mt-5 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">
-          Become a Volunteer
-        </h1>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
-          Help protect wildlife and save lives in Rupandehi. No prior experience required — we provide full
-          training.
-        </p>
+      <section className="relative px-5 py-20 lg:py-28 text-center overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute inset-0 bg-gradient-to-b from-accent/5 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="relative">
+          <span className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/15 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-accent shadow-sm">
+            <Users className="h-3.5 w-3.5" /> Join our team
+          </span>
+          <h1 className="mt-6 font-display text-5xl lg:text-6xl font-bold tracking-tight">
+            Become a Volunteer
+          </h1>
+          <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
+            Help protect wildlife and save lives in Rupandehi. No prior experience required — we provide full
+            training.
+          </p>
+        </div>
       </section>
 
       <div className="mx-auto max-w-6xl px-5 py-10">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {heroStats.map((s) => (
             <div
               key={s.label}
-              className="rounded-xl border border-border/70 bg-card/60 p-5 text-center"
+              className="rounded-2xl border border-border/30 bg-background/60 backdrop-blur-xl shadow-md p-6 text-center transition-all hover:shadow-lg hover:-translate-y-1"
             >
               <p className="font-display text-2xl font-extrabold text-primary">{s.value}</p>
               <p className="mt-1 text-xs text-muted-foreground">{s.label}</p>
@@ -79,10 +85,10 @@ export default function VolunteersPage() {
           ))}
         </div>
 
-        <h2 className="mt-12 text-xl font-bold">Why Volunteer With Us?</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
+        <h2 className="mt-16 text-2xl font-bold">Why Volunteer With Us?</h2>
+        <div className="mt-6 grid gap-5 md:grid-cols-2">
           {benefits.map((b) => (
-            <div key={b.title} className="flex gap-4 rounded-xl border border-border/70 bg-card/60 p-5">
+            <div key={b.title} className="flex gap-4 rounded-2xl border border-border/30 bg-background/60 backdrop-blur-xl shadow-md p-6 transition-all hover:shadow-lg hover:-translate-y-1">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-border/70 bg-secondary/60">
                 <b.icon className={"h-4 w-4 " + b.tone} />
               </span>
@@ -101,9 +107,9 @@ export default function VolunteersPage() {
           </p>
         </div>
 
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {volunteers.slice(0, 6).map((v) => (
-            <div key={v.id} className="overflow-hidden rounded-xl border border-border/70 bg-card/60">
+            <div key={v.id} className="overflow-hidden rounded-2xl border border-border/30 bg-background/60 backdrop-blur-xl shadow-md transition-all hover:shadow-lg hover:-translate-y-1">
               <div className="relative grid h-44 place-items-center bg-primary/15">
                 <span className="font-display text-4xl font-extrabold text-primary/70">{v.initials}</span>
                 <span
@@ -142,7 +148,7 @@ export default function VolunteersPage() {
           ))}
         </div>
 
-        <div className="mt-14 rounded-xl border border-border/70 bg-card/60 p-6">
+        <div className="mt-16 rounded-2xl border border-border/30 bg-background/60 backdrop-blur-2xl shadow-lg p-8">
           <h2 className="text-lg font-bold">Volunteer Application</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Fill in your details — we'll contact you within 3-5 days.
@@ -177,10 +183,10 @@ export default function VolunteersPage() {
                     key={m}
                     onClick={() => toggle(m)}
                     className={
-                      "rounded-lg border px-3 py-2 text-xs font-medium transition-colors " +
+                      "rounded-xl border px-4 py-3 text-sm font-medium transition-all " +
                       (selected.includes(m)
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border/70 bg-secondary/40 text-muted-foreground hover:text-foreground")
+                        ? "border-accent bg-accent text-accent-foreground shadow-md"
+                        : "border-border/30 bg-background/40 backdrop-blur-sm text-muted-foreground hover:text-foreground hover:border-accent/40")
                     }
                   >
                     {m}

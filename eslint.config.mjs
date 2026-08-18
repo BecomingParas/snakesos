@@ -14,7 +14,11 @@ export default [
         'error',
         {
           enforceBuildableLibDependency: true,
-          allow: ['^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$'],
+          allow: [
+            '^.*/eslint(\\.base)?\\.config\\.[cm]?[jt]s$',
+            '^\\./prisma/generated/.*$',
+            '^\\.\\./prisma/generated/.*$',
+          ],
           depConstraints: [
             {
               sourceTag: '*',

@@ -1,0 +1,65 @@
+# ===================================================================
+# HOSPITAL QUERIES
+# ===================================================================
+
+extend type Query {
+  # Get single hospital by ID
+  hospital(id: ID!): Hospital
+  
+  # List hospitals with pagination and filters
+  hospitals(
+    filter: HospitalFilterInput
+    location: HospitalLocationInput
+    sort: HospitalSortInput
+    first: Int
+    after: String
+  ): HospitalConnection!
+  
+  # Find nearest snakebite facilities
+  nearestSnakebiteFacilities(
+    latitude: Float!
+    longitude: Float!
+    radiusKm: Float
+    limit: Int
+  ): [NearestFacility!]!
+  
+  # Find nearest facility with verified antivenom
+  nearestVerifiedAntivenomFacility(
+    latitude: Float!
+    longitude: Float!
+    maxRadiusKm: Float
+  ): NearestFacility
+  
+  # Get hospital statistics
+  hospitalStatistics: HospitalStatistics!
+  
+  # Get hospitals needing verification
+  hospitalsNeedingVerification(
+    province: String
+    maxDaysSinceVerification: Int
+    first: Int
+    after: String
+  ): HospitalConnection!
+  
+  # Get verification records for a hospital
+  hospitalVerifications(
+    hospitalId: ID!
+    first: Int
+    after: String
+  ): [HospitalVerification!]!
+  
+  # Get hospital reports
+  hospitalReports(
+    hospitalId: ID
+    status: HospitalReportStatus
+    first: Int
+    after: String
+  ): [HospitalReport!]!
+  
+  # Search hospitals by name or location
+  searchHospitals(
+    query: String!
+    filter: HospitalFilterInput
+    first: Int
+  ): [Hospital!]!
+}

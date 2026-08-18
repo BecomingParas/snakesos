@@ -4,7 +4,7 @@
  */
 
 import { RescueRepository } from '@snake-rescue/database';
-import { BadRequestError, UnauthorizedError } from '@snake-rescue/shared';
+import { BadRequestError, AuthorizationError } from '@snake-rescue/shared';
 import { RescueStatusMachine, RescueStatus } from '../../domain/rescue-status-machine.js';
 
 export interface CancelRescueInput {
@@ -69,11 +69,11 @@ export class CancelRescueUseCase {
     const isOwner = rescue.userId === userId;
 
     if (cancelledBy === 'ADMIN' && !isAdmin) {
-      throw new UnauthorizedError('Only admins can cancel on behalf of admin');
+      throw new AuthorizationError('Only admins can cancel on behalf of admin');
     }
 
     if (cancelledBy === 'CITIZEN' && !isOwner && !isAdmin) {
-      throw new UnauthorizedError('You can only cancel your own rescue requests');
+      throw new AuthorizationError('You can only cancel your own rescue requests');
     }
 
     // If rescue is already accepted/in progress, only allow admin cancellation

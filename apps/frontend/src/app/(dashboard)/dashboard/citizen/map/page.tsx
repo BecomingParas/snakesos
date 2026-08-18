@@ -10,6 +10,7 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useWatchUserLocation } from '@/hooks/useUserLocation';
 import { useMyRescueRequestsQuery } from '@/lib/graphql/hooks/rescue.hooks';
+import { useNearbyHospitals } from '@/lib/graphql/hooks/hospital.hooks';
 import { MapPin, Phone, AlertCircle, RefreshCw, Clock, Navigation2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDistance, calculateDistance, estimateTravelTime } from '@/lib/map/distance';
@@ -50,6 +51,20 @@ export default function CitizenMapPage() {
   });
 
   const rescues = data?.myRescueRequests?.edges?.map(edge => edge.node) || [];
+  
+  // Fetch nearby hospitals using GraphQL hooks
+  const { data: hospitalsData } = useNearbyHospitals(
+    location?.latitude,
+    location?.longitude,
+    {
+      radiusKm: 30,
+      antivenomRequired: false,
+      limit: 10,
+      skip: !location, // Only fetch when we have location
+    }
+  );
+
+  const nearbyHospitals = hospitalsData?.nearbyHospitals || [];
   
   // Show error toast
   if (error) {
@@ -344,6 +359,7 @@ export default function CitizenMapPage() {
                   snakeDescription: r.snakeDescription,
                 }))}
                 rescuers={mockRescuers}
+                hospitals={nearbyHospitals}
                 userLocation={location}
                 selectedRescueId={selectedRescueId}
                 onRescueClick={handleRescueClick}
@@ -357,7 +373,7 @@ export default function CitizenMapPage() {
       {/* Map Legend */}
       <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
         <h3 className="text-sm font-semibold text-slate-900 mb-3">Map Legend</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white border-2 border-white shadow">🐍</div>
             <span className="text-slate-600">My Request</span>
@@ -365,6 +381,14 @@ export default function CitizenMapPage() {
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center border-2 border-white shadow">👨‍⚕️</div>
             <span className="text-slate-600">Rescuer</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center border-2 border-white shadow text-xs">🏥</div>
+            <span className="text-slate-600">Hospital (Antivenom)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-yellow-600 flex items-center justify-center border-2 border-white shadow text-xs">🏥</div>
+            <span className="text-slate-600">Hospital (Unknown)</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 rounded-full bg-blue-600 border-2 border-white shadow"></div>

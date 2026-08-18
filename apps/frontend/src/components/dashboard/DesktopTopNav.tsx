@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, Moon, Sun, Search, Siren, LogOut, User } from 'lucide-react'
+import { Bell, Search, Siren, LogOut, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -12,8 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { ThemeToggle } from '@/components/theme'
 import { toast } from 'sonner'
-import { useState } from 'react'
 
 interface DesktopTopNavProps {
   user: {
@@ -24,13 +24,6 @@ interface DesktopTopNavProps {
 }
 
 export function DesktopTopNav({ user, onLogout }: DesktopTopNavProps) {
-  const [darkMode, setDarkMode] = useState(true)
-
-  const toggleTheme = () => {
-    setDarkMode(!darkMode)
-    document.documentElement.classList.toggle('dark')
-  }
-
   const initials = user.name
     .split(' ')
     .map((n) => n[0])
@@ -39,16 +32,16 @@ export function DesktopTopNav({ user, onLogout }: DesktopTopNavProps) {
     .slice(0, 2)
 
   return (
-    <div className="sticky top-0 z-50 flex h-14 items-center justify-between border-b border-border/50 bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <div className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-border/20 bg-background/60 px-6 backdrop-blur-2xl shadow-sm">
       {/* Search */}
       <div className="flex flex-1 items-center gap-4">
-        <div className="relative w-full max-w-sm">
+        <div className="relative w-full max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search or jump to..."
-            className="h-9 pl-9 pr-4"
+            className="h-10 pl-9 pr-20 border-border/30 bg-background/40 backdrop-blur-sm focus-visible:border-primary/50 transition-all"
           />
-          <kbd className="pointer-events-none absolute right-2 top-1/2 hidden h-5 -translate-y-1/2 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+          <kbd className="pointer-events-none absolute right-2 top-1/2 hidden h-6 -translate-y-1/2 select-none items-center gap-1 rounded border border-border/30 bg-muted/50 px-2 font-mono text-[10px] font-semibold opacity-100 sm:flex">
             <span className="text-xs">⌘</span>K
           </kbd>
         </div>
@@ -60,7 +53,7 @@ export function DesktopTopNav({ user, onLogout }: DesktopTopNavProps) {
         <Button
           size="sm"
           variant="destructive"
-          className="h-9"
+          className="h-10 shadow-md hover:shadow-lg transition-all"
           onClick={() => toast.error('Emergency dispatch alerted', { description: 'Hotline 1166 notified' })}
         >
           <Siren className="mr-2 h-4 w-4" />
@@ -68,47 +61,39 @@ export function DesktopTopNav({ user, onLogout }: DesktopTopNavProps) {
         </Button>
 
         {/* Notifications */}
-        <Button variant="ghost" size="icon" className="h-9 w-9">
+        <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-secondary/50 transition-all">
           <Bell className="h-4 w-4" />
           <span className="sr-only">Notifications</span>
         </Button>
 
         {/* Theme Toggle */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-9 w-9"
-          onClick={toggleTheme}
-        >
-          {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          <span className="sr-only">Toggle theme</span>
-        </Button>
+        <ThemeToggle />
 
         {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-9 gap-2 px-2">
-              <Avatar className="h-7 w-7">
-                <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+            <Button variant="ghost" className="h-10 gap-2 px-2 hover:bg-secondary/50 transition-all">
+              <Avatar className="h-8 w-8 border-2 border-border/20">
+                <AvatarFallback className="bg-primary/10 text-xs font-bold text-primary">
                   {initials}
                 </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuContent align="end" className="w-56 border-border/30 bg-background/95 backdrop-blur-xl">
             <DropdownMenuLabel>
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{user.name}</p>
+                <p className="text-sm font-semibold leading-none">{user.name}</p>
                 <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-border/30" />
+            <DropdownMenuItem className="hover:bg-secondary/50 transition-all">
               <User className="mr-2 h-4 w-4" />
               Profile
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onLogout}>
+            <DropdownMenuSeparator className="bg-border/30" />
+            <DropdownMenuItem onClick={onLogout} className="hover:bg-destructive/10 transition-all">
               <LogOut className="mr-2 h-4 w-4" />
               Log out
             </DropdownMenuItem>

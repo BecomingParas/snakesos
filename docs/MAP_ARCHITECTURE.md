@@ -164,16 +164,20 @@ mutation UpdateRescueProgress {
 **Props:**
 - `rescues: RescueLocation[]` - Array of rescue locations
 - `rescuers: RescuerLocation[]` - Array of rescuer locations
+- `hospitals: HospitalLocation[]` - Array of hospital locations (NEW)
 - `center: [number, number]` - Map center coordinates
 - `zoom: number` - Zoom level
 - `userLocation: { latitude, longitude }` - Current user location
 - `selectedRescueId: string` - ID of selected rescue
 - `onRescueClick: (id: string) => void` - Marker click handler
+- `onHospitalClick: (id: string) => void` - Hospital marker click handler (NEW)
 
 **Features:**
 - ✅ Dynamic marker rendering based on priority
 - ✅ Rescuer tracking with offset for visibility
+- ✅ **Hospital markers with antivenom status color-coding (NEW)**
 - ✅ Popup with rescue details
+- ✅ **Hospital popup with antivenom status, distance, phone (NEW)**
 - ✅ Distance calculation from user location
 - ✅ Smooth map animations on selection
 - ✅ Invalid coordinate filtering
@@ -186,6 +190,14 @@ mutation UpdateRescueProgress {
 | HIGH      | Orange    | #ea580c   |
 | MEDIUM    | Yellow    | #ca8a04   |
 | LOW       | Green     | #16a34a   |
+
+### Hospital Marker Colors (NEW)
+
+| Antivenom Status | Color     | Hex       |
+|------------------|-----------|-----------|
+| AVAILABLE        | Green     | #16a34a   |
+| UNKNOWN          | Yellow    | #ca8a04   |
+| OUT_OF_STOCK     | Red       | #dc2626   |
 
 ### Status Badge Colors
 
@@ -252,6 +264,7 @@ sortByDistance<T>(items, userLat, userLng): T[]
 
 ```tsx
 import dynamic from 'next/dynamic'
+import { useNearbyHospitals } from '@/lib/graphql/hooks/hospital.hooks'
 
 const RescueMap = dynamic(
   () => import('@/components/map/RescueMap'),
@@ -260,6 +273,10 @@ const RescueMap = dynamic(
 
 function CommandCenter() {
   const { data } = useActiveRescuesQuery()
+  const { data: hospitalsData } = useNearbyHospitals(27.7172, 85.324, {
+    radiusKm: 100,
+    limit: 50,
+  })
   
   return (
     <RescueMap
@@ -271,7 +288,9 @@ function CommandCenter() {
         status: e.node.status,
       }))}
       rescuers={/* ... */}
+      hospitals={hospitalsData.nearbyHospitals}
       onRescueClick={handleRescueClick}
+      onHospitalClick={handleHospitalClick}
     />
   )
 }
@@ -285,8 +304,18 @@ Full-page map view with:
 - Statistics panel
 - All active rescues
 - All active rescuers
+- **Nearby hospitals (100km radius) (NEW)**
 - Map legend
 - Refresh controls
+
+### Rescuer Map Page
+
+**Route:** `/dashboard/rescuer/map`
+
+Rescuer map showing:
+- Assigned rescue requests
+- **Nearby hospitals for reference (50km) (NEW)**
+- Distance and ETA to rescues
 
 ### Citizen Map Page
 
@@ -295,6 +324,7 @@ Full-page map view with:
 Citizen-facing map showing:
 - Their own rescue requests
 - Assigned rescuer location
+- **Nearby hospitals (30km radius) (NEW)**
 - ETA and distance
 
 ## Real-Time Updates
@@ -424,17 +454,27 @@ function MapUpdater({ center }) {
 ```
 apps/frontend/src/
 ├── components/map/
-│   └── RescueMap.tsx                    # Main map component
+│   ├── RescueMap.tsx                    # Main map component (updated with hospitals)
+│   ├── HospitalMap.tsx                  # Standalone hospital map
+│   └── HospitalMapWithData.tsx          # Hospital map with API integration
 ├── lib/map/
 │   ├── coordinates.ts                    # Coordinate validation
 │   └── distance.ts                       # Distance calculations
 ├── hooks/
 │   └── useUserLocation.ts                # Geolocation hook
 ├── lib/graphql/hooks/
-│   └── rescue.hooks.ts                   # GraphQL queries
-└── app/(dashboard)/dashboard/admin/
-    ├── command/page.tsx                  # Command center
-    └── map/page.tsx                      # Full map page
+│   ├── rescue.hooks.ts                   # Rescue GraphQL queries
+│   └── hospital.hooks.ts                 # Hospital GraphQL queries (NEW)
+└── app/(dashboard)/dashboard/
+    ├── admin/
+    │   ├── command/page.tsx              # Command center
+    │   ├── map/page.tsx                  # Full map page (updated)
+    │   └── hospitals/page.tsx            # Hospital management (NEW)
+    ├── rescuer/
+    │   └── map/page.tsx                  # Rescuer map (updated)
+    └── citizen/
+        ├── map/page.tsx                  # Citizen map (updated)
+        └── hospitals/page.tsx            # Hospital finder (NEW)
 ```
 
 ## References

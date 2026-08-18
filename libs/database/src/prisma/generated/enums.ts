@@ -9,7 +9,167 @@
 * 🟢 You can import this file directly.
 */
 
+export const UserRole = {
+  CITIZEN: 'CITIZEN',
+  VOLUNTEER: 'VOLUNTEER',
+  VERIFIED_RESCUER: 'VERIFIED_RESCUER',
+  DISTRICT_COORDINATOR: 'DISTRICT_COORDINATOR',
+  ADMIN: 'ADMIN',
+  SUPER_ADMIN: 'SUPER_ADMIN'
+} as const
+
+export type UserRole = (typeof UserRole)[keyof typeof UserRole]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const UserStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  PENDING_VERIFICATION: 'PENDING_VERIFICATION',
+  BANNED: 'BANNED'
+} as const
+
+export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
+
+
+export const RescueStatus = {
+  PENDING: 'PENDING',
+  ASSIGNED: 'ASSIGNED',
+  ACCEPTED: 'ACCEPTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+  CLOSED: 'CLOSED',
+  EXPIRED: 'EXPIRED'
+} as const
+
+export type RescueStatus = (typeof RescueStatus)[keyof typeof RescueStatus]
+
+
+export const RescuePriority = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  CRITICAL: 'CRITICAL'
+} as const
+
+export type RescuePriority = (typeof RescuePriority)[keyof typeof RescuePriority]
+
+
+export const RescueOutcome = {
+  RESCUED_RELOCATED: 'RESCUED_RELOCATED',
+  ALREADY_GONE: 'ALREADY_GONE',
+  FALSE_ALARM: 'FALSE_ALARM',
+  NO_SNAKE_FOUND: 'NO_SNAKE_FOUND',
+  DECEASED: 'DECEASED',
+  REFUSED_HELP: 'REFUSED_HELP'
+} as const
+
+export type RescueOutcome = (typeof RescueOutcome)[keyof typeof RescueOutcome]
+
+
+export const VolunteerStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  VERIFIED: 'VERIFIED',
+  SUSPENDED: 'SUSPENDED',
+  REJECTED: 'REJECTED',
+  INACTIVE: 'INACTIVE'
+} as const
+
+export type VolunteerStatus = (typeof VolunteerStatus)[keyof typeof VolunteerStatus]
+
+
+export const DangerLevel = {
+  HARMLESS: 'HARMLESS',
+  MILDLY_VENOMOUS: 'MILDLY_VENOMOUS',
+  MEDICALLY_SIGNIFICANT: 'MEDICALLY_SIGNIFICANT',
+  HIGHLY_DANGEROUS: 'HIGHLY_DANGEROUS'
+} as const
+
+export type DangerLevel = (typeof DangerLevel)[keyof typeof DangerLevel]
+
+
+export const PostStatus = {
+  DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED',
+  ARCHIVED: 'ARCHIVED',
+  SCHEDULED: 'SCHEDULED'
+} as const
+
+export type PostStatus = (typeof PostStatus)[keyof typeof PostStatus]
+
+
+export const PaymentMethod = {
+  ESEWA: 'ESEWA',
+  KHALTI: 'KHALTI',
+  IME_PAY: 'IME_PAY',
+  FONEPAY: 'FONEPAY',
+  BANK_TRANSFER: 'BANK_TRANSFER',
+  STRIPE: 'STRIPE',
+  PAYPAL: 'PAYPAL',
+  CASH: 'CASH'
+} as const
+
+export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
+
+
+export const PaymentStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
+
+
+export const NotificationType = {
+  RESCUE_CREATED: 'RESCUE_CREATED',
+  RESCUE_ASSIGNED: 'RESCUE_ASSIGNED',
+  RESCUE_ACCEPTED: 'RESCUE_ACCEPTED',
+  RESCUE_COMPLETED: 'RESCUE_COMPLETED',
+  RESCUE_CANCELLED: 'RESCUE_CANCELLED',
+  VOLUNTEER_APPROVED: 'VOLUNTEER_APPROVED',
+  VOLUNTEER_REJECTED: 'VOLUNTEER_REJECTED',
+  TRAINING_SCHEDULED: 'TRAINING_SCHEDULED',
+  TRAINING_REMINDER: 'TRAINING_REMINDER',
+  DONATION_RECEIVED: 'DONATION_RECEIVED',
+  SYSTEM_ALERT: 'SYSTEM_ALERT',
+  ANNOUNCEMENT: 'ANNOUNCEMENT'
+} as const
+
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
+
+
+export const AntivenomStatus = {
+  AVAILABLE: 'AVAILABLE',
+  LOW_STOCK: 'LOW_STOCK',
+  OUT_OF_STOCK: 'OUT_OF_STOCK',
+  UNKNOWN: 'UNKNOWN',
+  NOT_SUPPORTED: 'NOT_SUPPORTED'
+} as const
+
+export type AntivenomStatus = (typeof AntivenomStatus)[keyof typeof AntivenomStatus]
+
+
+export const VerificationStatus = {
+  VERIFIED: 'VERIFIED',
+  HISTORICAL: 'HISTORICAL',
+  STALE: 'STALE',
+  UNVERIFIED: 'UNVERIFIED'
+} as const
+
+export type VerificationStatus = (typeof VerificationStatus)[keyof typeof VerificationStatus]
+
+
+export const HospitalStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  TEMPORARILY_CLOSED: 'TEMPORARILY_CLOSED',
+  PERMANENTLY_CLOSED: 'PERMANENTLY_CLOSED'
+} as const
+
+export type HospitalStatus = (typeof HospitalStatus)[keyof typeof HospitalStatus]

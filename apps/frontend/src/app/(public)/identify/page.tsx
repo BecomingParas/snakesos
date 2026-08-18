@@ -101,24 +101,30 @@ export default function IdentifyPage() {
 
   return (
     <div>
-      <section className="border-b border-border/70 bg-gradient-to-b from-primary/10 to-transparent px-5 py-16 text-center">
-        <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/15 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
-          <Bot className="h-3.5 w-3.5" /> AI-powered
-        </span>
-        <h1 className="mt-5 font-display text-4xl font-extrabold tracking-tight sm:text-5xl">
-          Snake <span className="text-primary">Identifier</span>
-        </h1>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted-foreground">
-          Upload a clear photo of a snake. Our AI will instantly identify the species, assess the danger
-          level, and provide life-saving first aid steps.
-        </p>
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1.5">
-            <ShieldCheck className="h-3.5 w-3.5 text-primary" /> Powered by Google Gemini
+      <section className="relative px-5 py-20 lg:py-28 text-center overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute inset-0 bg-gradient-to-b from-accent/5 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
+        
+        <div className="relative">
+          <span className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/15 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-accent shadow-sm">
+            <Bot className="h-3.5 w-3.5" /> AI-powered
           </span>
-          <span className="flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5 text-warning" /> Results in ~5 seconds
-          </span>
+          <h1 className="mt-6 font-display text-5xl lg:text-6xl font-bold tracking-tight">
+            Snake <span className="text-accent">Identifier</span>
+          </h1>
+          <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
+            Upload a clear photo of a snake. Our AI will instantly identify the species, assess the danger
+            level, and provide life-saving first aid steps.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
+            <span className="flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-accent" /> Powered by Google Gemini
+            </span>
+            <span className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-accent" /> Results in ~5 seconds
+            </span>
+          </div>
         </div>
       </section>
 
@@ -136,7 +142,7 @@ export default function IdentifyPage() {
                 e.preventDefault();
                 pickFile(e.dataTransfer.files?.[0]);
               }}
-              className="mt-4 overflow-hidden rounded-xl border border-dashed border-primary/40 bg-primary/5"
+              className="mt-4 overflow-hidden rounded-2xl border border-dashed border-accent/40 bg-accent/5 backdrop-blur-sm"
             >
               {preview ? (
                 <div className="relative">
@@ -203,7 +209,7 @@ export default function IdentifyPage() {
               )}
             </div>
 
-            <div className="mt-5 rounded-xl border border-border/70 bg-card/60 p-5">
+            <div className="mt-5 rounded-2xl border border-border/30 bg-background/60 backdrop-blur-xl shadow-md p-5">
               <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
                 <Lightbulb className="h-3.5 w-3.5 text-warning" /> Tips for best results
               </p>
@@ -229,8 +235,8 @@ export default function IdentifyPage() {
             </h2>
 
             {result && meta ? (
-              <div className="mt-4 space-y-4">
-                <div className="rounded-xl border border-primary/40 bg-primary/5 p-5">
+              <div className="mt-4 space-y-5">
+                <div className="rounded-2xl border border-accent/40 bg-accent/10 backdrop-blur-sm shadow-md p-6">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <h3 className="text-xl font-bold">{result.name}</h3>
@@ -264,7 +270,7 @@ export default function IdentifyPage() {
                   </p>
                 </div>
 
-                <div className="rounded-xl border border-border/70 bg-card/60 p-5">
+                <div className="rounded-2xl border border-border/30 bg-background/60 backdrop-blur-xl shadow-md p-6">
                   <p className="flex items-center gap-2 font-semibold text-primary">
                     <CheckCircle2 className="h-4 w-4" /> First Aid Steps
                   </p>

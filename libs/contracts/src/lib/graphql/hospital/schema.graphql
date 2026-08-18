@@ -1,0 +1,182 @@
+# ===================================================================
+# HOSPITAL SCHEMA
+# ===================================================================
+
+type Hospital {
+  id: ID!
+  
+  # Basic Information
+  name: String!
+  address: String!
+  municipality: String!
+  ward: Int
+  district: String!
+  province: String!
+  
+  # Contact Information
+  phone: String
+  email: String
+  emergencyPhone: String
+  
+  # Location
+  latitude: Float!
+  longitude: Float!
+  
+  # Emergency Capabilities
+  emergencyAvailable: Boolean!
+  emergency24x7: Boolean!
+  
+  # Snakebite Treatment Capability
+  snakebiteTreatmentAvailable: Boolean!
+  treatmentCenterType: TreatmentCenterType
+  
+  # Antivenom Status
+  antivenomStatus: AntivenomStatus!
+  antivenomStockQuantity: Int
+  antivenomLastVerifiedAt: DateTime
+  antivenomVerifiedBy: String
+  antivenomStockPublic: Boolean!
+  
+  # Derived verification state
+  antivenomVerificationFreshness: VerificationFreshness!
+  
+  # Additional Medical Capabilities
+  ventilatorAvailable: Boolean!
+  icuAvailable: Boolean!
+  ambulanceAvailable: Boolean!
+  bloodBankAvailable: Boolean!
+  
+  # Data Source & Verification
+  source: String
+  sourceYear: String
+  sourceUrl: String
+  verificationStatus: VerificationStatus!
+  officialTreatmentCenter: Boolean!
+  
+  # Status
+  status: HospitalStatus!
+  
+  # Additional Information
+  hospitalType: HospitalType
+  bedCapacity: Int
+  specializations: [String!]!
+  
+  # Metadata
+  notes: String
+  
+  # Computed Fields
+  distanceFromUser: Float # Distance in kilometers (computed based on user location)
+  markerColor: String! # Color for map marker based on status
+  recommendationScore: Float # Suitability score for snake rescue
+  
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  
+  # Relations
+  verificationRecords: [HospitalVerification!]!
+  recentVerification: HospitalVerification
+}
+
+type HospitalVerification {
+  id: ID!
+  hospitalId: String!
+  hospital: Hospital!
+  
+  # Verification Details
+  verifiedBy: String!
+  verificationType: VerificationType!
+  
+  # What was verified
+  snakebiteTreatment: Boolean
+  antivenomStatus: AntivenomStatus
+  antivenomQuantity: Int
+  emergencyStatus: Boolean
+  ventilatorStatus: Boolean
+  
+  # Verification Evidence
+  notes: String
+  evidenceUrls: [String!]!
+  officialDocumentUrl: String
+  
+  # Source Information
+  contactPerson: String
+  contactDesignation: String
+  contactPhone: String
+  
+  verificationDate: DateTime!
+  nextVerificationDue: DateTime
+  
+  createdAt: DateTime!
+}
+
+type HospitalReport {
+  id: ID!
+  hospitalId: String!
+  hospital: Hospital!
+  
+  # Reporter Information
+  reportedBy: String
+  reporterName: String
+  reporterEmail: String
+  reporterPhone: String
+  
+  # Report Details
+  reportType: HospitalReportType!
+  description: String!
+  
+  # Status
+  status: HospitalReportStatus!
+  
+  # Resolution
+  resolvedBy: String
+  resolvedAt: DateTime
+  resolution: String
+  
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+# Verification freshness indicator
+enum VerificationFreshness {
+  FRESH        # Verified within freshness period
+  STALE        # Verification expired
+  VERY_OLD     # Very old data
+  NEVER        # Never verified
+}
+
+# Hospital Connection (for pagination)
+type HospitalConnection {
+  edges: [HospitalEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type HospitalEdge {
+  node: Hospital!
+  cursor: String!
+}
+
+# Nearest facilities response
+type NearestFacility {
+  hospital: Hospital!
+  distance: Float!
+  travelTimeEstimate: String!
+  recommendationReason: String
+}
+
+# Hospital statistics
+type HospitalStatistics {
+  total: Int!
+  withSnakebiteTreatment: Int!
+  withVerifiedAntivenom: Int!
+  withUnknownAntivenom: Int!
+  outOfStock: Int!
+  byProvince: [ProvinceHospitalCount!]!
+  verificationCoverage: Float!
+}
+
+type ProvinceHospitalCount {
+  province: String!
+  count: Int!
+  withAntivenom: Int!
+}

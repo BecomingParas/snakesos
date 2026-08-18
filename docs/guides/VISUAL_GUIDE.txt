@@ -1,0 +1,166 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║                                                                      ║
+║              📱 MOBILE ACCESS - VISUAL STEP-BY-STEP GUIDE            ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+
+┌────────────────────────────────────────────────────────────────────┐
+│  STEP 1: RUN SETUP SCRIPT (Administrator PowerShell)               │
+└────────────────────────────────────────────────────────────────────┘
+
+    1. Right-click Windows Start button
+    2. Click "Windows PowerShell (Admin)"
+    3. Run these commands:
+
+    ┌──────────────────────────────────────────────────────────┐
+    │ cd ~/OneDrive/Desktop/snake-rescue                       │
+    │ Set-ExecutionPolicy Bypass -Scope Process -Force         │
+    │ .\setup-mobile-access.ps1                                │
+    └──────────────────────────────────────────────────────────┘
+
+    You'll see:
+    ✓ Running with Administrator privileges
+    ✓ Your IP Address: 192.168.1.65
+    ✓ Port 4200 (Frontend) - Opened
+    ✓ Port 4000 (Backend) - Opened
+    ✓ Setup Complete!
+
+
+┌────────────────────────────────────────────────────────────────────┐
+│  STEP 2: EDIT project.json FILE                                    │
+└────────────────────────────────────────────────────────────────────┘
+
+    Open: apps/frontend/project.json
+
+    FIND THIS:
+    ┌──────────────────────────────────────────────────────────┐
+    │ "serve": {                                               │
+    │   "executor": "@nx/next:server",                         │
+    │   "options": {                                           │
+    │     "buildTarget": "frontend:build",                     │
+    │     "dev": true,                                         │
+    │     "port": 4200                                         │
+    │   }                                                      │
+    │ }                                                        │
+    └──────────────────────────────────────────────────────────┘
+
+    CHANGE TO THIS:
+    ┌──────────────────────────────────────────────────────────┐
+    │ "serve": {                                               │
+    │   "executor": "@nx/next:server",                         │
+    │   "options": {                                           │
+    │     "buildTarget": "frontend:build",                     │
+    │     "dev": true,                                         │
+    │     "port": 4200,                                        │
+    │     "hostname": "0.0.0.0"  ← ADD THIS LINE              │
+    │   }                                                      │
+    │ }                                                        │
+    └──────────────────────────────────────────────────────────┘
+
+    Save the file!
+
+
+┌────────────────────────────────────────────────────────────────────┐
+│  STEP 3: START DEV SERVER                                          │
+└────────────────────────────────────────────────────────────────────┘
+
+    In your regular terminal:
+
+    ┌──────────────────────────────────────────────────────────┐
+    │ npm run dev                                              │
+    └──────────────────────────────────────────────────────────┘
+
+    Wait for:
+    ✓ Frontend ready on http://localhost:4200
+    ✓ Backend ready on http://localhost:4000
+
+
+┌────────────────────────────────────────────────────────────────────┐
+│  STEP 4: ACCESS FROM MOBILE                                        │
+└────────────────────────────────────────────────────────────────────┘
+
+    On Your Computer:                    On Your Mobile:
+    ┌───────────────────┐               ┌───────────────────┐
+    │   💻 LAPTOP       │               │   📱 PHONE        │
+    │                   │               │                   │
+    │  IP: 192.168.1.65 │◄─────WiFi────►│  Same WiFi       │
+    │  Running:         │               │  Browser:         │
+    │  npm run dev      │               │  192.168.1.65:4200│
+    └───────────────────┘               └───────────────────┘
+
+    1. Make sure mobile is on SAME Wi-Fi
+    2. Open browser on mobile
+    3. Type: http://192.168.1.65:4200
+    4. Press Go!
+    5. 🎉 You should see your app!
+
+
+╔══════════════════════════════════════════════════════════════════════╗
+║                         🎯 QUICK REFERENCE                           ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+    Your IP:        192.168.1.65
+    Mobile URL:     http://192.168.1.65:4200
+    Backend URL:    http://192.168.1.65:4000
+
+    Requirements:
+    ✓ Same Wi-Fi network
+    ✓ Dev server running (npm run dev)
+    ✓ Firewall ports open (script does this)
+    ✓ hostname: "0.0.0.0" in project.json
+
+
+╔══════════════════════════════════════════════════════════════════════╗
+║                     ❌ COMMON PROBLEMS & FIXES                       ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+    Problem: Can't connect from mobile
+    Fix: 
+    → Check both devices on same Wi-Fi
+    → Restart dev server (Ctrl+C, then npm run dev)
+    → Try http://localhost:4200 on computer first
+
+    ────────────────────────────────────────────────────────────
+
+    Problem: Script says "not running as administrator"
+    Fix:
+    → Right-click PowerShell
+    → Click "Run as Administrator"
+    → Run script again
+
+    ────────────────────────────────────────────────────────────
+
+    Problem: IP address changed
+    Fix:
+    → Run: ipconfig
+    → Find new IPv4 Address
+    → Use new IP in mobile browser
+    → Update .env.mobile if needed
+
+    ────────────────────────────────────────────────────────────
+
+    Problem: Port 4200 already in use
+    Fix:
+    → Close other running dev servers
+    → Or change port in project.json
+
+
+╔══════════════════════════════════════════════════════════════════════╗
+║                         📝 FILES CREATED                             ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+    ✓ setup-mobile-access.ps1      → Automatic setup script
+    ✓ cleanup-mobile-access.ps1    → Remove configuration
+    ✓ MOBILE_ACCESS_GUIDE.md       → Detailed guide
+    ✓ START_HERE.md                → Simple guide
+    ✓ VISUAL_GUIDE.txt             → This file
+    ✓ MOBILE_ACCESS_INFO.txt       → Your info (after running script)
+    ✓ apps/frontend/.env.mobile    → Mobile environment config
+
+
+╔══════════════════════════════════════════════════════════════════════╗
+║                    🎉 THAT'S IT! YOU'RE DONE!                        ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+    Questions? Check START_HERE.md or MOBILE_ACCESS_GUIDE.md

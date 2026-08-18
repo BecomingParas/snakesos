@@ -102,16 +102,16 @@ export default function RescuesPage() {
         description="Every report that reaches the hotline lands here. Triage by venom risk and exposure, then page the nearest certified handler."
       />
 
-      <div className="mt-6 flex flex-wrap gap-2">
+      <div className="mt-8 flex flex-wrap gap-2.5">
         {filters.map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
             className={
-              "rounded-full border px-4 py-1.5 text-xs font-medium uppercase tracking-wider transition-colors " +
+              "rounded-full border px-6 py-2.5 text-xs font-medium uppercase tracking-wider transition-all " +
               (filter === f
-                ? "border-primary bg-primary/15 text-primary"
-                : "border-border text-muted-foreground hover:text-foreground")
+                ? "border-accent bg-accent text-accent-foreground shadow-md"
+                : "border-border/30 bg-background/40 backdrop-blur-sm text-muted-foreground hover:text-foreground hover:border-accent/40")
             }
           >
             {f}
@@ -119,17 +119,17 @@ export default function RescuesPage() {
         ))}
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-        <div className="space-y-3">
+      <div className="mt-8 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+        <div className="space-y-4">
           {list.map((r) => (
             <button
               key={r.id}
               onClick={() => setSelected(r)}
               className={
-                "w-full rounded-xl border p-4 text-left transition-colors " +
+                "w-full rounded-2xl border p-5 text-left transition-all " +
                 (selected.id === r.id
-                  ? "border-primary/60 bg-primary/5"
-                  : "border-border/70 bg-card/60 hover:border-border")
+                  ? "border-accent/60 bg-accent/10 shadow-md backdrop-blur-sm"
+                  : "border-border/30 bg-background/40 backdrop-blur-sm hover:border-accent/40 hover:shadow-sm")
               }
             >
               <div className="flex flex-wrap items-center gap-2">
@@ -153,8 +153,8 @@ export default function RescuesPage() {
           ))}
         </div>
 
-        <div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
-          <Card className="border-border/70 bg-card/70">
+        <div className="space-y-6 lg:sticky lg:top-28 lg:self-start">
+          <Card className="border-border/30 bg-background/60 backdrop-blur-2xl shadow-md">
             <CardContent className="p-5">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-mono text-xs text-muted-foreground">{selected.code}</span>
@@ -233,7 +233,7 @@ export default function RescuesPage() {
 
 function ReportForm() {
   return (
-    <Card className="border-border/70 bg-card/70">
+    <Card className="border-border/30 bg-background/60 backdrop-blur-2xl shadow-md">
       <CardContent className="p-5">
         <h3 className="text-lg font-semibold">Report a snake sighting</h3>
         <p className="mt-1 text-sm text-muted-foreground">

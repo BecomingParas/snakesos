@@ -1,0 +1,52 @@
+# ===================================================================
+# HOSPITAL MUTATIONS
+# ===================================================================
+
+extend type Mutation {
+  # Create new hospital (Admin only)
+  createHospital(input: CreateHospitalInput!): Hospital!
+  
+  # Update hospital information (Admin only)
+  updateHospital(id: ID!, input: UpdateHospitalInput!): Hospital!
+  
+  # Delete hospital (Admin only)
+  deleteHospital(id: ID!): Boolean!
+  
+  # Verify antivenom status (Authorized verifier only)
+  verifyAntivenomStatus(input: VerifyAntivenomInput!): Hospital!
+  
+  # Verify complete hospital capability (Authorized verifier only)
+  verifyHospitalCapability(input: VerifyHospitalCapabilityInput!): Hospital!
+  
+  # Update antivenom stock quantity (Hospital staff / Admin)
+  updateAntivenomStock(
+    hospitalId: ID!
+    quantity: Int!
+    notes: String
+  ): Hospital!
+  
+  # Report incorrect hospital information (Public)
+  reportHospitalInformation(input: CreateHospitalReportInput!): HospitalReport!
+  
+  # Resolve hospital report (Admin only)
+  resolveHospitalReport(input: ResolveHospitalReportInput!): HospitalReport!
+  
+  # Bulk import hospitals (Super Admin only)
+  bulkImportHospitals(
+    hospitals: [CreateHospitalInput!]!
+    source: String!
+  ): BulkImportResult!
+}
+
+type BulkImportResult {
+  success: Boolean!
+  imported: Int!
+  failed: Int!
+  errors: [BulkImportError!]!
+}
+
+type BulkImportError {
+  index: Int!
+  hospitalName: String!
+  error: String!
+}

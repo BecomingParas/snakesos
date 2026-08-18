@@ -75,23 +75,23 @@ export function TwoColumnAuthLayout({
 
               {/* Feature Highlights */}
               <div className="mt-10 grid grid-cols-3 gap-4">
-                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
-                  <p className="text-xl font-bold text-green-400">24/7</p>
-                  <p className="mt-1 text-xs text-slate-400">
+                <div className="rounded-xl border border-border bg-card/50 p-4">
+                  <p className="text-xl font-bold text-primary">24/7</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
                     Rescue Support
                   </p>
                 </div>
 
-                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
-                  <p className="text-xl font-bold text-green-400">Live</p>
-                  <p className="mt-1 text-xs text-slate-400">
+                <div className="rounded-xl border border-border bg-card/50 p-4">
+                  <p className="text-xl font-bold text-primary">Live</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
                     Incident Tracking
                   </p>
                 </div>
 
-                <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
-                  <p className="text-xl font-bold text-green-400">Safe</p>
-                  <p className="mt-1 text-xs text-slate-400">
+                <div className="rounded-xl border border-border bg-card/50 p-4">
+                  <p className="text-xl font-bold text-primary">Safe</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
                     Wildlife Care
                   </p>
                 </div>
@@ -101,7 +101,7 @@ export function TwoColumnAuthLayout({
 
           {/* Copyright */}
           <div className="px-12 pb-8">
-            <p className="text-center text-xs text-slate-500">
+            <p className="text-center text-xs text-muted-foreground">
               © 2024 SnakeSOS. All rights reserved.
             </p>
           </div>
@@ -127,7 +127,7 @@ export function TwoColumnAuthLayout({
             </Link>
 
             <h1 className="font-display text-2xl font-bold uppercase tracking-[0.15em]">
-              Snake<span className="text-green-600">SOS</span>
+              Snake<span className="text-primary">SOS</span>
             </h1>
 
             <p className="mt-1 text-sm text-muted-foreground">
@@ -136,10 +136,10 @@ export function TwoColumnAuthLayout({
           </div>
 
           {/* Form Card */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xl sm:p-8">
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-xl sm:p-8">
             {/* Form Heading */}
             <div className="mb-7 text-center">
-              <h2 className="text-2xl font-bold tracking-tight text-slate-900">
+              <h2 className="text-2xl font-bold tracking-tight text-card-foreground">
                 {title}
               </h2>
 

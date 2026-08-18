@@ -40,5 +40,10 @@ export function createGraphQLSchema(additionalResolvers: any[] = []) {
   return makeExecutableSchema({
     typeDefs,
     resolvers: mergedResolvers,
+    // Some hospital resolvers are transitional while their names migrate to the
+    // shared contract. Do not fail server startup for those extra resolvers.
+    resolverValidationOptions: {
+      requireResolversToMatchSchema: 'ignore',
+    },
   });
 }

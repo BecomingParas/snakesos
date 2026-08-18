@@ -44,14 +44,32 @@ export interface RescuerLocation {
   status?: string;
 }
 
+export interface HospitalLocation {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  address: string;
+  municipality?: string;
+  district?: string;
+  phone?: string;
+  emergencyPhone?: string;
+  antivenomStatus?: string;
+  emergency24x7?: boolean;
+  distance?: number;
+  distanceFormatted?: string;
+}
+
 interface RescueMapProps {
   rescues: RescueLocation[];
   rescuers?: RescuerLocation[];
+  hospitals?: HospitalLocation[];
   center?: [number, number];
   zoom?: number;
   userLocation?: { latitude: number; longitude: number } | null;
   selectedRescueId?: string | null;
   onRescueClick?: (rescueId: string) => void;
+  onHospitalClick?: (hospitalId: string) => void;
   showAccuracyCircle?: boolean;
 }
 
@@ -107,11 +125,13 @@ function getStatusBadgeColor(status: string): string {
 export function RescueMap({
   rescues,
   rescuers = [],
+  hospitals = [],
   center = [27.7172, 85.324], // Kathmandu default
   zoom = 13,
   userLocation,
   selectedRescueId,
   onRescueClick,
+  onHospitalClick,
   showAccuracyCircle = true,
 }: RescueMapProps) {
   const [mapCenter, setMapCenter] = useState<[number, number]>(center);
@@ -120,10 +140,16 @@ export function RescueMap({
   // Filter out rescues and rescuers with invalid coordinates
   const validRescues = filterValidCoordinates(rescues);
   const validRescuers = filterValidCoordinates(rescuers);
+  
+  // Filter hospitals with valid coordinates (using latitude/longitude instead of lat/lng)
+  const validHospitals = hospitals.filter(h => 
+    isValidCoordinate(h.latitude, h.longitude)
+  );
 
   // Show warning if some items were filtered out
   const invalidRescueCount = rescues.length - validRescues.length;
   const invalidRescuerCount = rescuers.length - validRescuers.length;
+  const invalidHospitalCount = hospitals.length - validHospitals.length;
 
   // Update center when prop changes (e.g., different rescue selected)
   // Use JSON.stringify to compare array values, not references
@@ -153,7 +179,7 @@ export function RescueMap({
   return (
     <>
       {/* Warning banner for invalid coordinates */}
-      {(invalidRescueCount > 0 || invalidRescuerCount > 0) && (
+      {(invalidRescueCount > 0 || invalidRescuerCount > 0 || invalidHospitalCount > 0) && (
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[1000] max-w-md">
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg shadow-lg p-3 text-sm">
             <p className="text-yellow-800 font-medium">
@@ -167,6 +193,11 @@ export function RescueMap({
             {invalidRescuerCount > 0 && (
               <p className="text-yellow-700 text-xs">
                 {invalidRescuerCount} rescuer{invalidRescuerCount > 1 ? 's' : ''} not shown
+              </p>
+            )}
+            {invalidHospitalCount > 0 && (
+              <p className="text-yellow-700 text-xs">
+                {invalidHospitalCount} hospital{invalidHospitalCount > 1 ? 's' : ''} not shown
               </p>
             )}
           </div>
@@ -288,6 +319,130 @@ export function RescueMap({
           </Popup>
         </Marker>
       ))}
+
+      {/* Hospital Markers */}
+      {validHospitals.map((hospital) => {
+        // Determine hospital marker color based on antivenom status
+        const getHospitalColor = (status?: string): string => {
+          switch (status?.toUpperCase()) {
+            case 'AVAILABLE':
+              return '#16a34a'; // green-600 - Verified available
+            case 'OUT_OF_STOCK':
+              return '#dc2626'; // red-600 - Out of stock
+            case 'UNKNOWN':
+            default:
+              return '#ca8a04'; // yellow-600 - Unknown/not verified
+          }
+        };
+
+        const hospitalColor = getHospitalColor(hospital.antivenomStatus);
+        
+        // Calculate distance if user location is available
+        const distance = userLocation && hospital.latitude && hospital.longitude
+          ? calculateDistance(
+              userLocation.latitude,
+              userLocation.longitude,
+              hospital.latitude,
+              hospital.longitude
+            )
+          : hospital.distance || null;
+
+        return (
+          <Marker
+            key={`hospital-${hospital.id}`}
+            position={[hospital.latitude, hospital.longitude]}
+            icon={L.divIcon({
+              className: 'hospital-marker',
+              html: `
+                <div style="
+                  background: ${hospitalColor};
+                  width: 30px;
+                  height: 30px;
+                  border-radius: 50%;
+                  border: 3px solid white;
+                  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 14px;
+                  cursor: pointer;
+                ">🏥</div>
+              `,
+              iconSize: [30, 30],
+              iconAnchor: [15, 15],
+            })}
+            eventHandlers={{
+              click: () => onHospitalClick?.(hospital.id),
+            }}
+          >
+            <Popup>
+              <div className="text-sm min-w-[220px]">
+                <strong className="text-slate-900">🏥 {hospital.name}</strong>
+                
+                <div className="mt-2 space-y-1">
+                  <p className="text-xs text-slate-700">
+                    <strong>Location:</strong> {hospital.address}
+                  </p>
+                  
+                  {hospital.municipality && (
+                    <p className="text-xs text-slate-600">
+                      {hospital.municipality}, {hospital.district}
+                    </p>
+                  )}
+                  
+                  {hospital.phone && (
+                    <p className="text-xs text-slate-700 mt-2">
+                      <strong>Phone:</strong> 📞 {hospital.phone}
+                    </p>
+                  )}
+                  
+                  {hospital.emergencyPhone && (
+                    <p className="text-xs text-red-700">
+                      <strong>Emergency:</strong> 📞 {hospital.emergencyPhone}
+                    </p>
+                  )}
+                  
+                  <div className="mt-2 pt-2 border-t border-slate-200">
+                    <p className="text-xs">
+                      <strong>Antivenom Status:</strong>{' '}
+                      <span className={`px-2 py-0.5 rounded ${
+                        hospital.antivenomStatus === 'AVAILABLE'
+                          ? 'bg-green-100 text-green-800'
+                          : hospital.antivenomStatus === 'OUT_OF_STOCK'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {hospital.antivenomStatus === 'AVAILABLE'
+                          ? '✓ Available'
+                          : hospital.antivenomStatus === 'OUT_OF_STOCK'
+                          ? '✗ Out of Stock'
+                          : '? Unknown'}
+                      </span>
+                    </p>
+                    
+                    {hospital.emergency24x7 && (
+                      <p className="text-xs text-blue-600 mt-1">
+                        ⏰ 24/7 Emergency Services
+                      </p>
+                    )}
+                  </div>
+                  
+                  {distance !== null && (
+                    <div className="mt-2 pt-2 border-t border-slate-200">
+                      <p className="text-xs text-blue-600 font-semibold">
+                        📍 {hospital.distanceFormatted || formatDistance(distance)}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {estimateTravelTime(distance)}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        );
+      })}
 
       {/* Rescue Request Markers */}
       {validRescues.map((rescue) => {

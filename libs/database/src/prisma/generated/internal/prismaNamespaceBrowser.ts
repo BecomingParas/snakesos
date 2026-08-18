@@ -51,7 +51,30 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-
+  User: 'User',
+  Session: 'Session',
+  Account: 'Account',
+  Verification: 'Verification',
+  Role: 'Role',
+  Permission: 'Permission',
+  RolePermission: 'RolePermission',
+  UserRoleAssignment: 'UserRoleAssignment',
+  RescueRequest: 'RescueRequest',
+  RescueTimeline: 'RescueTimeline',
+  Volunteer: 'Volunteer',
+  Training: 'Training',
+  SnakeSpecies: 'SnakeSpecies',
+  AIIdentification: 'AIIdentification',
+  BlogPost: 'BlogPost',
+  GalleryImage: 'GalleryImage',
+  Donation: 'Donation',
+  Notification: 'Notification',
+  ContactMessage: 'ContactMessage',
+  ActivityLog: 'ActivityLog',
+  Hospital: 'Hospital',
+  HospitalVerification: 'HospitalVerification',
+  HospitalReport: 'HospitalReport',
+  SystemSetting: 'SystemSetting'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -68,4 +91,648 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const UserScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  password: 'password',
+  name: 'name',
+  phone: 'phone',
+  role: 'role',
+  status: 'status',
+  avatar: 'avatar',
+  googleId: 'googleId',
+  googleEmail: 'googleEmail',
+  emailVerified: 'emailVerified',
+  verifiedAt: 'verifiedAt',
+  lastLoginAt: 'lastLoginAt',
+  lastLoginIp: 'lastLoginIp',
+  passwordResetToken: 'passwordResetToken',
+  passwordResetExpiry: 'passwordResetExpiry',
+  language: 'language',
+  timezone: 'timezone',
+  notificationPreferences: 'notificationPreferences',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const SessionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  token: 'token',
+  expiresAt: 'expiresAt',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+
+
+export const AccountScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  providerId: 'providerId',
+  accountId: 'accountId',
+  accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  expiresAt: 'expiresAt',
+  tokenType: 'tokenType',
+  scope: 'scope',
+  idToken: 'idToken',
+  password: 'password',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AccountScalarFieldEnum = (typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum]
+
+
+export const VerificationScalarFieldEnum = {
+  id: 'id',
+  identifier: 'identifier',
+  token: 'token',
+  code: 'code',
+  type: 'type',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
+} as const
+
+export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[keyof typeof VerificationScalarFieldEnum]
+
+
+export const RoleScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum]
+
+
+export const PermissionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  resource: 'resource',
+  action: 'action',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PermissionScalarFieldEnum = (typeof PermissionScalarFieldEnum)[keyof typeof PermissionScalarFieldEnum]
+
+
+export const RolePermissionScalarFieldEnum = {
+  roleId: 'roleId',
+  permissionId: 'permissionId'
+} as const
+
+export type RolePermissionScalarFieldEnum = (typeof RolePermissionScalarFieldEnum)[keyof typeof RolePermissionScalarFieldEnum]
+
+
+export const UserRoleAssignmentScalarFieldEnum = {
+  userId: 'userId',
+  roleId: 'roleId',
+  grantedAt: 'grantedAt',
+  grantedBy: 'grantedBy'
+} as const
+
+export type UserRoleAssignmentScalarFieldEnum = (typeof UserRoleAssignmentScalarFieldEnum)[keyof typeof UserRoleAssignmentScalarFieldEnum]
+
+
+export const RescueRequestScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  phone: 'phone',
+  email: 'email',
+  municipality: 'municipality',
+  ward: 'ward',
+  address: 'address',
+  landmark: 'landmark',
+  lat: 'lat',
+  lng: 'lng',
+  locationAccuracy: 'locationAccuracy',
+  snakeDescription: 'snakeDescription',
+  snakeSize: 'snakeSize',
+  snakeColor: 'snakeColor',
+  snakeImageUrl: 'snakeImageUrl',
+  snakeImages: 'snakeImages',
+  speciesId: 'speciesId',
+  aiIdentificationId: 'aiIdentificationId',
+  status: 'status',
+  priority: 'priority',
+  stillPresent: 'stillPresent',
+  notes: 'notes',
+  internalNotes: 'internalNotes',
+  assignedTo: 'assignedTo',
+  assignedAt: 'assignedAt',
+  assignedBy: 'assignedBy',
+  acceptedAt: 'acceptedAt',
+  arrivedAt: 'arrivedAt',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  outcome: 'outcome',
+  rescueReport: 'rescueReport',
+  rescueImages: 'rescueImages',
+  rescueDuration: 'rescueDuration',
+  verifiedBy: 'verifiedBy',
+  verifiedAt: 'verifiedAt',
+  isEmergency: 'isEmergency',
+  emergencyDetails: 'emergencyDetails',
+  hasBite: 'hasBite',
+  biteDetails: 'biteDetails',
+  source: 'source',
+  referenceNumber: 'referenceNumber',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type RescueRequestScalarFieldEnum = (typeof RescueRequestScalarFieldEnum)[keyof typeof RescueRequestScalarFieldEnum]
+
+
+export const RescueTimelineScalarFieldEnum = {
+  id: 'id',
+  rescueId: 'rescueId',
+  event: 'event',
+  description: 'description',
+  metadata: 'metadata',
+  userId: 'userId',
+  lat: 'lat',
+  lng: 'lng',
+  createdAt: 'createdAt'
+} as const
+
+export type RescueTimelineScalarFieldEnum = (typeof RescueTimelineScalarFieldEnum)[keyof typeof RescueTimelineScalarFieldEnum]
+
+
+export const VolunteerScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  contact: 'contact',
+  email: 'email',
+  address: 'address',
+  municipality: 'municipality',
+  ward: 'ward',
+  dateOfBirth: 'dateOfBirth',
+  gender: 'gender',
+  emergencyContact: 'emergencyContact',
+  emergencyPhone: 'emergencyPhone',
+  experience: 'experience',
+  experienceYears: 'experienceYears',
+  vehicle: 'vehicle',
+  vehicleDetails: 'vehicleDetails',
+  skills: 'skills',
+  certifications: 'certifications',
+  languages: 'languages',
+  availableTime: 'availableTime',
+  availableDays: 'availableDays',
+  emergencyAvailability: 'emergencyAvailability',
+  isAvailableNow: 'isAvailableNow',
+  assignedZone: 'assignedZone',
+  coverageRadius: 'coverageRadius',
+  currentLat: 'currentLat',
+  currentLng: 'currentLng',
+  lastLocationUpdate: 'lastLocationUpdate',
+  imageUrl: 'imageUrl',
+  bio: 'bio',
+  status: 'status',
+  verifiedAt: 'verifiedAt',
+  verifiedBy: 'verifiedBy',
+  rejectedAt: 'rejectedAt',
+  rejectedBy: 'rejectedBy',
+  rejectionReason: 'rejectionReason',
+  totalRescues: 'totalRescues',
+  completedRescues: 'completedRescues',
+  cancelledRescues: 'cancelledRescues',
+  successRate: 'successRate',
+  averageResponseTime: 'averageResponseTime',
+  averageRescueTime: 'averageRescueTime',
+  rating: 'rating',
+  totalRatings: 'totalRatings',
+  trainingCompleted: 'trainingCompleted',
+  trainingDate: 'trainingDate',
+  certificationExpiry: 'certificationExpiry',
+  hasEquipment: 'hasEquipment',
+  equipment: 'equipment',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type VolunteerScalarFieldEnum = (typeof VolunteerScalarFieldEnum)[keyof typeof VolunteerScalarFieldEnum]
+
+
+export const TrainingScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  type: 'type',
+  scheduledAt: 'scheduledAt',
+  duration: 'duration',
+  location: 'location',
+  instructor: 'instructor',
+  maxParticipants: 'maxParticipants',
+  registeredCount: 'registeredCount',
+  status: 'status',
+  materials: 'materials',
+  certificate: 'certificate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TrainingScalarFieldEnum = (typeof TrainingScalarFieldEnum)[keyof typeof TrainingScalarFieldEnum]
+
+
+export const SnakeSpeciesScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  scientificName: 'scientificName',
+  nepaliName: 'nepaliName',
+  localNames: 'localNames',
+  aliases: 'aliases',
+  family: 'family',
+  genus: 'genus',
+  species: 'species',
+  venomous: 'venomous',
+  dangerLevel: 'dangerLevel',
+  venomType: 'venomType',
+  averageLength: 'averageLength',
+  maxLength: 'maxLength',
+  color: 'color',
+  pattern: 'pattern',
+  identificationGuide: 'identificationGuide',
+  distinctiveFeatures: 'distinctiveFeatures',
+  behavior: 'behavior',
+  habitat: 'habitat',
+  activeTime: 'activeTime',
+  diet: 'diet',
+  safetyTips: 'safetyTips',
+  emergencyAdvice: 'emergencyAdvice',
+  firstAidSteps: 'firstAidSteps',
+  foundInNepal: 'foundInNepal',
+  regions: 'regions',
+  altitudeRange: 'altitudeRange',
+  conservationStatus: 'conservationStatus',
+  protected: 'protected',
+  imageUrl: 'imageUrl',
+  images: 'images',
+  videoUrl: 'videoUrl',
+  rescueCount: 'rescueCount',
+  identificationCount: 'identificationCount',
+  verified: 'verified',
+  verifiedBy: 'verifiedBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type SnakeSpeciesScalarFieldEnum = (typeof SnakeSpeciesScalarFieldEnum)[keyof typeof SnakeSpeciesScalarFieldEnum]
+
+
+export const AIIdentificationScalarFieldEnum = {
+  id: 'id',
+  imageUrl: 'imageUrl',
+  imageThumbnail: 'imageThumbnail',
+  uploadSource: 'uploadSource',
+  speciesId: 'speciesId',
+  confidence: 'confidence',
+  alternativeMatches: 'alternativeMatches',
+  provider: 'provider',
+  model: 'model',
+  promptUsed: 'promptUsed',
+  responseTime: 'responseTime',
+  venomousDetected: 'venomousDetected',
+  dangerAssessment: 'dangerAssessment',
+  colorDetected: 'colorDetected',
+  sizeEstimate: 'sizeEstimate',
+  userId: 'userId',
+  userFeedback: 'userFeedback',
+  correctSpeciesId: 'correctSpeciesId',
+  createdAt: 'createdAt'
+} as const
+
+export type AIIdentificationScalarFieldEnum = (typeof AIIdentificationScalarFieldEnum)[keyof typeof AIIdentificationScalarFieldEnum]
+
+
+export const BlogPostScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  slug: 'slug',
+  content: 'content',
+  excerpt: 'excerpt',
+  category: 'category',
+  tags: 'tags',
+  authorId: 'authorId',
+  status: 'status',
+  publishedAt: 'publishedAt',
+  scheduledAt: 'scheduledAt',
+  imageUrl: 'imageUrl',
+  images: 'images',
+  videoUrl: 'videoUrl',
+  metaTitle: 'metaTitle',
+  metaDescription: 'metaDescription',
+  metaKeywords: 'metaKeywords',
+  views: 'views',
+  likes: 'likes',
+  shares: 'shares',
+  commentsEnabled: 'commentsEnabled',
+  commentCount: 'commentCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type BlogPostScalarFieldEnum = (typeof BlogPostScalarFieldEnum)[keyof typeof BlogPostScalarFieldEnum]
+
+
+export const GalleryImageScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  description: 'description',
+  imageUrl: 'imageUrl',
+  thumbnailUrl: 'thumbnailUrl',
+  category: 'category',
+  tags: 'tags',
+  rescueId: 'rescueId',
+  speciesId: 'speciesId',
+  uploadedBy: 'uploadedBy',
+  isPublic: 'isPublic',
+  isFeatured: 'isFeatured',
+  views: 'views',
+  likes: 'likes',
+  fileSize: 'fileSize',
+  dimensions: 'dimensions',
+  format: 'format',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type GalleryImageScalarFieldEnum = (typeof GalleryImageScalarFieldEnum)[keyof typeof GalleryImageScalarFieldEnum]
+
+
+export const DonationScalarFieldEnum = {
+  id: 'id',
+  donorId: 'donorId',
+  donorName: 'donorName',
+  donorEmail: 'donorEmail',
+  donorPhone: 'donorPhone',
+  amount: 'amount',
+  currency: 'currency',
+  amountUSD: 'amountUSD',
+  paymentMethod: 'paymentMethod',
+  paymentGateway: 'paymentGateway',
+  transactionId: 'transactionId',
+  gatewayResponse: 'gatewayResponse',
+  status: 'status',
+  paidAt: 'paidAt',
+  purpose: 'purpose',
+  campaign: 'campaign',
+  message: 'message',
+  anonymous: 'anonymous',
+  receiptNumber: 'receiptNumber',
+  receiptUrl: 'receiptUrl',
+  invoiceUrl: 'invoiceUrl',
+  verifiedAt: 'verifiedAt',
+  verifiedBy: 'verifiedBy',
+  verificationNotes: 'verificationNotes',
+  refundedAt: 'refundedAt',
+  refundReason: 'refundReason',
+  refundAmount: 'refundAmount',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  source: 'source',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DonationScalarFieldEnum = (typeof DonationScalarFieldEnum)[keyof typeof DonationScalarFieldEnum]
+
+
+export const NotificationScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  title: 'title',
+  message: 'message',
+  link: 'link',
+  actionUrl: 'actionUrl',
+  sentViaApp: 'sentViaApp',
+  sentViaEmail: 'sentViaEmail',
+  sentViaSMS: 'sentViaSMS',
+  sentViaTelegram: 'sentViaTelegram',
+  read: 'read',
+  readAt: 'readAt',
+  rescueId: 'rescueId',
+  metadata: 'metadata',
+  priority: 'priority',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
+} as const
+
+export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
+export const ContactMessageScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  subject: 'subject',
+  message: 'message',
+  category: 'category',
+  priority: 'priority',
+  status: 'status',
+  assignedTo: 'assignedTo',
+  responded: 'responded',
+  respondedAt: 'respondedAt',
+  response: 'response',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  source: 'source',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ContactMessageScalarFieldEnum = (typeof ContactMessageScalarFieldEnum)[keyof typeof ContactMessageScalarFieldEnum]
+
+
+export const ActivityLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  action: 'action',
+  entity: 'entity',
+  entityId: 'entityId',
+  description: 'description',
+  metadata: 'metadata',
+  oldValues: 'oldValues',
+  newValues: 'newValues',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  method: 'method',
+  url: 'url',
+  success: 'success',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt'
+} as const
+
+export type ActivityLogScalarFieldEnum = (typeof ActivityLogScalarFieldEnum)[keyof typeof ActivityLogScalarFieldEnum]
+
+
+export const HospitalScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  address: 'address',
+  municipality: 'municipality',
+  ward: 'ward',
+  district: 'district',
+  province: 'province',
+  phone: 'phone',
+  email: 'email',
+  emergencyPhone: 'emergencyPhone',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  emergencyAvailable: 'emergencyAvailable',
+  emergency24x7: 'emergency24x7',
+  snakebiteTreatmentAvailable: 'snakebiteTreatmentAvailable',
+  treatmentCenterType: 'treatmentCenterType',
+  antivenomStatus: 'antivenomStatus',
+  antivenomStockQuantity: 'antivenomStockQuantity',
+  antivenomLastVerifiedAt: 'antivenomLastVerifiedAt',
+  antivenomVerifiedBy: 'antivenomVerifiedBy',
+  antivenomStockPublic: 'antivenomStockPublic',
+  ventilatorAvailable: 'ventilatorAvailable',
+  icuAvailable: 'icuAvailable',
+  ambulanceAvailable: 'ambulanceAvailable',
+  bloodBankAvailable: 'bloodBankAvailable',
+  source: 'source',
+  sourceYear: 'sourceYear',
+  sourceUrl: 'sourceUrl',
+  verificationStatus: 'verificationStatus',
+  officialTreatmentCenter: 'officialTreatmentCenter',
+  status: 'status',
+  hospitalType: 'hospitalType',
+  bedCapacity: 'bedCapacity',
+  specializations: 'specializations',
+  notes: 'notes',
+  internalNotes: 'internalNotes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type HospitalScalarFieldEnum = (typeof HospitalScalarFieldEnum)[keyof typeof HospitalScalarFieldEnum]
+
+
+export const HospitalVerificationScalarFieldEnum = {
+  id: 'id',
+  hospitalId: 'hospitalId',
+  verifiedBy: 'verifiedBy',
+  verificationType: 'verificationType',
+  snakebiteTreatment: 'snakebiteTreatment',
+  antivenomStatus: 'antivenomStatus',
+  antivenomQuantity: 'antivenomQuantity',
+  emergencyStatus: 'emergencyStatus',
+  ventilatorStatus: 'ventilatorStatus',
+  notes: 'notes',
+  evidenceUrls: 'evidenceUrls',
+  officialDocumentUrl: 'officialDocumentUrl',
+  contactPerson: 'contactPerson',
+  contactDesignation: 'contactDesignation',
+  contactPhone: 'contactPhone',
+  verificationDate: 'verificationDate',
+  nextVerificationDue: 'nextVerificationDue',
+  createdAt: 'createdAt'
+} as const
+
+export type HospitalVerificationScalarFieldEnum = (typeof HospitalVerificationScalarFieldEnum)[keyof typeof HospitalVerificationScalarFieldEnum]
+
+
+export const HospitalReportScalarFieldEnum = {
+  id: 'id',
+  hospitalId: 'hospitalId',
+  reportedBy: 'reportedBy',
+  reporterName: 'reporterName',
+  reporterEmail: 'reporterEmail',
+  reporterPhone: 'reporterPhone',
+  reportType: 'reportType',
+  description: 'description',
+  status: 'status',
+  resolvedBy: 'resolvedBy',
+  resolvedAt: 'resolvedAt',
+  resolution: 'resolution',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type HospitalReportScalarFieldEnum = (typeof HospitalReportScalarFieldEnum)[keyof typeof HospitalReportScalarFieldEnum]
+
+
+export const SystemSettingScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  value: 'value',
+  type: 'type',
+  category: 'category',
+  description: 'description',
+  isPublic: 'isPublic',
+  updatedBy: 'updatedBy',
+  updatedAt: 'updatedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type SystemSettingScalarFieldEnum = (typeof SystemSettingScalarFieldEnum)[keyof typeof SystemSettingScalarFieldEnum]
+
+
+export const SortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+} as const
+
+export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

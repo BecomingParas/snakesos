@@ -10,7 +10,7 @@
 // - Singleton pattern for application-wide database access
 // ===================================================================
 
-import { PrismaClient, Prisma as PrismaTypes } from '@prisma/client';
+import { PrismaClient, Prisma as PrismaTypes } from './prisma/generated/client.js';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 declare global {
@@ -59,5 +59,5 @@ process.on('SIGINT', cleanup);
 process.on('SIGTERM', cleanup);
 
 // Export Prisma types
-export * from '@prisma/client';
-export type { Prisma } from '@prisma/client';
+export * from './prisma/generated/client.js';
+export type { Prisma } from './prisma/generated/client.js';

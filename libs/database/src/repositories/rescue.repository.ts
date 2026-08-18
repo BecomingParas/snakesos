@@ -3,7 +3,7 @@
  * Database operations for RescueRequest entity
  */
 
-import { PrismaClient, RescueRequest, Prisma, RescueStatus } from '@prisma/client';
+import { PrismaClient, RescueRequest, Prisma, RescueStatus } from '../prisma/generated/client.js';
 import { BaseRepository } from './base.repository.js';
 
 export class RescueRepository extends BaseRepository<

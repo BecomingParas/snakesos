@@ -1,0 +1,17 @@
+﻿========================================
+Snake Rescue - Mobile Access Information
+========================================
+
+Your Computer IP: 192.168.1.65
+Frontend URL: http://192.168.1.65:4200
+Backend URL: http://192.168.1.65:4000
+
+Setup Date: 2026-08-18 16:51
+
+To access from mobile:
+1. Connect mobile to same Wi-Fi
+2. Open: http://192.168.1.65:4200
+
+To undo this setup, run:
+  .\cleanup-mobile-access.ps1
+========================================

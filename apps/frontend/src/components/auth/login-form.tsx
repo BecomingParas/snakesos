@@ -85,14 +85,14 @@ export function LoginForm() {
   return (
     <>
       {/* Tab Switcher */}
-      <div className="flex gap-2 mb-6 p-1 bg-slate-100 rounded-lg">
+      <div className="flex gap-2 mb-6 p-1 bg-secondary rounded-lg">
         <button
           type="button"
           onClick={() => setActiveTab('signin')}
           className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all ${
             activeTab === 'signin'
-              ? 'bg-slate-900 text-white shadow-sm'
-              : 'text-slate-700 hover:text-slate-900'
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
           }`}
         >
           Sign in
@@ -105,8 +105,8 @@ export function LoginForm() {
           }}
           className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all ${
             activeTab === 'signup'
-              ? 'bg-slate-900 text-white shadow-sm'
-              : 'text-slate-700 hover:text-slate-900'
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
           }`}
         >
           Create account
@@ -115,7 +115,7 @@ export function LoginForm() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
         <div className="space-y-1">
-          <Label htmlFor="email" className="text-slate-700 font-medium text-sm">
+          <Label htmlFor="email" className="text-foreground font-medium text-sm">
             Email
           </Label>
           <Input
@@ -125,13 +125,13 @@ export function LoginForm() {
             autoComplete="email"
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? 'email-error' : undefined}
-            className={`h-9 bg-white border-slate-300 focus:bg-white text-sm text-slate-900 placeholder:text-slate-400 ${
-              errors.email ? 'border-red-500' : ''
+            className={`h-9 ${
+              errors.email ? 'border-destructive' : ''
             }`}
             {...register('email')}
           />
           {errors.email?.message && (
-            <p id="email-error" role="alert" className="text-xs text-red-600 mt-0.5">
+            <p id="email-error" role="alert" className="text-xs text-destructive mt-0.5">
               {errors.email.message}
             </p>
           )}
@@ -139,12 +139,12 @@ export function LoginForm() {
 
         <div className="space-y-1">
           <div className="flex items-center justify-between">
-            <Label htmlFor="password" className="text-slate-700 font-medium text-sm">
+            <Label htmlFor="password" className="text-foreground font-medium text-sm">
               Password
             </Label>
             <Link
               href="/forgot-password"
-              className="text-xs text-blue-600 hover:text-blue-700 hover:underline"
+              className="text-xs text-primary hover:text-primary/80 hover:underline"
             >
               Forgot password?
             </Link>
@@ -155,13 +155,13 @@ export function LoginForm() {
             autoComplete="current-password"
             aria-invalid={Boolean(errors.password)}
             aria-describedby={errors.password ? 'password-error' : undefined}
-            className={`h-9 bg-white border-slate-300 focus:bg-white text-sm text-slate-900 placeholder:text-slate-400 ${
-              errors.password ? 'border-red-500' : ''
+            className={`h-9 ${
+              errors.password ? 'border-destructive' : ''
             }`}
             {...register('password')}
           />
           {errors.password?.message && (
-            <p id="password-error" role="alert" className="text-xs text-red-600 mt-0.5">
+            <p id="password-error" role="alert" className="text-xs text-destructive mt-0.5">
               {errors.password.message}
             </p>
           )}
@@ -169,7 +169,7 @@ export function LoginForm() {
 
         <Button 
           type="submit" 
-          className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm mt-4 text-sm" 
+          className="w-full h-9 font-medium shadow-sm mt-4 text-sm" 
           disabled={isSubmitting}
         >
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -179,10 +179,10 @@ export function LoginForm() {
         {/* Divider */}
         <div className="relative my-4">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-300"></div>
+            <div className="w-full border-t border-border"></div>
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-2 text-slate-500">Or continue with</span>
+            <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
           </div>
         </div>
 
@@ -190,7 +190,7 @@ export function LoginForm() {
         <Button
           type="button"
           variant="outline"
-          className="w-full h-9 bg-white border-slate-300 hover:bg-slate-50 text-slate-700 font-medium text-sm"
+          className="w-full h-9 font-medium text-sm"
           onClick={() => toast.info('Google OAuth coming soon!')}
         >
           <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -203,9 +203,9 @@ export function LoginForm() {
         </Button>
 
         <div className="text-center pt-2">
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-muted-foreground">
             Don't have an account?{' '}
-            <Link href="/signup" className="text-blue-600 hover:text-blue-700 font-medium hover:underline">
+            <Link href="/signup" className="text-primary hover:text-primary/80 font-medium hover:underline">
               Sign up
             </Link>
           </p>
