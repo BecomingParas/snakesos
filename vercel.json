@@ -1,8 +1,9 @@
 {
   "buildCommand": "npx nx build frontend --prod",
   "framework": "nextjs",
-  "installCommand": "npm install",
+  "installCommand": "npm install --legacy-peer-deps",
   "outputDirectory": "apps/frontend/.next",
+  "ignoreCommand": "exit 1",
   "github": {
     "silent": false,
     "autoJobCancelation": true
