@@ -1,6 +1,5 @@
 # Vercel Ignore File
-# Files/folders that Vercel should ignore during deployment
-# This speeds up uploads and reduces deployment size
+# Only exclude files that are definitely not needed for frontend build
 
 # Backend (not needed for frontend deployment)
 apps/backend/
@@ -12,7 +11,7 @@ docs/
 *.md
 !README.md
 
-# Development files
+# Development tools
 .github/
 .husky/
 .vscode/
@@ -28,14 +27,7 @@ docs/
 cypress/
 apps/backend-e2e/
 
-# Build artifacts
-dist/
-.next/
-.nx/
-node_modules/.cache/
-
 # Environment files (set in Vercel dashboard instead)
-.env
 .env.local
 .env.*.local
 
@@ -48,24 +40,6 @@ tmp/
 *.tmp
 .DS_Store
 Thumbs.db
-
-# Scripts (build scripts are run by Vercel)
-scripts/
-run-seed.mjs
-test-password.js
-
-# Configuration files not needed for deployment
-.prettierrc
-.prettierignore
-.nxignore
-.gitattributes
-jest.config.ts
-jest.preset.js
-cypress.config.ts
-
-# Lock files (npm install uses package-lock.json automatically)
-yarn.lock
-pnpm-lock.yaml
 
 # Session summaries and documentation
 SESSION_*.md
