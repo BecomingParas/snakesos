@@ -39,9 +39,14 @@ export function useHospital(id: string) {
 /**
  * List hospitals with filters and pagination
  */
-export function useHospitals(filters?: unknown, pagination?: unknown) {
+export function useHospitals(filters?: unknown, options?: { first?: number; after?: string }) {
   return useQuery(LIST_HOSPITALS, {
-    variables: { filter: filters, pagination },
+    variables: { 
+      filter: filters, 
+      first: options?.first || 100,
+      after: options?.after,
+    },
+    fetchPolicy: 'cache-and-network', // Always fetch fresh data from network
   });
 }
 
@@ -98,9 +103,9 @@ export function useSearchHospitals(query: string, limit = 10) {
 /**
  * Get hospitals by province
  */
-export function useHospitalsByProvince(province: string, pagination?: unknown) {
+export function useHospitalsByProvince(province: string, options?: { first?: number; after?: string }) {
   return useQuery(GET_HOSPITALS_BY_PROVINCE, {
-    variables: { province, pagination },
+    variables: { province, first: options?.first, after: options?.after },
     skip: !province,
   });
 }
@@ -108,9 +113,9 @@ export function useHospitalsByProvince(province: string, pagination?: unknown) {
 /**
  * Get hospitals by district
  */
-export function useHospitalsByDistrict(district: string, pagination?: unknown) {
+export function useHospitalsByDistrict(district: string, options?: { first?: number; after?: string }) {
   return useQuery(GET_HOSPITALS_BY_DISTRICT, {
-    variables: { district, pagination },
+    variables: { district, first: options?.first, after: options?.after },
     skip: !district,
   });
 }

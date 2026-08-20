@@ -44,3 +44,7 @@ yarn-error.log*
 
 # OS
 Thumbs.db
+
+# Large video files (host on CDN instead)
+public/snake_rescue.mp4
+public/*.mp4

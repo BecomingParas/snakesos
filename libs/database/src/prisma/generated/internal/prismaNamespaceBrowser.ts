@@ -74,7 +74,13 @@ export const ModelName = {
   Hospital: 'Hospital',
   HospitalVerification: 'HospitalVerification',
   HospitalReport: 'HospitalReport',
-  SystemSetting: 'SystemSetting'
+  SystemSetting: 'SystemSetting',
+  SnakebiteHotspot: 'SnakebiteHotspot',
+  SnakebiteCase: 'SnakebiteCase',
+  TreatmentCenterSource: 'TreatmentCenterSource',
+  RescueVehicle: 'RescueVehicle',
+  SpeciesObservation: 'SpeciesObservation',
+  DistrictStatistics: 'DistrictStatistics'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -255,7 +261,12 @@ export const RescueRequestScalarFieldEnum = {
   referenceNumber: 'referenceNumber',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  estimatedTravelTimeMinutes: 'estimatedTravelTimeMinutes',
+  routeDistance: 'routeDistance',
+  routeGeometry: 'routeGeometry',
+  nearestHospitalId: 'nearestHospitalId',
+  vehicleId: 'vehicleId'
 } as const
 
 export type RescueRequestScalarFieldEnum = (typeof RescueRequestScalarFieldEnum)[keyof typeof RescueRequestScalarFieldEnum]
@@ -326,6 +337,14 @@ export const VolunteerScalarFieldEnum = {
   certificationExpiry: 'certificationExpiry',
   hasEquipment: 'hasEquipment',
   equipment: 'equipment',
+  serviceRadiusKm: 'serviceRadiusKm',
+  serviceDistricts: 'serviceDistricts',
+  totalResponseTimeMinutes: 'totalResponseTimeMinutes',
+  averageResponseTimeMinutes: 'averageResponseTimeMinutes',
+  lastKnownLatitude: 'lastKnownLatitude',
+  lastKnownLongitude: 'lastKnownLongitude',
+  lastLocationUpdateFromTracking: 'lastLocationUpdateFromTracking',
+  vehicleId: 'vehicleId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -626,6 +645,12 @@ export const HospitalScalarFieldEnum = {
   hospitalType: 'hospitalType',
   bedCapacity: 'bedCapacity',
   specializations: 'specializations',
+  edcdCertified: 'edcdCertified',
+  edcdCertificationDate: 'edcdCertificationDate',
+  treatmentCenterCategory: 'treatmentCenterCategory',
+  populationCoverage: 'populationCoverage',
+  travelTimeCoverage: 'travelTimeCoverage',
+  lastOperationalCheck: 'lastOperationalCheck',
   notes: 'notes',
   internalNotes: 'internalNotes',
   createdAt: 'createdAt',
@@ -694,6 +719,178 @@ export const SystemSettingScalarFieldEnum = {
 } as const
 
 export type SystemSettingScalarFieldEnum = (typeof SystemSettingScalarFieldEnum)[keyof typeof SystemSettingScalarFieldEnum]
+
+
+export const SnakebiteHotspotScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  geometryJson: 'geometryJson',
+  district: 'district',
+  municipality: 'municipality',
+  ward: 'ward',
+  province: 'province',
+  riskScore: 'riskScore',
+  riskLevel: 'riskLevel',
+  caseCount: 'caseCount',
+  populationAtRisk: 'populationAtRisk',
+  incidenceRate: 'incidenceRate',
+  mortalityRate: 'mortalityRate',
+  seasonalityScore: 'seasonalityScore',
+  source: 'source',
+  sourceUrl: 'sourceUrl',
+  studyYear: 'studyYear',
+  methodology: 'methodology',
+  confidence: 'confidence',
+  season: 'season',
+  monthlyPattern: 'monthlyPattern',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  verifiedBy: 'verifiedBy'
+} as const
+
+export type SnakebiteHotspotScalarFieldEnum = (typeof SnakebiteHotspotScalarFieldEnum)[keyof typeof SnakebiteHotspotScalarFieldEnum]
+
+
+export const SnakebiteCaseScalarFieldEnum = {
+  id: 'id',
+  year: 'year',
+  month: 'month',
+  season: 'season',
+  date: 'date',
+  province: 'province',
+  district: 'district',
+  municipality: 'municipality',
+  ward: 'ward',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  ageGroup: 'ageGroup',
+  sex: 'sex',
+  speciesId: 'speciesId',
+  speciesCommon: 'speciesCommon',
+  envenomation: 'envenomation',
+  symptoms: 'symptoms',
+  outcome: 'outcome',
+  treatmentCenterId: 'treatmentCenterId',
+  treatmentDelayMinutes: 'treatmentDelayMinutes',
+  antivenomGiven: 'antivenomGiven',
+  hospitalStayDays: 'hospitalStayDays',
+  source: 'source',
+  sourceUrl: 'sourceUrl',
+  studyId: 'studyId',
+  caseId: 'caseId',
+  dataQuality: 'dataQuality',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  importedBy: 'importedBy'
+} as const
+
+export type SnakebiteCaseScalarFieldEnum = (typeof SnakebiteCaseScalarFieldEnum)[keyof typeof SnakebiteCaseScalarFieldEnum]
+
+
+export const TreatmentCenterSourceScalarFieldEnum = {
+  id: 'id',
+  treatmentCenterId: 'treatmentCenterId',
+  sourceType: 'sourceType',
+  sourceUrl: 'sourceUrl',
+  sourceName: 'sourceName',
+  verifiedAt: 'verifiedAt',
+  verifiedBy: 'verifiedBy',
+  notes: 'notes',
+  documentUrl: 'documentUrl',
+  contactPerson: 'contactPerson',
+  contactPhone: 'contactPhone',
+  lastContactedAt: 'lastContactedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TreatmentCenterSourceScalarFieldEnum = (typeof TreatmentCenterSourceScalarFieldEnum)[keyof typeof TreatmentCenterSourceScalarFieldEnum]
+
+
+export const RescueVehicleScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  organizationName: 'organizationName',
+  vehicleNumber: 'vehicleNumber',
+  vehicleType: 'vehicleType',
+  model: 'model',
+  year: 'year',
+  color: 'color',
+  equipment: 'equipment',
+  status: 'status',
+  lastKnownLatitude: 'lastKnownLatitude',
+  lastKnownLongitude: 'lastKnownLongitude',
+  lastLocationUpdate: 'lastLocationUpdate',
+  passengerCapacity: 'passengerCapacity',
+  cargoCapacity: 'cargoCapacity',
+  lastMaintenanceDate: 'lastMaintenanceDate',
+  nextMaintenanceDate: 'nextMaintenanceDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  active: 'active',
+  deletedAt: 'deletedAt'
+} as const
+
+export type RescueVehicleScalarFieldEnum = (typeof RescueVehicleScalarFieldEnum)[keyof typeof RescueVehicleScalarFieldEnum]
+
+
+export const SpeciesObservationScalarFieldEnum = {
+  id: 'id',
+  observerId: 'observerId',
+  speciesId: 'speciesId',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  locationName: 'locationName',
+  district: 'district',
+  municipality: 'municipality',
+  province: 'province',
+  observedAt: 'observedAt',
+  behavior: 'behavior',
+  habitat: 'habitat',
+  photoUrl: 'photoUrl',
+  description: 'description',
+  validated: 'validated',
+  validatedBy: 'validatedBy',
+  validatedAt: 'validatedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SpeciesObservationScalarFieldEnum = (typeof SpeciesObservationScalarFieldEnum)[keyof typeof SpeciesObservationScalarFieldEnum]
+
+
+export const DistrictStatisticsScalarFieldEnum = {
+  id: 'id',
+  district: 'district',
+  province: 'province',
+  totalIncidents: 'totalIncidents',
+  activeRescues: 'activeRescues',
+  completedRescues: 'completedRescues',
+  snakebiteCases: 'snakebiteCases',
+  deaths: 'deaths',
+  treatmentCenters: 'treatmentCenters',
+  availableRescuers: 'availableRescuers',
+  avgResponseTimeMinutes: 'avgResponseTimeMinutes',
+  medianResponseTimeMinutes: 'medianResponseTimeMinutes',
+  avgTravelDistanceKm: 'avgTravelDistanceKm',
+  successRate: 'successRate',
+  riskLevel: 'riskLevel',
+  lastIncidentDate: 'lastIncidentDate',
+  lastSnakebiteDate: 'lastSnakebiteDate',
+  monsoonIncidents: 'monsoonIncidents',
+  winterIncidents: 'winterIncidents',
+  springIncidents: 'springIncidents',
+  autumnIncidents: 'autumnIncidents',
+  topSpecies: 'topSpecies',
+  lastCalculated: 'lastCalculated',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DistrictStatisticsScalarFieldEnum = (typeof DistrictStatisticsScalarFieldEnum)[keyof typeof DistrictStatisticsScalarFieldEnum]
 
 
 export const SortOrder = {

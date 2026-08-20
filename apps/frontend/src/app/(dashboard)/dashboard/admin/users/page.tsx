@@ -42,7 +42,6 @@ export default function AdminUsersPage() {
       pagination: { limit: 200, page: 1 },
       filter: {
         role: roleFilter !== 'all' ? roleFilter : undefined,
-        status: statusFilter === 'active' ? 'ACTIVE' : statusFilter === 'inactive' ? 'INACTIVE' : undefined,
         search: searchTerm || undefined,
       }
     },
@@ -54,16 +53,17 @@ export default function AdminUsersPage() {
 
 
   const users = data?.users?.edges || []
+  const userNodes = users.map((edge: any) => edge.node)
 
   // Calculate stats
   const stats = useMemo(() => {
     return {
-      total: users.length,
-      active: users.filter(u => u.status === 'ACTIVE').length,
-      citizens: users.filter(u => u.role === 'CITIZEN').length,
-      rescuers: users.filter(u => u.role === 'VERIFIED_RESCUER' || u.role === 'VOLUNTEER').length,
+      total: userNodes.length,
+      active: userNodes.filter((u: any) => u?.status === 'ACTIVE').length,
+      citizens: userNodes.filter((u: any) => u?.role === 'CITIZEN').length,
+      rescuers: userNodes.filter((u: any) => u?.role === 'VERIFIED_RESCUER' || u?.role === 'VOLUNTEER').length,
     }
-  }, [users])
+  }, [userNodes])
 
   if (error) {
     toast.error(`Failed to load users: ${error.message}`)
@@ -193,7 +193,7 @@ export default function AdminUsersPage() {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
+                {userNodes.map((user: any) => (
                   <tr 
                     key={user.id}
                     className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"

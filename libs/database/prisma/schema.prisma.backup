@@ -1,0 +1,1167 @@
+// ===================================================================
+// BUTWAL SNAKE RESCUE PLATFORM - PRISMA SCHEMA
+// ===================================================================
+// Production-grade PostgreSQL database schema for enterprise snake
+// rescue management, volunteer coordination, AI identification,
+// CMS, and donation system.
+//
+// Reference: https://www.butwalsnake.com/
+// ===================================================================
+
+generator client {
+  provider      = "prisma-client"
+  output        = "../src/prisma/generated"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ===================================================================
+// USER MANAGEMENT & AUTHENTICATION
+// ===================================================================
+
+model User {
+  id       String     @id @default(uuid())
+  email    String     @unique
+  password String? // Null for OAuth users
+  name     String
+  phone    String?
+  role     UserRole   @default(CITIZEN)
+  status   UserStatus @default(ACTIVE)
+  avatar   String?
+
+  // OAuth Integration
+  googleId    String? @unique
+  googleEmail String?
+
+  // Email Verification
+  emailVerified Boolean   @default(false)
+  verifiedAt    DateTime?
+
+  // Security
+  lastLoginAt         DateTime?
+  lastLoginIp         String?
+  passwordResetToken  String?
+  passwordResetExpiry DateTime?
+
+  // Preferences
+  language                String @default("en")
+  timezone                String @default("Asia/Kathmandu")
+  notificationPreferences Json? // Notification preferences
+
+  // Metadata
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Soft delete
+
+  // Relations
+  rescueRequests    RescueRequest[]
+  volunteerProfile  Volunteer?
+  blogPosts         BlogPost[]
+  galleryImages     GalleryImage[]
+  donations         Donation[]
+  aiIdentifications AIIdentification[]
+  notifications     Notification[]
+  activityLogs      ActivityLog[]
+  rescueTimelines   RescueTimeline[]
+  trainings         Training[]
+
+  // Better Auth Relations
+  sessions Session[]
+  accounts Account[]
+
+  // RBAC Relations
+  userRoles UserRoleAssignment[]
+
+  @@index([email])
+  @@index([role])
+  @@index([status])
+  @@index([googleId])
+  @@map("users")
+}
+
+enum UserRole {
+  CITIZEN
+  VOLUNTEER
+  VERIFIED_RESCUER
+  DISTRICT_COORDINATOR
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING_VERIFICATION
+  BANNED
+}
+
+// ===================================================================
+// BETTER AUTH TABLES (Authentication)
+// ===================================================================
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
+
+model Account {
+  id           String    @id @default(uuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  providerId   String    @map("provider") // "credential", "google", "github", etc.
+  accountId    String    @map("providerAccountId") // Provider-specific account ID
+  accessToken  String?   @db.Text
+  refreshToken String?   @db.Text
+  expiresAt    DateTime?
+  tokenType    String?
+  scope        String?
+  idToken      String?   @db.Text
+  password     String? // Hashed password for credential accounts (Better Auth requirement)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(uuid())
+  identifier String // email or phone
+  token      String   @unique
+  code       String? // 6-digit verification code
+  type       String // "email", "password-reset"
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  @@index([token])
+  @@index([identifier])
+  @@index([code])
+  @@map("verifications")
+}
+
+// ===================================================================
+// RBAC TABLES (Authorization)
+// ===================================================================
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique // "ADMIN", "VOLUNTEER", etc.
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  permissions RolePermission[]
+  userRoles   UserRoleAssignment[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  name        String   @unique // "MANAGE_USERS", "ASSIGN_RESCUES", etc.
+  description String?
+  resource    String // "users", "rescues", "volunteers"
+  action      String // "create", "read", "update", "delete"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roles RolePermission[]
+
+  @@unique([resource, action])
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model UserRoleAssignment {
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roleId    String
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  grantedAt DateTime @default(now())
+  grantedBy String?
+
+  @@id([userId, roleId])
+  @@map("user_role_assignments")
+}
+
+// ===================================================================
+// RESCUE MANAGEMENT
+// ===================================================================
+
+model RescueRequest {
+  id String @id @default(uuid())
+
+  // Reporter Information
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name   String
+  phone  String
+  email  String?
+
+  // Location Details
+  municipality     String
+  ward             Int?
+  address          String
+  landmark         String?
+  lat              Float?
+  lng              Float?
+  locationAccuracy Float? // GPS accuracy in meters
+
+  // Snake Information
+  snakeDescription String?
+  snakeSize        String? // "Small (<1ft)", "Medium (1-3ft)", "Large (>3ft)"
+  snakeColor       String?
+  snakeImageUrl    String?
+  snakeImages      String[] // Multiple images
+
+  // Species Identification
+  speciesId          String?
+  species            SnakeSpecies?     @relation(fields: [speciesId], references: [id], onDelete: SetNull)
+  aiIdentificationId String?           @unique
+  aiIdentification   AIIdentification? @relation(fields: [aiIdentificationId], references: [id])
+
+  // Rescue Status
+  status        RescueStatus   @default(PENDING)
+  priority      RescuePriority @default(MEDIUM)
+  stillPresent  Boolean        @default(true)
+  notes         String?        @db.Text
+  internalNotes String?        @db.Text // Admin-only notes
+
+  // Assignment
+  assignedTo        String?
+  assignedVolunteer Volunteer? @relation(fields: [assignedTo], references: [id], onDelete: SetNull)
+  assignedAt        DateTime?
+  assignedBy        String? // Admin who assigned
+
+  // Tracking
+  acceptedAt DateTime?
+  arrivedAt  DateTime?
+  startedAt  DateTime?
+
+  // Completion
+  completedAt    DateTime?
+  outcome        RescueOutcome?
+  rescueReport   String?        @db.Text
+  rescueImages   String[]
+  rescueDuration Int? // Minutes
+
+  // Verification
+  verifiedBy String?
+  verifiedAt DateTime?
+
+  // Emergency Details
+  isEmergency      Boolean @default(false)
+  emergencyDetails String?
+  hasBite          Boolean @default(false)
+  biteDetails      String?
+
+  // Metadata
+  source          String    @default("WEB") // WEB, APP, PHONE, TELEGRAM
+  referenceNumber String?   @unique // Human-readable ref like "BR-2024-001"
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  // Relations
+  timeline      RescueTimeline[]
+  notifications Notification[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([municipality])
+  @@index([assignedTo])
+  @@index([createdAt])
+  @@index([userId])
+  @@index([speciesId])
+  @@map("rescue_requests")
+}
+
+enum RescueStatus {
+  PENDING // New request, not assigned
+  ASSIGNED // Assigned to volunteer
+  ACCEPTED // Volunteer accepted
+  IN_PROGRESS // Volunteer en route or on site
+  COMPLETED // Successfully rescued
+  CANCELLED // Cancelled by reporter
+  CLOSED // Closed without rescue
+  EXPIRED // No response within time limit
+}
+
+enum RescuePriority {
+  LOW // Non-venomous, not urgent
+  MEDIUM // Standard rescue
+  HIGH // Venomous snake
+  CRITICAL // Bite victim, immediate danger
+}
+
+enum RescueOutcome {
+  RESCUED_RELOCATED // Snake rescued and relocated
+  ALREADY_GONE // Snake left before arrival
+  FALSE_ALARM // Not a snake or no danger
+  NO_SNAKE_FOUND // Could not locate
+  DECEASED // Snake was dead
+  REFUSED_HELP // Reporter changed mind
+}
+
+model RescueTimeline {
+  id       String        @id @default(uuid())
+  rescueId String
+  rescue   RescueRequest @relation(fields: [rescueId], references: [id], onDelete: Cascade)
+
+  event       String // "CREATED", "ASSIGNED", "ACCEPTED", "COMPLETED"
+  description String? @db.Text
+  metadata    Json? // Additional context
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  lat Float? // Location when event occurred
+  lng Float?
+
+  createdAt DateTime @default(now())
+
+  @@index([rescueId])
+  @@index([createdAt])
+  @@map("rescue_timelines")
+}
+
+// ===================================================================
+// VOLUNTEER MANAGEMENT
+// ===================================================================
+
+model Volunteer {
+  id String @id @default(uuid())
+
+  // User Link
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Personal Information
+  name         String
+  contact      String
+  email        String?
+  address      String
+  municipality String
+  ward         Int?
+  dateOfBirth  DateTime?
+  gender       String?
+
+  // Emergency Contact
+  emergencyContact String?
+  emergencyPhone   String?
+
+  // Qualification & Experience
+  experience      String // "Beginner", "Intermediate", "Expert"
+  experienceYears Int?
+  vehicle         String // "None", "Bike", "Car", "Both"
+  vehicleDetails  String?
+  skills          String[] // ["First Aid", "Snake Handling", "Photography"]
+  certifications  String[]
+  languages       String[] @default(["Nepali", "English"])
+
+  // Availability
+  availableTime         String // "Anytime", "Weekends", "Evenings"
+  availableDays         String[] // ["Monday", "Tuesday", ...]
+  emergencyAvailability Boolean  @default(true)
+  isAvailableNow        Boolean  @default(false)
+  assignedZone          String?
+  coverageRadius        Int?     @default(5) // Kilometers
+
+  // Location (for dispatch)
+  currentLat         Float?
+  currentLng         Float?
+  lastLocationUpdate DateTime?
+
+  // Profile
+  imageUrl String?
+  bio      String? @db.Text
+
+  // Verification & Status
+  status          VolunteerStatus @default(PENDING)
+  verifiedAt      DateTime?
+  verifiedBy      String?
+  rejectedAt      DateTime?
+  rejectedBy      String?
+  rejectionReason String?
+
+  // Performance Metrics
+  totalRescues        Int    @default(0)
+  completedRescues    Int    @default(0)
+  cancelledRescues    Int    @default(0)
+  successRate         Float?
+  averageResponseTime Int? // Minutes
+  averageRescueTime   Int? // Minutes
+  rating              Float?
+  totalRatings        Int    @default(0)
+
+  // Training & Certification
+  trainingCompleted   Boolean   @default(false)
+  trainingDate        DateTime?
+  certificationExpiry DateTime?
+
+  // Equipment
+  hasEquipment Boolean  @default(false)
+  equipment    String[] // ["Snake Hook", "Tongs", "Bag", "Boots"]
+
+  // Metadata
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // Relations
+  rescueAssignments RescueRequest[]
+  trainings         Training[]
+
+  @@index([status])
+  @@index([municipality])
+  @@index([isAvailableNow])
+  @@index([userId])
+  @@map("volunteers")
+}
+
+enum VolunteerStatus {
+  PENDING // Application submitted
+  APPROVED // Basic approval
+  VERIFIED // Fully verified rescuer
+  SUSPENDED // Temporarily suspended
+  REJECTED // Application rejected
+  INACTIVE // Inactive/retired
+}
+
+model Training {
+  id String @id @default(uuid())
+
+  title       String
+  description String? @db.Text
+  type        String // "BASIC", "ADVANCED", "REFRESHER", "FIRST_AID"
+
+  // Schedule
+  scheduledAt DateTime
+  duration    Int // Minutes
+  location    String
+  instructor  String?
+
+  // Capacity
+  maxParticipants Int @default(20)
+  registeredCount Int @default(0)
+
+  // Status
+  status String @default("SCHEDULED") // SCHEDULED, ONGOING, COMPLETED, CANCELLED
+
+  // Materials
+  materials   String[] // URLs to training materials
+  certificate String? // Certificate template
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  participants User[]
+  volunteers   Volunteer[]
+
+  @@index([scheduledAt])
+  @@index([status])
+  @@map("trainings")
+}
+
+// ===================================================================
+// SNAKE SPECIES DATABASE
+// ===================================================================
+
+model SnakeSpecies {
+  id String @id @default(uuid())
+
+  // Nomenclature
+  name           String   @unique // English common name
+  scientificName String   @unique
+  nepaliName     String
+  localNames     String[] // Regional names
+  aliases        String[] // Alternative names
+
+  // Classification
+  family  String?
+  genus   String?
+  species String?
+
+  // Danger Assessment
+  venomous    Boolean      @default(false)
+  dangerLevel DangerLevel?
+  venomType   String? // "Neurotoxic", "Hemotoxic", "Cytotoxic"
+
+  // Physical Characteristics
+  averageLength       String? // "60-90 cm"
+  maxLength           String?
+  color               String?
+  pattern             String?
+  identificationGuide String?  @db.Text
+  distinctiveFeatures String[]
+
+  // Behavior & Habitat
+  behavior   String? @db.Text
+  habitat    String? @db.Text
+  activeTime String? // "Nocturnal", "Diurnal", "Both"
+  diet       String?
+
+  // Safety Information
+  safetyTips      String?  @db.Text
+  emergencyAdvice String?  @db.Text
+  firstAidSteps   String[]
+
+  // Distribution
+  foundInNepal  Boolean  @default(true)
+  regions       String[] // Districts/regions
+  altitudeRange String? // "0-1000m"
+
+  // Conservation
+  conservationStatus String? // "Least Concern", "Endangered", etc.
+  protected          Boolean @default(false)
+
+  // Media
+  imageUrl String?
+  images   String[]
+  videoUrl String?
+
+  // Statistics
+  rescueCount         Int @default(0)
+  identificationCount Int @default(0)
+
+  // Metadata
+  verified   Boolean   @default(false)
+  verifiedBy String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  // Relations
+  rescueRequests    RescueRequest[]
+  aiIdentifications AIIdentification[]
+
+  @@index([venomous])
+  @@index([dangerLevel])
+  @@index([family])
+  @@map("snake_species")
+}
+
+enum DangerLevel {
+  HARMLESS // No venom, no danger
+  MILDLY_VENOMOUS // Mild symptoms
+  MEDICALLY_SIGNIFICANT // Requires medical attention
+  HIGHLY_DANGEROUS // Can be fatal
+}
+
+// ===================================================================
+// AI SNAKE IDENTIFICATION
+// ===================================================================
+
+model AIIdentification {
+  id String @id @default(uuid())
+
+  // Input
+  imageUrl       String
+  imageThumbnail String?
+  uploadSource   String  @default("WEB") // WEB, APP, API
+
+  // Results
+  speciesId  String?
+  species    SnakeSpecies? @relation(fields: [speciesId], references: [id], onDelete: SetNull)
+  confidence Float // 0.0 to 1.0
+
+  // Alternative Matches
+  alternativeMatches Json? // [{ speciesId, confidence, name }]
+
+  // AI Provider Details
+  provider     String // "gemini", "openai", "claude", "local"
+  model        String // "gemini-1.5-pro", "gpt-4-vision", etc.
+  promptUsed   String? @db.Text
+  responseTime Int? // Milliseconds
+
+  // Additional Analysis
+  venomousDetected Boolean?
+  dangerAssessment String?
+  colorDetected    String[]
+  sizeEstimate     String?
+
+  // User Context
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Feedback
+  userFeedback     String? // "CORRECT", "INCORRECT", "PARTIAL"
+  correctSpeciesId String? // If user corrects identification
+
+  // Metadata
+  createdAt DateTime @default(now())
+
+  // Relations
+  rescueRequest RescueRequest?
+
+  @@index([speciesId])
+  @@index([userId])
+  @@index([provider])
+  @@index([createdAt])
+  @@map("ai_identifications")
+}
+
+// ===================================================================
+// CONTENT MANAGEMENT SYSTEM (CMS)
+// ===================================================================
+
+model BlogPost {
+  id String @id @default(uuid())
+
+  // Content
+  title   String
+  slug    String  @unique
+  content String  @db.Text
+  excerpt String? @db.Text
+
+  // Categorization
+  category String   @default("News") // News, Education, Research, Success Story
+  tags     String[]
+
+  // Author
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  // Publishing
+  status      PostStatus @default(DRAFT)
+  publishedAt DateTime?
+  scheduledAt DateTime? // For scheduled publishing
+
+  // Media
+  imageUrl String? // Featured image
+  images   String[] // Content images
+  videoUrl String?
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+  metaKeywords    String[]
+
+  // Engagement
+  views  Int @default(0)
+  likes  Int @default(0)
+  shares Int @default(0)
+
+  // Comments (future feature)
+  commentsEnabled Boolean @default(true)
+  commentCount    Int     @default(0)
+
+  // Metadata
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([status])
+  @@index([category])
+  @@index([authorId])
+  @@index([publishedAt])
+  @@index([slug])
+  @@map("blog_posts")
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  SCHEDULED
+}
+
+model GalleryImage {
+  id String @id @default(uuid())
+
+  // Content
+  title        String?
+  description  String? @db.Text
+  imageUrl     String
+  thumbnailUrl String?
+
+  // Categorization
+  category String? // "Rescue", "Species", "Training", "Event"
+  tags     String[]
+
+  // Context
+  rescueId  String? // Link to rescue if applicable
+  speciesId String? // Link to species if applicable
+
+  // Uploader
+  uploadedBy String?
+  uploader   User?   @relation(fields: [uploadedBy], references: [id], onDelete: SetNull)
+
+  // Visibility
+  isPublic   Boolean @default(true)
+  isFeatured Boolean @default(false)
+
+  // Engagement
+  views Int @default(0)
+  likes Int @default(0)
+
+  // Metadata
+  fileSize   Int? // Bytes
+  dimensions String? // "1920x1080"
+  format     String? // "jpeg", "png"
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([category])
+  @@index([uploadedBy])
+  @@index([isPublic])
+  @@index([isFeatured])
+  @@map("gallery_images")
+}
+
+// ===================================================================
+// DONATIONS & PAYMENTS
+// ===================================================================
+
+model Donation {
+  id String @id @default(uuid())
+
+  // Donor Information
+  donorId    String?
+  donor      User?   @relation(fields: [donorId], references: [id], onDelete: SetNull)
+  donorName  String
+  donorEmail String?
+  donorPhone String?
+
+  // Amount
+  amount    Float
+  currency  String @default("NPR")
+  amountUSD Float? // Converted amount for reporting
+
+  // Payment Details
+  paymentMethod   PaymentMethod
+  paymentGateway  String // "esewa", "khalti", "stripe", "bank"
+  transactionId   String?       @unique
+  gatewayResponse Json? // Full gateway response
+
+  // Status
+  status PaymentStatus @default(PENDING)
+  paidAt DateTime?
+
+  // Purpose
+  purpose   String? // "General", "Emergency Fund", "Equipment", "Training"
+  campaign  String? // Specific campaign
+  message   String? @db.Text
+  anonymous Boolean @default(false)
+
+  // Receipt
+  receiptNumber String? @unique
+  receiptUrl    String?
+  invoiceUrl    String?
+
+  // Verification
+  verifiedAt        DateTime?
+  verifiedBy        String?
+  verificationNotes String?
+
+  // Refund
+  refundedAt   DateTime?
+  refundReason String?
+  refundAmount Float?
+
+  // Metadata
+  ipAddress String?
+  userAgent String?
+  source    String  @default("WEB") // WEB, APP, ADMIN
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([paymentMethod])
+  @@index([donorId])
+  @@index([createdAt])
+  @@map("donations")
+}
+
+enum PaymentMethod {
+  ESEWA
+  KHALTI
+  IME_PAY
+  FONEPAY
+  BANK_TRANSFER
+  STRIPE
+  PAYPAL
+  CASH
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+// ===================================================================
+// NOTIFICATIONS & MESSAGING
+// ===================================================================
+
+model Notification {
+  id String @id @default(uuid())
+
+  // Recipient
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Content
+  type      NotificationType
+  title     String
+  message   String           @db.Text
+  link      String?
+  actionUrl String?
+
+  // Delivery Channels
+  sentViaApp      Boolean @default(true)
+  sentViaEmail    Boolean @default(false)
+  sentViaSMS      Boolean @default(false)
+  sentViaTelegram Boolean @default(false)
+
+  // Status
+  read   Boolean   @default(false)
+  readAt DateTime?
+
+  // Context
+  rescueId String?
+  rescue   RescueRequest? @relation(fields: [rescueId], references: [id], onDelete: Cascade)
+
+  // Metadata
+  metadata  Json?
+  priority  String    @default("NORMAL") // LOW, NORMAL, HIGH, URGENT
+  expiresAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+  @@index([type])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  RESCUE_CREATED
+  RESCUE_ASSIGNED
+  RESCUE_ACCEPTED
+  RESCUE_COMPLETED
+  RESCUE_CANCELLED
+  VOLUNTEER_APPROVED
+  VOLUNTEER_REJECTED
+  TRAINING_SCHEDULED
+  TRAINING_REMINDER
+  DONATION_RECEIVED
+  SYSTEM_ALERT
+  ANNOUNCEMENT
+}
+
+// ===================================================================
+// CONTACT & INQUIRIES
+// ===================================================================
+
+model ContactMessage {
+  id String @id @default(uuid())
+
+  // Sender
+  name    String
+  email   String
+  phone   String?
+  subject String
+  message String  @db.Text
+
+  // Classification
+  category String @default("GENERAL") // GENERAL, RESCUE, VOLUNTEER, DONATION, TECHNICAL
+  priority String @default("NORMAL")
+
+  // Status
+  status     String  @default("NEW") // NEW, READ, RESPONDED, CLOSED
+  assignedTo String?
+
+  // Response
+  responded   Boolean   @default(false)
+  respondedAt DateTime?
+  response    String?   @db.Text
+
+  // Metadata
+  ipAddress String?
+  userAgent String?
+  source    String  @default("WEB")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([category])
+  @@index([createdAt])
+  @@map("contact_messages")
+}
+
+// ===================================================================
+// AUDIT & ACTIVITY LOGS
+// ===================================================================
+
+model ActivityLog {
+  id String @id @default(uuid())
+
+  // Actor
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Action
+  action   String // "LOGIN", "LOGOUT", "CREATE_RESCUE", "UPDATE_STATUS", etc.
+  entity   String? // "RescueRequest", "Volunteer", "User", etc.
+  entityId String?
+
+  // Details
+  description String?
+  metadata    Json? // Additional context
+
+  // Changes (for audit trail)
+  oldValues Json?
+  newValues Json?
+
+  // Request Context
+  ipAddress String?
+  userAgent String?
+  method    String? // GET, POST, PUT, DELETE
+  url       String?
+
+  // Result
+  success      Boolean @default(true)
+  errorMessage String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity, entityId])
+  @@index([createdAt])
+  @@map("activity_logs")
+}
+
+// ===================================================================
+// HOSPITAL & ANTIVENOM MANAGEMENT
+// ===================================================================
+
+model Hospital {
+  id String @id @default(uuid())
+
+  // Basic Information
+  name         String
+  address      String
+  municipality String
+  ward         Int?
+  district     String
+  province     String
+
+  // Contact Information
+  phone          String?
+  email          String?
+  emergencyPhone String?
+
+  // Location (Required for mapping)
+  latitude  Float
+  longitude Float
+
+  // Emergency Capabilities
+  emergencyAvailable Boolean @default(false)
+  emergency24x7      Boolean @default(false)
+
+  // Snakebite Treatment Capability
+  snakebiteTreatmentAvailable Boolean @default(false)
+  treatmentCenterType         String? // "PRIMARY", "DISTRICT", "SPECIALIZED", "REFERRAL"
+
+  // Antivenom Status
+  antivenomStatus         AntivenomStatus @default(UNKNOWN)
+  antivenomStockQuantity  Int? // Stock level (null = not tracked)
+  antivenomLastVerifiedAt DateTime?
+  antivenomVerifiedBy     String? // User ID who verified
+  antivenomStockPublic    Boolean         @default(false) // Whether to show stock quantity
+
+  // Additional Medical Capabilities
+  ventilatorAvailable Boolean @default(false)
+  icuAvailable        Boolean @default(false)
+  ambulanceAvailable  Boolean @default(false)
+  bloodBankAvailable  Boolean @default(false)
+
+  // Data Source & Verification
+  source                  String? // "EDCD", "Provincial_Health", "Hospital_Direct", "Manual"
+  sourceYear              String? // e.g., "2078/79", "2024"
+  sourceUrl               String?
+  verificationStatus      VerificationStatus @default(UNVERIFIED)
+  officialTreatmentCenter Boolean            @default(false)
+
+  // Status
+  status HospitalStatus @default(ACTIVE)
+
+  // Additional Information
+  hospitalType    String? // "GOVERNMENT", "PRIVATE", "ARMY", "POLICE", "NGO"
+  bedCapacity     Int?
+  specializations String[]
+
+  // Metadata
+  notes         String? @db.Text
+  internalNotes String? @db.Text // Admin-only notes
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // Relations
+  verificationRecords HospitalVerification[]
+  reports             HospitalReport[]
+
+  @@index([latitude, longitude])
+  @@index([snakebiteTreatmentAvailable])
+  @@index([antivenomStatus])
+  @@index([antivenomLastVerifiedAt])
+  @@index([municipality])
+  @@index([district])
+  @@index([province])
+  @@index([status])
+  @@index([verificationStatus])
+  @@map("hospitals")
+}
+
+enum AntivenomStatus {
+  AVAILABLE // Verified in stock
+  LOW_STOCK // Low but available
+  OUT_OF_STOCK // Verified out of stock
+  UNKNOWN // Not verified / no data
+  NOT_SUPPORTED // Hospital doesn't provide antivenom
+}
+
+enum VerificationStatus {
+  VERIFIED // Recently verified
+  HISTORICAL // Based on old data (needs re-verification)
+  STALE // Verification expired
+  UNVERIFIED // No verification yet
+}
+
+enum HospitalStatus {
+  ACTIVE
+  INACTIVE
+  TEMPORARILY_CLOSED
+  PERMANENTLY_CLOSED
+}
+
+model HospitalVerification {
+  id String @id @default(uuid())
+
+  hospitalId String
+  hospital   Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+
+  // Verification Details
+  verifiedBy       String // User ID
+  verificationType String // "PHONE_CALL", "SITE_VISIT", "OFFICIAL_DOCUMENT", "HOSPITAL_REPORT"
+
+  // What was verified
+  snakebiteTreatment Boolean?
+  antivenomStatus    AntivenomStatus?
+  antivenomQuantity  Int?
+  emergencyStatus    Boolean?
+  ventilatorStatus   Boolean?
+
+  // Verification Evidence
+  notes               String?  @db.Text
+  evidenceUrls        String[] // Photos, documents
+  officialDocumentUrl String?
+
+  // Source Information
+  contactPerson      String? // Who provided the information
+  contactDesignation String?
+  contactPhone       String?
+
+  verificationDate    DateTime  @default(now())
+  nextVerificationDue DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([hospitalId])
+  @@index([verificationDate])
+  @@map("hospital_verifications")
+}
+
+model HospitalReport {
+  id String @id @default(uuid())
+
+  hospitalId String
+  hospital   Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+
+  // Reporter Information
+  reportedBy    String? // User ID (if logged in)
+  reporterName  String?
+  reporterEmail String?
+  reporterPhone String?
+
+  // Report Details
+  reportType  String // "INCORRECT_INFO", "OUTDATED_STATUS", "CLOSED", "WRONG_LOCATION", "OTHER"
+  description String @db.Text
+
+  // Status
+  status String @default("NEW") // NEW, UNDER_REVIEW, RESOLVED, DISMISSED
+
+  // Resolution
+  resolvedBy String?
+  resolvedAt DateTime?
+  resolution String?   @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([hospitalId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("hospital_reports")
+}
+
+// ===================================================================
+// SYSTEM CONFIGURATION
+// ===================================================================
+
+model SystemSetting {
+  id String @id @default(uuid())
+
+  key      String @unique
+  value    String @db.Text
+  type     String @default("STRING") // STRING, NUMBER, BOOLEAN, JSON
+  category String @default("GENERAL")
+
+  description String?
+  isPublic    Boolean @default(false)
+
+  updatedBy String?
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@index([category])
+  @@map("system_settings")
+}

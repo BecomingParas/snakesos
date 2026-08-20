@@ -21,6 +21,19 @@ export const USER_FIELDS_FRAGMENT = gql`
 `;
 
 /**
+ * Registration Payload Fragment - Registration response fields (no auth tokens)
+ */
+export const REGISTRATION_PAYLOAD_FRAGMENT = gql`
+  ${USER_FIELDS_FRAGMENT}
+  
+  fragment RegistrationPayloadFields on RegistrationPayload {
+    user {
+      ...UserFields
+    }
+  }
+`;
+
+/**
  * Auth Payload Fragment - Authentication response fields
  */
 export const AUTH_PAYLOAD_FRAGMENT = gql`
@@ -38,13 +51,14 @@ export const AUTH_PAYLOAD_FRAGMENT = gql`
 
 /**
  * Register Mutation - Create a new user account
+ * Returns user data only (no tokens until email is verified and user logs in)
  */
 export const REGISTER_MUTATION = gql`
-  ${AUTH_PAYLOAD_FRAGMENT}
+  ${REGISTRATION_PAYLOAD_FRAGMENT}
   
   mutation Register($input: RegisterInput!) {
     register(input: $input) {
-      ...AuthPayloadFields
+      ...RegistrationPayloadFields
     }
   }
 `;

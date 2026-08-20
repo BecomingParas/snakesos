@@ -4,36 +4,7 @@
  * Source: EDCD reports 88 snakebite treatment centers nationwide (2078/79)
  */
 
-import { PrismaClient } from '@prisma/client';
-import { PrismaPg } from '@prisma/adapter-pg';
-import { config } from 'dotenv';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
-
-// Get __dirname equivalent in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Load environment variables
-config({ path: resolve(__dirname, '../../../../.env') });
-
-// Get database URL from environment
-const databaseUrl = process.env.DATABASE_URL;
-
-if (!databaseUrl) {
-  throw new Error(
-    'DATABASE_URL environment variable is not set. Please configure it in your .env file.'
-  );
-}
-
-// Create Prisma PostgreSQL adapter with connection string
-const adapter = new PrismaPg(databaseUrl);
-
-// Initialize PrismaClient with driver adapter
-const prisma = new PrismaClient({
-  adapter,
-  log: ['error', 'warn'],
-});
+import { prisma } from '../../src/client.js';
 
 // Comprehensive list of snakebite treatment centers across Nepal
 // Based on EDCD official list (88 centers) + Provincial Health data
@@ -241,8 +212,8 @@ const hospitals = [
     municipality: 'Hetauda',
     district: 'Makwanpur',
     province: 'Bagmati',
-    latitude: 27.4287,
-    longitude: 85.0326,
+    latitude: 27.4328,
+    longitude: 85.0275,
     phone: '057-520133',
     emergencyAvailable: true,
     emergency24x7: true,
@@ -739,26 +710,6 @@ const hospitals = [
     hospitalType: 'GOVERNMENT',
     status: 'ACTIVE',
   },
-  {
-    name: 'Mahendranagar District Hospital',
-    address: 'Mahendranagar, Kanchanpur',
-    municipality: 'Mahendranagar',
-    district: 'Kanchanpur',
-    province: 'Madhesh',
-    latitude: 28.9678,
-    longitude: 80.1828,
-    emergencyAvailable: true,
-    emergency24x7: false,
-    snakebiteTreatmentAvailable: true,
-    treatmentCenterType: 'DISTRICT',
-    antivenomStatus: 'UNKNOWN',
-    source: 'EDCD',
-    sourceYear: '2078/79',
-    officialTreatmentCenter: true,
-    verificationStatus: 'HISTORICAL',
-    hospitalType: 'GOVERNMENT',
-    status: 'ACTIVE',
-  },
 
   // ==================== GANDAKI PROVINCE (8 centers) ====================
   {
@@ -930,29 +881,91 @@ const hospitals = [
     status: 'ACTIVE',
   },
 
-  // ==================== LUMBINI PROVINCE (11 centers) ====================
+  // ==================== LUMBINI PROVINCE (14 centers) ====================
+  // Rupandehi District - High snakebite incidence area
   {
     name: 'Lumbini Provincial Hospital',
-    address: 'Butwal, Rupandehi',
+    address: 'Butwal-11, Rupandehi',
     municipality: 'Butwal',
+    ward: 11,
     district: 'Rupandehi',
     province: 'Lumbini',
-    latitude: 27.7000,
-    longitude: 83.4500,
+    latitude: 27.6978,
+    longitude: 83.4642,
     phone: '071-540333',
     emergencyPhone: '071-540333',
     emergencyAvailable: true,
     emergency24x7: true,
     snakebiteTreatmentAvailable: true,
-    treatmentCenterType: 'DISTRICT',
+    treatmentCenterType: 'PROVINCIAL',
     antivenomStatus: 'UNKNOWN',
+    ventilatorAvailable: true,
+    icuAvailable: true,
     ambulanceAvailable: true,
+    bloodBankAvailable: true,
     source: 'EDCD',
     sourceYear: '2078/79',
     officialTreatmentCenter: true,
     verificationStatus: 'HISTORICAL',
     hospitalType: 'GOVERNMENT',
     status: 'ACTIVE',
+    notes: 'Provincial referral center for snakebite cases. Call to confirm current antivenom availability.',
+  },
+  {
+    name: 'Bhim Hospital',
+    address: 'Bhairahawa-03, Rupandehi',
+    municipality: 'Siddharthanagar',
+    ward: 3,
+    district: 'Rupandehi',
+    province: 'Lumbini',
+    latitude: 27.5051,
+    longitude: 83.4533,
+    phone: '071-521321',
+    emergencyPhone: '071-521321',
+    emergencyAvailable: true,
+    emergency24x7: true,
+    snakebiteTreatmentAvailable: true,
+    treatmentCenterType: 'PRIVATE',
+    antivenomStatus: 'UNKNOWN',
+    ventilatorAvailable: true,
+    icuAvailable: true,
+    ambulanceAvailable: true,
+    bloodBankAvailable: true,
+    source: 'Local_Health_Facilities',
+    sourceYear: '2081/82',
+    officialTreatmentCenter: true,
+    verificationStatus: 'HISTORICAL',
+    hospitalType: 'PRIVATE',
+    status: 'ACTIVE',
+    notes: 'Major private hospital in Bhairahawa. Known for emergency trauma care. Call to confirm antivenom stock.',
+  },
+  {
+    name: 'Universal College of Medical Sciences (UCMS)',
+    address: 'Bhairahawa-05, Rupandehi',
+    municipality: 'Siddharthanagar',
+    ward: 5,
+    district: 'Rupandehi',
+    province: 'Lumbini',
+    latitude: 27.5089,
+    longitude: 83.4604,
+    phone: '071-520295',
+    emergencyPhone: '071-520295',
+    emergencyAvailable: true,
+    emergency24x7: true,
+    snakebiteTreatmentAvailable: true,
+    treatmentCenterType: 'REFERRAL',
+    antivenomStatus: 'UNKNOWN',
+    ventilatorAvailable: true,
+    icuAvailable: true,
+    ambulanceAvailable: true,
+    bloodBankAvailable: true,
+    source: 'Local_Health_Facilities',
+    sourceYear: '2081/82',
+    officialTreatmentCenter: true,
+    verificationStatus: 'HISTORICAL',
+    hospitalType: 'PRIVATE',
+    status: 'ACTIVE',
+    notes: 'Teaching hospital with emergency medicine department. Handles critical snakebite cases. Call to verify antivenom availability.',
   },
   {
     name: 'Lumbini Medical College',
@@ -1435,7 +1448,7 @@ async function seedHospitals() {
   for (const hospital of hospitals) {
     try {
       // Check if hospital already exists
-      const existing = await prisma.hospital.findFirst({
+      const existing = await (prisma.hospital.findFirst as any)({
         where: {
           name: hospital.name,
           district: hospital.district,
@@ -1449,8 +1462,8 @@ async function seedHospitals() {
       }
 
       // Create hospital
-      await prisma.hospital.create({
-        data: hospital,
+      await (prisma.hospital.create as any)({
+        data: hospital as any,
       });
 
       console.log(`✅ Created ${hospital.name}`);
@@ -1458,9 +1471,9 @@ async function seedHospitals() {
 
       // Add verification record for verified hospitals
       if (hospital.verificationStatus === 'VERIFIED') {
-        await prisma.hospitalVerification.create({
+        await (prisma.hospitalVerification.create as any)({
           data: {
-            hospitalId: (await prisma.hospital.findFirst({
+            hospitalId: (await (prisma.hospital.findFirst as any)({
               where: { name: hospital.name },
               select: { id: true },
             }))!.id,

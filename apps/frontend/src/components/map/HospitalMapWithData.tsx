@@ -133,8 +133,8 @@ export function HospitalMapWithData({
     }
   );
 
-  const hospitals = data?.nearbyHospitals
-    ? data.nearbyHospitals.map(mapHospitalData)
+  const hospitals = (data as any)?.nearbyHospitals
+    ? (data as any).nearbyHospitals.map(mapHospitalData)
     : [];
 
   const loading = isRequestingLocation || queryLoading;

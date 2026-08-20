@@ -12,6 +12,9 @@ export * from '../rescue/index.js';
 // Hospital Module
 export * from '../hospital/index.js';
 
+// Map Module (Geospatial Intelligence)
+export * from '../map/index.js';
+
 // Analytics Module
 export * from '../analytics/index.js';
 

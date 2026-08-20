@@ -29,11 +29,17 @@ export const hospitalQueryResolvers = {
       _parent: unknown,
       args: {
         filter?: HospitalFilters;
+        first?: number;
+        after?: string;
         pagination?: PaginationInput;
       },
       context: GraphQLContext
     ) => {
-      const result = await hospitalService.listHospitals(args.filter, args.pagination);
+      // Support both Relay-style (first/after) and traditional (pagination) arguments
+      const limit = args.first || args.pagination?.limit || 100; // Default to 100 for admin
+      const page = args.pagination?.page || 1;
+
+      const result = await hospitalService.listHospitals(args.filter, { page, limit });
 
       return {
         edges: result.hospitals.map((hospital) => ({
@@ -68,6 +74,26 @@ export const hospitalQueryResolvers = {
     },
 
     /**
+     * Find nearest snakebite treatment facilities (filtered)
+     */
+    nearestSnakebiteFacilities: async (
+      _parent: unknown,
+      args: {
+        latitude: number;
+        longitude: number;
+        radiusKm?: number;
+        limit?: number;
+      },
+      context: GraphQLContext
+    ) => {
+      // Call nearbyHospitals with snakebite filter
+      return hospitalService.getNearbyHospitals({
+        ...args,
+        antivenomRequired: false, // Show all snakebite facilities, not just with antivenom
+      });
+    },
+
+    /**
      * Get recommended hospitals based on location and emergency type
      */
     recommendedHospitals: async (
@@ -90,6 +116,16 @@ export const hospitalQueryResolvers = {
      * Get hospital statistics (admin only)
      */
     hospitalStats: async (_parent: unknown, _args: unknown, context: GraphQLContext) => {
+      context.requireAuth();
+      context.requireRole(['ADMIN', 'SUPER_ADMIN']);
+
+      return hospitalService.getStatistics();
+    },
+
+    /**
+     * Get hospital statistics (alias)
+     */
+    hospitalStatistics: async (_parent: unknown, _args: unknown, context: GraphQLContext) => {
       context.requireAuth();
       context.requireRole(['ADMIN', 'SUPER_ADMIN']);
 

@@ -420,7 +420,13 @@ export const ModelName = {
   Hospital: 'Hospital',
   HospitalVerification: 'HospitalVerification',
   HospitalReport: 'HospitalReport',
-  SystemSetting: 'SystemSetting'
+  SystemSetting: 'SystemSetting',
+  SnakebiteHotspot: 'SnakebiteHotspot',
+  SnakebiteCase: 'SnakebiteCase',
+  TreatmentCenterSource: 'TreatmentCenterSource',
+  RescueVehicle: 'RescueVehicle',
+  SpeciesObservation: 'SpeciesObservation',
+  DistrictStatistics: 'DistrictStatistics'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -436,7 +442,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "role" | "permission" | "rolePermission" | "userRoleAssignment" | "rescueRequest" | "rescueTimeline" | "volunteer" | "training" | "snakeSpecies" | "aIIdentification" | "blogPost" | "galleryImage" | "donation" | "notification" | "contactMessage" | "activityLog" | "hospital" | "hospitalVerification" | "hospitalReport" | "systemSetting"
+    modelProps: "user" | "session" | "account" | "verification" | "role" | "permission" | "rolePermission" | "userRoleAssignment" | "rescueRequest" | "rescueTimeline" | "volunteer" | "training" | "snakeSpecies" | "aIIdentification" | "blogPost" | "galleryImage" | "donation" | "notification" | "contactMessage" | "activityLog" | "hospital" | "hospitalVerification" | "hospitalReport" | "systemSetting" | "snakebiteHotspot" | "snakebiteCase" | "treatmentCenterSource" | "rescueVehicle" | "speciesObservation" | "districtStatistics"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2216,6 +2222,450 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SnakebiteHotspot: {
+      payload: Prisma.$SnakebiteHotspotPayload<ExtArgs>
+      fields: Prisma.SnakebiteHotspotFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SnakebiteHotspotFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteHotspotPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SnakebiteHotspotFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteHotspotPayload>
+        }
+        findFirst: {
+          args: Prisma.SnakebiteHotspotFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteHotspotPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SnakebiteHotspotFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteHotspotPayload>
+        }
+        findMany: {
+          args: Prisma.SnakebiteHotspotFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteHotspotPayload>[]
+        }
+        create: {
+          args: Prisma.SnakebiteHotspotCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteHotspotPayload>
+        }
+        createMany: {
+          args: Prisma.SnakebiteHotspotCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SnakebiteHotspotCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteHotspotPayload>[]
+        }
+        delete: {
+          args: Prisma.SnakebiteHotspotDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteHotspotPayload>
+        }
+        update: {
+          args: Prisma.SnakebiteHotspotUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteHotspotPayload>
+        }
+        deleteMany: {
+          args: Prisma.SnakebiteHotspotDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SnakebiteHotspotUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SnakebiteHotspotUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteHotspotPayload>[]
+        }
+        upsert: {
+          args: Prisma.SnakebiteHotspotUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteHotspotPayload>
+        }
+        aggregate: {
+          args: Prisma.SnakebiteHotspotAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSnakebiteHotspot>
+        }
+        groupBy: {
+          args: Prisma.SnakebiteHotspotGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SnakebiteHotspotGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SnakebiteHotspotCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SnakebiteHotspotCountAggregateOutputType> | number
+        }
+      }
+    }
+    SnakebiteCase: {
+      payload: Prisma.$SnakebiteCasePayload<ExtArgs>
+      fields: Prisma.SnakebiteCaseFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SnakebiteCaseFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteCasePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SnakebiteCaseFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteCasePayload>
+        }
+        findFirst: {
+          args: Prisma.SnakebiteCaseFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteCasePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SnakebiteCaseFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteCasePayload>
+        }
+        findMany: {
+          args: Prisma.SnakebiteCaseFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteCasePayload>[]
+        }
+        create: {
+          args: Prisma.SnakebiteCaseCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteCasePayload>
+        }
+        createMany: {
+          args: Prisma.SnakebiteCaseCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SnakebiteCaseCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteCasePayload>[]
+        }
+        delete: {
+          args: Prisma.SnakebiteCaseDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteCasePayload>
+        }
+        update: {
+          args: Prisma.SnakebiteCaseUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteCasePayload>
+        }
+        deleteMany: {
+          args: Prisma.SnakebiteCaseDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SnakebiteCaseUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SnakebiteCaseUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteCasePayload>[]
+        }
+        upsert: {
+          args: Prisma.SnakebiteCaseUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SnakebiteCasePayload>
+        }
+        aggregate: {
+          args: Prisma.SnakebiteCaseAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSnakebiteCase>
+        }
+        groupBy: {
+          args: Prisma.SnakebiteCaseGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SnakebiteCaseGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SnakebiteCaseCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SnakebiteCaseCountAggregateOutputType> | number
+        }
+      }
+    }
+    TreatmentCenterSource: {
+      payload: Prisma.$TreatmentCenterSourcePayload<ExtArgs>
+      fields: Prisma.TreatmentCenterSourceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TreatmentCenterSourceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TreatmentCenterSourcePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TreatmentCenterSourceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TreatmentCenterSourcePayload>
+        }
+        findFirst: {
+          args: Prisma.TreatmentCenterSourceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TreatmentCenterSourcePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TreatmentCenterSourceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TreatmentCenterSourcePayload>
+        }
+        findMany: {
+          args: Prisma.TreatmentCenterSourceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TreatmentCenterSourcePayload>[]
+        }
+        create: {
+          args: Prisma.TreatmentCenterSourceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TreatmentCenterSourcePayload>
+        }
+        createMany: {
+          args: Prisma.TreatmentCenterSourceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TreatmentCenterSourceCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TreatmentCenterSourcePayload>[]
+        }
+        delete: {
+          args: Prisma.TreatmentCenterSourceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TreatmentCenterSourcePayload>
+        }
+        update: {
+          args: Prisma.TreatmentCenterSourceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TreatmentCenterSourcePayload>
+        }
+        deleteMany: {
+          args: Prisma.TreatmentCenterSourceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TreatmentCenterSourceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TreatmentCenterSourceUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TreatmentCenterSourcePayload>[]
+        }
+        upsert: {
+          args: Prisma.TreatmentCenterSourceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TreatmentCenterSourcePayload>
+        }
+        aggregate: {
+          args: Prisma.TreatmentCenterSourceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTreatmentCenterSource>
+        }
+        groupBy: {
+          args: Prisma.TreatmentCenterSourceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TreatmentCenterSourceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TreatmentCenterSourceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TreatmentCenterSourceCountAggregateOutputType> | number
+        }
+      }
+    }
+    RescueVehicle: {
+      payload: Prisma.$RescueVehiclePayload<ExtArgs>
+      fields: Prisma.RescueVehicleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RescueVehicleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueVehiclePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RescueVehicleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueVehiclePayload>
+        }
+        findFirst: {
+          args: Prisma.RescueVehicleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueVehiclePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RescueVehicleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueVehiclePayload>
+        }
+        findMany: {
+          args: Prisma.RescueVehicleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueVehiclePayload>[]
+        }
+        create: {
+          args: Prisma.RescueVehicleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueVehiclePayload>
+        }
+        createMany: {
+          args: Prisma.RescueVehicleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RescueVehicleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueVehiclePayload>[]
+        }
+        delete: {
+          args: Prisma.RescueVehicleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueVehiclePayload>
+        }
+        update: {
+          args: Prisma.RescueVehicleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueVehiclePayload>
+        }
+        deleteMany: {
+          args: Prisma.RescueVehicleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RescueVehicleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RescueVehicleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueVehiclePayload>[]
+        }
+        upsert: {
+          args: Prisma.RescueVehicleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueVehiclePayload>
+        }
+        aggregate: {
+          args: Prisma.RescueVehicleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRescueVehicle>
+        }
+        groupBy: {
+          args: Prisma.RescueVehicleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RescueVehicleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RescueVehicleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RescueVehicleCountAggregateOutputType> | number
+        }
+      }
+    }
+    SpeciesObservation: {
+      payload: Prisma.$SpeciesObservationPayload<ExtArgs>
+      fields: Prisma.SpeciesObservationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SpeciesObservationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpeciesObservationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SpeciesObservationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpeciesObservationPayload>
+        }
+        findFirst: {
+          args: Prisma.SpeciesObservationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpeciesObservationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SpeciesObservationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpeciesObservationPayload>
+        }
+        findMany: {
+          args: Prisma.SpeciesObservationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpeciesObservationPayload>[]
+        }
+        create: {
+          args: Prisma.SpeciesObservationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpeciesObservationPayload>
+        }
+        createMany: {
+          args: Prisma.SpeciesObservationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SpeciesObservationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpeciesObservationPayload>[]
+        }
+        delete: {
+          args: Prisma.SpeciesObservationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpeciesObservationPayload>
+        }
+        update: {
+          args: Prisma.SpeciesObservationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpeciesObservationPayload>
+        }
+        deleteMany: {
+          args: Prisma.SpeciesObservationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SpeciesObservationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SpeciesObservationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpeciesObservationPayload>[]
+        }
+        upsert: {
+          args: Prisma.SpeciesObservationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SpeciesObservationPayload>
+        }
+        aggregate: {
+          args: Prisma.SpeciesObservationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSpeciesObservation>
+        }
+        groupBy: {
+          args: Prisma.SpeciesObservationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SpeciesObservationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SpeciesObservationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SpeciesObservationCountAggregateOutputType> | number
+        }
+      }
+    }
+    DistrictStatistics: {
+      payload: Prisma.$DistrictStatisticsPayload<ExtArgs>
+      fields: Prisma.DistrictStatisticsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DistrictStatisticsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictStatisticsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DistrictStatisticsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictStatisticsPayload>
+        }
+        findFirst: {
+          args: Prisma.DistrictStatisticsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictStatisticsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DistrictStatisticsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictStatisticsPayload>
+        }
+        findMany: {
+          args: Prisma.DistrictStatisticsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictStatisticsPayload>[]
+        }
+        create: {
+          args: Prisma.DistrictStatisticsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictStatisticsPayload>
+        }
+        createMany: {
+          args: Prisma.DistrictStatisticsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DistrictStatisticsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictStatisticsPayload>[]
+        }
+        delete: {
+          args: Prisma.DistrictStatisticsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictStatisticsPayload>
+        }
+        update: {
+          args: Prisma.DistrictStatisticsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictStatisticsPayload>
+        }
+        deleteMany: {
+          args: Prisma.DistrictStatisticsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DistrictStatisticsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DistrictStatisticsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictStatisticsPayload>[]
+        }
+        upsert: {
+          args: Prisma.DistrictStatisticsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DistrictStatisticsPayload>
+        }
+        aggregate: {
+          args: Prisma.DistrictStatisticsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDistrictStatistics>
+        }
+        groupBy: {
+          args: Prisma.DistrictStatisticsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DistrictStatisticsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DistrictStatisticsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DistrictStatisticsCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2417,7 +2867,12 @@ export const RescueRequestScalarFieldEnum = {
   referenceNumber: 'referenceNumber',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  deletedAt: 'deletedAt'
+  deletedAt: 'deletedAt',
+  estimatedTravelTimeMinutes: 'estimatedTravelTimeMinutes',
+  routeDistance: 'routeDistance',
+  routeGeometry: 'routeGeometry',
+  nearestHospitalId: 'nearestHospitalId',
+  vehicleId: 'vehicleId'
 } as const
 
 export type RescueRequestScalarFieldEnum = (typeof RescueRequestScalarFieldEnum)[keyof typeof RescueRequestScalarFieldEnum]
@@ -2488,6 +2943,14 @@ export const VolunteerScalarFieldEnum = {
   certificationExpiry: 'certificationExpiry',
   hasEquipment: 'hasEquipment',
   equipment: 'equipment',
+  serviceRadiusKm: 'serviceRadiusKm',
+  serviceDistricts: 'serviceDistricts',
+  totalResponseTimeMinutes: 'totalResponseTimeMinutes',
+  averageResponseTimeMinutes: 'averageResponseTimeMinutes',
+  lastKnownLatitude: 'lastKnownLatitude',
+  lastKnownLongitude: 'lastKnownLongitude',
+  lastLocationUpdateFromTracking: 'lastLocationUpdateFromTracking',
+  vehicleId: 'vehicleId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   deletedAt: 'deletedAt'
@@ -2788,6 +3251,12 @@ export const HospitalScalarFieldEnum = {
   hospitalType: 'hospitalType',
   bedCapacity: 'bedCapacity',
   specializations: 'specializations',
+  edcdCertified: 'edcdCertified',
+  edcdCertificationDate: 'edcdCertificationDate',
+  treatmentCenterCategory: 'treatmentCenterCategory',
+  populationCoverage: 'populationCoverage',
+  travelTimeCoverage: 'travelTimeCoverage',
+  lastOperationalCheck: 'lastOperationalCheck',
   notes: 'notes',
   internalNotes: 'internalNotes',
   createdAt: 'createdAt',
@@ -2856,6 +3325,178 @@ export const SystemSettingScalarFieldEnum = {
 } as const
 
 export type SystemSettingScalarFieldEnum = (typeof SystemSettingScalarFieldEnum)[keyof typeof SystemSettingScalarFieldEnum]
+
+
+export const SnakebiteHotspotScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  geometryJson: 'geometryJson',
+  district: 'district',
+  municipality: 'municipality',
+  ward: 'ward',
+  province: 'province',
+  riskScore: 'riskScore',
+  riskLevel: 'riskLevel',
+  caseCount: 'caseCount',
+  populationAtRisk: 'populationAtRisk',
+  incidenceRate: 'incidenceRate',
+  mortalityRate: 'mortalityRate',
+  seasonalityScore: 'seasonalityScore',
+  source: 'source',
+  sourceUrl: 'sourceUrl',
+  studyYear: 'studyYear',
+  methodology: 'methodology',
+  confidence: 'confidence',
+  season: 'season',
+  monthlyPattern: 'monthlyPattern',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  createdBy: 'createdBy',
+  verifiedBy: 'verifiedBy'
+} as const
+
+export type SnakebiteHotspotScalarFieldEnum = (typeof SnakebiteHotspotScalarFieldEnum)[keyof typeof SnakebiteHotspotScalarFieldEnum]
+
+
+export const SnakebiteCaseScalarFieldEnum = {
+  id: 'id',
+  year: 'year',
+  month: 'month',
+  season: 'season',
+  date: 'date',
+  province: 'province',
+  district: 'district',
+  municipality: 'municipality',
+  ward: 'ward',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  ageGroup: 'ageGroup',
+  sex: 'sex',
+  speciesId: 'speciesId',
+  speciesCommon: 'speciesCommon',
+  envenomation: 'envenomation',
+  symptoms: 'symptoms',
+  outcome: 'outcome',
+  treatmentCenterId: 'treatmentCenterId',
+  treatmentDelayMinutes: 'treatmentDelayMinutes',
+  antivenomGiven: 'antivenomGiven',
+  hospitalStayDays: 'hospitalStayDays',
+  source: 'source',
+  sourceUrl: 'sourceUrl',
+  studyId: 'studyId',
+  caseId: 'caseId',
+  dataQuality: 'dataQuality',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  importedBy: 'importedBy'
+} as const
+
+export type SnakebiteCaseScalarFieldEnum = (typeof SnakebiteCaseScalarFieldEnum)[keyof typeof SnakebiteCaseScalarFieldEnum]
+
+
+export const TreatmentCenterSourceScalarFieldEnum = {
+  id: 'id',
+  treatmentCenterId: 'treatmentCenterId',
+  sourceType: 'sourceType',
+  sourceUrl: 'sourceUrl',
+  sourceName: 'sourceName',
+  verifiedAt: 'verifiedAt',
+  verifiedBy: 'verifiedBy',
+  notes: 'notes',
+  documentUrl: 'documentUrl',
+  contactPerson: 'contactPerson',
+  contactPhone: 'contactPhone',
+  lastContactedAt: 'lastContactedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TreatmentCenterSourceScalarFieldEnum = (typeof TreatmentCenterSourceScalarFieldEnum)[keyof typeof TreatmentCenterSourceScalarFieldEnum]
+
+
+export const RescueVehicleScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  organizationName: 'organizationName',
+  vehicleNumber: 'vehicleNumber',
+  vehicleType: 'vehicleType',
+  model: 'model',
+  year: 'year',
+  color: 'color',
+  equipment: 'equipment',
+  status: 'status',
+  lastKnownLatitude: 'lastKnownLatitude',
+  lastKnownLongitude: 'lastKnownLongitude',
+  lastLocationUpdate: 'lastLocationUpdate',
+  passengerCapacity: 'passengerCapacity',
+  cargoCapacity: 'cargoCapacity',
+  lastMaintenanceDate: 'lastMaintenanceDate',
+  nextMaintenanceDate: 'nextMaintenanceDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  active: 'active',
+  deletedAt: 'deletedAt'
+} as const
+
+export type RescueVehicleScalarFieldEnum = (typeof RescueVehicleScalarFieldEnum)[keyof typeof RescueVehicleScalarFieldEnum]
+
+
+export const SpeciesObservationScalarFieldEnum = {
+  id: 'id',
+  observerId: 'observerId',
+  speciesId: 'speciesId',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  locationName: 'locationName',
+  district: 'district',
+  municipality: 'municipality',
+  province: 'province',
+  observedAt: 'observedAt',
+  behavior: 'behavior',
+  habitat: 'habitat',
+  photoUrl: 'photoUrl',
+  description: 'description',
+  validated: 'validated',
+  validatedBy: 'validatedBy',
+  validatedAt: 'validatedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SpeciesObservationScalarFieldEnum = (typeof SpeciesObservationScalarFieldEnum)[keyof typeof SpeciesObservationScalarFieldEnum]
+
+
+export const DistrictStatisticsScalarFieldEnum = {
+  id: 'id',
+  district: 'district',
+  province: 'province',
+  totalIncidents: 'totalIncidents',
+  activeRescues: 'activeRescues',
+  completedRescues: 'completedRescues',
+  snakebiteCases: 'snakebiteCases',
+  deaths: 'deaths',
+  treatmentCenters: 'treatmentCenters',
+  availableRescuers: 'availableRescuers',
+  avgResponseTimeMinutes: 'avgResponseTimeMinutes',
+  medianResponseTimeMinutes: 'medianResponseTimeMinutes',
+  avgTravelDistanceKm: 'avgTravelDistanceKm',
+  successRate: 'successRate',
+  riskLevel: 'riskLevel',
+  lastIncidentDate: 'lastIncidentDate',
+  lastSnakebiteDate: 'lastSnakebiteDate',
+  monsoonIncidents: 'monsoonIncidents',
+  winterIncidents: 'winterIncidents',
+  springIncidents: 'springIncidents',
+  autumnIncidents: 'autumnIncidents',
+  topSpecies: 'topSpecies',
+  lastCalculated: 'lastCalculated',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DistrictStatisticsScalarFieldEnum = (typeof DistrictStatisticsScalarFieldEnum)[keyof typeof DistrictStatisticsScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -3177,6 +3818,104 @@ export type EnumHospitalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$P
 export type ListEnumHospitalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HospitalStatus[]'>
     
 
+
+/**
+ * Reference to a field of type 'TreatmentCenterType'
+ */
+export type EnumTreatmentCenterTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TreatmentCenterType'>
+    
+
+
+/**
+ * Reference to a field of type 'TreatmentCenterType[]'
+ */
+export type ListEnumTreatmentCenterTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TreatmentCenterType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'RiskLevel'
+ */
+export type EnumRiskLevelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RiskLevel'>
+    
+
+
+/**
+ * Reference to a field of type 'RiskLevel[]'
+ */
+export type ListEnumRiskLevelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RiskLevel[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Season'
+ */
+export type EnumSeasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Season'>
+    
+
+
+/**
+ * Reference to a field of type 'Season[]'
+ */
+export type ListEnumSeasonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Season[]'>
+    
+
+
+/**
+ * Reference to a field of type 'CaseOutcome'
+ */
+export type EnumCaseOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CaseOutcome'>
+    
+
+
+/**
+ * Reference to a field of type 'CaseOutcome[]'
+ */
+export type ListEnumCaseOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CaseOutcome[]'>
+    
+
+
+/**
+ * Reference to a field of type 'SourceType'
+ */
+export type EnumSourceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SourceType'>
+    
+
+
+/**
+ * Reference to a field of type 'SourceType[]'
+ */
+export type ListEnumSourceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SourceType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'VehicleType'
+ */
+export type EnumVehicleTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VehicleType'>
+    
+
+
+/**
+ * Reference to a field of type 'VehicleType[]'
+ */
+export type ListEnumVehicleTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VehicleType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'VehicleStatus'
+ */
+export type EnumVehicleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VehicleStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'VehicleStatus[]'
+ */
+export type ListEnumVehicleStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VehicleStatus[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -3352,6 +4091,12 @@ export type GlobalOmitConfig = {
   hospitalVerification?: Prisma.HospitalVerificationOmit
   hospitalReport?: Prisma.HospitalReportOmit
   systemSetting?: Prisma.SystemSettingOmit
+  snakebiteHotspot?: Prisma.SnakebiteHotspotOmit
+  snakebiteCase?: Prisma.SnakebiteCaseOmit
+  treatmentCenterSource?: Prisma.TreatmentCenterSourceOmit
+  rescueVehicle?: Prisma.RescueVehicleOmit
+  speciesObservation?: Prisma.SpeciesObservationOmit
+  districtStatistics?: Prisma.DistrictStatisticsOmit
 }
 
 /* Types for Logging */

@@ -61,7 +61,7 @@ export default function RescuerMapPage() {
     }
   );
 
-  const nearbyHospitals = hospitalsData?.nearbyHospitals || [];
+  const nearbyHospitals = (hospitalsData as any)?.nearbyHospitals || [];
   
   // Define rescue type for better type safety
   type RescueWithDistance = typeof rescues[0] & { 

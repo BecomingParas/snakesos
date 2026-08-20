@@ -40,6 +40,11 @@ export type VolunteerAvgAggregateOutputType = {
   averageRescueTime: number | null
   rating: number | null
   totalRatings: number | null
+  serviceRadiusKm: number | null
+  totalResponseTimeMinutes: number | null
+  averageResponseTimeMinutes: number | null
+  lastKnownLatitude: number | null
+  lastKnownLongitude: number | null
 }
 
 export type VolunteerSumAggregateOutputType = {
@@ -56,6 +61,11 @@ export type VolunteerSumAggregateOutputType = {
   averageRescueTime: number | null
   rating: number | null
   totalRatings: number | null
+  serviceRadiusKm: number | null
+  totalResponseTimeMinutes: number | null
+  averageResponseTimeMinutes: number | null
+  lastKnownLatitude: number | null
+  lastKnownLongitude: number | null
 }
 
 export type VolunteerMinAggregateOutputType = {
@@ -103,6 +113,13 @@ export type VolunteerMinAggregateOutputType = {
   trainingDate: Date | null
   certificationExpiry: Date | null
   hasEquipment: boolean | null
+  serviceRadiusKm: number | null
+  totalResponseTimeMinutes: number | null
+  averageResponseTimeMinutes: number | null
+  lastKnownLatitude: number | null
+  lastKnownLongitude: number | null
+  lastLocationUpdateFromTracking: Date | null
+  vehicleId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -153,6 +170,13 @@ export type VolunteerMaxAggregateOutputType = {
   trainingDate: Date | null
   certificationExpiry: Date | null
   hasEquipment: boolean | null
+  serviceRadiusKm: number | null
+  totalResponseTimeMinutes: number | null
+  averageResponseTimeMinutes: number | null
+  lastKnownLatitude: number | null
+  lastKnownLongitude: number | null
+  lastLocationUpdateFromTracking: Date | null
+  vehicleId: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -208,6 +232,14 @@ export type VolunteerCountAggregateOutputType = {
   certificationExpiry: number
   hasEquipment: number
   equipment: number
+  serviceRadiusKm: number
+  serviceDistricts: number
+  totalResponseTimeMinutes: number
+  averageResponseTimeMinutes: number
+  lastKnownLatitude: number
+  lastKnownLongitude: number
+  lastLocationUpdateFromTracking: number
+  vehicleId: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -229,6 +261,11 @@ export type VolunteerAvgAggregateInputType = {
   averageRescueTime?: true
   rating?: true
   totalRatings?: true
+  serviceRadiusKm?: true
+  totalResponseTimeMinutes?: true
+  averageResponseTimeMinutes?: true
+  lastKnownLatitude?: true
+  lastKnownLongitude?: true
 }
 
 export type VolunteerSumAggregateInputType = {
@@ -245,6 +282,11 @@ export type VolunteerSumAggregateInputType = {
   averageRescueTime?: true
   rating?: true
   totalRatings?: true
+  serviceRadiusKm?: true
+  totalResponseTimeMinutes?: true
+  averageResponseTimeMinutes?: true
+  lastKnownLatitude?: true
+  lastKnownLongitude?: true
 }
 
 export type VolunteerMinAggregateInputType = {
@@ -292,6 +334,13 @@ export type VolunteerMinAggregateInputType = {
   trainingDate?: true
   certificationExpiry?: true
   hasEquipment?: true
+  serviceRadiusKm?: true
+  totalResponseTimeMinutes?: true
+  averageResponseTimeMinutes?: true
+  lastKnownLatitude?: true
+  lastKnownLongitude?: true
+  lastLocationUpdateFromTracking?: true
+  vehicleId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -342,6 +391,13 @@ export type VolunteerMaxAggregateInputType = {
   trainingDate?: true
   certificationExpiry?: true
   hasEquipment?: true
+  serviceRadiusKm?: true
+  totalResponseTimeMinutes?: true
+  averageResponseTimeMinutes?: true
+  lastKnownLatitude?: true
+  lastKnownLongitude?: true
+  lastLocationUpdateFromTracking?: true
+  vehicleId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -397,6 +453,14 @@ export type VolunteerCountAggregateInputType = {
   certificationExpiry?: true
   hasEquipment?: true
   equipment?: true
+  serviceRadiusKm?: true
+  serviceDistricts?: true
+  totalResponseTimeMinutes?: true
+  averageResponseTimeMinutes?: true
+  lastKnownLatitude?: true
+  lastKnownLongitude?: true
+  lastLocationUpdateFromTracking?: true
+  vehicleId?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -539,6 +603,14 @@ export type VolunteerGroupByOutputType = {
   certificationExpiry: Date | null
   hasEquipment: boolean
   equipment: string[]
+  serviceRadiusKm: number | null
+  serviceDistricts: runtime.JsonValue | null
+  totalResponseTimeMinutes: number | null
+  averageResponseTimeMinutes: number | null
+  lastKnownLatitude: number | null
+  lastKnownLongitude: number | null
+  lastLocationUpdateFromTracking: Date | null
+  vehicleId: string | null
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -617,10 +689,19 @@ export type VolunteerWhereInput = {
   certificationExpiry?: Prisma.DateTimeNullableFilter<"Volunteer"> | Date | string | null
   hasEquipment?: Prisma.BoolFilter<"Volunteer"> | boolean
   equipment?: Prisma.StringNullableListFilter<"Volunteer">
+  serviceRadiusKm?: Prisma.FloatNullableFilter<"Volunteer"> | number | null
+  serviceDistricts?: Prisma.JsonNullableFilter<"Volunteer">
+  totalResponseTimeMinutes?: Prisma.IntNullableFilter<"Volunteer"> | number | null
+  averageResponseTimeMinutes?: Prisma.FloatNullableFilter<"Volunteer"> | number | null
+  lastKnownLatitude?: Prisma.FloatNullableFilter<"Volunteer"> | number | null
+  lastKnownLongitude?: Prisma.FloatNullableFilter<"Volunteer"> | number | null
+  lastLocationUpdateFromTracking?: Prisma.DateTimeNullableFilter<"Volunteer"> | Date | string | null
+  vehicleId?: Prisma.StringNullableFilter<"Volunteer"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Volunteer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Volunteer"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Volunteer"> | Date | string | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  assignedVehicle?: Prisma.XOR<Prisma.RescueVehicleNullableScalarRelationFilter, Prisma.RescueVehicleWhereInput> | null
   rescueAssignments?: Prisma.RescueRequestListRelationFilter
   trainings?: Prisma.TrainingListRelationFilter
 }
@@ -675,10 +756,19 @@ export type VolunteerOrderByWithRelationInput = {
   certificationExpiry?: Prisma.SortOrderInput | Prisma.SortOrder
   hasEquipment?: Prisma.SortOrder
   equipment?: Prisma.SortOrder
+  serviceRadiusKm?: Prisma.SortOrderInput | Prisma.SortOrder
+  serviceDistricts?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalResponseTimeMinutes?: Prisma.SortOrderInput | Prisma.SortOrder
+  averageResponseTimeMinutes?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastKnownLatitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastKnownLongitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastLocationUpdateFromTracking?: Prisma.SortOrderInput | Prisma.SortOrder
+  vehicleId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
+  assignedVehicle?: Prisma.RescueVehicleOrderByWithRelationInput
   rescueAssignments?: Prisma.RescueRequestOrderByRelationAggregateInput
   trainings?: Prisma.TrainingOrderByRelationAggregateInput
 }
@@ -736,10 +826,19 @@ export type VolunteerWhereUniqueInput = Prisma.AtLeast<{
   certificationExpiry?: Prisma.DateTimeNullableFilter<"Volunteer"> | Date | string | null
   hasEquipment?: Prisma.BoolFilter<"Volunteer"> | boolean
   equipment?: Prisma.StringNullableListFilter<"Volunteer">
+  serviceRadiusKm?: Prisma.FloatNullableFilter<"Volunteer"> | number | null
+  serviceDistricts?: Prisma.JsonNullableFilter<"Volunteer">
+  totalResponseTimeMinutes?: Prisma.IntNullableFilter<"Volunteer"> | number | null
+  averageResponseTimeMinutes?: Prisma.FloatNullableFilter<"Volunteer"> | number | null
+  lastKnownLatitude?: Prisma.FloatNullableFilter<"Volunteer"> | number | null
+  lastKnownLongitude?: Prisma.FloatNullableFilter<"Volunteer"> | number | null
+  lastLocationUpdateFromTracking?: Prisma.DateTimeNullableFilter<"Volunteer"> | Date | string | null
+  vehicleId?: Prisma.StringNullableFilter<"Volunteer"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Volunteer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Volunteer"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Volunteer"> | Date | string | null
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  assignedVehicle?: Prisma.XOR<Prisma.RescueVehicleNullableScalarRelationFilter, Prisma.RescueVehicleWhereInput> | null
   rescueAssignments?: Prisma.RescueRequestListRelationFilter
   trainings?: Prisma.TrainingListRelationFilter
 }, "id" | "userId">
@@ -794,6 +893,14 @@ export type VolunteerOrderByWithAggregationInput = {
   certificationExpiry?: Prisma.SortOrderInput | Prisma.SortOrder
   hasEquipment?: Prisma.SortOrder
   equipment?: Prisma.SortOrder
+  serviceRadiusKm?: Prisma.SortOrderInput | Prisma.SortOrder
+  serviceDistricts?: Prisma.SortOrderInput | Prisma.SortOrder
+  totalResponseTimeMinutes?: Prisma.SortOrderInput | Prisma.SortOrder
+  averageResponseTimeMinutes?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastKnownLatitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastKnownLongitude?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastLocationUpdateFromTracking?: Prisma.SortOrderInput | Prisma.SortOrder
+  vehicleId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -857,6 +964,14 @@ export type VolunteerScalarWhereWithAggregatesInput = {
   certificationExpiry?: Prisma.DateTimeNullableWithAggregatesFilter<"Volunteer"> | Date | string | null
   hasEquipment?: Prisma.BoolWithAggregatesFilter<"Volunteer"> | boolean
   equipment?: Prisma.StringNullableListFilter<"Volunteer">
+  serviceRadiusKm?: Prisma.FloatNullableWithAggregatesFilter<"Volunteer"> | number | null
+  serviceDistricts?: Prisma.JsonNullableWithAggregatesFilter<"Volunteer">
+  totalResponseTimeMinutes?: Prisma.IntNullableWithAggregatesFilter<"Volunteer"> | number | null
+  averageResponseTimeMinutes?: Prisma.FloatNullableWithAggregatesFilter<"Volunteer"> | number | null
+  lastKnownLatitude?: Prisma.FloatNullableWithAggregatesFilter<"Volunteer"> | number | null
+  lastKnownLongitude?: Prisma.FloatNullableWithAggregatesFilter<"Volunteer"> | number | null
+  lastLocationUpdateFromTracking?: Prisma.DateTimeNullableWithAggregatesFilter<"Volunteer"> | Date | string | null
+  vehicleId?: Prisma.StringNullableWithAggregatesFilter<"Volunteer"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Volunteer"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Volunteer"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Volunteer"> | Date | string | null
@@ -911,10 +1026,18 @@ export type VolunteerCreateInput = {
   certificationExpiry?: Date | string | null
   hasEquipment?: boolean
   equipment?: Prisma.VolunteerCreateequipmentInput | string[]
+  serviceRadiusKm?: number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: number | null
+  averageResponseTimeMinutes?: number | null
+  lastKnownLatitude?: number | null
+  lastKnownLongitude?: number | null
+  lastLocationUpdateFromTracking?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   user?: Prisma.UserCreateNestedOneWithoutVolunteerProfileInput
+  assignedVehicle?: Prisma.RescueVehicleCreateNestedOneWithoutRescuersInput
   rescueAssignments?: Prisma.RescueRequestCreateNestedManyWithoutAssignedVolunteerInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutVolunteersInput
 }
@@ -969,6 +1092,14 @@ export type VolunteerUncheckedCreateInput = {
   certificationExpiry?: Date | string | null
   hasEquipment?: boolean
   equipment?: Prisma.VolunteerCreateequipmentInput | string[]
+  serviceRadiusKm?: number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: number | null
+  averageResponseTimeMinutes?: number | null
+  lastKnownLatitude?: number | null
+  lastKnownLongitude?: number | null
+  lastLocationUpdateFromTracking?: Date | string | null
+  vehicleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1025,10 +1156,18 @@ export type VolunteerUpdateInput = {
   certificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   hasEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   equipment?: Prisma.VolunteerUpdateequipmentInput | string[]
+  serviceRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  averageResponseTimeMinutes?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastLocationUpdateFromTracking?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneWithoutVolunteerProfileNestedInput
+  assignedVehicle?: Prisma.RescueVehicleUpdateOneWithoutRescuersNestedInput
   rescueAssignments?: Prisma.RescueRequestUpdateManyWithoutAssignedVolunteerNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutVolunteersNestedInput
 }
@@ -1083,6 +1222,14 @@ export type VolunteerUncheckedUpdateInput = {
   certificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   hasEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   equipment?: Prisma.VolunteerUpdateequipmentInput | string[]
+  serviceRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  averageResponseTimeMinutes?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastLocationUpdateFromTracking?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  vehicleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1140,6 +1287,14 @@ export type VolunteerCreateManyInput = {
   certificationExpiry?: Date | string | null
   hasEquipment?: boolean
   equipment?: Prisma.VolunteerCreateequipmentInput | string[]
+  serviceRadiusKm?: number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: number | null
+  averageResponseTimeMinutes?: number | null
+  lastKnownLatitude?: number | null
+  lastKnownLongitude?: number | null
+  lastLocationUpdateFromTracking?: Date | string | null
+  vehicleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1194,6 +1349,13 @@ export type VolunteerUpdateManyMutationInput = {
   certificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   hasEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   equipment?: Prisma.VolunteerUpdateequipmentInput | string[]
+  serviceRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  averageResponseTimeMinutes?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastLocationUpdateFromTracking?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1249,6 +1411,14 @@ export type VolunteerUncheckedUpdateManyInput = {
   certificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   hasEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   equipment?: Prisma.VolunteerUpdateequipmentInput | string[]
+  serviceRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  averageResponseTimeMinutes?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastLocationUpdateFromTracking?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  vehicleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1309,6 +1479,14 @@ export type VolunteerCountOrderByAggregateInput = {
   certificationExpiry?: Prisma.SortOrder
   hasEquipment?: Prisma.SortOrder
   equipment?: Prisma.SortOrder
+  serviceRadiusKm?: Prisma.SortOrder
+  serviceDistricts?: Prisma.SortOrder
+  totalResponseTimeMinutes?: Prisma.SortOrder
+  averageResponseTimeMinutes?: Prisma.SortOrder
+  lastKnownLatitude?: Prisma.SortOrder
+  lastKnownLongitude?: Prisma.SortOrder
+  lastLocationUpdateFromTracking?: Prisma.SortOrder
+  vehicleId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -1328,6 +1506,11 @@ export type VolunteerAvgOrderByAggregateInput = {
   averageRescueTime?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   totalRatings?: Prisma.SortOrder
+  serviceRadiusKm?: Prisma.SortOrder
+  totalResponseTimeMinutes?: Prisma.SortOrder
+  averageResponseTimeMinutes?: Prisma.SortOrder
+  lastKnownLatitude?: Prisma.SortOrder
+  lastKnownLongitude?: Prisma.SortOrder
 }
 
 export type VolunteerMaxOrderByAggregateInput = {
@@ -1375,6 +1558,13 @@ export type VolunteerMaxOrderByAggregateInput = {
   trainingDate?: Prisma.SortOrder
   certificationExpiry?: Prisma.SortOrder
   hasEquipment?: Prisma.SortOrder
+  serviceRadiusKm?: Prisma.SortOrder
+  totalResponseTimeMinutes?: Prisma.SortOrder
+  averageResponseTimeMinutes?: Prisma.SortOrder
+  lastKnownLatitude?: Prisma.SortOrder
+  lastKnownLongitude?: Prisma.SortOrder
+  lastLocationUpdateFromTracking?: Prisma.SortOrder
+  vehicleId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -1425,6 +1615,13 @@ export type VolunteerMinOrderByAggregateInput = {
   trainingDate?: Prisma.SortOrder
   certificationExpiry?: Prisma.SortOrder
   hasEquipment?: Prisma.SortOrder
+  serviceRadiusKm?: Prisma.SortOrder
+  totalResponseTimeMinutes?: Prisma.SortOrder
+  averageResponseTimeMinutes?: Prisma.SortOrder
+  lastKnownLatitude?: Prisma.SortOrder
+  lastKnownLongitude?: Prisma.SortOrder
+  lastLocationUpdateFromTracking?: Prisma.SortOrder
+  vehicleId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -1444,6 +1641,11 @@ export type VolunteerSumOrderByAggregateInput = {
   averageRescueTime?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   totalRatings?: Prisma.SortOrder
+  serviceRadiusKm?: Prisma.SortOrder
+  totalResponseTimeMinutes?: Prisma.SortOrder
+  averageResponseTimeMinutes?: Prisma.SortOrder
+  lastKnownLatitude?: Prisma.SortOrder
+  lastKnownLongitude?: Prisma.SortOrder
 }
 
 export type VolunteerListRelationFilter = {
@@ -1599,6 +1801,48 @@ export type VolunteerUncheckedUpdateManyWithoutTrainingsNestedInput = {
   deleteMany?: Prisma.VolunteerScalarWhereInput | Prisma.VolunteerScalarWhereInput[]
 }
 
+export type VolunteerCreateNestedManyWithoutAssignedVehicleInput = {
+  create?: Prisma.XOR<Prisma.VolunteerCreateWithoutAssignedVehicleInput, Prisma.VolunteerUncheckedCreateWithoutAssignedVehicleInput> | Prisma.VolunteerCreateWithoutAssignedVehicleInput[] | Prisma.VolunteerUncheckedCreateWithoutAssignedVehicleInput[]
+  connectOrCreate?: Prisma.VolunteerCreateOrConnectWithoutAssignedVehicleInput | Prisma.VolunteerCreateOrConnectWithoutAssignedVehicleInput[]
+  createMany?: Prisma.VolunteerCreateManyAssignedVehicleInputEnvelope
+  connect?: Prisma.VolunteerWhereUniqueInput | Prisma.VolunteerWhereUniqueInput[]
+}
+
+export type VolunteerUncheckedCreateNestedManyWithoutAssignedVehicleInput = {
+  create?: Prisma.XOR<Prisma.VolunteerCreateWithoutAssignedVehicleInput, Prisma.VolunteerUncheckedCreateWithoutAssignedVehicleInput> | Prisma.VolunteerCreateWithoutAssignedVehicleInput[] | Prisma.VolunteerUncheckedCreateWithoutAssignedVehicleInput[]
+  connectOrCreate?: Prisma.VolunteerCreateOrConnectWithoutAssignedVehicleInput | Prisma.VolunteerCreateOrConnectWithoutAssignedVehicleInput[]
+  createMany?: Prisma.VolunteerCreateManyAssignedVehicleInputEnvelope
+  connect?: Prisma.VolunteerWhereUniqueInput | Prisma.VolunteerWhereUniqueInput[]
+}
+
+export type VolunteerUpdateManyWithoutAssignedVehicleNestedInput = {
+  create?: Prisma.XOR<Prisma.VolunteerCreateWithoutAssignedVehicleInput, Prisma.VolunteerUncheckedCreateWithoutAssignedVehicleInput> | Prisma.VolunteerCreateWithoutAssignedVehicleInput[] | Prisma.VolunteerUncheckedCreateWithoutAssignedVehicleInput[]
+  connectOrCreate?: Prisma.VolunteerCreateOrConnectWithoutAssignedVehicleInput | Prisma.VolunteerCreateOrConnectWithoutAssignedVehicleInput[]
+  upsert?: Prisma.VolunteerUpsertWithWhereUniqueWithoutAssignedVehicleInput | Prisma.VolunteerUpsertWithWhereUniqueWithoutAssignedVehicleInput[]
+  createMany?: Prisma.VolunteerCreateManyAssignedVehicleInputEnvelope
+  set?: Prisma.VolunteerWhereUniqueInput | Prisma.VolunteerWhereUniqueInput[]
+  disconnect?: Prisma.VolunteerWhereUniqueInput | Prisma.VolunteerWhereUniqueInput[]
+  delete?: Prisma.VolunteerWhereUniqueInput | Prisma.VolunteerWhereUniqueInput[]
+  connect?: Prisma.VolunteerWhereUniqueInput | Prisma.VolunteerWhereUniqueInput[]
+  update?: Prisma.VolunteerUpdateWithWhereUniqueWithoutAssignedVehicleInput | Prisma.VolunteerUpdateWithWhereUniqueWithoutAssignedVehicleInput[]
+  updateMany?: Prisma.VolunteerUpdateManyWithWhereWithoutAssignedVehicleInput | Prisma.VolunteerUpdateManyWithWhereWithoutAssignedVehicleInput[]
+  deleteMany?: Prisma.VolunteerScalarWhereInput | Prisma.VolunteerScalarWhereInput[]
+}
+
+export type VolunteerUncheckedUpdateManyWithoutAssignedVehicleNestedInput = {
+  create?: Prisma.XOR<Prisma.VolunteerCreateWithoutAssignedVehicleInput, Prisma.VolunteerUncheckedCreateWithoutAssignedVehicleInput> | Prisma.VolunteerCreateWithoutAssignedVehicleInput[] | Prisma.VolunteerUncheckedCreateWithoutAssignedVehicleInput[]
+  connectOrCreate?: Prisma.VolunteerCreateOrConnectWithoutAssignedVehicleInput | Prisma.VolunteerCreateOrConnectWithoutAssignedVehicleInput[]
+  upsert?: Prisma.VolunteerUpsertWithWhereUniqueWithoutAssignedVehicleInput | Prisma.VolunteerUpsertWithWhereUniqueWithoutAssignedVehicleInput[]
+  createMany?: Prisma.VolunteerCreateManyAssignedVehicleInputEnvelope
+  set?: Prisma.VolunteerWhereUniqueInput | Prisma.VolunteerWhereUniqueInput[]
+  disconnect?: Prisma.VolunteerWhereUniqueInput | Prisma.VolunteerWhereUniqueInput[]
+  delete?: Prisma.VolunteerWhereUniqueInput | Prisma.VolunteerWhereUniqueInput[]
+  connect?: Prisma.VolunteerWhereUniqueInput | Prisma.VolunteerWhereUniqueInput[]
+  update?: Prisma.VolunteerUpdateWithWhereUniqueWithoutAssignedVehicleInput | Prisma.VolunteerUpdateWithWhereUniqueWithoutAssignedVehicleInput[]
+  updateMany?: Prisma.VolunteerUpdateManyWithWhereWithoutAssignedVehicleInput | Prisma.VolunteerUpdateManyWithWhereWithoutAssignedVehicleInput[]
+  deleteMany?: Prisma.VolunteerScalarWhereInput | Prisma.VolunteerScalarWhereInput[]
+}
+
 export type VolunteerCreateWithoutUserInput = {
   id?: string
   name: string
@@ -1648,9 +1892,17 @@ export type VolunteerCreateWithoutUserInput = {
   certificationExpiry?: Date | string | null
   hasEquipment?: boolean
   equipment?: Prisma.VolunteerCreateequipmentInput | string[]
+  serviceRadiusKm?: number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: number | null
+  averageResponseTimeMinutes?: number | null
+  lastKnownLatitude?: number | null
+  lastKnownLongitude?: number | null
+  lastLocationUpdateFromTracking?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
+  assignedVehicle?: Prisma.RescueVehicleCreateNestedOneWithoutRescuersInput
   rescueAssignments?: Prisma.RescueRequestCreateNestedManyWithoutAssignedVolunteerInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutVolunteersInput
 }
@@ -1704,6 +1956,14 @@ export type VolunteerUncheckedCreateWithoutUserInput = {
   certificationExpiry?: Date | string | null
   hasEquipment?: boolean
   equipment?: Prisma.VolunteerCreateequipmentInput | string[]
+  serviceRadiusKm?: number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: number | null
+  averageResponseTimeMinutes?: number | null
+  lastKnownLatitude?: number | null
+  lastKnownLongitude?: number | null
+  lastLocationUpdateFromTracking?: Date | string | null
+  vehicleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1776,9 +2036,17 @@ export type VolunteerUpdateWithoutUserInput = {
   certificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   hasEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   equipment?: Prisma.VolunteerUpdateequipmentInput | string[]
+  serviceRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  averageResponseTimeMinutes?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastLocationUpdateFromTracking?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  assignedVehicle?: Prisma.RescueVehicleUpdateOneWithoutRescuersNestedInput
   rescueAssignments?: Prisma.RescueRequestUpdateManyWithoutAssignedVolunteerNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutVolunteersNestedInput
 }
@@ -1832,6 +2100,14 @@ export type VolunteerUncheckedUpdateWithoutUserInput = {
   certificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   hasEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   equipment?: Prisma.VolunteerUpdateequipmentInput | string[]
+  serviceRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  averageResponseTimeMinutes?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastLocationUpdateFromTracking?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  vehicleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1888,10 +2164,18 @@ export type VolunteerCreateWithoutRescueAssignmentsInput = {
   certificationExpiry?: Date | string | null
   hasEquipment?: boolean
   equipment?: Prisma.VolunteerCreateequipmentInput | string[]
+  serviceRadiusKm?: number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: number | null
+  averageResponseTimeMinutes?: number | null
+  lastKnownLatitude?: number | null
+  lastKnownLongitude?: number | null
+  lastLocationUpdateFromTracking?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   user?: Prisma.UserCreateNestedOneWithoutVolunteerProfileInput
+  assignedVehicle?: Prisma.RescueVehicleCreateNestedOneWithoutRescuersInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutVolunteersInput
 }
 
@@ -1945,6 +2229,14 @@ export type VolunteerUncheckedCreateWithoutRescueAssignmentsInput = {
   certificationExpiry?: Date | string | null
   hasEquipment?: boolean
   equipment?: Prisma.VolunteerCreateequipmentInput | string[]
+  serviceRadiusKm?: number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: number | null
+  averageResponseTimeMinutes?: number | null
+  lastKnownLatitude?: number | null
+  lastKnownLongitude?: number | null
+  lastLocationUpdateFromTracking?: Date | string | null
+  vehicleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2016,10 +2308,18 @@ export type VolunteerUpdateWithoutRescueAssignmentsInput = {
   certificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   hasEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   equipment?: Prisma.VolunteerUpdateequipmentInput | string[]
+  serviceRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  averageResponseTimeMinutes?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastLocationUpdateFromTracking?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneWithoutVolunteerProfileNestedInput
+  assignedVehicle?: Prisma.RescueVehicleUpdateOneWithoutRescuersNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutVolunteersNestedInput
 }
 
@@ -2073,6 +2373,14 @@ export type VolunteerUncheckedUpdateWithoutRescueAssignmentsInput = {
   certificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   hasEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   equipment?: Prisma.VolunteerUpdateequipmentInput | string[]
+  serviceRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  averageResponseTimeMinutes?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastLocationUpdateFromTracking?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  vehicleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2128,10 +2436,18 @@ export type VolunteerCreateWithoutTrainingsInput = {
   certificationExpiry?: Date | string | null
   hasEquipment?: boolean
   equipment?: Prisma.VolunteerCreateequipmentInput | string[]
+  serviceRadiusKm?: number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: number | null
+  averageResponseTimeMinutes?: number | null
+  lastKnownLatitude?: number | null
+  lastKnownLongitude?: number | null
+  lastLocationUpdateFromTracking?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   user?: Prisma.UserCreateNestedOneWithoutVolunteerProfileInput
+  assignedVehicle?: Prisma.RescueVehicleCreateNestedOneWithoutRescuersInput
   rescueAssignments?: Prisma.RescueRequestCreateNestedManyWithoutAssignedVolunteerInput
 }
 
@@ -2185,6 +2501,14 @@ export type VolunteerUncheckedCreateWithoutTrainingsInput = {
   certificationExpiry?: Date | string | null
   hasEquipment?: boolean
   equipment?: Prisma.VolunteerCreateequipmentInput | string[]
+  serviceRadiusKm?: number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: number | null
+  averageResponseTimeMinutes?: number | null
+  lastKnownLatitude?: number | null
+  lastKnownLongitude?: number | null
+  lastLocationUpdateFromTracking?: Date | string | null
+  vehicleId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2265,9 +2589,171 @@ export type VolunteerScalarWhereInput = {
   certificationExpiry?: Prisma.DateTimeNullableFilter<"Volunteer"> | Date | string | null
   hasEquipment?: Prisma.BoolFilter<"Volunteer"> | boolean
   equipment?: Prisma.StringNullableListFilter<"Volunteer">
+  serviceRadiusKm?: Prisma.FloatNullableFilter<"Volunteer"> | number | null
+  serviceDistricts?: Prisma.JsonNullableFilter<"Volunteer">
+  totalResponseTimeMinutes?: Prisma.IntNullableFilter<"Volunteer"> | number | null
+  averageResponseTimeMinutes?: Prisma.FloatNullableFilter<"Volunteer"> | number | null
+  lastKnownLatitude?: Prisma.FloatNullableFilter<"Volunteer"> | number | null
+  lastKnownLongitude?: Prisma.FloatNullableFilter<"Volunteer"> | number | null
+  lastLocationUpdateFromTracking?: Prisma.DateTimeNullableFilter<"Volunteer"> | Date | string | null
+  vehicleId?: Prisma.StringNullableFilter<"Volunteer"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Volunteer"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Volunteer"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Volunteer"> | Date | string | null
+}
+
+export type VolunteerCreateWithoutAssignedVehicleInput = {
+  id?: string
+  name: string
+  contact: string
+  email?: string | null
+  address: string
+  municipality: string
+  ward?: number | null
+  dateOfBirth?: Date | string | null
+  gender?: string | null
+  emergencyContact?: string | null
+  emergencyPhone?: string | null
+  experience: string
+  experienceYears?: number | null
+  vehicle: string
+  vehicleDetails?: string | null
+  skills?: Prisma.VolunteerCreateskillsInput | string[]
+  certifications?: Prisma.VolunteerCreatecertificationsInput | string[]
+  languages?: Prisma.VolunteerCreatelanguagesInput | string[]
+  availableTime: string
+  availableDays?: Prisma.VolunteerCreateavailableDaysInput | string[]
+  emergencyAvailability?: boolean
+  isAvailableNow?: boolean
+  assignedZone?: string | null
+  coverageRadius?: number | null
+  currentLat?: number | null
+  currentLng?: number | null
+  lastLocationUpdate?: Date | string | null
+  imageUrl?: string | null
+  bio?: string | null
+  status?: $Enums.VolunteerStatus
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectedBy?: string | null
+  rejectionReason?: string | null
+  totalRescues?: number
+  completedRescues?: number
+  cancelledRescues?: number
+  successRate?: number | null
+  averageResponseTime?: number | null
+  averageRescueTime?: number | null
+  rating?: number | null
+  totalRatings?: number
+  trainingCompleted?: boolean
+  trainingDate?: Date | string | null
+  certificationExpiry?: Date | string | null
+  hasEquipment?: boolean
+  equipment?: Prisma.VolunteerCreateequipmentInput | string[]
+  serviceRadiusKm?: number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: number | null
+  averageResponseTimeMinutes?: number | null
+  lastKnownLatitude?: number | null
+  lastKnownLongitude?: number | null
+  lastLocationUpdateFromTracking?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  user?: Prisma.UserCreateNestedOneWithoutVolunteerProfileInput
+  rescueAssignments?: Prisma.RescueRequestCreateNestedManyWithoutAssignedVolunteerInput
+  trainings?: Prisma.TrainingCreateNestedManyWithoutVolunteersInput
+}
+
+export type VolunteerUncheckedCreateWithoutAssignedVehicleInput = {
+  id?: string
+  userId?: string | null
+  name: string
+  contact: string
+  email?: string | null
+  address: string
+  municipality: string
+  ward?: number | null
+  dateOfBirth?: Date | string | null
+  gender?: string | null
+  emergencyContact?: string | null
+  emergencyPhone?: string | null
+  experience: string
+  experienceYears?: number | null
+  vehicle: string
+  vehicleDetails?: string | null
+  skills?: Prisma.VolunteerCreateskillsInput | string[]
+  certifications?: Prisma.VolunteerCreatecertificationsInput | string[]
+  languages?: Prisma.VolunteerCreatelanguagesInput | string[]
+  availableTime: string
+  availableDays?: Prisma.VolunteerCreateavailableDaysInput | string[]
+  emergencyAvailability?: boolean
+  isAvailableNow?: boolean
+  assignedZone?: string | null
+  coverageRadius?: number | null
+  currentLat?: number | null
+  currentLng?: number | null
+  lastLocationUpdate?: Date | string | null
+  imageUrl?: string | null
+  bio?: string | null
+  status?: $Enums.VolunteerStatus
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectedBy?: string | null
+  rejectionReason?: string | null
+  totalRescues?: number
+  completedRescues?: number
+  cancelledRescues?: number
+  successRate?: number | null
+  averageResponseTime?: number | null
+  averageRescueTime?: number | null
+  rating?: number | null
+  totalRatings?: number
+  trainingCompleted?: boolean
+  trainingDate?: Date | string | null
+  certificationExpiry?: Date | string | null
+  hasEquipment?: boolean
+  equipment?: Prisma.VolunteerCreateequipmentInput | string[]
+  serviceRadiusKm?: number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: number | null
+  averageResponseTimeMinutes?: number | null
+  lastKnownLatitude?: number | null
+  lastKnownLongitude?: number | null
+  lastLocationUpdateFromTracking?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  rescueAssignments?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutAssignedVolunteerInput
+  trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutVolunteersInput
+}
+
+export type VolunteerCreateOrConnectWithoutAssignedVehicleInput = {
+  where: Prisma.VolunteerWhereUniqueInput
+  create: Prisma.XOR<Prisma.VolunteerCreateWithoutAssignedVehicleInput, Prisma.VolunteerUncheckedCreateWithoutAssignedVehicleInput>
+}
+
+export type VolunteerCreateManyAssignedVehicleInputEnvelope = {
+  data: Prisma.VolunteerCreateManyAssignedVehicleInput | Prisma.VolunteerCreateManyAssignedVehicleInput[]
+  skipDuplicates?: boolean
+}
+
+export type VolunteerUpsertWithWhereUniqueWithoutAssignedVehicleInput = {
+  where: Prisma.VolunteerWhereUniqueInput
+  update: Prisma.XOR<Prisma.VolunteerUpdateWithoutAssignedVehicleInput, Prisma.VolunteerUncheckedUpdateWithoutAssignedVehicleInput>
+  create: Prisma.XOR<Prisma.VolunteerCreateWithoutAssignedVehicleInput, Prisma.VolunteerUncheckedCreateWithoutAssignedVehicleInput>
+}
+
+export type VolunteerUpdateWithWhereUniqueWithoutAssignedVehicleInput = {
+  where: Prisma.VolunteerWhereUniqueInput
+  data: Prisma.XOR<Prisma.VolunteerUpdateWithoutAssignedVehicleInput, Prisma.VolunteerUncheckedUpdateWithoutAssignedVehicleInput>
+}
+
+export type VolunteerUpdateManyWithWhereWithoutAssignedVehicleInput = {
+  where: Prisma.VolunteerScalarWhereInput
+  data: Prisma.XOR<Prisma.VolunteerUpdateManyMutationInput, Prisma.VolunteerUncheckedUpdateManyWithoutAssignedVehicleInput>
 }
 
 export type VolunteerUpdateWithoutTrainingsInput = {
@@ -2319,10 +2805,18 @@ export type VolunteerUpdateWithoutTrainingsInput = {
   certificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   hasEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   equipment?: Prisma.VolunteerUpdateequipmentInput | string[]
+  serviceRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  averageResponseTimeMinutes?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastLocationUpdateFromTracking?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneWithoutVolunteerProfileNestedInput
+  assignedVehicle?: Prisma.RescueVehicleUpdateOneWithoutRescuersNestedInput
   rescueAssignments?: Prisma.RescueRequestUpdateManyWithoutAssignedVolunteerNestedInput
 }
 
@@ -2376,6 +2870,14 @@ export type VolunteerUncheckedUpdateWithoutTrainingsInput = {
   certificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   hasEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   equipment?: Prisma.VolunteerUpdateequipmentInput | string[]
+  serviceRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  averageResponseTimeMinutes?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastLocationUpdateFromTracking?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  vehicleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2432,6 +2934,266 @@ export type VolunteerUncheckedUpdateManyWithoutTrainingsInput = {
   certificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   hasEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
   equipment?: Prisma.VolunteerUpdateequipmentInput | string[]
+  serviceRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  averageResponseTimeMinutes?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastLocationUpdateFromTracking?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  vehicleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type VolunteerCreateManyAssignedVehicleInput = {
+  id?: string
+  userId?: string | null
+  name: string
+  contact: string
+  email?: string | null
+  address: string
+  municipality: string
+  ward?: number | null
+  dateOfBirth?: Date | string | null
+  gender?: string | null
+  emergencyContact?: string | null
+  emergencyPhone?: string | null
+  experience: string
+  experienceYears?: number | null
+  vehicle: string
+  vehicleDetails?: string | null
+  skills?: Prisma.VolunteerCreateskillsInput | string[]
+  certifications?: Prisma.VolunteerCreatecertificationsInput | string[]
+  languages?: Prisma.VolunteerCreatelanguagesInput | string[]
+  availableTime: string
+  availableDays?: Prisma.VolunteerCreateavailableDaysInput | string[]
+  emergencyAvailability?: boolean
+  isAvailableNow?: boolean
+  assignedZone?: string | null
+  coverageRadius?: number | null
+  currentLat?: number | null
+  currentLng?: number | null
+  lastLocationUpdate?: Date | string | null
+  imageUrl?: string | null
+  bio?: string | null
+  status?: $Enums.VolunteerStatus
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  rejectedAt?: Date | string | null
+  rejectedBy?: string | null
+  rejectionReason?: string | null
+  totalRescues?: number
+  completedRescues?: number
+  cancelledRescues?: number
+  successRate?: number | null
+  averageResponseTime?: number | null
+  averageRescueTime?: number | null
+  rating?: number | null
+  totalRatings?: number
+  trainingCompleted?: boolean
+  trainingDate?: Date | string | null
+  certificationExpiry?: Date | string | null
+  hasEquipment?: boolean
+  equipment?: Prisma.VolunteerCreateequipmentInput | string[]
+  serviceRadiusKm?: number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: number | null
+  averageResponseTimeMinutes?: number | null
+  lastKnownLatitude?: number | null
+  lastKnownLongitude?: number | null
+  lastLocationUpdateFromTracking?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+}
+
+export type VolunteerUpdateWithoutAssignedVehicleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  contact?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  municipality?: Prisma.StringFieldUpdateOperationsInput | string
+  ward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.StringFieldUpdateOperationsInput | string
+  experienceYears?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  vehicle?: Prisma.StringFieldUpdateOperationsInput | string
+  vehicleDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.VolunteerUpdateskillsInput | string[]
+  certifications?: Prisma.VolunteerUpdatecertificationsInput | string[]
+  languages?: Prisma.VolunteerUpdatelanguagesInput | string[]
+  availableTime?: Prisma.StringFieldUpdateOperationsInput | string
+  availableDays?: Prisma.VolunteerUpdateavailableDaysInput | string[]
+  emergencyAvailability?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isAvailableNow?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  assignedZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverageRadius?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currentLat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  currentLng?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastLocationUpdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumVolunteerStatusFieldUpdateOperationsInput | $Enums.VolunteerStatus
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalRescues?: Prisma.IntFieldUpdateOperationsInput | number
+  completedRescues?: Prisma.IntFieldUpdateOperationsInput | number
+  cancelledRescues?: Prisma.IntFieldUpdateOperationsInput | number
+  successRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  averageResponseTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  averageRescueTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalRatings?: Prisma.IntFieldUpdateOperationsInput | number
+  trainingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trainingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  certificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  hasEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  equipment?: Prisma.VolunteerUpdateequipmentInput | string[]
+  serviceRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  averageResponseTimeMinutes?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastLocationUpdateFromTracking?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  user?: Prisma.UserUpdateOneWithoutVolunteerProfileNestedInput
+  rescueAssignments?: Prisma.RescueRequestUpdateManyWithoutAssignedVolunteerNestedInput
+  trainings?: Prisma.TrainingUpdateManyWithoutVolunteersNestedInput
+}
+
+export type VolunteerUncheckedUpdateWithoutAssignedVehicleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  contact?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  municipality?: Prisma.StringFieldUpdateOperationsInput | string
+  ward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.StringFieldUpdateOperationsInput | string
+  experienceYears?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  vehicle?: Prisma.StringFieldUpdateOperationsInput | string
+  vehicleDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.VolunteerUpdateskillsInput | string[]
+  certifications?: Prisma.VolunteerUpdatecertificationsInput | string[]
+  languages?: Prisma.VolunteerUpdatelanguagesInput | string[]
+  availableTime?: Prisma.StringFieldUpdateOperationsInput | string
+  availableDays?: Prisma.VolunteerUpdateavailableDaysInput | string[]
+  emergencyAvailability?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isAvailableNow?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  assignedZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverageRadius?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currentLat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  currentLng?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastLocationUpdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumVolunteerStatusFieldUpdateOperationsInput | $Enums.VolunteerStatus
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalRescues?: Prisma.IntFieldUpdateOperationsInput | number
+  completedRescues?: Prisma.IntFieldUpdateOperationsInput | number
+  cancelledRescues?: Prisma.IntFieldUpdateOperationsInput | number
+  successRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  averageResponseTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  averageRescueTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalRatings?: Prisma.IntFieldUpdateOperationsInput | number
+  trainingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trainingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  certificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  hasEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  equipment?: Prisma.VolunteerUpdateequipmentInput | string[]
+  serviceRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  averageResponseTimeMinutes?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastLocationUpdateFromTracking?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rescueAssignments?: Prisma.RescueRequestUncheckedUpdateManyWithoutAssignedVolunteerNestedInput
+  trainings?: Prisma.TrainingUncheckedUpdateManyWithoutVolunteersNestedInput
+}
+
+export type VolunteerUncheckedUpdateManyWithoutAssignedVehicleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  contact?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  municipality?: Prisma.StringFieldUpdateOperationsInput | string
+  ward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  dateOfBirth?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  gender?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyContact?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experience?: Prisma.StringFieldUpdateOperationsInput | string
+  experienceYears?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  vehicle?: Prisma.StringFieldUpdateOperationsInput | string
+  vehicleDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  skills?: Prisma.VolunteerUpdateskillsInput | string[]
+  certifications?: Prisma.VolunteerUpdatecertificationsInput | string[]
+  languages?: Prisma.VolunteerUpdatelanguagesInput | string[]
+  availableTime?: Prisma.StringFieldUpdateOperationsInput | string
+  availableDays?: Prisma.VolunteerUpdateavailableDaysInput | string[]
+  emergencyAvailability?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isAvailableNow?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  assignedZone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverageRadius?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  currentLat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  currentLng?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastLocationUpdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumVolunteerStatusFieldUpdateOperationsInput | $Enums.VolunteerStatus
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rejectedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rejectionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  totalRescues?: Prisma.IntFieldUpdateOperationsInput | number
+  completedRescues?: Prisma.IntFieldUpdateOperationsInput | number
+  cancelledRescues?: Prisma.IntFieldUpdateOperationsInput | number
+  successRate?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  averageResponseTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  averageRescueTime?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  rating?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  totalRatings?: Prisma.IntFieldUpdateOperationsInput | number
+  trainingCompleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  trainingDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  certificationExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  hasEquipment?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  equipment?: Prisma.VolunteerUpdateequipmentInput | string[]
+  serviceRadiusKm?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  serviceDistricts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  totalResponseTimeMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  averageResponseTimeMinutes?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLatitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastKnownLongitude?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lastLocationUpdateFromTracking?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2527,10 +3289,19 @@ export type VolunteerSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   certificationExpiry?: boolean
   hasEquipment?: boolean
   equipment?: boolean
+  serviceRadiusKm?: boolean
+  serviceDistricts?: boolean
+  totalResponseTimeMinutes?: boolean
+  averageResponseTimeMinutes?: boolean
+  lastKnownLatitude?: boolean
+  lastKnownLongitude?: boolean
+  lastLocationUpdateFromTracking?: boolean
+  vehicleId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
   user?: boolean | Prisma.Volunteer$userArgs<ExtArgs>
+  assignedVehicle?: boolean | Prisma.Volunteer$assignedVehicleArgs<ExtArgs>
   rescueAssignments?: boolean | Prisma.Volunteer$rescueAssignmentsArgs<ExtArgs>
   trainings?: boolean | Prisma.Volunteer$trainingsArgs<ExtArgs>
   _count?: boolean | Prisma.VolunteerCountOutputTypeDefaultArgs<ExtArgs>
@@ -2586,10 +3357,19 @@ export type VolunteerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   certificationExpiry?: boolean
   hasEquipment?: boolean
   equipment?: boolean
+  serviceRadiusKm?: boolean
+  serviceDistricts?: boolean
+  totalResponseTimeMinutes?: boolean
+  averageResponseTimeMinutes?: boolean
+  lastKnownLatitude?: boolean
+  lastKnownLongitude?: boolean
+  lastLocationUpdateFromTracking?: boolean
+  vehicleId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
   user?: boolean | Prisma.Volunteer$userArgs<ExtArgs>
+  assignedVehicle?: boolean | Prisma.Volunteer$assignedVehicleArgs<ExtArgs>
 }, ExtArgs["result"]["volunteer"]>
 
 export type VolunteerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -2642,10 +3422,19 @@ export type VolunteerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   certificationExpiry?: boolean
   hasEquipment?: boolean
   equipment?: boolean
+  serviceRadiusKm?: boolean
+  serviceDistricts?: boolean
+  totalResponseTimeMinutes?: boolean
+  averageResponseTimeMinutes?: boolean
+  lastKnownLatitude?: boolean
+  lastKnownLongitude?: boolean
+  lastLocationUpdateFromTracking?: boolean
+  vehicleId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
   user?: boolean | Prisma.Volunteer$userArgs<ExtArgs>
+  assignedVehicle?: boolean | Prisma.Volunteer$assignedVehicleArgs<ExtArgs>
 }, ExtArgs["result"]["volunteer"]>
 
 export type VolunteerSelectScalar = {
@@ -2698,29 +3487,41 @@ export type VolunteerSelectScalar = {
   certificationExpiry?: boolean
   hasEquipment?: boolean
   equipment?: boolean
+  serviceRadiusKm?: boolean
+  serviceDistricts?: boolean
+  totalResponseTimeMinutes?: boolean
+  averageResponseTimeMinutes?: boolean
+  lastKnownLatitude?: boolean
+  lastKnownLongitude?: boolean
+  lastLocationUpdateFromTracking?: boolean
+  vehicleId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type VolunteerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "contact" | "email" | "address" | "municipality" | "ward" | "dateOfBirth" | "gender" | "emergencyContact" | "emergencyPhone" | "experience" | "experienceYears" | "vehicle" | "vehicleDetails" | "skills" | "certifications" | "languages" | "availableTime" | "availableDays" | "emergencyAvailability" | "isAvailableNow" | "assignedZone" | "coverageRadius" | "currentLat" | "currentLng" | "lastLocationUpdate" | "imageUrl" | "bio" | "status" | "verifiedAt" | "verifiedBy" | "rejectedAt" | "rejectedBy" | "rejectionReason" | "totalRescues" | "completedRescues" | "cancelledRescues" | "successRate" | "averageResponseTime" | "averageRescueTime" | "rating" | "totalRatings" | "trainingCompleted" | "trainingDate" | "certificationExpiry" | "hasEquipment" | "equipment" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["volunteer"]>
+export type VolunteerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "contact" | "email" | "address" | "municipality" | "ward" | "dateOfBirth" | "gender" | "emergencyContact" | "emergencyPhone" | "experience" | "experienceYears" | "vehicle" | "vehicleDetails" | "skills" | "certifications" | "languages" | "availableTime" | "availableDays" | "emergencyAvailability" | "isAvailableNow" | "assignedZone" | "coverageRadius" | "currentLat" | "currentLng" | "lastLocationUpdate" | "imageUrl" | "bio" | "status" | "verifiedAt" | "verifiedBy" | "rejectedAt" | "rejectedBy" | "rejectionReason" | "totalRescues" | "completedRescues" | "cancelledRescues" | "successRate" | "averageResponseTime" | "averageRescueTime" | "rating" | "totalRatings" | "trainingCompleted" | "trainingDate" | "certificationExpiry" | "hasEquipment" | "equipment" | "serviceRadiusKm" | "serviceDistricts" | "totalResponseTimeMinutes" | "averageResponseTimeMinutes" | "lastKnownLatitude" | "lastKnownLongitude" | "lastLocationUpdateFromTracking" | "vehicleId" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["volunteer"]>
 export type VolunteerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.Volunteer$userArgs<ExtArgs>
+  assignedVehicle?: boolean | Prisma.Volunteer$assignedVehicleArgs<ExtArgs>
   rescueAssignments?: boolean | Prisma.Volunteer$rescueAssignmentsArgs<ExtArgs>
   trainings?: boolean | Prisma.Volunteer$trainingsArgs<ExtArgs>
   _count?: boolean | Prisma.VolunteerCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type VolunteerIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.Volunteer$userArgs<ExtArgs>
+  assignedVehicle?: boolean | Prisma.Volunteer$assignedVehicleArgs<ExtArgs>
 }
 export type VolunteerIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.Volunteer$userArgs<ExtArgs>
+  assignedVehicle?: boolean | Prisma.Volunteer$assignedVehicleArgs<ExtArgs>
 }
 
 export type $VolunteerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Volunteer"
   objects: {
     user: Prisma.$UserPayload<ExtArgs> | null
+    assignedVehicle: Prisma.$RescueVehiclePayload<ExtArgs> | null
     rescueAssignments: Prisma.$RescueRequestPayload<ExtArgs>[]
     trainings: Prisma.$TrainingPayload<ExtArgs>[]
   }
@@ -2774,6 +3575,14 @@ export type $VolunteerPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     certificationExpiry: Date | null
     hasEquipment: boolean
     equipment: string[]
+    serviceRadiusKm: number | null
+    serviceDistricts: runtime.JsonValue | null
+    totalResponseTimeMinutes: number | null
+    averageResponseTimeMinutes: number | null
+    lastKnownLatitude: number | null
+    lastKnownLongitude: number | null
+    lastLocationUpdateFromTracking: Date | null
+    vehicleId: string | null
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -3172,6 +3981,7 @@ readonly fields: VolunteerFieldRefs;
 export interface Prisma__VolunteerClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.Volunteer$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Volunteer$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  assignedVehicle<T extends Prisma.Volunteer$assignedVehicleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Volunteer$assignedVehicleArgs<ExtArgs>>): Prisma.Prisma__RescueVehicleClient<runtime.Types.Result.GetResult<Prisma.$RescueVehiclePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   rescueAssignments<T extends Prisma.Volunteer$rescueAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Volunteer$rescueAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RescueRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   trainings<T extends Prisma.Volunteer$trainingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Volunteer$trainingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrainingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
@@ -3252,6 +4062,14 @@ export interface VolunteerFieldRefs {
   readonly certificationExpiry: Prisma.FieldRef<"Volunteer", 'DateTime'>
   readonly hasEquipment: Prisma.FieldRef<"Volunteer", 'Boolean'>
   readonly equipment: Prisma.FieldRef<"Volunteer", 'String[]'>
+  readonly serviceRadiusKm: Prisma.FieldRef<"Volunteer", 'Float'>
+  readonly serviceDistricts: Prisma.FieldRef<"Volunteer", 'Json'>
+  readonly totalResponseTimeMinutes: Prisma.FieldRef<"Volunteer", 'Int'>
+  readonly averageResponseTimeMinutes: Prisma.FieldRef<"Volunteer", 'Float'>
+  readonly lastKnownLatitude: Prisma.FieldRef<"Volunteer", 'Float'>
+  readonly lastKnownLongitude: Prisma.FieldRef<"Volunteer", 'Float'>
+  readonly lastLocationUpdateFromTracking: Prisma.FieldRef<"Volunteer", 'DateTime'>
+  readonly vehicleId: Prisma.FieldRef<"Volunteer", 'String'>
   readonly createdAt: Prisma.FieldRef<"Volunteer", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Volunteer", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"Volunteer", 'DateTime'>
@@ -3672,6 +4490,25 @@ export type Volunteer$userArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   include?: Prisma.UserInclude<ExtArgs> | null
   where?: Prisma.UserWhereInput
+}
+
+/**
+ * Volunteer.assignedVehicle
+ */
+export type Volunteer$assignedVehicleArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RescueVehicle
+   */
+  select?: Prisma.RescueVehicleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RescueVehicle
+   */
+  omit?: Prisma.RescueVehicleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RescueVehicleInclude<ExtArgs> | null
+  where?: Prisma.RescueVehicleWhereInput
 }
 
 /**

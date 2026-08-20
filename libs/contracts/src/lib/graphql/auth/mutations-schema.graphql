@@ -6,9 +6,9 @@
 
 extend type Mutation {
   """
-  Register a new user account
+  Register a new user account (returns user data only, no auth tokens until email verification + login)
   """
-  register(input: RegisterInput!): AuthPayload!
+  register(input: RegisterInput!): RegistrationPayload!
   
   """
   Login with email and password

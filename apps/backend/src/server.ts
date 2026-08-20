@@ -16,6 +16,7 @@ import {
   hospitalQueryResolvers,
   hospitalMutationResolvers,
   hospitalSubscriptionResolvers,
+  mapQueryResolvers,
 } from '@snake-rescue/modules';
 import { config } from './config/index.js';
 
@@ -35,6 +36,7 @@ export async function setupApolloServer(app: Express) {
     hospitalQueryResolvers,
     hospitalMutationResolvers,
     hospitalSubscriptionResolvers,
+    mapQueryResolvers,
   ];
 
   // Create Apollo Server with schema and resolvers

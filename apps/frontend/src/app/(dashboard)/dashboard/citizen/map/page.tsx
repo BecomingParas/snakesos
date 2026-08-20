@@ -64,7 +64,7 @@ export default function CitizenMapPage() {
     }
   );
 
-  const nearbyHospitals = hospitalsData?.nearbyHospitals || [];
+  const nearbyHospitals = (hospitalsData as any)?.nearbyHospitals || [];
   
   // Show error toast
   if (error) {

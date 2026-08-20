@@ -10,11 +10,14 @@ import {
 } from 'lucide-react'
 import { useDashboardStats } from '@/hooks/dashboard'
 import { useResponsive } from '@/hooks/use-responsive'
+import { useActiveRescuesQuery } from '@/lib/graphql/hooks/rescue.hooks'
+import { useVolunteersQuery } from '@/lib/graphql/hooks/volunteer.hooks'
+import { useHospitals } from '@/lib/graphql/hooks/hospital.hooks'
 import { AdminDashboardMobile } from './AdminDashboardMobile'
 import { StatisticsCard, ChartCard, SectionPanel, LiveFieldMap } from '@/components/dashboard/widgets'
 import { DataTable } from '@/components/dashboard/data-table'
-import type { SeriesPoint, StatDef, TableDef } from '@/lib/dashboard-data'
-import { markers, activityFeed } from '@/lib/dashboard-data'
+import type { SeriesPoint, StatDef, TableDef, MapMarker } from '@/lib/dashboard-data'
+import { markers as mockMarkers, activityFeed } from '@/lib/dashboard-data'
 
 const TONE_ICON = {
   error: AlertTriangle,
@@ -33,6 +36,79 @@ const TONE_CLASS = {
 export default function AdminDashboard() {
   const { stats, loading, error } = useDashboardStats()
   const { isMobile } = useResponsive()
+
+  // Fetch ALL real data for live field map
+  const { data: rescuesData } = useActiveRescuesQuery({
+    variables: { pagination: { limit: 200, page: 1 } },
+    pollInterval: 30000, // Refresh every 30 seconds
+  })
+
+  const { data: volunteersData } = useVolunteersQuery({
+    variables: {
+      pagination: { limit: 200, page: 1 },
+      filter: { status: 'APPROVED', isAvailableNow: true },
+    },
+    pollInterval: 30000,
+  })
+
+  const { data: hospitalsData } = useHospitals(
+    { status: 'ACTIVE' },
+    { first: 100 }
+  )
+
+  // Convert real data to MapMarker format for LiveFieldMap
+  const rescues = rescuesData?.activeRescues?.edges?.map(edge => edge.node) || []
+  const volunteers = volunteersData?.volunteers?.edges?.map(edge => edge.node) || []
+  const hospitals = (hospitalsData as any)?.hospitals?.edges?.map((edge: any) => edge.node) || []
+
+  // Create markers from real data
+  const realMarkers: MapMarker[] = [
+    // Rescue markers
+    ...rescues.map((r: any) => ({
+      id: `rescue-${r.id}`,
+      type: 'rescue' as const,
+      label: `${r.snakeDescription || 'Snake rescue'} · ${r.municipality}`,
+      x: ((r.lng - 80.0) / 8.2) * 100, // Convert lng to percentage
+      y: (1 - (r.lat - 26.3) / 4.1) * 100, // Convert lat to percentage (inverted)
+      priority: r.priority as any,
+      status: r.status,
+    })),
+    // Volunteer markers
+    ...volunteers.map((v: any) => ({
+      id: `volunteer-${v.id}`,
+      type: 'handler' as const,
+      label: `${v.user?.name || 'Volunteer'} · ${v.municipality}`,
+      x: Math.random() * 100, // Mock position (volunteers don't have GPS)
+      y: Math.random() * 100,
+      priority: 'LOW' as const,
+      status: v.isAvailableNow ? 'AVAILABLE' : 'BUSY',
+    })),
+    // Hospital markers - SHOW ALL, not just 20!
+    ...hospitals.map((h: any) => ({
+      id: `hospital-${h.id}`,
+      type: 'facility' as const,
+      label: `${h.name} · ${h.municipality}`,
+      x: ((h.longitude - 80.0) / 8.2) * 100,
+      y: (1 - (h.latitude - 26.3) / 4.1) * 100,
+      priority: 'LOW' as const,
+      status: h.emergency24x7 ? 'AVAILABLE' : 'LIMITED',
+    })),
+  ]
+
+  // Use real markers if available, otherwise fallback to mock
+  const markers = realMarkers.length > 0 ? realMarkers : mockMarkers
+
+  console.log('[Admin Dashboard] Live field map data:', {
+    rescues: rescues.length,
+    volunteers: volunteers.length,
+    hospitals: hospitals.length,
+    markers: markers.length,
+    breakdown: {
+      rescueMarkers: rescues.length,
+      volunteerMarkers: volunteers.length,
+      hospitalMarkers: hospitals.length,
+    }
+  })
 
   if (loading) {
     return (

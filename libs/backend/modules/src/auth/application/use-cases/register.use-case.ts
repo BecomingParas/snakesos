@@ -95,23 +95,8 @@ export class RegisterUseCase {
       // Don't fail registration if email fails
     }
 
-    // Create session (7 days expiry) - but user can't access dashboard until verified
-    const sessionToken = `${user.id}_${Date.now()}_${randomBytes(8).toString('hex')}`;
-    const sessionExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-
-    const session = await prisma.session.create({
-      data: {
-        userId: user.id,
-        token: sessionToken,
-        expiresAt: sessionExpiresAt,
-        ipAddress: null,
-        userAgent: null,
-      }
-    });
-
+    // Return user data only - no session/tokens until email is verified and user logs in
     return {
-      accessToken: session.token,
-      refreshToken: session.token, // Same token for now
       user: {
         id: user.id,
         email: user.email,
@@ -122,7 +107,6 @@ export class RegisterUseCase {
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
-      expiresIn: 60 * 60 * 24 * 7, // 7 days
     };
   }
 }

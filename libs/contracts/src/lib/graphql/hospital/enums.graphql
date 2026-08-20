@@ -36,8 +36,10 @@ enum HospitalType {
 enum TreatmentCenterType {
   PRIMARY
   DISTRICT
+  PROVINCIAL
   SPECIALIZED
   REFERRAL
+  PRIVATE
 }
 
 enum VerificationType {

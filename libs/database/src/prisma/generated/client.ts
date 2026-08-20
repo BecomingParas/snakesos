@@ -161,3 +161,33 @@ export type HospitalReport = Prisma.HospitalReportModel
  * 
  */
 export type SystemSetting = Prisma.SystemSettingModel
+/**
+ * Model SnakebiteHotspot
+ * 
+ */
+export type SnakebiteHotspot = Prisma.SnakebiteHotspotModel
+/**
+ * Model SnakebiteCase
+ * 
+ */
+export type SnakebiteCase = Prisma.SnakebiteCaseModel
+/**
+ * Model TreatmentCenterSource
+ * 
+ */
+export type TreatmentCenterSource = Prisma.TreatmentCenterSourceModel
+/**
+ * Model RescueVehicle
+ * 
+ */
+export type RescueVehicle = Prisma.RescueVehicleModel
+/**
+ * Model SpeciesObservation
+ * 
+ */
+export type SpeciesObservation = Prisma.SpeciesObservationModel
+/**
+ * Model DistrictStatistics
+ * 
+ */
+export type DistrictStatistics = Prisma.DistrictStatisticsModel

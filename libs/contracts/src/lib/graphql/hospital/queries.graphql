@@ -15,12 +15,28 @@ extend type Query {
     after: String
   ): HospitalConnection!
   
-  # Find nearest snakebite facilities
+  # Find nearby hospitals (with distance)
+  nearbyHospitals(
+    latitude: Float!
+    longitude: Float!
+    radiusKm: Float
+    antivenomRequired: Boolean
+    limit: Int
+  ): [NearestFacility!]!
+  
+  # Find nearest snakebite facilities (alias for nearbyHospitals with treatment filter)
   nearestSnakebiteFacilities(
     latitude: Float!
     longitude: Float!
     radiusKm: Float
     limit: Int
+  ): [NearestFacility!]!
+  
+  # Get recommended hospitals based on emergency type
+  recommendedHospitals(
+    latitude: Float!
+    longitude: Float!
+    hasBite: Boolean
   ): [NearestFacility!]!
   
   # Find nearest facility with verified antivenom
@@ -32,6 +48,7 @@ extend type Query {
   
   # Get hospital statistics
   hospitalStatistics: HospitalStatistics!
+  hospitalStats: HospitalStatistics! # Alias
   
   # Get hospitals needing verification
   hospitalsNeedingVerification(
@@ -60,6 +77,23 @@ extend type Query {
   searchHospitals(
     query: String!
     filter: HospitalFilterInput
-    first: Int
+    limit: Int
   ): [Hospital!]!
+  
+  # Get hospitals by province
+  hospitalsByProvince(
+    province: String!
+    pagination: PaginationInput
+  ): HospitalConnection!
+  
+  # Get hospitals by district
+  hospitalsByDistrict(
+    district: String!
+    pagination: PaginationInput
+  ): HospitalConnection!
+}
+
+input PaginationInput {
+  page: Int
+  limit: Int
 }

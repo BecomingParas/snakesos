@@ -478,6 +478,8 @@ export type SnakeSpeciesWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"SnakeSpecies"> | Date | string | null
   rescueRequests?: Prisma.RescueRequestListRelationFilter
   aiIdentifications?: Prisma.AIIdentificationListRelationFilter
+  historicalCases?: Prisma.SnakebiteCaseListRelationFilter
+  observations?: Prisma.SpeciesObservationListRelationFilter
 }
 
 export type SnakeSpeciesOrderByWithRelationInput = {
@@ -523,6 +525,8 @@ export type SnakeSpeciesOrderByWithRelationInput = {
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   rescueRequests?: Prisma.RescueRequestOrderByRelationAggregateInput
   aiIdentifications?: Prisma.AIIdentificationOrderByRelationAggregateInput
+  historicalCases?: Prisma.SnakebiteCaseOrderByRelationAggregateInput
+  observations?: Prisma.SpeciesObservationOrderByRelationAggregateInput
 }
 
 export type SnakeSpeciesWhereUniqueInput = Prisma.AtLeast<{
@@ -571,6 +575,8 @@ export type SnakeSpeciesWhereUniqueInput = Prisma.AtLeast<{
   deletedAt?: Prisma.DateTimeNullableFilter<"SnakeSpecies"> | Date | string | null
   rescueRequests?: Prisma.RescueRequestListRelationFilter
   aiIdentifications?: Prisma.AIIdentificationListRelationFilter
+  historicalCases?: Prisma.SnakebiteCaseListRelationFilter
+  observations?: Prisma.SpeciesObservationListRelationFilter
 }, "id" | "name" | "scientificName">
 
 export type SnakeSpeciesOrderByWithAggregationInput = {
@@ -710,6 +716,8 @@ export type SnakeSpeciesCreateInput = {
   deletedAt?: Date | string | null
   rescueRequests?: Prisma.RescueRequestCreateNestedManyWithoutSpeciesInput
   aiIdentifications?: Prisma.AIIdentificationCreateNestedManyWithoutSpeciesInput
+  historicalCases?: Prisma.SnakebiteCaseCreateNestedManyWithoutSpeciesInput
+  observations?: Prisma.SpeciesObservationCreateNestedManyWithoutSpeciesInput
 }
 
 export type SnakeSpeciesUncheckedCreateInput = {
@@ -755,6 +763,8 @@ export type SnakeSpeciesUncheckedCreateInput = {
   deletedAt?: Date | string | null
   rescueRequests?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutSpeciesInput
   aiIdentifications?: Prisma.AIIdentificationUncheckedCreateNestedManyWithoutSpeciesInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedCreateNestedManyWithoutSpeciesInput
+  observations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutSpeciesInput
 }
 
 export type SnakeSpeciesUpdateInput = {
@@ -800,6 +810,8 @@ export type SnakeSpeciesUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rescueRequests?: Prisma.RescueRequestUpdateManyWithoutSpeciesNestedInput
   aiIdentifications?: Prisma.AIIdentificationUpdateManyWithoutSpeciesNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUpdateManyWithoutSpeciesNestedInput
+  observations?: Prisma.SpeciesObservationUpdateManyWithoutSpeciesNestedInput
 }
 
 export type SnakeSpeciesUncheckedUpdateInput = {
@@ -845,6 +857,8 @@ export type SnakeSpeciesUncheckedUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rescueRequests?: Prisma.RescueRequestUncheckedUpdateManyWithoutSpeciesNestedInput
   aiIdentifications?: Prisma.AIIdentificationUncheckedUpdateManyWithoutSpeciesNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedUpdateManyWithoutSpeciesNestedInput
+  observations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutSpeciesNestedInput
 }
 
 export type SnakeSpeciesCreateManyInput = {
@@ -1198,6 +1212,38 @@ export type SnakeSpeciesUpdateOneWithoutAiIdentificationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.SnakeSpeciesUpdateToOneWithWhereWithoutAiIdentificationsInput, Prisma.SnakeSpeciesUpdateWithoutAiIdentificationsInput>, Prisma.SnakeSpeciesUncheckedUpdateWithoutAiIdentificationsInput>
 }
 
+export type SnakeSpeciesCreateNestedOneWithoutHistoricalCasesInput = {
+  create?: Prisma.XOR<Prisma.SnakeSpeciesCreateWithoutHistoricalCasesInput, Prisma.SnakeSpeciesUncheckedCreateWithoutHistoricalCasesInput>
+  connectOrCreate?: Prisma.SnakeSpeciesCreateOrConnectWithoutHistoricalCasesInput
+  connect?: Prisma.SnakeSpeciesWhereUniqueInput
+}
+
+export type SnakeSpeciesUpdateOneWithoutHistoricalCasesNestedInput = {
+  create?: Prisma.XOR<Prisma.SnakeSpeciesCreateWithoutHistoricalCasesInput, Prisma.SnakeSpeciesUncheckedCreateWithoutHistoricalCasesInput>
+  connectOrCreate?: Prisma.SnakeSpeciesCreateOrConnectWithoutHistoricalCasesInput
+  upsert?: Prisma.SnakeSpeciesUpsertWithoutHistoricalCasesInput
+  disconnect?: Prisma.SnakeSpeciesWhereInput | boolean
+  delete?: Prisma.SnakeSpeciesWhereInput | boolean
+  connect?: Prisma.SnakeSpeciesWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SnakeSpeciesUpdateToOneWithWhereWithoutHistoricalCasesInput, Prisma.SnakeSpeciesUpdateWithoutHistoricalCasesInput>, Prisma.SnakeSpeciesUncheckedUpdateWithoutHistoricalCasesInput>
+}
+
+export type SnakeSpeciesCreateNestedOneWithoutObservationsInput = {
+  create?: Prisma.XOR<Prisma.SnakeSpeciesCreateWithoutObservationsInput, Prisma.SnakeSpeciesUncheckedCreateWithoutObservationsInput>
+  connectOrCreate?: Prisma.SnakeSpeciesCreateOrConnectWithoutObservationsInput
+  connect?: Prisma.SnakeSpeciesWhereUniqueInput
+}
+
+export type SnakeSpeciesUpdateOneWithoutObservationsNestedInput = {
+  create?: Prisma.XOR<Prisma.SnakeSpeciesCreateWithoutObservationsInput, Prisma.SnakeSpeciesUncheckedCreateWithoutObservationsInput>
+  connectOrCreate?: Prisma.SnakeSpeciesCreateOrConnectWithoutObservationsInput
+  upsert?: Prisma.SnakeSpeciesUpsertWithoutObservationsInput
+  disconnect?: Prisma.SnakeSpeciesWhereInput | boolean
+  delete?: Prisma.SnakeSpeciesWhereInput | boolean
+  connect?: Prisma.SnakeSpeciesWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SnakeSpeciesUpdateToOneWithWhereWithoutObservationsInput, Prisma.SnakeSpeciesUpdateWithoutObservationsInput>, Prisma.SnakeSpeciesUncheckedUpdateWithoutObservationsInput>
+}
+
 export type SnakeSpeciesCreateWithoutRescueRequestsInput = {
   id?: string
   name: string
@@ -1240,6 +1286,8 @@ export type SnakeSpeciesCreateWithoutRescueRequestsInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   aiIdentifications?: Prisma.AIIdentificationCreateNestedManyWithoutSpeciesInput
+  historicalCases?: Prisma.SnakebiteCaseCreateNestedManyWithoutSpeciesInput
+  observations?: Prisma.SpeciesObservationCreateNestedManyWithoutSpeciesInput
 }
 
 export type SnakeSpeciesUncheckedCreateWithoutRescueRequestsInput = {
@@ -1284,6 +1332,8 @@ export type SnakeSpeciesUncheckedCreateWithoutRescueRequestsInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   aiIdentifications?: Prisma.AIIdentificationUncheckedCreateNestedManyWithoutSpeciesInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedCreateNestedManyWithoutSpeciesInput
+  observations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutSpeciesInput
 }
 
 export type SnakeSpeciesCreateOrConnectWithoutRescueRequestsInput = {
@@ -1344,6 +1394,8 @@ export type SnakeSpeciesUpdateWithoutRescueRequestsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   aiIdentifications?: Prisma.AIIdentificationUpdateManyWithoutSpeciesNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUpdateManyWithoutSpeciesNestedInput
+  observations?: Prisma.SpeciesObservationUpdateManyWithoutSpeciesNestedInput
 }
 
 export type SnakeSpeciesUncheckedUpdateWithoutRescueRequestsInput = {
@@ -1388,6 +1440,8 @@ export type SnakeSpeciesUncheckedUpdateWithoutRescueRequestsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   aiIdentifications?: Prisma.AIIdentificationUncheckedUpdateManyWithoutSpeciesNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedUpdateManyWithoutSpeciesNestedInput
+  observations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutSpeciesNestedInput
 }
 
 export type SnakeSpeciesCreateWithoutAiIdentificationsInput = {
@@ -1432,6 +1486,8 @@ export type SnakeSpeciesCreateWithoutAiIdentificationsInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   rescueRequests?: Prisma.RescueRequestCreateNestedManyWithoutSpeciesInput
+  historicalCases?: Prisma.SnakebiteCaseCreateNestedManyWithoutSpeciesInput
+  observations?: Prisma.SpeciesObservationCreateNestedManyWithoutSpeciesInput
 }
 
 export type SnakeSpeciesUncheckedCreateWithoutAiIdentificationsInput = {
@@ -1476,6 +1532,8 @@ export type SnakeSpeciesUncheckedCreateWithoutAiIdentificationsInput = {
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   rescueRequests?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutSpeciesInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedCreateNestedManyWithoutSpeciesInput
+  observations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutSpeciesInput
 }
 
 export type SnakeSpeciesCreateOrConnectWithoutAiIdentificationsInput = {
@@ -1536,6 +1594,8 @@ export type SnakeSpeciesUpdateWithoutAiIdentificationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rescueRequests?: Prisma.RescueRequestUpdateManyWithoutSpeciesNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUpdateManyWithoutSpeciesNestedInput
+  observations?: Prisma.SpeciesObservationUpdateManyWithoutSpeciesNestedInput
 }
 
 export type SnakeSpeciesUncheckedUpdateWithoutAiIdentificationsInput = {
@@ -1580,6 +1640,408 @@ export type SnakeSpeciesUncheckedUpdateWithoutAiIdentificationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rescueRequests?: Prisma.RescueRequestUncheckedUpdateManyWithoutSpeciesNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedUpdateManyWithoutSpeciesNestedInput
+  observations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutSpeciesNestedInput
+}
+
+export type SnakeSpeciesCreateWithoutHistoricalCasesInput = {
+  id?: string
+  name: string
+  scientificName: string
+  nepaliName: string
+  localNames?: Prisma.SnakeSpeciesCreatelocalNamesInput | string[]
+  aliases?: Prisma.SnakeSpeciesCreatealiasesInput | string[]
+  family?: string | null
+  genus?: string | null
+  species?: string | null
+  venomous?: boolean
+  dangerLevel?: $Enums.DangerLevel | null
+  venomType?: string | null
+  averageLength?: string | null
+  maxLength?: string | null
+  color?: string | null
+  pattern?: string | null
+  identificationGuide?: string | null
+  distinctiveFeatures?: Prisma.SnakeSpeciesCreatedistinctiveFeaturesInput | string[]
+  behavior?: string | null
+  habitat?: string | null
+  activeTime?: string | null
+  diet?: string | null
+  safetyTips?: string | null
+  emergencyAdvice?: string | null
+  firstAidSteps?: Prisma.SnakeSpeciesCreatefirstAidStepsInput | string[]
+  foundInNepal?: boolean
+  regions?: Prisma.SnakeSpeciesCreateregionsInput | string[]
+  altitudeRange?: string | null
+  conservationStatus?: string | null
+  protected?: boolean
+  imageUrl?: string | null
+  images?: Prisma.SnakeSpeciesCreateimagesInput | string[]
+  videoUrl?: string | null
+  rescueCount?: number
+  identificationCount?: number
+  verified?: boolean
+  verifiedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  rescueRequests?: Prisma.RescueRequestCreateNestedManyWithoutSpeciesInput
+  aiIdentifications?: Prisma.AIIdentificationCreateNestedManyWithoutSpeciesInput
+  observations?: Prisma.SpeciesObservationCreateNestedManyWithoutSpeciesInput
+}
+
+export type SnakeSpeciesUncheckedCreateWithoutHistoricalCasesInput = {
+  id?: string
+  name: string
+  scientificName: string
+  nepaliName: string
+  localNames?: Prisma.SnakeSpeciesCreatelocalNamesInput | string[]
+  aliases?: Prisma.SnakeSpeciesCreatealiasesInput | string[]
+  family?: string | null
+  genus?: string | null
+  species?: string | null
+  venomous?: boolean
+  dangerLevel?: $Enums.DangerLevel | null
+  venomType?: string | null
+  averageLength?: string | null
+  maxLength?: string | null
+  color?: string | null
+  pattern?: string | null
+  identificationGuide?: string | null
+  distinctiveFeatures?: Prisma.SnakeSpeciesCreatedistinctiveFeaturesInput | string[]
+  behavior?: string | null
+  habitat?: string | null
+  activeTime?: string | null
+  diet?: string | null
+  safetyTips?: string | null
+  emergencyAdvice?: string | null
+  firstAidSteps?: Prisma.SnakeSpeciesCreatefirstAidStepsInput | string[]
+  foundInNepal?: boolean
+  regions?: Prisma.SnakeSpeciesCreateregionsInput | string[]
+  altitudeRange?: string | null
+  conservationStatus?: string | null
+  protected?: boolean
+  imageUrl?: string | null
+  images?: Prisma.SnakeSpeciesCreateimagesInput | string[]
+  videoUrl?: string | null
+  rescueCount?: number
+  identificationCount?: number
+  verified?: boolean
+  verifiedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  rescueRequests?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutSpeciesInput
+  aiIdentifications?: Prisma.AIIdentificationUncheckedCreateNestedManyWithoutSpeciesInput
+  observations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutSpeciesInput
+}
+
+export type SnakeSpeciesCreateOrConnectWithoutHistoricalCasesInput = {
+  where: Prisma.SnakeSpeciesWhereUniqueInput
+  create: Prisma.XOR<Prisma.SnakeSpeciesCreateWithoutHistoricalCasesInput, Prisma.SnakeSpeciesUncheckedCreateWithoutHistoricalCasesInput>
+}
+
+export type SnakeSpeciesUpsertWithoutHistoricalCasesInput = {
+  update: Prisma.XOR<Prisma.SnakeSpeciesUpdateWithoutHistoricalCasesInput, Prisma.SnakeSpeciesUncheckedUpdateWithoutHistoricalCasesInput>
+  create: Prisma.XOR<Prisma.SnakeSpeciesCreateWithoutHistoricalCasesInput, Prisma.SnakeSpeciesUncheckedCreateWithoutHistoricalCasesInput>
+  where?: Prisma.SnakeSpeciesWhereInput
+}
+
+export type SnakeSpeciesUpdateToOneWithWhereWithoutHistoricalCasesInput = {
+  where?: Prisma.SnakeSpeciesWhereInput
+  data: Prisma.XOR<Prisma.SnakeSpeciesUpdateWithoutHistoricalCasesInput, Prisma.SnakeSpeciesUncheckedUpdateWithoutHistoricalCasesInput>
+}
+
+export type SnakeSpeciesUpdateWithoutHistoricalCasesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  scientificName?: Prisma.StringFieldUpdateOperationsInput | string
+  nepaliName?: Prisma.StringFieldUpdateOperationsInput | string
+  localNames?: Prisma.SnakeSpeciesUpdatelocalNamesInput | string[]
+  aliases?: Prisma.SnakeSpeciesUpdatealiasesInput | string[]
+  family?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  species?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  venomous?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dangerLevel?: Prisma.NullableEnumDangerLevelFieldUpdateOperationsInput | $Enums.DangerLevel | null
+  venomType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  averageLength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxLength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pattern?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identificationGuide?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  distinctiveFeatures?: Prisma.SnakeSpeciesUpdatedistinctiveFeaturesInput | string[]
+  behavior?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  habitat?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  diet?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  safetyTips?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyAdvice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firstAidSteps?: Prisma.SnakeSpeciesUpdatefirstAidStepsInput | string[]
+  foundInNepal?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  regions?: Prisma.SnakeSpeciesUpdateregionsInput | string[]
+  altitudeRange?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conservationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  protected?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.SnakeSpeciesUpdateimagesInput | string[]
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rescueCount?: Prisma.IntFieldUpdateOperationsInput | number
+  identificationCount?: Prisma.IntFieldUpdateOperationsInput | number
+  verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rescueRequests?: Prisma.RescueRequestUpdateManyWithoutSpeciesNestedInput
+  aiIdentifications?: Prisma.AIIdentificationUpdateManyWithoutSpeciesNestedInput
+  observations?: Prisma.SpeciesObservationUpdateManyWithoutSpeciesNestedInput
+}
+
+export type SnakeSpeciesUncheckedUpdateWithoutHistoricalCasesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  scientificName?: Prisma.StringFieldUpdateOperationsInput | string
+  nepaliName?: Prisma.StringFieldUpdateOperationsInput | string
+  localNames?: Prisma.SnakeSpeciesUpdatelocalNamesInput | string[]
+  aliases?: Prisma.SnakeSpeciesUpdatealiasesInput | string[]
+  family?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  species?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  venomous?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dangerLevel?: Prisma.NullableEnumDangerLevelFieldUpdateOperationsInput | $Enums.DangerLevel | null
+  venomType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  averageLength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxLength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pattern?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identificationGuide?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  distinctiveFeatures?: Prisma.SnakeSpeciesUpdatedistinctiveFeaturesInput | string[]
+  behavior?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  habitat?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  diet?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  safetyTips?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyAdvice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firstAidSteps?: Prisma.SnakeSpeciesUpdatefirstAidStepsInput | string[]
+  foundInNepal?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  regions?: Prisma.SnakeSpeciesUpdateregionsInput | string[]
+  altitudeRange?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conservationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  protected?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.SnakeSpeciesUpdateimagesInput | string[]
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rescueCount?: Prisma.IntFieldUpdateOperationsInput | number
+  identificationCount?: Prisma.IntFieldUpdateOperationsInput | number
+  verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rescueRequests?: Prisma.RescueRequestUncheckedUpdateManyWithoutSpeciesNestedInput
+  aiIdentifications?: Prisma.AIIdentificationUncheckedUpdateManyWithoutSpeciesNestedInput
+  observations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutSpeciesNestedInput
+}
+
+export type SnakeSpeciesCreateWithoutObservationsInput = {
+  id?: string
+  name: string
+  scientificName: string
+  nepaliName: string
+  localNames?: Prisma.SnakeSpeciesCreatelocalNamesInput | string[]
+  aliases?: Prisma.SnakeSpeciesCreatealiasesInput | string[]
+  family?: string | null
+  genus?: string | null
+  species?: string | null
+  venomous?: boolean
+  dangerLevel?: $Enums.DangerLevel | null
+  venomType?: string | null
+  averageLength?: string | null
+  maxLength?: string | null
+  color?: string | null
+  pattern?: string | null
+  identificationGuide?: string | null
+  distinctiveFeatures?: Prisma.SnakeSpeciesCreatedistinctiveFeaturesInput | string[]
+  behavior?: string | null
+  habitat?: string | null
+  activeTime?: string | null
+  diet?: string | null
+  safetyTips?: string | null
+  emergencyAdvice?: string | null
+  firstAidSteps?: Prisma.SnakeSpeciesCreatefirstAidStepsInput | string[]
+  foundInNepal?: boolean
+  regions?: Prisma.SnakeSpeciesCreateregionsInput | string[]
+  altitudeRange?: string | null
+  conservationStatus?: string | null
+  protected?: boolean
+  imageUrl?: string | null
+  images?: Prisma.SnakeSpeciesCreateimagesInput | string[]
+  videoUrl?: string | null
+  rescueCount?: number
+  identificationCount?: number
+  verified?: boolean
+  verifiedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  rescueRequests?: Prisma.RescueRequestCreateNestedManyWithoutSpeciesInput
+  aiIdentifications?: Prisma.AIIdentificationCreateNestedManyWithoutSpeciesInput
+  historicalCases?: Prisma.SnakebiteCaseCreateNestedManyWithoutSpeciesInput
+}
+
+export type SnakeSpeciesUncheckedCreateWithoutObservationsInput = {
+  id?: string
+  name: string
+  scientificName: string
+  nepaliName: string
+  localNames?: Prisma.SnakeSpeciesCreatelocalNamesInput | string[]
+  aliases?: Prisma.SnakeSpeciesCreatealiasesInput | string[]
+  family?: string | null
+  genus?: string | null
+  species?: string | null
+  venomous?: boolean
+  dangerLevel?: $Enums.DangerLevel | null
+  venomType?: string | null
+  averageLength?: string | null
+  maxLength?: string | null
+  color?: string | null
+  pattern?: string | null
+  identificationGuide?: string | null
+  distinctiveFeatures?: Prisma.SnakeSpeciesCreatedistinctiveFeaturesInput | string[]
+  behavior?: string | null
+  habitat?: string | null
+  activeTime?: string | null
+  diet?: string | null
+  safetyTips?: string | null
+  emergencyAdvice?: string | null
+  firstAidSteps?: Prisma.SnakeSpeciesCreatefirstAidStepsInput | string[]
+  foundInNepal?: boolean
+  regions?: Prisma.SnakeSpeciesCreateregionsInput | string[]
+  altitudeRange?: string | null
+  conservationStatus?: string | null
+  protected?: boolean
+  imageUrl?: string | null
+  images?: Prisma.SnakeSpeciesCreateimagesInput | string[]
+  videoUrl?: string | null
+  rescueCount?: number
+  identificationCount?: number
+  verified?: boolean
+  verifiedBy?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  rescueRequests?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutSpeciesInput
+  aiIdentifications?: Prisma.AIIdentificationUncheckedCreateNestedManyWithoutSpeciesInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedCreateNestedManyWithoutSpeciesInput
+}
+
+export type SnakeSpeciesCreateOrConnectWithoutObservationsInput = {
+  where: Prisma.SnakeSpeciesWhereUniqueInput
+  create: Prisma.XOR<Prisma.SnakeSpeciesCreateWithoutObservationsInput, Prisma.SnakeSpeciesUncheckedCreateWithoutObservationsInput>
+}
+
+export type SnakeSpeciesUpsertWithoutObservationsInput = {
+  update: Prisma.XOR<Prisma.SnakeSpeciesUpdateWithoutObservationsInput, Prisma.SnakeSpeciesUncheckedUpdateWithoutObservationsInput>
+  create: Prisma.XOR<Prisma.SnakeSpeciesCreateWithoutObservationsInput, Prisma.SnakeSpeciesUncheckedCreateWithoutObservationsInput>
+  where?: Prisma.SnakeSpeciesWhereInput
+}
+
+export type SnakeSpeciesUpdateToOneWithWhereWithoutObservationsInput = {
+  where?: Prisma.SnakeSpeciesWhereInput
+  data: Prisma.XOR<Prisma.SnakeSpeciesUpdateWithoutObservationsInput, Prisma.SnakeSpeciesUncheckedUpdateWithoutObservationsInput>
+}
+
+export type SnakeSpeciesUpdateWithoutObservationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  scientificName?: Prisma.StringFieldUpdateOperationsInput | string
+  nepaliName?: Prisma.StringFieldUpdateOperationsInput | string
+  localNames?: Prisma.SnakeSpeciesUpdatelocalNamesInput | string[]
+  aliases?: Prisma.SnakeSpeciesUpdatealiasesInput | string[]
+  family?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  species?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  venomous?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dangerLevel?: Prisma.NullableEnumDangerLevelFieldUpdateOperationsInput | $Enums.DangerLevel | null
+  venomType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  averageLength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxLength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pattern?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identificationGuide?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  distinctiveFeatures?: Prisma.SnakeSpeciesUpdatedistinctiveFeaturesInput | string[]
+  behavior?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  habitat?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  diet?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  safetyTips?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyAdvice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firstAidSteps?: Prisma.SnakeSpeciesUpdatefirstAidStepsInput | string[]
+  foundInNepal?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  regions?: Prisma.SnakeSpeciesUpdateregionsInput | string[]
+  altitudeRange?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conservationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  protected?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.SnakeSpeciesUpdateimagesInput | string[]
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rescueCount?: Prisma.IntFieldUpdateOperationsInput | number
+  identificationCount?: Prisma.IntFieldUpdateOperationsInput | number
+  verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rescueRequests?: Prisma.RescueRequestUpdateManyWithoutSpeciesNestedInput
+  aiIdentifications?: Prisma.AIIdentificationUpdateManyWithoutSpeciesNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUpdateManyWithoutSpeciesNestedInput
+}
+
+export type SnakeSpeciesUncheckedUpdateWithoutObservationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  scientificName?: Prisma.StringFieldUpdateOperationsInput | string
+  nepaliName?: Prisma.StringFieldUpdateOperationsInput | string
+  localNames?: Prisma.SnakeSpeciesUpdatelocalNamesInput | string[]
+  aliases?: Prisma.SnakeSpeciesUpdatealiasesInput | string[]
+  family?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  genus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  species?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  venomous?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  dangerLevel?: Prisma.NullableEnumDangerLevelFieldUpdateOperationsInput | $Enums.DangerLevel | null
+  venomType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  averageLength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxLength?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  color?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  pattern?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  identificationGuide?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  distinctiveFeatures?: Prisma.SnakeSpeciesUpdatedistinctiveFeaturesInput | string[]
+  behavior?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  habitat?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activeTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  diet?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  safetyTips?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyAdvice?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  firstAidSteps?: Prisma.SnakeSpeciesUpdatefirstAidStepsInput | string[]
+  foundInNepal?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  regions?: Prisma.SnakeSpeciesUpdateregionsInput | string[]
+  altitudeRange?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  conservationStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  protected?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  images?: Prisma.SnakeSpeciesUpdateimagesInput | string[]
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rescueCount?: Prisma.IntFieldUpdateOperationsInput | number
+  identificationCount?: Prisma.IntFieldUpdateOperationsInput | number
+  verified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rescueRequests?: Prisma.RescueRequestUncheckedUpdateManyWithoutSpeciesNestedInput
+  aiIdentifications?: Prisma.AIIdentificationUncheckedUpdateManyWithoutSpeciesNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedUpdateManyWithoutSpeciesNestedInput
 }
 
 
@@ -1590,11 +2052,15 @@ export type SnakeSpeciesUncheckedUpdateWithoutAiIdentificationsInput = {
 export type SnakeSpeciesCountOutputType = {
   rescueRequests: number
   aiIdentifications: number
+  historicalCases: number
+  observations: number
 }
 
 export type SnakeSpeciesCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   rescueRequests?: boolean | SnakeSpeciesCountOutputTypeCountRescueRequestsArgs
   aiIdentifications?: boolean | SnakeSpeciesCountOutputTypeCountAiIdentificationsArgs
+  historicalCases?: boolean | SnakeSpeciesCountOutputTypeCountHistoricalCasesArgs
+  observations?: boolean | SnakeSpeciesCountOutputTypeCountObservationsArgs
 }
 
 /**
@@ -1619,6 +2085,20 @@ export type SnakeSpeciesCountOutputTypeCountRescueRequestsArgs<ExtArgs extends r
  */
 export type SnakeSpeciesCountOutputTypeCountAiIdentificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.AIIdentificationWhereInput
+}
+
+/**
+ * SnakeSpeciesCountOutputType without action
+ */
+export type SnakeSpeciesCountOutputTypeCountHistoricalCasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SnakebiteCaseWhereInput
+}
+
+/**
+ * SnakeSpeciesCountOutputType without action
+ */
+export type SnakeSpeciesCountOutputTypeCountObservationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SpeciesObservationWhereInput
 }
 
 
@@ -1665,6 +2145,8 @@ export type SnakeSpeciesSelect<ExtArgs extends runtime.Types.Extensions.Internal
   deletedAt?: boolean
   rescueRequests?: boolean | Prisma.SnakeSpecies$rescueRequestsArgs<ExtArgs>
   aiIdentifications?: boolean | Prisma.SnakeSpecies$aiIdentificationsArgs<ExtArgs>
+  historicalCases?: boolean | Prisma.SnakeSpecies$historicalCasesArgs<ExtArgs>
+  observations?: boolean | Prisma.SnakeSpecies$observationsArgs<ExtArgs>
   _count?: boolean | Prisma.SnakeSpeciesCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["snakeSpecies"]>
 
@@ -1801,6 +2283,8 @@ export type SnakeSpeciesOmit<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type SnakeSpeciesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   rescueRequests?: boolean | Prisma.SnakeSpecies$rescueRequestsArgs<ExtArgs>
   aiIdentifications?: boolean | Prisma.SnakeSpecies$aiIdentificationsArgs<ExtArgs>
+  historicalCases?: boolean | Prisma.SnakeSpecies$historicalCasesArgs<ExtArgs>
+  observations?: boolean | Prisma.SnakeSpecies$observationsArgs<ExtArgs>
   _count?: boolean | Prisma.SnakeSpeciesCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SnakeSpeciesIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1811,6 +2295,8 @@ export type $SnakeSpeciesPayload<ExtArgs extends runtime.Types.Extensions.Intern
   objects: {
     rescueRequests: Prisma.$RescueRequestPayload<ExtArgs>[]
     aiIdentifications: Prisma.$AIIdentificationPayload<ExtArgs>[]
+    historicalCases: Prisma.$SnakebiteCasePayload<ExtArgs>[]
+    observations: Prisma.$SpeciesObservationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2249,6 +2735,8 @@ export interface Prisma__SnakeSpeciesClient<T, Null = never, ExtArgs extends run
   readonly [Symbol.toStringTag]: "PrismaPromise"
   rescueRequests<T extends Prisma.SnakeSpecies$rescueRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SnakeSpecies$rescueRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RescueRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   aiIdentifications<T extends Prisma.SnakeSpecies$aiIdentificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SnakeSpecies$aiIdentificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AIIdentificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  historicalCases<T extends Prisma.SnakeSpecies$historicalCasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SnakeSpecies$historicalCasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SnakebiteCasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  observations<T extends Prisma.SnakeSpecies$observationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SnakeSpecies$observationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SpeciesObservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2756,6 +3244,54 @@ export type SnakeSpecies$aiIdentificationsArgs<ExtArgs extends runtime.Types.Ext
   take?: number
   skip?: number
   distinct?: Prisma.AIIdentificationScalarFieldEnum | Prisma.AIIdentificationScalarFieldEnum[]
+}
+
+/**
+ * SnakeSpecies.historicalCases
+ */
+export type SnakeSpecies$historicalCasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SnakebiteCase
+   */
+  select?: Prisma.SnakebiteCaseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SnakebiteCase
+   */
+  omit?: Prisma.SnakebiteCaseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SnakebiteCaseInclude<ExtArgs> | null
+  where?: Prisma.SnakebiteCaseWhereInput
+  orderBy?: Prisma.SnakebiteCaseOrderByWithRelationInput | Prisma.SnakebiteCaseOrderByWithRelationInput[]
+  cursor?: Prisma.SnakebiteCaseWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SnakebiteCaseScalarFieldEnum | Prisma.SnakebiteCaseScalarFieldEnum[]
+}
+
+/**
+ * SnakeSpecies.observations
+ */
+export type SnakeSpecies$observationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SpeciesObservation
+   */
+  select?: Prisma.SpeciesObservationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SpeciesObservation
+   */
+  omit?: Prisma.SpeciesObservationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SpeciesObservationInclude<ExtArgs> | null
+  where?: Prisma.SpeciesObservationWhereInput
+  orderBy?: Prisma.SpeciesObservationOrderByWithRelationInput | Prisma.SpeciesObservationOrderByWithRelationInput[]
+  cursor?: Prisma.SpeciesObservationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SpeciesObservationScalarFieldEnum | Prisma.SpeciesObservationScalarFieldEnum[]
 }
 
 /**

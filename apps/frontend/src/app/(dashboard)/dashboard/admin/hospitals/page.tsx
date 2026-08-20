@@ -50,6 +50,7 @@ import {
   Shield,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export default function HospitalsPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -397,7 +398,16 @@ export default function HospitalsPage() {
                     <div className="flex items-center gap-2">
                       {hospital.name}
                       {hospital.officialTreatmentCenter && (
-                        <Shield className="h-4 w-4 text-blue-600" title="Official Treatment Center" />
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Shield className="h-4 w-4 text-blue-600" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Official Treatment Center</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       )}
                     </div>
                   </TableCell>

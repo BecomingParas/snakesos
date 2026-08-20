@@ -405,17 +405,29 @@ export function LiveFieldMap({
   markers: MapMarker[];
   onMarkerClick?: (m: MapMarker) => void;
 }) {
-  // Convert MapMarkers to rescue format for RescueMap component
+  // Separate markers by type for better visibility
+  const rescueMarkers = markers.filter(m => m.type === 'rescue');
+  const handlerMarkers = markers.filter(m => m.type === 'rescuer');
+  const facilityMarkers = markers.filter(m => m.type === 'sighting');
+  
+  console.log('[LiveFieldMap] Marker breakdown:', {
+    rescues: rescueMarkers.length,
+    handlers: handlerMarkers.length,
+    facilities: facilityMarkers.length,
+    total: markers.length,
+  });
+  
+  // Convert MapMarkers to rescue/rescuer/hospital format for RescueMap component
   // Map percentage-based x,y coordinates to actual Nepal lat/lng
-  const rescues = markers.map(marker => {
+  
+  const rescues = rescueMarkers.map(marker => {
     // Normalize x (0-100) and y (0-100) to Nepal's geographic bounds
     // Nepal bounds: Lat 26.3-30.4, Lng 80.0-88.2
     const latRange = 30.4 - 26.3; // 4.1 degrees
     const lngRange = 88.2 - 80.0; // 8.2 degrees
     
     // Convert percentage coordinates to actual coordinates
-    // x = longitude (west to east), y = latitude (north to south, inverted)
-    const lat = 26.3 + (latRange * (1 - marker.y / 100)); // Invert y for north-south
+    const lat = 26.3 + (latRange * (1 - marker.y / 100));
     const lng = 80.0 + (lngRange * (marker.x / 100));
     
     return {
@@ -432,11 +444,52 @@ export function LiveFieldMap({
     };
   });
 
+  const rescuers = handlerMarkers.map(marker => {
+    const latRange = 30.4 - 26.3;
+    const lngRange = 88.2 - 80.0;
+    const lat = 26.3 + (latRange * (1 - marker.y / 100));
+    const lng = 80.0 + (lngRange * (marker.x / 100));
+    
+    return {
+      id: marker.id,
+      name: marker.label.split('·')[0]?.trim() || 'Volunteer',
+      lat,
+      lng,
+      phone: '+977-9800000000',
+      status: marker.status === 'PENDING' || marker.status === 'COMPLETED' || marker.status === 'CANCELLED' ? 'AVAILABLE' : 'EN_ROUTE',
+      experience: 'INTERMEDIATE',
+    };
+  });
+
+  const hospitals = facilityMarkers.map(marker => {
+    const latRange = 30.4 - 26.3;
+    const lngRange = 88.2 - 80.0;
+    const lat = 26.3 + (latRange * (1 - marker.y / 100));
+    const lng = 80.0 + (lngRange * (marker.x / 100));
+    
+    return {
+      id: marker.id,
+      name: marker.label.split('·')[0]?.trim() || 'Hospital',
+      latitude: lat,
+      longitude: lng,
+      address: marker.label,
+      municipality: marker.label.split('·')[1]?.trim() || '',
+      district: '',
+      phone: '',
+      emergencyPhone: '',
+      antivenomStatus: 'UNKNOWN',
+      emergency24x7: true,
+      snakebiteTreatmentAvailable: true,
+      ventilatorAvailable: false,
+    };
+  });
+
   return (
     <div className="relative w-full" style={{ height: '400px' }}>
       <RescueMap
         rescues={rescues}
-        rescuers={[]}
+        rescuers={rescuers}
+        hospitals={hospitals}
         center={[27.7172, 85.324]} // Kathmandu center
         zoom={7} // Show most of Nepal
         showAccuracyCircle={false}

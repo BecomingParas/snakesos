@@ -21,6 +21,8 @@ export interface VerifyEmailResponse {
     name: string;
     role: string;
     emailVerified: boolean;
+    createdAt: Date;
+    updatedAt: Date;
   };
 }
 
@@ -98,6 +100,8 @@ export class VerifyEmailUseCase {
           name: user.name,
           role: user.role,
           emailVerified: true,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
         },
       };
     }
@@ -139,6 +143,8 @@ export class VerifyEmailUseCase {
         name: updatedUser.name,
         role: updatedUser.role,
         emailVerified: true,
+        createdAt: updatedUser.createdAt,
+        updatedAt: updatedUser.updatedAt,
       },
     };
   }

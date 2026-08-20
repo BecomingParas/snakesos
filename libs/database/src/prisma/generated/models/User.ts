@@ -324,6 +324,7 @@ export type UserWhereInput = {
   activityLogs?: Prisma.ActivityLogListRelationFilter
   rescueTimelines?: Prisma.RescueTimelineListRelationFilter
   trainings?: Prisma.TrainingListRelationFilter
+  speciesObservations?: Prisma.SpeciesObservationListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   userRoles?: Prisma.UserRoleAssignmentListRelationFilter
@@ -362,6 +363,7 @@ export type UserOrderByWithRelationInput = {
   activityLogs?: Prisma.ActivityLogOrderByRelationAggregateInput
   rescueTimelines?: Prisma.RescueTimelineOrderByRelationAggregateInput
   trainings?: Prisma.TrainingOrderByRelationAggregateInput
+  speciesObservations?: Prisma.SpeciesObservationOrderByRelationAggregateInput
   sessions?: Prisma.SessionOrderByRelationAggregateInput
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   userRoles?: Prisma.UserRoleAssignmentOrderByRelationAggregateInput
@@ -403,6 +405,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   activityLogs?: Prisma.ActivityLogListRelationFilter
   rescueTimelines?: Prisma.RescueTimelineListRelationFilter
   trainings?: Prisma.TrainingListRelationFilter
+  speciesObservations?: Prisma.SpeciesObservationListRelationFilter
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   userRoles?: Prisma.UserRoleAssignmentListRelationFilter
@@ -497,6 +500,7 @@ export type UserCreateInput = {
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
@@ -535,6 +539,7 @@ export type UserUncheckedCreateInput = {
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -573,6 +578,7 @@ export type UserUpdateInput = {
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
@@ -611,6 +617,7 @@ export type UserUncheckedUpdateInput = {
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -1032,6 +1039,22 @@ export type UserUpdateOneWithoutActivityLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutActivityLogsInput, Prisma.UserUpdateWithoutActivityLogsInput>, Prisma.UserUncheckedUpdateWithoutActivityLogsInput>
 }
 
+export type UserCreateNestedOneWithoutSpeciesObservationsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSpeciesObservationsInput, Prisma.UserUncheckedCreateWithoutSpeciesObservationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSpeciesObservationsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutSpeciesObservationsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSpeciesObservationsInput, Prisma.UserUncheckedCreateWithoutSpeciesObservationsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSpeciesObservationsInput
+  upsert?: Prisma.UserUpsertWithoutSpeciesObservationsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSpeciesObservationsInput, Prisma.UserUpdateWithoutSpeciesObservationsInput>, Prisma.UserUncheckedUpdateWithoutSpeciesObservationsInput>
+}
+
 export type UserCreateWithoutSessionsInput = {
   id?: string
   email: string
@@ -1065,6 +1088,7 @@ export type UserCreateWithoutSessionsInput = {
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
 }
@@ -1102,6 +1126,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
 }
@@ -1155,6 +1180,7 @@ export type UserUpdateWithoutSessionsInput = {
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
 }
@@ -1192,6 +1218,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -1229,6 +1256,7 @@ export type UserCreateWithoutAccountsInput = {
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
 }
@@ -1266,6 +1294,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
 }
@@ -1319,6 +1348,7 @@ export type UserUpdateWithoutAccountsInput = {
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
 }
@@ -1356,6 +1386,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -1393,6 +1424,7 @@ export type UserCreateWithoutUserRolesInput = {
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
 }
@@ -1430,6 +1462,7 @@ export type UserUncheckedCreateWithoutUserRolesInput = {
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
 }
@@ -1483,6 +1516,7 @@ export type UserUpdateWithoutUserRolesInput = {
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
 }
@@ -1520,6 +1554,7 @@ export type UserUncheckedUpdateWithoutUserRolesInput = {
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -1556,6 +1591,7 @@ export type UserCreateWithoutRescueRequestsInput = {
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
@@ -1593,6 +1629,7 @@ export type UserUncheckedCreateWithoutRescueRequestsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -1646,6 +1683,7 @@ export type UserUpdateWithoutRescueRequestsInput = {
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
@@ -1683,6 +1721,7 @@ export type UserUncheckedUpdateWithoutRescueRequestsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -1720,6 +1759,7 @@ export type UserCreateWithoutRescueTimelinesInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
@@ -1757,6 +1797,7 @@ export type UserUncheckedCreateWithoutRescueTimelinesInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -1810,6 +1851,7 @@ export type UserUpdateWithoutRescueTimelinesInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
@@ -1847,6 +1889,7 @@ export type UserUncheckedUpdateWithoutRescueTimelinesInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -1884,6 +1927,7 @@ export type UserCreateWithoutVolunteerProfileInput = {
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
@@ -1921,6 +1965,7 @@ export type UserUncheckedCreateWithoutVolunteerProfileInput = {
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -1974,6 +2019,7 @@ export type UserUpdateWithoutVolunteerProfileInput = {
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
@@ -2011,6 +2057,7 @@ export type UserUncheckedUpdateWithoutVolunteerProfileInput = {
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -2048,6 +2095,7 @@ export type UserCreateWithoutTrainingsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
+  speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
@@ -2085,6 +2133,7 @@ export type UserUncheckedCreateWithoutTrainingsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -2171,6 +2220,7 @@ export type UserCreateWithoutAiIdentificationsInput = {
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
@@ -2208,6 +2258,7 @@ export type UserUncheckedCreateWithoutAiIdentificationsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -2261,6 +2312,7 @@ export type UserUpdateWithoutAiIdentificationsInput = {
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
@@ -2298,6 +2350,7 @@ export type UserUncheckedUpdateWithoutAiIdentificationsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -2335,6 +2388,7 @@ export type UserCreateWithoutBlogPostsInput = {
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
@@ -2372,6 +2426,7 @@ export type UserUncheckedCreateWithoutBlogPostsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -2425,6 +2480,7 @@ export type UserUpdateWithoutBlogPostsInput = {
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
@@ -2462,6 +2518,7 @@ export type UserUncheckedUpdateWithoutBlogPostsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -2499,6 +2556,7 @@ export type UserCreateWithoutGalleryImagesInput = {
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
@@ -2536,6 +2594,7 @@ export type UserUncheckedCreateWithoutGalleryImagesInput = {
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -2589,6 +2648,7 @@ export type UserUpdateWithoutGalleryImagesInput = {
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
@@ -2626,6 +2686,7 @@ export type UserUncheckedUpdateWithoutGalleryImagesInput = {
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -2663,6 +2724,7 @@ export type UserCreateWithoutDonationsInput = {
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
@@ -2700,6 +2762,7 @@ export type UserUncheckedCreateWithoutDonationsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -2753,6 +2816,7 @@ export type UserUpdateWithoutDonationsInput = {
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
@@ -2790,6 +2854,7 @@ export type UserUncheckedUpdateWithoutDonationsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -2827,6 +2892,7 @@ export type UserCreateWithoutNotificationsInput = {
   activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
@@ -2864,6 +2930,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -2917,6 +2984,7 @@ export type UserUpdateWithoutNotificationsInput = {
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
@@ -2954,6 +3022,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -2991,6 +3060,7 @@ export type UserCreateWithoutActivityLogsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
@@ -3028,6 +3098,7 @@ export type UserUncheckedCreateWithoutActivityLogsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -3081,6 +3152,7 @@ export type UserUpdateWithoutActivityLogsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
@@ -3116,6 +3188,175 @@ export type UserUncheckedUpdateWithoutActivityLogsInput = {
   donations?: Prisma.DonationUncheckedUpdateManyWithoutDonorNestedInput
   aiIdentifications?: Prisma.AIIdentificationUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
+  trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  userRoles?: Prisma.UserRoleAssignmentUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutSpeciesObservationsInput = {
+  id?: string
+  email: string
+  password?: string | null
+  name: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  avatar?: string | null
+  googleId?: string | null
+  googleEmail?: string | null
+  emailVerified?: boolean
+  verifiedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  lastLoginIp?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  language?: string
+  timezone?: string
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  rescueRequests?: Prisma.RescueRequestCreateNestedManyWithoutUserInput
+  volunteerProfile?: Prisma.VolunteerCreateNestedOneWithoutUserInput
+  blogPosts?: Prisma.BlogPostCreateNestedManyWithoutAuthorInput
+  galleryImages?: Prisma.GalleryImageCreateNestedManyWithoutUploaderInput
+  donations?: Prisma.DonationCreateNestedManyWithoutDonorInput
+  aiIdentifications?: Prisma.AIIdentificationCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
+  rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
+  trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutSpeciesObservationsInput = {
+  id?: string
+  email: string
+  password?: string | null
+  name: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  avatar?: string | null
+  googleId?: string | null
+  googleEmail?: string | null
+  emailVerified?: boolean
+  verifiedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  lastLoginIp?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  language?: string
+  timezone?: string
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  rescueRequests?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutUserInput
+  volunteerProfile?: Prisma.VolunteerUncheckedCreateNestedOneWithoutUserInput
+  blogPosts?: Prisma.BlogPostUncheckedCreateNestedManyWithoutAuthorInput
+  galleryImages?: Prisma.GalleryImageUncheckedCreateNestedManyWithoutUploaderInput
+  donations?: Prisma.DonationUncheckedCreateNestedManyWithoutDonorInput
+  aiIdentifications?: Prisma.AIIdentificationUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
+  rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
+  trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutSpeciesObservationsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSpeciesObservationsInput, Prisma.UserUncheckedCreateWithoutSpeciesObservationsInput>
+}
+
+export type UserUpsertWithoutSpeciesObservationsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSpeciesObservationsInput, Prisma.UserUncheckedUpdateWithoutSpeciesObservationsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSpeciesObservationsInput, Prisma.UserUncheckedCreateWithoutSpeciesObservationsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSpeciesObservationsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSpeciesObservationsInput, Prisma.UserUncheckedUpdateWithoutSpeciesObservationsInput>
+}
+
+export type UserUpdateWithoutSpeciesObservationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginIp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  language?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rescueRequests?: Prisma.RescueRequestUpdateManyWithoutUserNestedInput
+  volunteerProfile?: Prisma.VolunteerUpdateOneWithoutUserNestedInput
+  blogPosts?: Prisma.BlogPostUpdateManyWithoutAuthorNestedInput
+  galleryImages?: Prisma.GalleryImageUpdateManyWithoutUploaderNestedInput
+  donations?: Prisma.DonationUpdateManyWithoutDonorNestedInput
+  aiIdentifications?: Prisma.AIIdentificationUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
+  rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
+  trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSpeciesObservationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginIp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  language?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rescueRequests?: Prisma.RescueRequestUncheckedUpdateManyWithoutUserNestedInput
+  volunteerProfile?: Prisma.VolunteerUncheckedUpdateOneWithoutUserNestedInput
+  blogPosts?: Prisma.BlogPostUncheckedUpdateManyWithoutAuthorNestedInput
+  galleryImages?: Prisma.GalleryImageUncheckedUpdateManyWithoutUploaderNestedInput
+  donations?: Prisma.DonationUncheckedUpdateManyWithoutDonorNestedInput
+  aiIdentifications?: Prisma.AIIdentificationUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -3155,6 +3396,7 @@ export type UserUpdateWithoutTrainingsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
@@ -3192,6 +3434,7 @@ export type UserUncheckedUpdateWithoutTrainingsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
   rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -3237,6 +3480,7 @@ export type UserCountOutputType = {
   activityLogs: number
   rescueTimelines: number
   trainings: number
+  speciesObservations: number
   sessions: number
   accounts: number
   userRoles: number
@@ -3252,6 +3496,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   activityLogs?: boolean | UserCountOutputTypeCountActivityLogsArgs
   rescueTimelines?: boolean | UserCountOutputTypeCountRescueTimelinesArgs
   trainings?: boolean | UserCountOutputTypeCountTrainingsArgs
+  speciesObservations?: boolean | UserCountOutputTypeCountSpeciesObservationsArgs
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
   accounts?: boolean | UserCountOutputTypeCountAccountsArgs
   userRoles?: boolean | UserCountOutputTypeCountUserRolesArgs
@@ -3333,6 +3578,13 @@ export type UserCountOutputTypeCountTrainingsArgs<ExtArgs extends runtime.Types.
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountSpeciesObservationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SpeciesObservationWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.SessionWhereInput
 }
@@ -3385,6 +3637,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   activityLogs?: boolean | Prisma.User$activityLogsArgs<ExtArgs>
   rescueTimelines?: boolean | Prisma.User$rescueTimelinesArgs<ExtArgs>
   trainings?: boolean | Prisma.User$trainingsArgs<ExtArgs>
+  speciesObservations?: boolean | Prisma.User$speciesObservationsArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   userRoles?: boolean | Prisma.User$userRolesArgs<ExtArgs>
@@ -3478,6 +3731,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   activityLogs?: boolean | Prisma.User$activityLogsArgs<ExtArgs>
   rescueTimelines?: boolean | Prisma.User$rescueTimelinesArgs<ExtArgs>
   trainings?: boolean | Prisma.User$trainingsArgs<ExtArgs>
+  speciesObservations?: boolean | Prisma.User$speciesObservationsArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   userRoles?: boolean | Prisma.User$userRolesArgs<ExtArgs>
@@ -3499,6 +3753,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     activityLogs: Prisma.$ActivityLogPayload<ExtArgs>[]
     rescueTimelines: Prisma.$RescueTimelinePayload<ExtArgs>[]
     trainings: Prisma.$TrainingPayload<ExtArgs>[]
+    speciesObservations: Prisma.$SpeciesObservationPayload<ExtArgs>[]
     sessions: Prisma.$SessionPayload<ExtArgs>[]
     accounts: Prisma.$AccountPayload<ExtArgs>[]
     userRoles: Prisma.$UserRoleAssignmentPayload<ExtArgs>[]
@@ -3930,6 +4185,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   activityLogs<T extends Prisma.User$activityLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$activityLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   rescueTimelines<T extends Prisma.User$rescueTimelinesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$rescueTimelinesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RescueTimelinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   trainings<T extends Prisma.User$trainingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$trainingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrainingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  speciesObservations<T extends Prisma.User$speciesObservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$speciesObservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SpeciesObservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   userRoles<T extends Prisma.User$userRolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$userRolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserRoleAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4609,6 +4865,30 @@ export type User$trainingsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.TrainingScalarFieldEnum | Prisma.TrainingScalarFieldEnum[]
+}
+
+/**
+ * User.speciesObservations
+ */
+export type User$speciesObservationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SpeciesObservation
+   */
+  select?: Prisma.SpeciesObservationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SpeciesObservation
+   */
+  omit?: Prisma.SpeciesObservationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SpeciesObservationInclude<ExtArgs> | null
+  where?: Prisma.SpeciesObservationWhereInput
+  orderBy?: Prisma.SpeciesObservationOrderByWithRelationInput | Prisma.SpeciesObservationOrderByWithRelationInput[]
+  cursor?: Prisma.SpeciesObservationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SpeciesObservationScalarFieldEnum | Prisma.SpeciesObservationScalarFieldEnum[]
 }
 
 /**

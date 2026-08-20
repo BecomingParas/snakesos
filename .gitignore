@@ -61,9 +61,18 @@ out
 test-output
 
 /generated/prisma
+libs/database/src/prisma/generated
 nul
 
 # Environment variables
 .env
 .env.local
 .env.*.local
+
+# Test files (non-committed)
+libs/**/jest.config.cjs
+libs/**/__tests__/
+libs/**/*.spec.ts
+libs/**/*.spec.tsx
+libs/**/*.test.ts
+libs/**/*.test.tsx

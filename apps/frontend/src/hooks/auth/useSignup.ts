@@ -17,9 +17,6 @@ export interface SignupInput {
 }
 
 export interface SignupResult {
-  accessToken: string;
-  refreshToken: string;
-  expiresIn: number;
   user: {
     id: string;
     email: string;
@@ -38,15 +35,9 @@ export function useSignup() {
   const [registerMutation, { loading, error, data }] = useMutation(REGISTER_MUTATION, {
     onCompleted: (data) => {
       const responseData = data as { register?: SignupResult } | undefined;
-      if (responseData?.register) {
-        // Store access token
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('auth-token', responseData.register.accessToken);
-        }
-        
-        // Update auth store
-        setUser(responseData.register.user);
-      }
+      // Registration complete - user will need to verify email then login
+      // No tokens or auth state to store during registration
+      console.log('Registration successful:', responseData?.register?.user);
     },
   });
 

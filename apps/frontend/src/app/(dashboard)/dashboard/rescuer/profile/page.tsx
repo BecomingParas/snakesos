@@ -59,7 +59,7 @@ export default function RescuerProfilePage() {
         experienceYears: profile.experienceYears || 0,
         municipality: profile.municipality || '',
         ward: profile.ward || 0,
-        specialization: profile.specialization || '',
+        specialization: '',
         isAvailableNow: profile.isAvailableNow,
       })
     }
@@ -78,7 +78,6 @@ export default function RescuerProfilePage() {
           experienceYears: formData.experienceYears || undefined,
           municipality: formData.municipality,
           ward: formData.ward || undefined,
-          specialization: formData.specialization || undefined,
           isAvailableNow: formData.isAvailableNow,
         },
       },
@@ -317,7 +316,7 @@ export default function RescuerProfilePage() {
                         experienceYears: profile.experienceYears || 0,
                         municipality: profile.municipality || '',
                         ward: profile.ward || 0,
-                        specialization: profile.specialization || '',
+                        specialization: '',
                         isAvailableNow: profile.isAvailableNow,
                       })
                     }
@@ -396,11 +395,11 @@ export default function RescuerProfilePage() {
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600 dark:text-gray-400">Verification Status:</span>
                 <Badge className={
-                  profile.verificationStatus === 'VERIFIED' ? 'bg-green-500' :
-                  profile.verificationStatus === 'PENDING' ? 'bg-yellow-500' :
+                  (profile as any).verificationStatus === 'VERIFIED' ? 'bg-green-500' :
+                  (profile as any).verificationStatus === 'PENDING' ? 'bg-yellow-500' :
                   'bg-red-500'
                 }>
-                  {profile.verificationStatus}
+                  {(profile as any).verificationStatus}
                 </Badge>
               </div>
               <div className="flex justify-between items-center">
@@ -436,7 +435,7 @@ export default function RescuerProfilePage() {
                     ✓ High Success Rate
                   </Badge>
                 )}
-                {profile.verificationStatus === 'VERIFIED' && (
+                {(profile as any).verificationStatus === 'VERIFIED' && (
                   <Badge className="bg-blue-500 text-white px-3 py-1.5">
                     ✓ Verified Rescuer
                   </Badge>

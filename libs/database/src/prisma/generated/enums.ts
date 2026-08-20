@@ -173,3 +173,90 @@ export const HospitalStatus = {
 } as const
 
 export type HospitalStatus = (typeof HospitalStatus)[keyof typeof HospitalStatus]
+
+
+export const RiskLevel = {
+  LOW: 'LOW',
+  MODERATE: 'MODERATE',
+  HIGH: 'HIGH',
+  VERY_HIGH: 'VERY_HIGH',
+  EXTREME: 'EXTREME'
+} as const
+
+export type RiskLevel = (typeof RiskLevel)[keyof typeof RiskLevel]
+
+
+export const Season = {
+  WINTER: 'WINTER',
+  SPRING: 'SPRING',
+  MONSOON: 'MONSOON',
+  AUTUMN: 'AUTUMN'
+} as const
+
+export type Season = (typeof Season)[keyof typeof Season]
+
+
+export const CaseOutcome = {
+  RECOVERED: 'RECOVERED',
+  RECOVERED_WITH_COMPLICATIONS: 'RECOVERED_WITH_COMPLICATIONS',
+  DECEASED: 'DECEASED',
+  LOST_TO_FOLLOWUP: 'LOST_TO_FOLLOWUP',
+  UNKNOWN: 'UNKNOWN'
+} as const
+
+export type CaseOutcome = (typeof CaseOutcome)[keyof typeof CaseOutcome]
+
+
+export const SourceType = {
+  EDCD: 'EDCD',
+  PROVINCIAL_HEALTH_AUTHORITY: 'PROVINCIAL_HEALTH_AUTHORITY',
+  DISTRICT_HEALTH_OFFICE: 'DISTRICT_HEALTH_OFFICE',
+  HOSPITAL_SELF_REPORTED: 'HOSPITAL_SELF_REPORTED',
+  RESEARCH_PAPER: 'RESEARCH_PAPER',
+  FIELD_SURVEY: 'FIELD_SURVEY',
+  MANUAL_VERIFICATION: 'MANUAL_VERIFICATION',
+  SNAKESOS_COMMUNITY: 'SNAKESOS_COMMUNITY',
+  GOVERNMENT_DOCUMENT: 'GOVERNMENT_DOCUMENT',
+  OTHER: 'OTHER'
+} as const
+
+export type SourceType = (typeof SourceType)[keyof typeof SourceType]
+
+
+export const VehicleType = {
+  RESCUE_VAN: 'RESCUE_VAN',
+  AMBULANCE: 'AMBULANCE',
+  MOTORBIKE: 'MOTORBIKE',
+  BICYCLE: 'BICYCLE',
+  CAR: 'CAR',
+  TRUCK: 'TRUCK',
+  OTHER: 'OTHER'
+} as const
+
+export type VehicleType = (typeof VehicleType)[keyof typeof VehicleType]
+
+
+export const VehicleStatus = {
+  AVAILABLE: 'AVAILABLE',
+  ASSIGNED: 'ASSIGNED',
+  EN_ROUTE: 'EN_ROUTE',
+  ON_SITE: 'ON_SITE',
+  MAINTENANCE: 'MAINTENANCE',
+  OFFLINE: 'OFFLINE',
+  DECOMMISSIONED: 'DECOMMISSIONED'
+} as const
+
+export type VehicleStatus = (typeof VehicleStatus)[keyof typeof VehicleStatus]
+
+
+export const TreatmentCenterType = {
+  GOVERNMENT: 'GOVERNMENT',
+  PROVINCIAL: 'PROVINCIAL',
+  DISTRICT: 'DISTRICT',
+  PRIVATE: 'PRIVATE',
+  TEACHING: 'TEACHING',
+  PRIMARY_HEALTH_CENTER: 'PRIMARY_HEALTH_CENTER',
+  OTHER: 'OTHER'
+} as const
+
+export type TreatmentCenterType = (typeof TreatmentCenterType)[keyof typeof TreatmentCenterType]

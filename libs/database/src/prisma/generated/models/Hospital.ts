@@ -32,6 +32,7 @@ export type HospitalAvgAggregateOutputType = {
   longitude: number | null
   antivenomStockQuantity: number | null
   bedCapacity: number | null
+  populationCoverage: number | null
 }
 
 export type HospitalSumAggregateOutputType = {
@@ -40,6 +41,7 @@ export type HospitalSumAggregateOutputType = {
   longitude: number | null
   antivenomStockQuantity: number | null
   bedCapacity: number | null
+  populationCoverage: number | null
 }
 
 export type HospitalMinAggregateOutputType = {
@@ -76,6 +78,11 @@ export type HospitalMinAggregateOutputType = {
   status: $Enums.HospitalStatus | null
   hospitalType: string | null
   bedCapacity: number | null
+  edcdCertified: boolean | null
+  edcdCertificationDate: Date | null
+  treatmentCenterCategory: $Enums.TreatmentCenterType | null
+  populationCoverage: number | null
+  lastOperationalCheck: Date | null
   notes: string | null
   internalNotes: string | null
   createdAt: Date | null
@@ -117,6 +124,11 @@ export type HospitalMaxAggregateOutputType = {
   status: $Enums.HospitalStatus | null
   hospitalType: string | null
   bedCapacity: number | null
+  edcdCertified: boolean | null
+  edcdCertificationDate: Date | null
+  treatmentCenterCategory: $Enums.TreatmentCenterType | null
+  populationCoverage: number | null
+  lastOperationalCheck: Date | null
   notes: string | null
   internalNotes: string | null
   createdAt: Date | null
@@ -159,6 +171,12 @@ export type HospitalCountAggregateOutputType = {
   hospitalType: number
   bedCapacity: number
   specializations: number
+  edcdCertified: number
+  edcdCertificationDate: number
+  treatmentCenterCategory: number
+  populationCoverage: number
+  travelTimeCoverage: number
+  lastOperationalCheck: number
   notes: number
   internalNotes: number
   createdAt: number
@@ -174,6 +192,7 @@ export type HospitalAvgAggregateInputType = {
   longitude?: true
   antivenomStockQuantity?: true
   bedCapacity?: true
+  populationCoverage?: true
 }
 
 export type HospitalSumAggregateInputType = {
@@ -182,6 +201,7 @@ export type HospitalSumAggregateInputType = {
   longitude?: true
   antivenomStockQuantity?: true
   bedCapacity?: true
+  populationCoverage?: true
 }
 
 export type HospitalMinAggregateInputType = {
@@ -218,6 +238,11 @@ export type HospitalMinAggregateInputType = {
   status?: true
   hospitalType?: true
   bedCapacity?: true
+  edcdCertified?: true
+  edcdCertificationDate?: true
+  treatmentCenterCategory?: true
+  populationCoverage?: true
+  lastOperationalCheck?: true
   notes?: true
   internalNotes?: true
   createdAt?: true
@@ -259,6 +284,11 @@ export type HospitalMaxAggregateInputType = {
   status?: true
   hospitalType?: true
   bedCapacity?: true
+  edcdCertified?: true
+  edcdCertificationDate?: true
+  treatmentCenterCategory?: true
+  populationCoverage?: true
+  lastOperationalCheck?: true
   notes?: true
   internalNotes?: true
   createdAt?: true
@@ -301,6 +331,12 @@ export type HospitalCountAggregateInputType = {
   hospitalType?: true
   bedCapacity?: true
   specializations?: true
+  edcdCertified?: true
+  edcdCertificationDate?: true
+  treatmentCenterCategory?: true
+  populationCoverage?: true
+  travelTimeCoverage?: true
+  lastOperationalCheck?: true
   notes?: true
   internalNotes?: true
   createdAt?: true
@@ -430,6 +466,12 @@ export type HospitalGroupByOutputType = {
   hospitalType: string | null
   bedCapacity: number | null
   specializations: string[]
+  edcdCertified: boolean
+  edcdCertificationDate: Date | null
+  treatmentCenterCategory: $Enums.TreatmentCenterType | null
+  populationCoverage: number | null
+  travelTimeCoverage: runtime.JsonValue | null
+  lastOperationalCheck: Date | null
   notes: string | null
   internalNotes: string | null
   createdAt: Date
@@ -495,6 +537,12 @@ export type HospitalWhereInput = {
   hospitalType?: Prisma.StringNullableFilter<"Hospital"> | string | null
   bedCapacity?: Prisma.IntNullableFilter<"Hospital"> | number | null
   specializations?: Prisma.StringNullableListFilter<"Hospital">
+  edcdCertified?: Prisma.BoolFilter<"Hospital"> | boolean
+  edcdCertificationDate?: Prisma.DateTimeNullableFilter<"Hospital"> | Date | string | null
+  treatmentCenterCategory?: Prisma.EnumTreatmentCenterTypeNullableFilter<"Hospital"> | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.IntNullableFilter<"Hospital"> | number | null
+  travelTimeCoverage?: Prisma.JsonNullableFilter<"Hospital">
+  lastOperationalCheck?: Prisma.DateTimeNullableFilter<"Hospital"> | Date | string | null
   notes?: Prisma.StringNullableFilter<"Hospital"> | string | null
   internalNotes?: Prisma.StringNullableFilter<"Hospital"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Hospital"> | Date | string
@@ -502,6 +550,9 @@ export type HospitalWhereInput = {
   deletedAt?: Prisma.DateTimeNullableFilter<"Hospital"> | Date | string | null
   verificationRecords?: Prisma.HospitalVerificationListRelationFilter
   reports?: Prisma.HospitalReportListRelationFilter
+  sources?: Prisma.TreatmentCenterSourceListRelationFilter
+  historicalCases?: Prisma.SnakebiteCaseListRelationFilter
+  nearestTo?: Prisma.RescueRequestListRelationFilter
 }
 
 export type HospitalOrderByWithRelationInput = {
@@ -539,6 +590,12 @@ export type HospitalOrderByWithRelationInput = {
   hospitalType?: Prisma.SortOrderInput | Prisma.SortOrder
   bedCapacity?: Prisma.SortOrderInput | Prisma.SortOrder
   specializations?: Prisma.SortOrder
+  edcdCertified?: Prisma.SortOrder
+  edcdCertificationDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  treatmentCenterCategory?: Prisma.SortOrderInput | Prisma.SortOrder
+  populationCoverage?: Prisma.SortOrderInput | Prisma.SortOrder
+  travelTimeCoverage?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastOperationalCheck?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   internalNotes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -546,6 +603,9 @@ export type HospitalOrderByWithRelationInput = {
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   verificationRecords?: Prisma.HospitalVerificationOrderByRelationAggregateInput
   reports?: Prisma.HospitalReportOrderByRelationAggregateInput
+  sources?: Prisma.TreatmentCenterSourceOrderByRelationAggregateInput
+  historicalCases?: Prisma.SnakebiteCaseOrderByRelationAggregateInput
+  nearestTo?: Prisma.RescueRequestOrderByRelationAggregateInput
 }
 
 export type HospitalWhereUniqueInput = Prisma.AtLeast<{
@@ -586,6 +646,12 @@ export type HospitalWhereUniqueInput = Prisma.AtLeast<{
   hospitalType?: Prisma.StringNullableFilter<"Hospital"> | string | null
   bedCapacity?: Prisma.IntNullableFilter<"Hospital"> | number | null
   specializations?: Prisma.StringNullableListFilter<"Hospital">
+  edcdCertified?: Prisma.BoolFilter<"Hospital"> | boolean
+  edcdCertificationDate?: Prisma.DateTimeNullableFilter<"Hospital"> | Date | string | null
+  treatmentCenterCategory?: Prisma.EnumTreatmentCenterTypeNullableFilter<"Hospital"> | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.IntNullableFilter<"Hospital"> | number | null
+  travelTimeCoverage?: Prisma.JsonNullableFilter<"Hospital">
+  lastOperationalCheck?: Prisma.DateTimeNullableFilter<"Hospital"> | Date | string | null
   notes?: Prisma.StringNullableFilter<"Hospital"> | string | null
   internalNotes?: Prisma.StringNullableFilter<"Hospital"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Hospital"> | Date | string
@@ -593,6 +659,9 @@ export type HospitalWhereUniqueInput = Prisma.AtLeast<{
   deletedAt?: Prisma.DateTimeNullableFilter<"Hospital"> | Date | string | null
   verificationRecords?: Prisma.HospitalVerificationListRelationFilter
   reports?: Prisma.HospitalReportListRelationFilter
+  sources?: Prisma.TreatmentCenterSourceListRelationFilter
+  historicalCases?: Prisma.SnakebiteCaseListRelationFilter
+  nearestTo?: Prisma.RescueRequestListRelationFilter
 }, "id">
 
 export type HospitalOrderByWithAggregationInput = {
@@ -630,6 +699,12 @@ export type HospitalOrderByWithAggregationInput = {
   hospitalType?: Prisma.SortOrderInput | Prisma.SortOrder
   bedCapacity?: Prisma.SortOrderInput | Prisma.SortOrder
   specializations?: Prisma.SortOrder
+  edcdCertified?: Prisma.SortOrder
+  edcdCertificationDate?: Prisma.SortOrderInput | Prisma.SortOrder
+  treatmentCenterCategory?: Prisma.SortOrderInput | Prisma.SortOrder
+  populationCoverage?: Prisma.SortOrderInput | Prisma.SortOrder
+  travelTimeCoverage?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastOperationalCheck?: Prisma.SortOrderInput | Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   internalNotes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -680,6 +755,12 @@ export type HospitalScalarWhereWithAggregatesInput = {
   hospitalType?: Prisma.StringNullableWithAggregatesFilter<"Hospital"> | string | null
   bedCapacity?: Prisma.IntNullableWithAggregatesFilter<"Hospital"> | number | null
   specializations?: Prisma.StringNullableListFilter<"Hospital">
+  edcdCertified?: Prisma.BoolWithAggregatesFilter<"Hospital"> | boolean
+  edcdCertificationDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Hospital"> | Date | string | null
+  treatmentCenterCategory?: Prisma.EnumTreatmentCenterTypeNullableWithAggregatesFilter<"Hospital"> | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.IntNullableWithAggregatesFilter<"Hospital"> | number | null
+  travelTimeCoverage?: Prisma.JsonNullableWithAggregatesFilter<"Hospital">
+  lastOperationalCheck?: Prisma.DateTimeNullableWithAggregatesFilter<"Hospital"> | Date | string | null
   notes?: Prisma.StringNullableWithAggregatesFilter<"Hospital"> | string | null
   internalNotes?: Prisma.StringNullableWithAggregatesFilter<"Hospital"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Hospital"> | Date | string
@@ -722,6 +803,12 @@ export type HospitalCreateInput = {
   hospitalType?: string | null
   bedCapacity?: number | null
   specializations?: Prisma.HospitalCreatespecializationsInput | string[]
+  edcdCertified?: boolean
+  edcdCertificationDate?: Date | string | null
+  treatmentCenterCategory?: $Enums.TreatmentCenterType | null
+  populationCoverage?: number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Date | string | null
   notes?: string | null
   internalNotes?: string | null
   createdAt?: Date | string
@@ -729,6 +816,9 @@ export type HospitalCreateInput = {
   deletedAt?: Date | string | null
   verificationRecords?: Prisma.HospitalVerificationCreateNestedManyWithoutHospitalInput
   reports?: Prisma.HospitalReportCreateNestedManyWithoutHospitalInput
+  sources?: Prisma.TreatmentCenterSourceCreateNestedManyWithoutTreatmentCenterInput
+  historicalCases?: Prisma.SnakebiteCaseCreateNestedManyWithoutTreatmentCenterInput
+  nearestTo?: Prisma.RescueRequestCreateNestedManyWithoutNearestHospitalInput
 }
 
 export type HospitalUncheckedCreateInput = {
@@ -766,6 +856,12 @@ export type HospitalUncheckedCreateInput = {
   hospitalType?: string | null
   bedCapacity?: number | null
   specializations?: Prisma.HospitalCreatespecializationsInput | string[]
+  edcdCertified?: boolean
+  edcdCertificationDate?: Date | string | null
+  treatmentCenterCategory?: $Enums.TreatmentCenterType | null
+  populationCoverage?: number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Date | string | null
   notes?: string | null
   internalNotes?: string | null
   createdAt?: Date | string
@@ -773,6 +869,9 @@ export type HospitalUncheckedCreateInput = {
   deletedAt?: Date | string | null
   verificationRecords?: Prisma.HospitalVerificationUncheckedCreateNestedManyWithoutHospitalInput
   reports?: Prisma.HospitalReportUncheckedCreateNestedManyWithoutHospitalInput
+  sources?: Prisma.TreatmentCenterSourceUncheckedCreateNestedManyWithoutTreatmentCenterInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedCreateNestedManyWithoutTreatmentCenterInput
+  nearestTo?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutNearestHospitalInput
 }
 
 export type HospitalUpdateInput = {
@@ -810,6 +909,12 @@ export type HospitalUpdateInput = {
   hospitalType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bedCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   specializations?: Prisma.HospitalUpdatespecializationsInput | string[]
+  edcdCertified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  edcdCertificationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  treatmentCenterCategory?: Prisma.NullableEnumTreatmentCenterTypeFieldUpdateOperationsInput | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -817,6 +922,9 @@ export type HospitalUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   verificationRecords?: Prisma.HospitalVerificationUpdateManyWithoutHospitalNestedInput
   reports?: Prisma.HospitalReportUpdateManyWithoutHospitalNestedInput
+  sources?: Prisma.TreatmentCenterSourceUpdateManyWithoutTreatmentCenterNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUpdateManyWithoutTreatmentCenterNestedInput
+  nearestTo?: Prisma.RescueRequestUpdateManyWithoutNearestHospitalNestedInput
 }
 
 export type HospitalUncheckedUpdateInput = {
@@ -854,6 +962,12 @@ export type HospitalUncheckedUpdateInput = {
   hospitalType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bedCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   specializations?: Prisma.HospitalUpdatespecializationsInput | string[]
+  edcdCertified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  edcdCertificationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  treatmentCenterCategory?: Prisma.NullableEnumTreatmentCenterTypeFieldUpdateOperationsInput | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -861,6 +975,9 @@ export type HospitalUncheckedUpdateInput = {
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   verificationRecords?: Prisma.HospitalVerificationUncheckedUpdateManyWithoutHospitalNestedInput
   reports?: Prisma.HospitalReportUncheckedUpdateManyWithoutHospitalNestedInput
+  sources?: Prisma.TreatmentCenterSourceUncheckedUpdateManyWithoutTreatmentCenterNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedUpdateManyWithoutTreatmentCenterNestedInput
+  nearestTo?: Prisma.RescueRequestUncheckedUpdateManyWithoutNearestHospitalNestedInput
 }
 
 export type HospitalCreateManyInput = {
@@ -898,6 +1015,12 @@ export type HospitalCreateManyInput = {
   hospitalType?: string | null
   bedCapacity?: number | null
   specializations?: Prisma.HospitalCreatespecializationsInput | string[]
+  edcdCertified?: boolean
+  edcdCertificationDate?: Date | string | null
+  treatmentCenterCategory?: $Enums.TreatmentCenterType | null
+  populationCoverage?: number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Date | string | null
   notes?: string | null
   internalNotes?: string | null
   createdAt?: Date | string
@@ -940,6 +1063,12 @@ export type HospitalUpdateManyMutationInput = {
   hospitalType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bedCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   specializations?: Prisma.HospitalUpdatespecializationsInput | string[]
+  edcdCertified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  edcdCertificationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  treatmentCenterCategory?: Prisma.NullableEnumTreatmentCenterTypeFieldUpdateOperationsInput | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -982,11 +1111,22 @@ export type HospitalUncheckedUpdateManyInput = {
   hospitalType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bedCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   specializations?: Prisma.HospitalUpdatespecializationsInput | string[]
+  edcdCertified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  edcdCertificationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  treatmentCenterCategory?: Prisma.NullableEnumTreatmentCenterTypeFieldUpdateOperationsInput | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+}
+
+export type HospitalNullableScalarRelationFilter = {
+  is?: Prisma.HospitalWhereInput | null
+  isNot?: Prisma.HospitalWhereInput | null
 }
 
 export type HospitalCountOrderByAggregateInput = {
@@ -1024,6 +1164,12 @@ export type HospitalCountOrderByAggregateInput = {
   hospitalType?: Prisma.SortOrder
   bedCapacity?: Prisma.SortOrder
   specializations?: Prisma.SortOrder
+  edcdCertified?: Prisma.SortOrder
+  edcdCertificationDate?: Prisma.SortOrder
+  treatmentCenterCategory?: Prisma.SortOrder
+  populationCoverage?: Prisma.SortOrder
+  travelTimeCoverage?: Prisma.SortOrder
+  lastOperationalCheck?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   internalNotes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -1037,6 +1183,7 @@ export type HospitalAvgOrderByAggregateInput = {
   longitude?: Prisma.SortOrder
   antivenomStockQuantity?: Prisma.SortOrder
   bedCapacity?: Prisma.SortOrder
+  populationCoverage?: Prisma.SortOrder
 }
 
 export type HospitalMaxOrderByAggregateInput = {
@@ -1073,6 +1220,11 @@ export type HospitalMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   hospitalType?: Prisma.SortOrder
   bedCapacity?: Prisma.SortOrder
+  edcdCertified?: Prisma.SortOrder
+  edcdCertificationDate?: Prisma.SortOrder
+  treatmentCenterCategory?: Prisma.SortOrder
+  populationCoverage?: Prisma.SortOrder
+  lastOperationalCheck?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   internalNotes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -1114,6 +1266,11 @@ export type HospitalMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   hospitalType?: Prisma.SortOrder
   bedCapacity?: Prisma.SortOrder
+  edcdCertified?: Prisma.SortOrder
+  edcdCertificationDate?: Prisma.SortOrder
+  treatmentCenterCategory?: Prisma.SortOrder
+  populationCoverage?: Prisma.SortOrder
+  lastOperationalCheck?: Prisma.SortOrder
   notes?: Prisma.SortOrder
   internalNotes?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -1127,11 +1284,28 @@ export type HospitalSumOrderByAggregateInput = {
   longitude?: Prisma.SortOrder
   antivenomStockQuantity?: Prisma.SortOrder
   bedCapacity?: Prisma.SortOrder
+  populationCoverage?: Prisma.SortOrder
 }
 
 export type HospitalScalarRelationFilter = {
   is?: Prisma.HospitalWhereInput
   isNot?: Prisma.HospitalWhereInput
+}
+
+export type HospitalCreateNestedOneWithoutNearestToInput = {
+  create?: Prisma.XOR<Prisma.HospitalCreateWithoutNearestToInput, Prisma.HospitalUncheckedCreateWithoutNearestToInput>
+  connectOrCreate?: Prisma.HospitalCreateOrConnectWithoutNearestToInput
+  connect?: Prisma.HospitalWhereUniqueInput
+}
+
+export type HospitalUpdateOneWithoutNearestToNestedInput = {
+  create?: Prisma.XOR<Prisma.HospitalCreateWithoutNearestToInput, Prisma.HospitalUncheckedCreateWithoutNearestToInput>
+  connectOrCreate?: Prisma.HospitalCreateOrConnectWithoutNearestToInput
+  upsert?: Prisma.HospitalUpsertWithoutNearestToInput
+  disconnect?: Prisma.HospitalWhereInput | boolean
+  delete?: Prisma.HospitalWhereInput | boolean
+  connect?: Prisma.HospitalWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HospitalUpdateToOneWithWhereWithoutNearestToInput, Prisma.HospitalUpdateWithoutNearestToInput>, Prisma.HospitalUncheckedUpdateWithoutNearestToInput>
 }
 
 export type HospitalCreatespecializationsInput = {
@@ -1153,6 +1327,10 @@ export type EnumHospitalStatusFieldUpdateOperationsInput = {
 export type HospitalUpdatespecializationsInput = {
   set?: string[]
   push?: string | string[]
+}
+
+export type NullableEnumTreatmentCenterTypeFieldUpdateOperationsInput = {
+  set?: $Enums.TreatmentCenterType | null
 }
 
 export type HospitalCreateNestedOneWithoutVerificationRecordsInput = {
@@ -1181,6 +1359,260 @@ export type HospitalUpdateOneRequiredWithoutReportsNestedInput = {
   upsert?: Prisma.HospitalUpsertWithoutReportsInput
   connect?: Prisma.HospitalWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.HospitalUpdateToOneWithWhereWithoutReportsInput, Prisma.HospitalUpdateWithoutReportsInput>, Prisma.HospitalUncheckedUpdateWithoutReportsInput>
+}
+
+export type HospitalCreateNestedOneWithoutHistoricalCasesInput = {
+  create?: Prisma.XOR<Prisma.HospitalCreateWithoutHistoricalCasesInput, Prisma.HospitalUncheckedCreateWithoutHistoricalCasesInput>
+  connectOrCreate?: Prisma.HospitalCreateOrConnectWithoutHistoricalCasesInput
+  connect?: Prisma.HospitalWhereUniqueInput
+}
+
+export type HospitalUpdateOneWithoutHistoricalCasesNestedInput = {
+  create?: Prisma.XOR<Prisma.HospitalCreateWithoutHistoricalCasesInput, Prisma.HospitalUncheckedCreateWithoutHistoricalCasesInput>
+  connectOrCreate?: Prisma.HospitalCreateOrConnectWithoutHistoricalCasesInput
+  upsert?: Prisma.HospitalUpsertWithoutHistoricalCasesInput
+  disconnect?: Prisma.HospitalWhereInput | boolean
+  delete?: Prisma.HospitalWhereInput | boolean
+  connect?: Prisma.HospitalWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HospitalUpdateToOneWithWhereWithoutHistoricalCasesInput, Prisma.HospitalUpdateWithoutHistoricalCasesInput>, Prisma.HospitalUncheckedUpdateWithoutHistoricalCasesInput>
+}
+
+export type HospitalCreateNestedOneWithoutSourcesInput = {
+  create?: Prisma.XOR<Prisma.HospitalCreateWithoutSourcesInput, Prisma.HospitalUncheckedCreateWithoutSourcesInput>
+  connectOrCreate?: Prisma.HospitalCreateOrConnectWithoutSourcesInput
+  connect?: Prisma.HospitalWhereUniqueInput
+}
+
+export type HospitalUpdateOneRequiredWithoutSourcesNestedInput = {
+  create?: Prisma.XOR<Prisma.HospitalCreateWithoutSourcesInput, Prisma.HospitalUncheckedCreateWithoutSourcesInput>
+  connectOrCreate?: Prisma.HospitalCreateOrConnectWithoutSourcesInput
+  upsert?: Prisma.HospitalUpsertWithoutSourcesInput
+  connect?: Prisma.HospitalWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HospitalUpdateToOneWithWhereWithoutSourcesInput, Prisma.HospitalUpdateWithoutSourcesInput>, Prisma.HospitalUncheckedUpdateWithoutSourcesInput>
+}
+
+export type HospitalCreateWithoutNearestToInput = {
+  id?: string
+  name: string
+  address: string
+  municipality: string
+  ward?: number | null
+  district: string
+  province: string
+  phone?: string | null
+  email?: string | null
+  emergencyPhone?: string | null
+  latitude: number
+  longitude: number
+  emergencyAvailable?: boolean
+  emergency24x7?: boolean
+  snakebiteTreatmentAvailable?: boolean
+  treatmentCenterType?: string | null
+  antivenomStatus?: $Enums.AntivenomStatus
+  antivenomStockQuantity?: number | null
+  antivenomLastVerifiedAt?: Date | string | null
+  antivenomVerifiedBy?: string | null
+  antivenomStockPublic?: boolean
+  ventilatorAvailable?: boolean
+  icuAvailable?: boolean
+  ambulanceAvailable?: boolean
+  bloodBankAvailable?: boolean
+  source?: string | null
+  sourceYear?: string | null
+  sourceUrl?: string | null
+  verificationStatus?: $Enums.VerificationStatus
+  officialTreatmentCenter?: boolean
+  status?: $Enums.HospitalStatus
+  hospitalType?: string | null
+  bedCapacity?: number | null
+  specializations?: Prisma.HospitalCreatespecializationsInput | string[]
+  edcdCertified?: boolean
+  edcdCertificationDate?: Date | string | null
+  treatmentCenterCategory?: $Enums.TreatmentCenterType | null
+  populationCoverage?: number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Date | string | null
+  notes?: string | null
+  internalNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  verificationRecords?: Prisma.HospitalVerificationCreateNestedManyWithoutHospitalInput
+  reports?: Prisma.HospitalReportCreateNestedManyWithoutHospitalInput
+  sources?: Prisma.TreatmentCenterSourceCreateNestedManyWithoutTreatmentCenterInput
+  historicalCases?: Prisma.SnakebiteCaseCreateNestedManyWithoutTreatmentCenterInput
+}
+
+export type HospitalUncheckedCreateWithoutNearestToInput = {
+  id?: string
+  name: string
+  address: string
+  municipality: string
+  ward?: number | null
+  district: string
+  province: string
+  phone?: string | null
+  email?: string | null
+  emergencyPhone?: string | null
+  latitude: number
+  longitude: number
+  emergencyAvailable?: boolean
+  emergency24x7?: boolean
+  snakebiteTreatmentAvailable?: boolean
+  treatmentCenterType?: string | null
+  antivenomStatus?: $Enums.AntivenomStatus
+  antivenomStockQuantity?: number | null
+  antivenomLastVerifiedAt?: Date | string | null
+  antivenomVerifiedBy?: string | null
+  antivenomStockPublic?: boolean
+  ventilatorAvailable?: boolean
+  icuAvailable?: boolean
+  ambulanceAvailable?: boolean
+  bloodBankAvailable?: boolean
+  source?: string | null
+  sourceYear?: string | null
+  sourceUrl?: string | null
+  verificationStatus?: $Enums.VerificationStatus
+  officialTreatmentCenter?: boolean
+  status?: $Enums.HospitalStatus
+  hospitalType?: string | null
+  bedCapacity?: number | null
+  specializations?: Prisma.HospitalCreatespecializationsInput | string[]
+  edcdCertified?: boolean
+  edcdCertificationDate?: Date | string | null
+  treatmentCenterCategory?: $Enums.TreatmentCenterType | null
+  populationCoverage?: number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Date | string | null
+  notes?: string | null
+  internalNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  verificationRecords?: Prisma.HospitalVerificationUncheckedCreateNestedManyWithoutHospitalInput
+  reports?: Prisma.HospitalReportUncheckedCreateNestedManyWithoutHospitalInput
+  sources?: Prisma.TreatmentCenterSourceUncheckedCreateNestedManyWithoutTreatmentCenterInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedCreateNestedManyWithoutTreatmentCenterInput
+}
+
+export type HospitalCreateOrConnectWithoutNearestToInput = {
+  where: Prisma.HospitalWhereUniqueInput
+  create: Prisma.XOR<Prisma.HospitalCreateWithoutNearestToInput, Prisma.HospitalUncheckedCreateWithoutNearestToInput>
+}
+
+export type HospitalUpsertWithoutNearestToInput = {
+  update: Prisma.XOR<Prisma.HospitalUpdateWithoutNearestToInput, Prisma.HospitalUncheckedUpdateWithoutNearestToInput>
+  create: Prisma.XOR<Prisma.HospitalCreateWithoutNearestToInput, Prisma.HospitalUncheckedCreateWithoutNearestToInput>
+  where?: Prisma.HospitalWhereInput
+}
+
+export type HospitalUpdateToOneWithWhereWithoutNearestToInput = {
+  where?: Prisma.HospitalWhereInput
+  data: Prisma.XOR<Prisma.HospitalUpdateWithoutNearestToInput, Prisma.HospitalUncheckedUpdateWithoutNearestToInput>
+}
+
+export type HospitalUpdateWithoutNearestToInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  municipality?: Prisma.StringFieldUpdateOperationsInput | string
+  ward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  district?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  emergencyAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emergency24x7?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snakebiteTreatmentAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  treatmentCenterType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antivenomStatus?: Prisma.EnumAntivenomStatusFieldUpdateOperationsInput | $Enums.AntivenomStatus
+  antivenomStockQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  antivenomLastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  antivenomVerifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antivenomStockPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ventilatorAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  icuAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ambulanceAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bloodBankAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  officialTreatmentCenter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumHospitalStatusFieldUpdateOperationsInput | $Enums.HospitalStatus
+  hospitalType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bedCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  specializations?: Prisma.HospitalUpdatespecializationsInput | string[]
+  edcdCertified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  edcdCertificationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  treatmentCenterCategory?: Prisma.NullableEnumTreatmentCenterTypeFieldUpdateOperationsInput | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationRecords?: Prisma.HospitalVerificationUpdateManyWithoutHospitalNestedInput
+  reports?: Prisma.HospitalReportUpdateManyWithoutHospitalNestedInput
+  sources?: Prisma.TreatmentCenterSourceUpdateManyWithoutTreatmentCenterNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUpdateManyWithoutTreatmentCenterNestedInput
+}
+
+export type HospitalUncheckedUpdateWithoutNearestToInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  municipality?: Prisma.StringFieldUpdateOperationsInput | string
+  ward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  district?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  emergencyAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emergency24x7?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snakebiteTreatmentAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  treatmentCenterType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antivenomStatus?: Prisma.EnumAntivenomStatusFieldUpdateOperationsInput | $Enums.AntivenomStatus
+  antivenomStockQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  antivenomLastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  antivenomVerifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antivenomStockPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ventilatorAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  icuAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ambulanceAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bloodBankAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  officialTreatmentCenter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumHospitalStatusFieldUpdateOperationsInput | $Enums.HospitalStatus
+  hospitalType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bedCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  specializations?: Prisma.HospitalUpdatespecializationsInput | string[]
+  edcdCertified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  edcdCertificationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  treatmentCenterCategory?: Prisma.NullableEnumTreatmentCenterTypeFieldUpdateOperationsInput | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationRecords?: Prisma.HospitalVerificationUncheckedUpdateManyWithoutHospitalNestedInput
+  reports?: Prisma.HospitalReportUncheckedUpdateManyWithoutHospitalNestedInput
+  sources?: Prisma.TreatmentCenterSourceUncheckedUpdateManyWithoutTreatmentCenterNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedUpdateManyWithoutTreatmentCenterNestedInput
 }
 
 export type HospitalCreateWithoutVerificationRecordsInput = {
@@ -1218,12 +1650,21 @@ export type HospitalCreateWithoutVerificationRecordsInput = {
   hospitalType?: string | null
   bedCapacity?: number | null
   specializations?: Prisma.HospitalCreatespecializationsInput | string[]
+  edcdCertified?: boolean
+  edcdCertificationDate?: Date | string | null
+  treatmentCenterCategory?: $Enums.TreatmentCenterType | null
+  populationCoverage?: number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Date | string | null
   notes?: string | null
   internalNotes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   reports?: Prisma.HospitalReportCreateNestedManyWithoutHospitalInput
+  sources?: Prisma.TreatmentCenterSourceCreateNestedManyWithoutTreatmentCenterInput
+  historicalCases?: Prisma.SnakebiteCaseCreateNestedManyWithoutTreatmentCenterInput
+  nearestTo?: Prisma.RescueRequestCreateNestedManyWithoutNearestHospitalInput
 }
 
 export type HospitalUncheckedCreateWithoutVerificationRecordsInput = {
@@ -1261,12 +1702,21 @@ export type HospitalUncheckedCreateWithoutVerificationRecordsInput = {
   hospitalType?: string | null
   bedCapacity?: number | null
   specializations?: Prisma.HospitalCreatespecializationsInput | string[]
+  edcdCertified?: boolean
+  edcdCertificationDate?: Date | string | null
+  treatmentCenterCategory?: $Enums.TreatmentCenterType | null
+  populationCoverage?: number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Date | string | null
   notes?: string | null
   internalNotes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   reports?: Prisma.HospitalReportUncheckedCreateNestedManyWithoutHospitalInput
+  sources?: Prisma.TreatmentCenterSourceUncheckedCreateNestedManyWithoutTreatmentCenterInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedCreateNestedManyWithoutTreatmentCenterInput
+  nearestTo?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutNearestHospitalInput
 }
 
 export type HospitalCreateOrConnectWithoutVerificationRecordsInput = {
@@ -1320,12 +1770,21 @@ export type HospitalUpdateWithoutVerificationRecordsInput = {
   hospitalType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bedCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   specializations?: Prisma.HospitalUpdatespecializationsInput | string[]
+  edcdCertified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  edcdCertificationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  treatmentCenterCategory?: Prisma.NullableEnumTreatmentCenterTypeFieldUpdateOperationsInput | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reports?: Prisma.HospitalReportUpdateManyWithoutHospitalNestedInput
+  sources?: Prisma.TreatmentCenterSourceUpdateManyWithoutTreatmentCenterNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUpdateManyWithoutTreatmentCenterNestedInput
+  nearestTo?: Prisma.RescueRequestUpdateManyWithoutNearestHospitalNestedInput
 }
 
 export type HospitalUncheckedUpdateWithoutVerificationRecordsInput = {
@@ -1363,12 +1822,21 @@ export type HospitalUncheckedUpdateWithoutVerificationRecordsInput = {
   hospitalType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bedCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   specializations?: Prisma.HospitalUpdatespecializationsInput | string[]
+  edcdCertified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  edcdCertificationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  treatmentCenterCategory?: Prisma.NullableEnumTreatmentCenterTypeFieldUpdateOperationsInput | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   reports?: Prisma.HospitalReportUncheckedUpdateManyWithoutHospitalNestedInput
+  sources?: Prisma.TreatmentCenterSourceUncheckedUpdateManyWithoutTreatmentCenterNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedUpdateManyWithoutTreatmentCenterNestedInput
+  nearestTo?: Prisma.RescueRequestUncheckedUpdateManyWithoutNearestHospitalNestedInput
 }
 
 export type HospitalCreateWithoutReportsInput = {
@@ -1406,12 +1874,21 @@ export type HospitalCreateWithoutReportsInput = {
   hospitalType?: string | null
   bedCapacity?: number | null
   specializations?: Prisma.HospitalCreatespecializationsInput | string[]
+  edcdCertified?: boolean
+  edcdCertificationDate?: Date | string | null
+  treatmentCenterCategory?: $Enums.TreatmentCenterType | null
+  populationCoverage?: number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Date | string | null
   notes?: string | null
   internalNotes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   verificationRecords?: Prisma.HospitalVerificationCreateNestedManyWithoutHospitalInput
+  sources?: Prisma.TreatmentCenterSourceCreateNestedManyWithoutTreatmentCenterInput
+  historicalCases?: Prisma.SnakebiteCaseCreateNestedManyWithoutTreatmentCenterInput
+  nearestTo?: Prisma.RescueRequestCreateNestedManyWithoutNearestHospitalInput
 }
 
 export type HospitalUncheckedCreateWithoutReportsInput = {
@@ -1449,12 +1926,21 @@ export type HospitalUncheckedCreateWithoutReportsInput = {
   hospitalType?: string | null
   bedCapacity?: number | null
   specializations?: Prisma.HospitalCreatespecializationsInput | string[]
+  edcdCertified?: boolean
+  edcdCertificationDate?: Date | string | null
+  treatmentCenterCategory?: $Enums.TreatmentCenterType | null
+  populationCoverage?: number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Date | string | null
   notes?: string | null
   internalNotes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
   verificationRecords?: Prisma.HospitalVerificationUncheckedCreateNestedManyWithoutHospitalInput
+  sources?: Prisma.TreatmentCenterSourceUncheckedCreateNestedManyWithoutTreatmentCenterInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedCreateNestedManyWithoutTreatmentCenterInput
+  nearestTo?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutNearestHospitalInput
 }
 
 export type HospitalCreateOrConnectWithoutReportsInput = {
@@ -1508,12 +1994,21 @@ export type HospitalUpdateWithoutReportsInput = {
   hospitalType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bedCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   specializations?: Prisma.HospitalUpdatespecializationsInput | string[]
+  edcdCertified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  edcdCertificationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  treatmentCenterCategory?: Prisma.NullableEnumTreatmentCenterTypeFieldUpdateOperationsInput | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   verificationRecords?: Prisma.HospitalVerificationUpdateManyWithoutHospitalNestedInput
+  sources?: Prisma.TreatmentCenterSourceUpdateManyWithoutTreatmentCenterNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUpdateManyWithoutTreatmentCenterNestedInput
+  nearestTo?: Prisma.RescueRequestUpdateManyWithoutNearestHospitalNestedInput
 }
 
 export type HospitalUncheckedUpdateWithoutReportsInput = {
@@ -1551,12 +2046,469 @@ export type HospitalUncheckedUpdateWithoutReportsInput = {
   hospitalType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   bedCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   specializations?: Prisma.HospitalUpdatespecializationsInput | string[]
+  edcdCertified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  edcdCertificationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  treatmentCenterCategory?: Prisma.NullableEnumTreatmentCenterTypeFieldUpdateOperationsInput | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   verificationRecords?: Prisma.HospitalVerificationUncheckedUpdateManyWithoutHospitalNestedInput
+  sources?: Prisma.TreatmentCenterSourceUncheckedUpdateManyWithoutTreatmentCenterNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedUpdateManyWithoutTreatmentCenterNestedInput
+  nearestTo?: Prisma.RescueRequestUncheckedUpdateManyWithoutNearestHospitalNestedInput
+}
+
+export type HospitalCreateWithoutHistoricalCasesInput = {
+  id?: string
+  name: string
+  address: string
+  municipality: string
+  ward?: number | null
+  district: string
+  province: string
+  phone?: string | null
+  email?: string | null
+  emergencyPhone?: string | null
+  latitude: number
+  longitude: number
+  emergencyAvailable?: boolean
+  emergency24x7?: boolean
+  snakebiteTreatmentAvailable?: boolean
+  treatmentCenterType?: string | null
+  antivenomStatus?: $Enums.AntivenomStatus
+  antivenomStockQuantity?: number | null
+  antivenomLastVerifiedAt?: Date | string | null
+  antivenomVerifiedBy?: string | null
+  antivenomStockPublic?: boolean
+  ventilatorAvailable?: boolean
+  icuAvailable?: boolean
+  ambulanceAvailable?: boolean
+  bloodBankAvailable?: boolean
+  source?: string | null
+  sourceYear?: string | null
+  sourceUrl?: string | null
+  verificationStatus?: $Enums.VerificationStatus
+  officialTreatmentCenter?: boolean
+  status?: $Enums.HospitalStatus
+  hospitalType?: string | null
+  bedCapacity?: number | null
+  specializations?: Prisma.HospitalCreatespecializationsInput | string[]
+  edcdCertified?: boolean
+  edcdCertificationDate?: Date | string | null
+  treatmentCenterCategory?: $Enums.TreatmentCenterType | null
+  populationCoverage?: number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Date | string | null
+  notes?: string | null
+  internalNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  verificationRecords?: Prisma.HospitalVerificationCreateNestedManyWithoutHospitalInput
+  reports?: Prisma.HospitalReportCreateNestedManyWithoutHospitalInput
+  sources?: Prisma.TreatmentCenterSourceCreateNestedManyWithoutTreatmentCenterInput
+  nearestTo?: Prisma.RescueRequestCreateNestedManyWithoutNearestHospitalInput
+}
+
+export type HospitalUncheckedCreateWithoutHistoricalCasesInput = {
+  id?: string
+  name: string
+  address: string
+  municipality: string
+  ward?: number | null
+  district: string
+  province: string
+  phone?: string | null
+  email?: string | null
+  emergencyPhone?: string | null
+  latitude: number
+  longitude: number
+  emergencyAvailable?: boolean
+  emergency24x7?: boolean
+  snakebiteTreatmentAvailable?: boolean
+  treatmentCenterType?: string | null
+  antivenomStatus?: $Enums.AntivenomStatus
+  antivenomStockQuantity?: number | null
+  antivenomLastVerifiedAt?: Date | string | null
+  antivenomVerifiedBy?: string | null
+  antivenomStockPublic?: boolean
+  ventilatorAvailable?: boolean
+  icuAvailable?: boolean
+  ambulanceAvailable?: boolean
+  bloodBankAvailable?: boolean
+  source?: string | null
+  sourceYear?: string | null
+  sourceUrl?: string | null
+  verificationStatus?: $Enums.VerificationStatus
+  officialTreatmentCenter?: boolean
+  status?: $Enums.HospitalStatus
+  hospitalType?: string | null
+  bedCapacity?: number | null
+  specializations?: Prisma.HospitalCreatespecializationsInput | string[]
+  edcdCertified?: boolean
+  edcdCertificationDate?: Date | string | null
+  treatmentCenterCategory?: $Enums.TreatmentCenterType | null
+  populationCoverage?: number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Date | string | null
+  notes?: string | null
+  internalNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  verificationRecords?: Prisma.HospitalVerificationUncheckedCreateNestedManyWithoutHospitalInput
+  reports?: Prisma.HospitalReportUncheckedCreateNestedManyWithoutHospitalInput
+  sources?: Prisma.TreatmentCenterSourceUncheckedCreateNestedManyWithoutTreatmentCenterInput
+  nearestTo?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutNearestHospitalInput
+}
+
+export type HospitalCreateOrConnectWithoutHistoricalCasesInput = {
+  where: Prisma.HospitalWhereUniqueInput
+  create: Prisma.XOR<Prisma.HospitalCreateWithoutHistoricalCasesInput, Prisma.HospitalUncheckedCreateWithoutHistoricalCasesInput>
+}
+
+export type HospitalUpsertWithoutHistoricalCasesInput = {
+  update: Prisma.XOR<Prisma.HospitalUpdateWithoutHistoricalCasesInput, Prisma.HospitalUncheckedUpdateWithoutHistoricalCasesInput>
+  create: Prisma.XOR<Prisma.HospitalCreateWithoutHistoricalCasesInput, Prisma.HospitalUncheckedCreateWithoutHistoricalCasesInput>
+  where?: Prisma.HospitalWhereInput
+}
+
+export type HospitalUpdateToOneWithWhereWithoutHistoricalCasesInput = {
+  where?: Prisma.HospitalWhereInput
+  data: Prisma.XOR<Prisma.HospitalUpdateWithoutHistoricalCasesInput, Prisma.HospitalUncheckedUpdateWithoutHistoricalCasesInput>
+}
+
+export type HospitalUpdateWithoutHistoricalCasesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  municipality?: Prisma.StringFieldUpdateOperationsInput | string
+  ward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  district?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  emergencyAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emergency24x7?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snakebiteTreatmentAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  treatmentCenterType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antivenomStatus?: Prisma.EnumAntivenomStatusFieldUpdateOperationsInput | $Enums.AntivenomStatus
+  antivenomStockQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  antivenomLastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  antivenomVerifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antivenomStockPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ventilatorAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  icuAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ambulanceAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bloodBankAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  officialTreatmentCenter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumHospitalStatusFieldUpdateOperationsInput | $Enums.HospitalStatus
+  hospitalType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bedCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  specializations?: Prisma.HospitalUpdatespecializationsInput | string[]
+  edcdCertified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  edcdCertificationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  treatmentCenterCategory?: Prisma.NullableEnumTreatmentCenterTypeFieldUpdateOperationsInput | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationRecords?: Prisma.HospitalVerificationUpdateManyWithoutHospitalNestedInput
+  reports?: Prisma.HospitalReportUpdateManyWithoutHospitalNestedInput
+  sources?: Prisma.TreatmentCenterSourceUpdateManyWithoutTreatmentCenterNestedInput
+  nearestTo?: Prisma.RescueRequestUpdateManyWithoutNearestHospitalNestedInput
+}
+
+export type HospitalUncheckedUpdateWithoutHistoricalCasesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  municipality?: Prisma.StringFieldUpdateOperationsInput | string
+  ward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  district?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  emergencyAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emergency24x7?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snakebiteTreatmentAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  treatmentCenterType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antivenomStatus?: Prisma.EnumAntivenomStatusFieldUpdateOperationsInput | $Enums.AntivenomStatus
+  antivenomStockQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  antivenomLastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  antivenomVerifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antivenomStockPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ventilatorAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  icuAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ambulanceAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bloodBankAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  officialTreatmentCenter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumHospitalStatusFieldUpdateOperationsInput | $Enums.HospitalStatus
+  hospitalType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bedCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  specializations?: Prisma.HospitalUpdatespecializationsInput | string[]
+  edcdCertified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  edcdCertificationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  treatmentCenterCategory?: Prisma.NullableEnumTreatmentCenterTypeFieldUpdateOperationsInput | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationRecords?: Prisma.HospitalVerificationUncheckedUpdateManyWithoutHospitalNestedInput
+  reports?: Prisma.HospitalReportUncheckedUpdateManyWithoutHospitalNestedInput
+  sources?: Prisma.TreatmentCenterSourceUncheckedUpdateManyWithoutTreatmentCenterNestedInput
+  nearestTo?: Prisma.RescueRequestUncheckedUpdateManyWithoutNearestHospitalNestedInput
+}
+
+export type HospitalCreateWithoutSourcesInput = {
+  id?: string
+  name: string
+  address: string
+  municipality: string
+  ward?: number | null
+  district: string
+  province: string
+  phone?: string | null
+  email?: string | null
+  emergencyPhone?: string | null
+  latitude: number
+  longitude: number
+  emergencyAvailable?: boolean
+  emergency24x7?: boolean
+  snakebiteTreatmentAvailable?: boolean
+  treatmentCenterType?: string | null
+  antivenomStatus?: $Enums.AntivenomStatus
+  antivenomStockQuantity?: number | null
+  antivenomLastVerifiedAt?: Date | string | null
+  antivenomVerifiedBy?: string | null
+  antivenomStockPublic?: boolean
+  ventilatorAvailable?: boolean
+  icuAvailable?: boolean
+  ambulanceAvailable?: boolean
+  bloodBankAvailable?: boolean
+  source?: string | null
+  sourceYear?: string | null
+  sourceUrl?: string | null
+  verificationStatus?: $Enums.VerificationStatus
+  officialTreatmentCenter?: boolean
+  status?: $Enums.HospitalStatus
+  hospitalType?: string | null
+  bedCapacity?: number | null
+  specializations?: Prisma.HospitalCreatespecializationsInput | string[]
+  edcdCertified?: boolean
+  edcdCertificationDate?: Date | string | null
+  treatmentCenterCategory?: $Enums.TreatmentCenterType | null
+  populationCoverage?: number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Date | string | null
+  notes?: string | null
+  internalNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  verificationRecords?: Prisma.HospitalVerificationCreateNestedManyWithoutHospitalInput
+  reports?: Prisma.HospitalReportCreateNestedManyWithoutHospitalInput
+  historicalCases?: Prisma.SnakebiteCaseCreateNestedManyWithoutTreatmentCenterInput
+  nearestTo?: Prisma.RescueRequestCreateNestedManyWithoutNearestHospitalInput
+}
+
+export type HospitalUncheckedCreateWithoutSourcesInput = {
+  id?: string
+  name: string
+  address: string
+  municipality: string
+  ward?: number | null
+  district: string
+  province: string
+  phone?: string | null
+  email?: string | null
+  emergencyPhone?: string | null
+  latitude: number
+  longitude: number
+  emergencyAvailable?: boolean
+  emergency24x7?: boolean
+  snakebiteTreatmentAvailable?: boolean
+  treatmentCenterType?: string | null
+  antivenomStatus?: $Enums.AntivenomStatus
+  antivenomStockQuantity?: number | null
+  antivenomLastVerifiedAt?: Date | string | null
+  antivenomVerifiedBy?: string | null
+  antivenomStockPublic?: boolean
+  ventilatorAvailable?: boolean
+  icuAvailable?: boolean
+  ambulanceAvailable?: boolean
+  bloodBankAvailable?: boolean
+  source?: string | null
+  sourceYear?: string | null
+  sourceUrl?: string | null
+  verificationStatus?: $Enums.VerificationStatus
+  officialTreatmentCenter?: boolean
+  status?: $Enums.HospitalStatus
+  hospitalType?: string | null
+  bedCapacity?: number | null
+  specializations?: Prisma.HospitalCreatespecializationsInput | string[]
+  edcdCertified?: boolean
+  edcdCertificationDate?: Date | string | null
+  treatmentCenterCategory?: $Enums.TreatmentCenterType | null
+  populationCoverage?: number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Date | string | null
+  notes?: string | null
+  internalNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  verificationRecords?: Prisma.HospitalVerificationUncheckedCreateNestedManyWithoutHospitalInput
+  reports?: Prisma.HospitalReportUncheckedCreateNestedManyWithoutHospitalInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedCreateNestedManyWithoutTreatmentCenterInput
+  nearestTo?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutNearestHospitalInput
+}
+
+export type HospitalCreateOrConnectWithoutSourcesInput = {
+  where: Prisma.HospitalWhereUniqueInput
+  create: Prisma.XOR<Prisma.HospitalCreateWithoutSourcesInput, Prisma.HospitalUncheckedCreateWithoutSourcesInput>
+}
+
+export type HospitalUpsertWithoutSourcesInput = {
+  update: Prisma.XOR<Prisma.HospitalUpdateWithoutSourcesInput, Prisma.HospitalUncheckedUpdateWithoutSourcesInput>
+  create: Prisma.XOR<Prisma.HospitalCreateWithoutSourcesInput, Prisma.HospitalUncheckedCreateWithoutSourcesInput>
+  where?: Prisma.HospitalWhereInput
+}
+
+export type HospitalUpdateToOneWithWhereWithoutSourcesInput = {
+  where?: Prisma.HospitalWhereInput
+  data: Prisma.XOR<Prisma.HospitalUpdateWithoutSourcesInput, Prisma.HospitalUncheckedUpdateWithoutSourcesInput>
+}
+
+export type HospitalUpdateWithoutSourcesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  municipality?: Prisma.StringFieldUpdateOperationsInput | string
+  ward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  district?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  emergencyAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emergency24x7?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snakebiteTreatmentAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  treatmentCenterType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antivenomStatus?: Prisma.EnumAntivenomStatusFieldUpdateOperationsInput | $Enums.AntivenomStatus
+  antivenomStockQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  antivenomLastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  antivenomVerifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antivenomStockPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ventilatorAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  icuAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ambulanceAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bloodBankAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  officialTreatmentCenter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumHospitalStatusFieldUpdateOperationsInput | $Enums.HospitalStatus
+  hospitalType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bedCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  specializations?: Prisma.HospitalUpdatespecializationsInput | string[]
+  edcdCertified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  edcdCertificationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  treatmentCenterCategory?: Prisma.NullableEnumTreatmentCenterTypeFieldUpdateOperationsInput | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationRecords?: Prisma.HospitalVerificationUpdateManyWithoutHospitalNestedInput
+  reports?: Prisma.HospitalReportUpdateManyWithoutHospitalNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUpdateManyWithoutTreatmentCenterNestedInput
+  nearestTo?: Prisma.RescueRequestUpdateManyWithoutNearestHospitalNestedInput
+}
+
+export type HospitalUncheckedUpdateWithoutSourcesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  municipality?: Prisma.StringFieldUpdateOperationsInput | string
+  ward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  district?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  emergencyAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emergency24x7?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snakebiteTreatmentAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  treatmentCenterType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antivenomStatus?: Prisma.EnumAntivenomStatusFieldUpdateOperationsInput | $Enums.AntivenomStatus
+  antivenomStockQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  antivenomLastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  antivenomVerifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antivenomStockPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ventilatorAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  icuAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ambulanceAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bloodBankAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  officialTreatmentCenter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumHospitalStatusFieldUpdateOperationsInput | $Enums.HospitalStatus
+  hospitalType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bedCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  specializations?: Prisma.HospitalUpdatespecializationsInput | string[]
+  edcdCertified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  edcdCertificationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  treatmentCenterCategory?: Prisma.NullableEnumTreatmentCenterTypeFieldUpdateOperationsInput | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationRecords?: Prisma.HospitalVerificationUncheckedUpdateManyWithoutHospitalNestedInput
+  reports?: Prisma.HospitalReportUncheckedUpdateManyWithoutHospitalNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedUpdateManyWithoutTreatmentCenterNestedInput
+  nearestTo?: Prisma.RescueRequestUncheckedUpdateManyWithoutNearestHospitalNestedInput
 }
 
 
@@ -1567,11 +2519,17 @@ export type HospitalUncheckedUpdateWithoutReportsInput = {
 export type HospitalCountOutputType = {
   verificationRecords: number
   reports: number
+  sources: number
+  historicalCases: number
+  nearestTo: number
 }
 
 export type HospitalCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   verificationRecords?: boolean | HospitalCountOutputTypeCountVerificationRecordsArgs
   reports?: boolean | HospitalCountOutputTypeCountReportsArgs
+  sources?: boolean | HospitalCountOutputTypeCountSourcesArgs
+  historicalCases?: boolean | HospitalCountOutputTypeCountHistoricalCasesArgs
+  nearestTo?: boolean | HospitalCountOutputTypeCountNearestToArgs
 }
 
 /**
@@ -1596,6 +2554,27 @@ export type HospitalCountOutputTypeCountVerificationRecordsArgs<ExtArgs extends 
  */
 export type HospitalCountOutputTypeCountReportsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.HospitalReportWhereInput
+}
+
+/**
+ * HospitalCountOutputType without action
+ */
+export type HospitalCountOutputTypeCountSourcesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TreatmentCenterSourceWhereInput
+}
+
+/**
+ * HospitalCountOutputType without action
+ */
+export type HospitalCountOutputTypeCountHistoricalCasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SnakebiteCaseWhereInput
+}
+
+/**
+ * HospitalCountOutputType without action
+ */
+export type HospitalCountOutputTypeCountNearestToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RescueRequestWhereInput
 }
 
 
@@ -1634,6 +2613,12 @@ export type HospitalSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   hospitalType?: boolean
   bedCapacity?: boolean
   specializations?: boolean
+  edcdCertified?: boolean
+  edcdCertificationDate?: boolean
+  treatmentCenterCategory?: boolean
+  populationCoverage?: boolean
+  travelTimeCoverage?: boolean
+  lastOperationalCheck?: boolean
   notes?: boolean
   internalNotes?: boolean
   createdAt?: boolean
@@ -1641,6 +2626,9 @@ export type HospitalSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   deletedAt?: boolean
   verificationRecords?: boolean | Prisma.Hospital$verificationRecordsArgs<ExtArgs>
   reports?: boolean | Prisma.Hospital$reportsArgs<ExtArgs>
+  sources?: boolean | Prisma.Hospital$sourcesArgs<ExtArgs>
+  historicalCases?: boolean | Prisma.Hospital$historicalCasesArgs<ExtArgs>
+  nearestTo?: boolean | Prisma.Hospital$nearestToArgs<ExtArgs>
   _count?: boolean | Prisma.HospitalCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["hospital"]>
 
@@ -1679,6 +2667,12 @@ export type HospitalSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   hospitalType?: boolean
   bedCapacity?: boolean
   specializations?: boolean
+  edcdCertified?: boolean
+  edcdCertificationDate?: boolean
+  treatmentCenterCategory?: boolean
+  populationCoverage?: boolean
+  travelTimeCoverage?: boolean
+  lastOperationalCheck?: boolean
   notes?: boolean
   internalNotes?: boolean
   createdAt?: boolean
@@ -1721,6 +2715,12 @@ export type HospitalSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   hospitalType?: boolean
   bedCapacity?: boolean
   specializations?: boolean
+  edcdCertified?: boolean
+  edcdCertificationDate?: boolean
+  treatmentCenterCategory?: boolean
+  populationCoverage?: boolean
+  travelTimeCoverage?: boolean
+  lastOperationalCheck?: boolean
   notes?: boolean
   internalNotes?: boolean
   createdAt?: boolean
@@ -1763,6 +2763,12 @@ export type HospitalSelectScalar = {
   hospitalType?: boolean
   bedCapacity?: boolean
   specializations?: boolean
+  edcdCertified?: boolean
+  edcdCertificationDate?: boolean
+  treatmentCenterCategory?: boolean
+  populationCoverage?: boolean
+  travelTimeCoverage?: boolean
+  lastOperationalCheck?: boolean
   notes?: boolean
   internalNotes?: boolean
   createdAt?: boolean
@@ -1770,10 +2776,13 @@ export type HospitalSelectScalar = {
   deletedAt?: boolean
 }
 
-export type HospitalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "address" | "municipality" | "ward" | "district" | "province" | "phone" | "email" | "emergencyPhone" | "latitude" | "longitude" | "emergencyAvailable" | "emergency24x7" | "snakebiteTreatmentAvailable" | "treatmentCenterType" | "antivenomStatus" | "antivenomStockQuantity" | "antivenomLastVerifiedAt" | "antivenomVerifiedBy" | "antivenomStockPublic" | "ventilatorAvailable" | "icuAvailable" | "ambulanceAvailable" | "bloodBankAvailable" | "source" | "sourceYear" | "sourceUrl" | "verificationStatus" | "officialTreatmentCenter" | "status" | "hospitalType" | "bedCapacity" | "specializations" | "notes" | "internalNotes" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["hospital"]>
+export type HospitalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "address" | "municipality" | "ward" | "district" | "province" | "phone" | "email" | "emergencyPhone" | "latitude" | "longitude" | "emergencyAvailable" | "emergency24x7" | "snakebiteTreatmentAvailable" | "treatmentCenterType" | "antivenomStatus" | "antivenomStockQuantity" | "antivenomLastVerifiedAt" | "antivenomVerifiedBy" | "antivenomStockPublic" | "ventilatorAvailable" | "icuAvailable" | "ambulanceAvailable" | "bloodBankAvailable" | "source" | "sourceYear" | "sourceUrl" | "verificationStatus" | "officialTreatmentCenter" | "status" | "hospitalType" | "bedCapacity" | "specializations" | "edcdCertified" | "edcdCertificationDate" | "treatmentCenterCategory" | "populationCoverage" | "travelTimeCoverage" | "lastOperationalCheck" | "notes" | "internalNotes" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["hospital"]>
 export type HospitalInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   verificationRecords?: boolean | Prisma.Hospital$verificationRecordsArgs<ExtArgs>
   reports?: boolean | Prisma.Hospital$reportsArgs<ExtArgs>
+  sources?: boolean | Prisma.Hospital$sourcesArgs<ExtArgs>
+  historicalCases?: boolean | Prisma.Hospital$historicalCasesArgs<ExtArgs>
+  nearestTo?: boolean | Prisma.Hospital$nearestToArgs<ExtArgs>
   _count?: boolean | Prisma.HospitalCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type HospitalIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1784,6 +2793,9 @@ export type $HospitalPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     verificationRecords: Prisma.$HospitalVerificationPayload<ExtArgs>[]
     reports: Prisma.$HospitalReportPayload<ExtArgs>[]
+    sources: Prisma.$TreatmentCenterSourcePayload<ExtArgs>[]
+    historicalCases: Prisma.$SnakebiteCasePayload<ExtArgs>[]
+    nearestTo: Prisma.$RescueRequestPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1820,6 +2832,12 @@ export type $HospitalPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     hospitalType: string | null
     bedCapacity: number | null
     specializations: string[]
+    edcdCertified: boolean
+    edcdCertificationDate: Date | null
+    treatmentCenterCategory: $Enums.TreatmentCenterType | null
+    populationCoverage: number | null
+    travelTimeCoverage: runtime.JsonValue | null
+    lastOperationalCheck: Date | null
     notes: string | null
     internalNotes: string | null
     createdAt: Date
@@ -2221,6 +3239,9 @@ export interface Prisma__HospitalClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   verificationRecords<T extends Prisma.Hospital$verificationRecordsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hospital$verificationRecordsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HospitalVerificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reports<T extends Prisma.Hospital$reportsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hospital$reportsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HospitalReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sources<T extends Prisma.Hospital$sourcesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hospital$sourcesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TreatmentCenterSourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  historicalCases<T extends Prisma.Hospital$historicalCasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hospital$historicalCasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SnakebiteCasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  nearestTo<T extends Prisma.Hospital$nearestToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hospital$nearestToArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RescueRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2284,6 +3305,12 @@ export interface HospitalFieldRefs {
   readonly hospitalType: Prisma.FieldRef<"Hospital", 'String'>
   readonly bedCapacity: Prisma.FieldRef<"Hospital", 'Int'>
   readonly specializations: Prisma.FieldRef<"Hospital", 'String[]'>
+  readonly edcdCertified: Prisma.FieldRef<"Hospital", 'Boolean'>
+  readonly edcdCertificationDate: Prisma.FieldRef<"Hospital", 'DateTime'>
+  readonly treatmentCenterCategory: Prisma.FieldRef<"Hospital", 'TreatmentCenterType'>
+  readonly populationCoverage: Prisma.FieldRef<"Hospital", 'Int'>
+  readonly travelTimeCoverage: Prisma.FieldRef<"Hospital", 'Json'>
+  readonly lastOperationalCheck: Prisma.FieldRef<"Hospital", 'DateTime'>
   readonly notes: Prisma.FieldRef<"Hospital", 'String'>
   readonly internalNotes: Prisma.FieldRef<"Hospital", 'String'>
   readonly createdAt: Prisma.FieldRef<"Hospital", 'DateTime'>
@@ -2727,6 +3754,78 @@ export type Hospital$reportsArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.HospitalReportScalarFieldEnum | Prisma.HospitalReportScalarFieldEnum[]
+}
+
+/**
+ * Hospital.sources
+ */
+export type Hospital$sourcesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TreatmentCenterSource
+   */
+  select?: Prisma.TreatmentCenterSourceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TreatmentCenterSource
+   */
+  omit?: Prisma.TreatmentCenterSourceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TreatmentCenterSourceInclude<ExtArgs> | null
+  where?: Prisma.TreatmentCenterSourceWhereInput
+  orderBy?: Prisma.TreatmentCenterSourceOrderByWithRelationInput | Prisma.TreatmentCenterSourceOrderByWithRelationInput[]
+  cursor?: Prisma.TreatmentCenterSourceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TreatmentCenterSourceScalarFieldEnum | Prisma.TreatmentCenterSourceScalarFieldEnum[]
+}
+
+/**
+ * Hospital.historicalCases
+ */
+export type Hospital$historicalCasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SnakebiteCase
+   */
+  select?: Prisma.SnakebiteCaseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SnakebiteCase
+   */
+  omit?: Prisma.SnakebiteCaseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SnakebiteCaseInclude<ExtArgs> | null
+  where?: Prisma.SnakebiteCaseWhereInput
+  orderBy?: Prisma.SnakebiteCaseOrderByWithRelationInput | Prisma.SnakebiteCaseOrderByWithRelationInput[]
+  cursor?: Prisma.SnakebiteCaseWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SnakebiteCaseScalarFieldEnum | Prisma.SnakebiteCaseScalarFieldEnum[]
+}
+
+/**
+ * Hospital.nearestTo
+ */
+export type Hospital$nearestToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RescueRequest
+   */
+  select?: Prisma.RescueRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RescueRequest
+   */
+  omit?: Prisma.RescueRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RescueRequestInclude<ExtArgs> | null
+  where?: Prisma.RescueRequestWhereInput
+  orderBy?: Prisma.RescueRequestOrderByWithRelationInput | Prisma.RescueRequestOrderByWithRelationInput[]
+  cursor?: Prisma.RescueRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RescueRequestScalarFieldEnum | Prisma.RescueRequestScalarFieldEnum[]
 }
 
 /**

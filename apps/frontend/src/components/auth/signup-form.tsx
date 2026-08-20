@@ -48,8 +48,8 @@ export function SignupForm() {
         description: 'Please check your email for verification code',
       })
       
-      // Redirect to login page where unverified users will be handled
-      router.push('/login')
+      // Redirect to verify-email page with the user's email
+      router.push(`/verify-email?email=${encodeURIComponent(data.email)}`)
     } catch (error: unknown) {
       // Handle duplicate email error - check message content
       if (

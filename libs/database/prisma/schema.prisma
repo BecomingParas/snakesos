@@ -67,6 +67,7 @@ model User {
   activityLogs      ActivityLog[]
   rescueTimelines   RescueTimeline[]
   trainings         Training[]
+  speciesObservations SpeciesObservation[] @relation
 
   // Better Auth Relations
   sessions Session[]
@@ -287,6 +288,17 @@ model RescueRequest {
   updatedAt       DateTime  @updatedAt
   deletedAt       DateTime?
 
+  // Geospatial Intelligence Enhancements
+  estimatedTravelTimeMinutes Int? // Estimated travel time to location
+  routeDistance              Float? // km from rescuer to incident
+  routeGeometry              Json? // GeoJSON of route taken
+  nearestHospitalId          String?
+  nearestHospital            Hospital? @relation("NearestHospital", fields: [nearestHospitalId], references: [id])
+
+  // Vehicle assignment
+  vehicleId String?
+  vehicle   RescueVehicle? @relation("VehicleRescues", fields: [vehicleId], references: [id])
+
   // Relations
   timeline      RescueTimeline[]
   notifications Notification[]
@@ -428,6 +440,19 @@ model Volunteer {
   hasEquipment Boolean  @default(false)
   equipment    String[] // ["Snake Hook", "Tongs", "Bag", "Boots"]
 
+  // Geospatial Intelligence Enhancements
+  serviceRadiusKm                Float? @default(20) // Service coverage radius
+  serviceDistricts               Json? // Array of districts they serve
+  totalResponseTimeMinutes       Int?   @default(0)
+  averageResponseTimeMinutes     Float?
+  lastKnownLatitude              Float? // Real-time location
+  lastKnownLongitude             Float?
+  lastLocationUpdateFromTracking DateTime? // Last location update timestamp
+
+  // Vehicle assignment
+  vehicleId String?
+  assignedVehicle RescueVehicle? @relation("VehicleRescuers", fields: [vehicleId], references: [id])
+
   // Metadata
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -561,6 +586,8 @@ model SnakeSpecies {
   // Relations
   rescueRequests    RescueRequest[]
   aiIdentifications AIIdentification[]
+  historicalCases   SnakebiteCase[]       @relation
+  observations      SpeciesObservation[]  @relation
 
   @@index([venomous])
   @@index([dangerLevel])
@@ -1027,6 +1054,14 @@ model Hospital {
   bedCapacity     Int?
   specializations String[]
 
+  // Geospatial Intelligence Enhancements
+  edcdCertified           Boolean                @default(false) // EDCD certified treatment center
+  edcdCertificationDate   DateTime?
+  treatmentCenterCategory TreatmentCenterType?
+  populationCoverage      Int? // Estimated population served
+  travelTimeCoverage      Json? // Isochrone data (travel time polygons)
+  lastOperationalCheck    DateTime?
+
   // Metadata
   notes         String? @db.Text
   internalNotes String? @db.Text // Admin-only notes
@@ -1038,6 +1073,9 @@ model Hospital {
   // Relations
   verificationRecords HospitalVerification[]
   reports             HospitalReport[]
+  sources             TreatmentCenterSource[] @relation("TreatmentCenterSources")
+  historicalCases     SnakebiteCase[]         @relation("HistoricalCases")
+  nearestTo           RescueRequest[]         @relation("NearestHospital")
 
   @@index([latitude, longitude])
   @@index([snakebiteTreatmentAvailable])
@@ -1164,4 +1202,356 @@ model SystemSetting {
 
   @@index([category])
   @@map("system_settings")
+}
+
+// ===================================================================
+// GEOSPATIAL INTELLIGENCE MODELS
+// ===================================================================
+// Research-based snakebite hotspots, historical cases, treatment
+// center provenance tracking, vehicle tracking, and analytics
+// ===================================================================
+
+model SnakebiteHotspot {
+  id String @id @default(uuid())
+
+  // Identity
+  name        String @unique
+  description String?
+
+  // Geometry (GeoJSON string until PostGIS is configured)
+  geometryJson String? // GeoJSON polygon
+
+  // Location
+  district     String?
+  municipality String?
+  ward         Int?
+  province     String?
+
+  // Risk Metrics
+  riskScore        Float // 0.0 - 1.0
+  riskLevel        RiskLevel
+  caseCount        Int?
+  populationAtRisk Int?
+  incidenceRate    Float? // per 100,000 population
+  mortalityRate    Float? // percentage
+  seasonalityScore Float? // 0.0 - 1.0 (1.0 = highly seasonal)
+
+  // Source Metadata (Research provenance)
+  source       String // e.g., "Sharma et al. 2021 - Nature Scientific Reports"
+  sourceUrl    String?
+  studyYear    Int?
+  methodology  String? // How the risk was determined
+  confidence   Float? // 0.0 - 1.0
+
+  // Temporal
+  season         Season?
+  monthlyPattern Json? // Array of monthly scores [0-11]
+
+  // Status
+  active Boolean @default(true)
+
+  // Metadata
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  createdBy  String? // User ID who created this
+  verifiedBy String? // Admin who verified this
+
+  @@index([riskLevel, district])
+  @@index([province, riskLevel])
+  @@index([district, riskLevel])
+  @@index([active])
+  @@map("snakebite_hotspots")
+}
+
+model SnakebiteCase {
+  id String @id @default(uuid())
+
+  // Temporal
+  year   Int
+  month  Int? // 1-12
+  season Season?
+  date   DateTime? // If precise date known
+
+  // Location (anonymized/aggregated for privacy)
+  province     String?
+  district     String?
+  municipality String?
+  ward         Int?
+  latitude     Float?
+  longitude    Float?
+
+  // Patient Demographics (anonymized)
+  ageGroup String? // "0-10", "11-20", "21-30", etc.
+  sex      String? // "M", "F", "O", "UNKNOWN"
+
+  // Snake Details
+  speciesId     String?
+  species       SnakeSpecies? @relation(fields: [speciesId], references: [id])
+  speciesCommon String? // Common name if species not in database
+
+  // Clinical
+  envenomation Boolean? // Was there envenomation?
+  symptoms     Json? // Array of symptoms
+  outcome      CaseOutcome
+
+  // Treatment
+  treatmentCenterId     String?
+  treatmentCenter       Hospital? @relation("HistoricalCases", fields: [treatmentCenterId], references: [id])
+  treatmentDelayMinutes Int? // Time from bite to treatment
+  antivenomGiven        Boolean?
+  hospitalStayDays      Int?
+
+  // Source Metadata
+  source    String // "Research Paper", "Hospital Records", "Survey", "EDCD"
+  sourceUrl String?
+  studyId   String? // Reference to parent study
+  caseId    String? // Original case ID in source
+
+  // Data Quality
+  dataQuality String? // "HIGH", "MEDIUM", "LOW"
+  notes       String? // Additional context
+
+  // Metadata
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  importedBy String? // User who imported this data
+
+  @@index([year, district])
+  @@index([province, year])
+  @@index([outcome, year])
+  @@index([district, year, month])
+  @@index([season, year])
+  @@map("snakebite_cases")
+}
+
+model TreatmentCenterSource {
+  id String @id @default(uuid())
+
+  treatmentCenterId String
+  treatmentCenter   Hospital @relation("TreatmentCenterSources", fields: [treatmentCenterId], references: [id], onDelete: Cascade)
+
+  // Source Details
+  sourceType SourceType
+  sourceUrl  String?
+  sourceName String? // Name of the document/organization
+
+  // Verification
+  verifiedAt DateTime
+  verifiedBy String? // User ID who verified
+
+  // Additional Info
+  notes           String?
+  documentUrl     String? // Link to source document
+  contactPerson   String? // Contact at source organization
+  contactPhone    String?
+  lastContactedAt DateTime?
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([treatmentCenterId])
+  @@index([sourceType])
+  @@map("treatment_center_sources")
+}
+
+model RescueVehicle {
+  id String @id @default(uuid())
+
+  // Organization
+  organizationId   String?
+  organizationName String? // Name of org if not in system
+
+  // Vehicle Details
+  vehicleNumber String // Registration/identification number
+  vehicleType   VehicleType
+  model         String?
+  year          Int?
+  color         String?
+
+  // Equipment
+  equipment Json? // Array of equipment available
+
+  // Status
+  status VehicleStatus @default(AVAILABLE)
+
+  // Location (persistent snapshot, not real-time)
+  lastKnownLatitude  Float?
+  lastKnownLongitude Float?
+  lastLocationUpdate DateTime?
+
+  // Capacity
+  passengerCapacity Int?
+  cargoCapacity     String?
+
+  // Maintenance
+  lastMaintenanceDate DateTime?
+  nextMaintenanceDate DateTime?
+
+  // Relations
+  rescuers       Volunteer[]     @relation("VehicleRescuers")
+  rescueRequests RescueRequest[] @relation("VehicleRescues")
+
+  // Metadata
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  active    Boolean   @default(true)
+  deletedAt DateTime? // Soft delete
+
+  @@index([status, active])
+  @@index([vehicleType])
+  @@map("rescue_vehicles")
+}
+
+model SpeciesObservation {
+  id String @id @default(uuid())
+
+  // Observer
+  observerId String?
+  observer   User? @relation(fields: [observerId], references: [id])
+
+  // Species
+  speciesId String?
+  species   SnakeSpecies? @relation(fields: [speciesId], references: [id])
+
+  // Location
+  latitude     Float
+  longitude    Float
+  locationName String?
+  district     String?
+  municipality String?
+  province     String?
+
+  // Observation Details
+  observedAt  DateTime
+  behavior    String? // "basking", "hunting", "defensive", etc.
+  habitat     String? // "forest", "grassland", "urban", etc.
+  photoUrl    String?
+  description String?
+
+  // Validation
+  validated   Boolean   @default(false)
+  validatedBy String?
+  validatedAt DateTime?
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([speciesId, observedAt])
+  @@index([district, province])
+  @@map("species_observations")
+}
+
+model DistrictStatistics {
+  id String @id @default(uuid())
+
+  // Location
+  district String @unique
+  province String
+
+  // Computed Metrics
+  totalIncidents            Int       @default(0)
+  activeRescues             Int       @default(0)
+  completedRescues          Int       @default(0)
+  snakebiteCases            Int       @default(0)
+  deaths                    Int       @default(0)
+  treatmentCenters          Int       @default(0)
+  availableRescuers         Int       @default(0)
+  avgResponseTimeMinutes    Float?
+  medianResponseTimeMinutes Float?
+  avgTravelDistanceKm       Float?
+  successRate               Float?
+  riskLevel                 RiskLevel?
+
+  // Temporal
+  lastIncidentDate  DateTime?
+  lastSnakebiteDate DateTime?
+
+  // Seasonality
+  monsoonIncidents Int?
+  winterIncidents  Int?
+  springIncidents  Int?
+  autumnIncidents  Int?
+
+  // Top Species
+  topSpecies Json? // Array of {speciesId, count}
+
+  // Cache metadata
+  lastCalculated DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([province])
+  @@index([riskLevel])
+  @@map("district_statistics")
+}
+
+// ===================================================================
+// GEOSPATIAL ENUMS
+// ===================================================================
+
+enum RiskLevel {
+  LOW
+  MODERATE
+  HIGH
+  VERY_HIGH
+  EXTREME
+}
+
+enum Season {
+  WINTER  // Dec-Feb
+  SPRING  // Mar-May
+  MONSOON // Jun-Sep (HIGH RISK - 73.2% of cases)
+  AUTUMN  // Oct-Nov
+}
+
+enum CaseOutcome {
+  RECOVERED                    // Full recovery
+  RECOVERED_WITH_COMPLICATIONS // Survived with long-term effects
+  DECEASED                     // Death
+  LOST_TO_FOLLOWUP             // Unknown outcome
+  UNKNOWN
+}
+
+enum SourceType {
+  EDCD                         // Epidemiology and Disease Control Division
+  PROVINCIAL_HEALTH_AUTHORITY
+  DISTRICT_HEALTH_OFFICE
+  HOSPITAL_SELF_REPORTED
+  RESEARCH_PAPER
+  FIELD_SURVEY
+  MANUAL_VERIFICATION
+  SNAKESOS_COMMUNITY
+  GOVERNMENT_DOCUMENT
+  OTHER
+}
+
+enum VehicleType {
+  RESCUE_VAN
+  AMBULANCE
+  MOTORBIKE
+  BICYCLE
+  CAR
+  TRUCK
+  OTHER
+}
+
+enum VehicleStatus {
+  AVAILABLE
+  ASSIGNED
+  EN_ROUTE
+  ON_SITE
+  MAINTENANCE
+  OFFLINE
+  DECOMMISSIONED
+}
+
+enum TreatmentCenterType {
+  GOVERNMENT
+  PROVINCIAL
+  DISTRICT
+  PRIVATE
+  TEACHING
+  PRIMARY_HEALTH_CENTER
+  OTHER
 }

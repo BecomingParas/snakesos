@@ -1,0 +1,81 @@
+# Map Overview Query for Admin Dashboard
+
+query MapOverview($bounds: MapBoundsInput!, $filters: MapFiltersInput) {
+  mapOverview(bounds: $bounds, filters: $filters) {
+    incidents {
+      id
+      latitude
+      longitude
+      status
+      priority
+      reportedAt
+      municipality
+    }
+    rescuers {
+      id
+      latitude
+      longitude
+      name
+      isAvailable
+      lastLocationUpdate
+    }
+    treatmentCenters {
+      id
+      latitude
+      longitude
+      name
+      antivenomStatus
+      snakebiteTreatmentAvailable
+      emergency24x7
+      district
+      phone
+    }
+    hotspots {
+      id
+      name
+      riskLevel
+      riskScore
+      district
+      province
+      source
+      sourceUrl
+      studyYear
+      geometry
+    }
+    statistics {
+      totalIncidents
+      activeRescues
+      availableRescuers
+      treatmentCenters
+      criticalIncidents
+      avgResponseTimeMinutes
+      successRate
+    }
+    metadata {
+      generatedAt
+      cached
+      freshnessSeconds
+    }
+  }
+}
+
+query SnakebiteHotspots($province: String, $district: String) {
+  snakebiteHotspots(province: $province, district: $district) {
+    id
+    name
+    description
+    geometry
+    district
+    province
+    riskScore
+    riskLevel
+    populationAtRisk
+    source
+    sourceUrl
+    studyYear
+    methodology
+    confidence
+    season
+    active
+  }
+}

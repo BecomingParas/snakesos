@@ -16,8 +16,6 @@ export const RegisterInputSchema = z.object({
 export type RegisterInput = z.infer<typeof RegisterInputSchema>;
 
 export interface RegisterResponse {
-  accessToken: string;
-  refreshToken: string;
   user: {
     id: string;
     email: string;
@@ -28,5 +26,4 @@ export interface RegisterResponse {
     createdAt: Date;
     updatedAt: Date;
   };
-  expiresIn: number;
 }

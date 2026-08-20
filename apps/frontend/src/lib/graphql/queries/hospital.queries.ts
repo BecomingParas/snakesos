@@ -26,7 +26,8 @@ export const HOSPITAL_FRAGMENT = gql`
     snakebiteTreatmentAvailable
     treatmentCenterType
     antivenomStatus
-    lastAntivenomVerification
+    antivenomLastVerifiedAt
+    antivenomVerifiedBy
     ventilatorAvailable
     icuAvailable
     ambulanceAvailable
@@ -62,8 +63,8 @@ export const GET_HOSPITAL = gql`
  */
 export const LIST_HOSPITALS = gql`
   ${HOSPITAL_FRAGMENT}
-  query ListHospitals($filter: HospitalFilter, $pagination: PaginationInput) {
-    hospitals(filter: $filter, pagination: $pagination) {
+  query ListHospitals($filter: HospitalFilterInput, $first: Int, $after: String) {
+    hospitals(filter: $filter, first: $first, after: $after) {
       edges {
         node {
           ...HospitalFields
@@ -76,7 +77,6 @@ export const LIST_HOSPITALS = gql`
         startCursor
         endCursor
       }
-      totalCount
     }
   }
 `;
@@ -164,8 +164,8 @@ export const SEARCH_HOSPITALS = gql`
  */
 export const GET_HOSPITALS_BY_PROVINCE = gql`
   ${HOSPITAL_FRAGMENT}
-  query GetHospitalsByProvince($province: String!, $pagination: PaginationInput) {
-    hospitalsByProvince(province: $province, pagination: $pagination) {
+  query GetHospitalsByProvince($province: String!, $first: Int, $after: String) {
+    hospitalsByProvince(province: $province, first: $first, after: $after) {
       edges {
         node {
           ...HospitalFields
@@ -178,7 +178,6 @@ export const GET_HOSPITALS_BY_PROVINCE = gql`
         startCursor
         endCursor
       }
-      totalCount
     }
   }
 `;
@@ -188,8 +187,8 @@ export const GET_HOSPITALS_BY_PROVINCE = gql`
  */
 export const GET_HOSPITALS_BY_DISTRICT = gql`
   ${HOSPITAL_FRAGMENT}
-  query GetHospitalsByDistrict($district: String!, $pagination: PaginationInput) {
-    hospitalsByDistrict(district: $district, pagination: $pagination) {
+  query GetHospitalsByDistrict($district: String!, $first: Int, $after: String) {
+    hospitalsByDistrict(district: $district, first: $first, after: $after) {
       edges {
         node {
           ...HospitalFields
@@ -202,7 +201,6 @@ export const GET_HOSPITALS_BY_DISTRICT = gql`
         startCursor
         endCursor
       }
-      totalCount
     }
   }
 `;

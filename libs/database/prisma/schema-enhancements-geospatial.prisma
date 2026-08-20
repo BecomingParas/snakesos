@@ -1,0 +1,433 @@
+// ===================================================================
+// SNAKESOS GEOSPATIAL INTELLIGENCE ENHANCEMENTS
+// ===================================================================
+// Additional models for geospatial intelligence platform
+// To be merged into main schema.prisma
+// ===================================================================
+
+// ===================================================================
+// GEOSPATIAL MODELS
+// ===================================================================
+
+model SnakebiteHotspot {
+  id String @id @default(uuid())
+
+  // Identity
+  name        String
+  description String?
+
+  // Geometry (PostGIS)
+  // geometry    Unsupported("geometry(Polygon, 4326)")? // PostGIS polygon
+  // For now, store as GeoJSON string until PostGIS is configured
+  geometryJson String // GeoJSON string
+
+  // Location
+  district     String?
+  municipality String?
+  ward         Int?
+  province     String?
+
+  // Risk Metrics
+  riskScore        Float // 0.0 - 1.0
+  riskLevel        RiskLevel
+  caseCount        Int?
+  populationAtRisk Int?
+  incidenceRate    Float? // per 100,000 population
+  mortalityRate    Float? // percentage
+  seasonalityScore Float? // 0.0 - 1.0 (1.0 = highly seasonal)
+
+  // Source Metadata (IMPORTANT: Research provenance)
+  source       String // e.g., "Sharma et al. 2021 - Nature Scientific Reports"
+  sourceUrl    String?
+  studyYear    Int?
+  methodology  String? // How the risk was determined
+  confidence   Float? // 0.0 - 1.0
+
+  // Temporal
+  season         Season?
+  monthlyPattern Json? // Array of monthly scores [0-11]
+
+  // Status
+  active Boolean @default(true)
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String? // User ID who created this
+  verifiedBy String? // Admin who verified this
+
+  @@index([riskLevel, district])
+  @@index([province, riskLevel])
+  @@index([district, riskLevel])
+  @@index([active])
+  @@map("snakebite_hotspots")
+}
+
+enum RiskLevel {
+  LOW
+  MODERATE
+  HIGH
+  VERY_HIGH
+  EXTREME
+}
+
+enum Season {
+  WINTER // Dec-Feb
+  SPRING // Mar-May
+  MONSOON // Jun-Sep (HIGH RISK - 73.2% of cases)
+  AUTUMN // Oct-Nov
+}
+
+// ===================================================================
+// HISTORICAL SNAKEBITE CASES (Research Data)
+// ===================================================================
+
+model SnakebiteCase {
+  id String @id @default(uuid())
+
+  // Temporal
+  year   Int
+  month  Int? // 1-12
+  season Season?
+  date   DateTime? // If precise date known
+
+  // Location
+  province     String?
+  district     String?
+  municipality String?
+  ward         Int?
+
+  // Coordinates (anonymized/aggregated for privacy)
+  latitude  Float?
+  longitude Float?
+  // locationPoint Unsupported("geometry(Point, 4326)")?
+
+  // Patient Demographics (anonymized)
+  ageGroup String? // "0-10", "11-20", "21-30", etc.
+  sex      String? // "M", "F", "O", "UNKNOWN"
+
+  // Snake Details
+  speciesId     String?
+  species       SnakeSpecies? @relation(fields: [speciesId], references: [id])
+  speciesCommon String? // Common name if species not in database
+
+  // Clinical
+  envenomation Boolean? // Was there envenomation?
+  symptoms     Json? // Array of symptoms
+  outcome      CaseOutcome
+
+  // Treatment
+  treatmentCenterId     String?
+  treatmentCenter       Hospital? @relation("HistoricalCases", fields: [treatmentCenterId], references: [id])
+  treatmentDelayMinutes Int? // Time from bite to treatment
+  antivenomGiven        Boolean?
+  hospitalStayDays      Int?
+
+  // Source Metadata
+  source    String // "Research Paper", "Hospital Records", "Survey", "EDCD"
+  sourceUrl String?
+  studyId   String? // Reference to parent study
+  caseId    String? // Original case ID in source
+
+  // Data Quality
+  dataQuality String? // "HIGH", "MEDIUM", "LOW"
+  notes       String? // Additional context
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  importedBy String? // User who imported this data
+
+  @@index([year, district])
+  @@index([province, year])
+  @@index([outcome, year])
+  @@index([district, year, month])
+  @@index([season, year])
+  @@map("snakebite_cases")
+}
+
+enum CaseOutcome {
+  RECOVERED // Full recovery
+  RECOVERED_WITH_COMPLICATIONS // Survived with long-term effects
+  DECEASED // Death
+  LOST_TO_FOLLOWUP // Unknown outcome
+  UNKNOWN
+}
+
+// ===================================================================
+// TREATMENT CENTER SOURCE TRACKING (Provenance)
+// ===================================================================
+
+model TreatmentCenterSource {
+  id String @id @default(uuid())
+
+  treatmentCenterId String
+  treatmentCenter   Hospital @relation("TreatmentCenterSources", fields: [treatmentCenterId], references: [id], onDelete: Cascade)
+
+  // Source Details
+  sourceType SourceType
+  sourceUrl  String?
+  sourceName String? // Name of the document/organization
+
+  // Verification
+  verifiedAt DateTime
+  verifiedBy String? // User ID who verified
+
+  // Additional Info
+  notes          String?
+  documentUrl    String? // Link to source document
+  contactPerson  String? // Contact at source organization
+  contactPhone   String?
+  lastContactedAt DateTime?
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([treatmentCenterId])
+  @@index([sourceType])
+  @@map("treatment_center_sources")
+}
+
+enum SourceType {
+  EDCD // Epidemiology and Disease Control Division
+  PROVINCIAL_HEALTH_AUTHORITY
+  DISTRICT_HEALTH_OFFICE
+  HOSPITAL_SELF_REPORTED
+  RESEARCH_PAPER
+  FIELD_SURVEY
+  MANUAL_VERIFICATION
+  SNAKESOS_COMMUNITY
+  GOVERNMENT_DOCUMENT
+  OTHER
+}
+
+// ===================================================================
+// RESCUE VEHICLE TRACKING
+// ===================================================================
+
+model RescueVehicle {
+  id String @id @default(uuid())
+
+  // Organization
+  organizationId   String?
+  organizationName String? // Name of org if not in system
+
+  // Vehicle Details
+  vehicleNumber String // Registration/identification number
+  vehicleType   VehicleType
+  model         String?
+  year          Int?
+  color         String?
+
+  // Equipment
+  equipment Json? // Array of equipment available
+
+  // Status
+  status VehicleStatus @default(AVAILABLE)
+
+  // Location (persistent snapshot, not real-time)
+  lastKnownLatitude  Float?
+  lastKnownLongitude Float?
+  lastLocationUpdate DateTime?
+
+  // Capacity
+  passengerCapacity Int?
+  cargoCapacity     String?
+
+  // Maintenance
+  lastMaintenanceDate DateTime?
+  nextMaintenanceDate DateTime?
+
+  // Relations
+  rescuers       Volunteer[] @relation("VehicleRescuers")
+  rescueRequests RescueRequest[] @relation("VehicleRescues")
+
+  // Metadata
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  active    Boolean   @default(true)
+  deletedAt DateTime? // Soft delete
+
+  @@index([status, active])
+  @@index([vehicleType])
+  @@map("rescue_vehicles")
+}
+
+enum VehicleType {
+  RESCUE_VAN
+  AMBULANCE
+  MOTORBIKE
+  BICYCLE
+  CAR
+  TRUCK
+  OTHER
+}
+
+enum VehicleStatus {
+  AVAILABLE
+  ASSIGNED
+  EN_ROUTE
+  ON_SITE
+  MAINTENANCE
+  OFFLINE
+  DECOMMISSIONED
+}
+
+// ===================================================================
+// SPECIES OBSERVATION (Citizen Science)
+// ===================================================================
+
+model SpeciesObservation {
+  id String @id @default(uuid())
+
+  // Observer
+  observerId String?
+  observer   User? @relation(fields: [observerId], references: [id])
+
+  // Species
+  speciesId String?
+  species   SnakeSpecies? @relation(fields: [speciesId], references: [id])
+
+  // Location
+  latitude     Float
+  longitude    Float
+  locationName String?
+  district     String?
+  municipality String?
+  province     String?
+
+  // Observation Details
+  observedAt  DateTime
+  behavior    String? // "basking", "hunting", "defensive", etc.
+  habitat     String? // "forest", "grassland", "urban", etc.
+  photoUrl    String?
+  description String?
+
+  // Validation
+  validated   Boolean @default(false)
+  validatedBy String?
+  validatedAt DateTime?
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([speciesId, observedAt])
+  @@index([district, province])
+  @@map("species_observations")
+}
+
+// ===================================================================
+// ENHANCEMENTS TO EXISTING MODELS
+// ===================================================================
+
+// Add to RescueRequest:
+// - estimatedTravelTimeMinutes Int?
+// - routeDistance Float?
+// - routeGeometry Json? // GeoJSON of route taken
+// - nearestHospitalId String?
+// - nearestHospital Hospital? @relation(...)
+
+// Add to Volunteer:
+// - serviceRadiusKm Float? // How far they're willing to travel
+// - vehicleId String?
+// - vehicle RescueVehicle? @relation(...)
+// - totalResponseTimeMinutes Int? // Average response time
+// - averageRating Float?
+
+// Add to Hospital:
+// - populationCoverage Int? // Estimated population served
+// - travelTimeCoverage Json? // Isochrone data
+// - lastOperationalCheck DateTime?
+// - edcdCertified Boolean @default(false)
+// - edcdCertificationDate DateTime?
+// - treatmentCenterType TreatmentCenterType?
+
+// ===================================================================
+// ANALYTICS MODELS (Computed/Cached)
+// ===================================================================
+
+model DistrictStatistics {
+  id String @id @default(uuid())
+
+  // Location
+  district String @unique
+  province String
+
+  // Computed Metrics
+  totalIncidents          Int      @default(0)
+  activeRescues           Int      @default(0)
+  completedRescues        Int      @default(0)
+  snakebiteCases          Int      @default(0)
+  deaths                  Int      @default(0)
+  treatmentCenters        Int      @default(0)
+  availableRescuers       Int      @default(0)
+  avgResponseTimeMinutes  Float?
+  medianResponseTimeMinutes Float?
+  avgTravelDistanceKm     Float?
+  successRate             Float?
+  riskLevel               RiskLevel?
+
+  // Temporal
+  lastIncidentDate  DateTime?
+  lastSnakebiteDate DateTime?
+
+  // Seasonality
+  monsoonIncidents   Int?
+  winterIncidents    Int?
+  springIncidents    Int?
+  autumnIncidents    Int?
+
+  // Top Species
+  topSpecies Json? // Array of {speciesId, count}
+
+  // Cache metadata
+  lastCalculated DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([province])
+  @@index([riskLevel])
+  @@map("district_statistics")
+}
+
+// ===================================================================
+// NOTES FOR IMPLEMENTATION
+// ===================================================================
+
+// 1. PostGIS Configuration:
+//    - Install PostGIS extension in PostgreSQL
+//    - Update schema.prisma with proper geometry types
+//    - Use Unsupported("geometry(Point, 4326)") for points
+//    - Use Unsupported("geometry(Polygon, 4326)") for polygons
+//
+// 2. Spatial Indexes:
+//    - Create GIST indexes on geometry columns
+//    - Add in migration: CREATE INDEX idx_name ON table USING GIST(geometry);
+//
+// 3. Privacy:
+//    - Never expose exact citizen coordinates publicly
+//    - Use aggregated/anonymized coordinates for historical data
+//    - Implement row-level security in PostgreSQL
+//
+// 4. Data Import:
+//    - Create import scripts for research data
+//    - Validate all sources and citations
+//    - Clearly separate live SnakeSOS data from research data
+//
+// 5. Real-time Location:
+//    - Use Redis for live rescuer/vehicle locations
+//    - Only persist snapshots to PostgreSQL
+//    - Update every 30-60 seconds max
+//
+// 6. Performance:
+//    - Use viewport-based queries (bounds)
+//    - Implement clustering for dense marker areas
+//    - Cache computed statistics
+//    - Use DataLoader for GraphQL
+//
+// 7. Authorization:
+//    - Admin: Full access to all data
+//    - Rescuer: Assigned incidents only
+//    - Citizen: Own incidents only
+//    - Public: Aggregated/anonymized data only

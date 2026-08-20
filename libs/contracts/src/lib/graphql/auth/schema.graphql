@@ -81,6 +81,13 @@ type AuthPayload {
 }
 
 """
+Registration payload returned after successful registration (no auth tokens until email verification + login)
+"""
+type RegistrationPayload {
+  user: User!
+}
+
+"""
 User profile for public display
 """
 type UserProfile {
