@@ -21,7 +21,7 @@
     "graphql:codegen:watch": "yarn workspace @snake-rescue/contracts codegen:watch",
     "graphql:generate": "yarn graphql:codegen",
     "verify:vercel": "node scripts/verify-vercel-deployment.mjs",
-    "prepare": "husky",
+    "prepare": "node -e \"if (process.env.CI !== 'true') { require('child_process').execSync('husky', {stdio: 'inherit'}) }\"",
     "lint": "nx affected --target=lint",
     "format": "nx format:write"
   },
