@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd apps/frontend && npx next build",
+  "buildCommand": "NODE_PATH=./node_modules:./apps/frontend/node_modules npx nx build frontend --prod",
   "framework": "nextjs",
   "installCommand": "npm install --legacy-peer-deps",
   "outputDirectory": "apps/frontend/.next",
