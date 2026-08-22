@@ -17,16 +17,16 @@ import { MapPin, Users, AlertCircle, RefreshCw, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
-// Dynamic import to avoid SSR issues
+// Dynamic import to avoid SSR issues - Using Leaflet (FREE, no API key needed)
 const RescueMap = dynamic(
   () => import('@/components/map/RescueMap').then(mod => ({ default: mod.RescueMap })),
   { 
     ssr: false,
     loading: () => (
-      <div className="h-[calc(100vh-200px)] flex items-center justify-center bg-slate-100 rounded-lg">
+      <div className="h-[calc(100vh-200px)] flex items-center justify-center rounded-lg bg-muted">
         <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading map...</p>
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading map...</p>
         </div>
       </div>
     ),
@@ -35,6 +35,7 @@ const RescueMap = dynamic(
 
 export default function AdminMapPage() {
   const [selectedRescueId, setSelectedRescueId] = useState<string | null>(null);
+  const [hospitalSearchQuery, setHospitalSearchQuery] = useState<string>('');
   
   // Filter states
   const [showCritical, setShowCritical] = useState(true);
@@ -294,8 +295,8 @@ export default function AdminMapPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Rescue Operations Map</h1>
-          <p className="text-sm text-slate-600 mt-1">
+          <h1 className="text-2xl font-bold text-foreground">Rescue Operations Map</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Real-time tracking of all rescue operations across Nepal
           </p>
         </div>
@@ -303,81 +304,81 @@ export default function AdminMapPage() {
 
       {/* Statistics Bar */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-600 uppercase">Total Active</p>
-              <p className="text-2xl font-bold text-slate-900">{stats.total}</p>
+              <p className="text-xs text-muted-foreground uppercase">Total Active</p>
+              <p className="text-2xl font-bold text-foreground">{stats.total}</p>
             </div>
-            <MapPin className="h-8 w-8 text-blue-600" />
+            <MapPin className="h-8 w-8 text-primary" />
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-red-200 p-4">
+        <div className="bg-card rounded-lg shadow-sm border border-destructive/30 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-600 uppercase">Critical</p>
-              <p className="text-2xl font-bold text-red-600">{stats.critical}</p>
+              <p className="text-xs text-muted-foreground uppercase">Critical</p>
+              <p className="text-2xl font-bold text-destructive">{stats.critical}</p>
             </div>
-            <AlertCircle className="h-8 w-8 text-red-600" />
+            <AlertCircle className="h-8 w-8 text-destructive" />
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-yellow-200 p-4">
+        <div className="bg-card rounded-lg shadow-sm border border-warning/30 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-600 uppercase">Pending</p>
-              <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
+              <p className="text-xs text-muted-foreground uppercase">Pending</p>
+              <p className="text-2xl font-bold text-warning">{stats.pending}</p>
             </div>
-            <Filter className="h-8 w-8 text-yellow-600" />
+            <Filter className="h-8 w-8 text-warning" />
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-blue-200 p-4">
+        <div className="bg-card rounded-lg shadow-sm border border-info/30 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-600 uppercase">Assigned</p>
-              <p className="text-2xl font-bold text-blue-600">{stats.assigned}</p>
+              <p className="text-xs text-muted-foreground uppercase">Assigned</p>
+              <p className="text-2xl font-bold text-info">{stats.assigned}</p>
             </div>
-            <Users className="h-8 w-8 text-blue-600" />
+            <Users className="h-8 w-8 text-info" />
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-purple-200 p-4">
+        <div className="bg-card rounded-lg shadow-sm border border-primary/30 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-600 uppercase">In Progress</p>
-              <p className="text-2xl font-bold text-purple-600">{stats.inProgress}</p>
+              <p className="text-xs text-muted-foreground uppercase">In Progress</p>
+              <p className="text-2xl font-bold text-primary">{stats.inProgress}</p>
             </div>
-            <MapPin className="h-8 w-8 text-purple-600" />
+            <MapPin className="h-8 w-8 text-primary" />
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-green-200 p-4">
+        <div className="bg-card rounded-lg shadow-sm border border-success/30 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-600 uppercase">Hospitals</p>
-              <p className="text-2xl font-bold text-green-600">{stats.hospitals}</p>
+              <p className="text-xs text-muted-foreground uppercase">Hospitals</p>
+              <p className="text-2xl font-bold text-success">{stats.hospitals}</p>
             </div>
             <div className="text-2xl">🏥</div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-teal-200 p-4">
+        <div className="bg-card rounded-lg shadow-sm border border-success/30 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-600 uppercase">Rescuers</p>
-              <p className="text-2xl font-bold text-teal-600">{stats.rescuers}</p>
+              <p className="text-xs text-muted-foreground uppercase">Rescuers</p>
+              <p className="text-2xl font-bold text-success">{stats.rescuers}</p>
             </div>
             <div className="text-2xl">🧑‍🚒</div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-red-200 p-4">
+        <div className="bg-card rounded-lg shadow-sm border border-destructive/30 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-600 uppercase">Hotspots</p>
-              <p className="text-2xl font-bold text-red-600">{stats.hotspots}</p>
+              <p className="text-xs text-muted-foreground uppercase">Hotspots</p>
+              <p className="text-2xl font-bold text-destructive">{stats.hotspots}</p>
             </div>
             <div className="text-2xl">🔥</div>
           </div>
@@ -385,12 +386,12 @@ export default function AdminMapPage() {
       </div>
 
       {/* Map Filters (Dropdown Style) */}
-      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
+      <div className="bg-card rounded-lg shadow-sm border border-border p-4">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-slate-900">Map Filters</h3>
+          <h3 className="text-sm font-semibold text-foreground">Map Filters</h3>
           <button
             onClick={toggleAllFilters}
-            className="text-xs px-3 py-1 rounded-md border-2 border-slate-300 hover:border-blue-500 hover:bg-blue-50 transition-all"
+            className="text-xs px-3 py-1 rounded-md border-2 border-input hover:border-primary hover:bg-accent transition-colors"
           >
             {allFiltersActive ? '✓ Deselect All' : 'Select All'}
           </button>
@@ -401,115 +402,115 @@ export default function AdminMapPage() {
           <div className="relative">
             <button
               onClick={() => setIsPriorityDropdownOpen(!isPriorityDropdownOpen)}
-              className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border-2 border-slate-200 bg-white hover:border-blue-400 transition-all text-left"
+              className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border-2 border-input bg-surface-elevated hover:border-primary transition-colors text-left"
             >
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-slate-700">🐍 Priority</span>
+                <span className="text-sm font-medium text-foreground">🐍 Priority</span>
               </div>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-muted-foreground">
                 {[showCritical, showHigh, showMedium, showLow].filter(Boolean).length}/4
               </span>
             </button>
             {isPriorityDropdownOpen && (
-              <div className="absolute top-full left-0 mt-1 w-full bg-white border-2 border-slate-200 rounded-lg shadow-lg z-50 p-2 space-y-1">
-                <label className="flex items-center gap-2 p-2 hover:bg-red-50 rounded cursor-pointer">
+              <div className="absolute top-full left-0 mt-1 w-full bg-popover text-popover-foreground border-2 border-border rounded-lg shadow-elevated z-50 p-2 space-y-1">
+                <label className="flex items-center gap-2 p-2 hover:bg-destructive/10 rounded cursor-pointer">
                   <input
                     type="checkbox"
                     checked={showCritical}
                     onChange={(e) => setShowCritical(e.target.checked)}
-                    className="w-4 h-4 text-red-600 rounded"
+                    className="w-4 h-4 accent-destructive rounded"
                   />
-                  <div className="w-5 h-5 rounded-full bg-red-600 flex items-center justify-center text-xs">🐍</div>
-                  <span className="text-sm text-slate-700">Critical</span>
+                  <div className="w-5 h-5 rounded-full bg-destructive flex items-center justify-center text-xs">🐍</div>
+                  <span className="text-sm text-foreground">Critical</span>
                 </label>
                 
-                <label className="flex items-center gap-2 p-2 hover:bg-orange-50 rounded cursor-pointer">
+                <label className="flex items-center gap-2 p-2 hover:bg-warning/10 rounded cursor-pointer">
                   <input
                     type="checkbox"
                     checked={showHigh}
                     onChange={(e) => setShowHigh(e.target.checked)}
-                    className="w-4 h-4 text-orange-600 rounded"
+                    className="w-4 h-4 accent-warning rounded"
                   />
-                  <div className="w-5 h-5 rounded-full bg-orange-600 flex items-center justify-center text-xs">🐍</div>
-                  <span className="text-sm text-slate-700">High</span>
+                  <div className="w-5 h-5 rounded-full bg-warning flex items-center justify-center text-xs">🐍</div>
+                  <span className="text-sm text-foreground">High</span>
                 </label>
                 
-                <label className="flex items-center gap-2 p-2 hover:bg-yellow-50 rounded cursor-pointer">
+                <label className="flex items-center gap-2 p-2 hover:bg-warning/10 rounded cursor-pointer">
                   <input
                     type="checkbox"
                     checked={showMedium}
                     onChange={(e) => setShowMedium(e.target.checked)}
-                    className="w-4 h-4 text-yellow-600 rounded"
+                    className="w-4 h-4 accent-warning rounded"
                   />
-                  <div className="w-5 h-5 rounded-full bg-yellow-600 flex items-center justify-center text-xs">🐍</div>
-                  <span className="text-sm text-slate-700">Medium</span>
+                  <div className="w-5 h-5 rounded-full bg-warning flex items-center justify-center text-xs">🐍</div>
+                  <span className="text-sm text-foreground">Medium</span>
                 </label>
                 
-                <label className="flex items-center gap-2 p-2 hover:bg-green-50 rounded cursor-pointer">
+                <label className="flex items-center gap-2 p-2 hover:bg-success/10 rounded cursor-pointer">
                   <input
                     type="checkbox"
                     checked={showLow}
                     onChange={(e) => setShowLow(e.target.checked)}
-                    className="w-4 h-4 text-green-600 rounded"
+                    className="w-4 h-4 accent-success rounded"
                   />
-                  <div className="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center text-xs">🐍</div>
-                  <span className="text-sm text-slate-700">Low</span>
+                  <div className="w-5 h-5 rounded-full bg-success flex items-center justify-center text-xs">🐍</div>
+                  <span className="text-sm text-foreground">Low</span>
                 </label>
               </div>
             )}
           </div>
 
           {/* Rescuers Toggle */}
-          <label className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg border-2 border-slate-200 bg-white hover:border-teal-400 transition-all cursor-pointer">
+          <label className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg border-2 border-input bg-surface-elevated hover:border-success transition-colors cursor-pointer">
             <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center text-xs">👨‍⚕️</div>
-              <span className="text-sm font-medium text-slate-700">Rescuers</span>
+              <div className="w-5 h-5 rounded-full bg-success flex items-center justify-center text-xs">👨‍⚕️</div>
+              <span className="text-sm font-medium text-foreground">Rescuers</span>
             </div>
             <input
               type="checkbox"
               checked={showRescuers}
               onChange={(e) => setShowRescuers(e.target.checked)}
-              className="w-4 h-4 text-teal-600 rounded"
+              className="w-4 h-4 accent-success rounded"
             />
           </label>
 
           {/* Hospitals Toggle */}
-          <label className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg border-2 border-slate-200 bg-white hover:border-green-400 transition-all cursor-pointer">
+          <label className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg border-2 border-input bg-surface-elevated hover:border-success transition-colors cursor-pointer">
             <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center text-xs">🏥</div>
-              <span className="text-sm font-medium text-slate-700">Hospitals</span>
+              <div className="w-5 h-5 rounded-full bg-success flex items-center justify-center text-xs">🏥</div>
+              <span className="text-sm font-medium text-foreground">Hospitals</span>
             </div>
             <input
               type="checkbox"
               checked={showHospitals}
               onChange={(e) => setShowHospitals(e.target.checked)}
-              className="w-4 h-4 text-green-600 rounded"
+              className="w-4 h-4 accent-success rounded"
             />
           </label>
 
           {/* Hotspots Toggle */}
-          <label className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg border-2 border-slate-200 bg-white hover:border-red-400 transition-all cursor-pointer">
+          <label className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg border-2 border-input bg-surface-elevated hover:border-destructive transition-colors cursor-pointer">
             <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-full bg-red-600/20 border-2 border-red-600 flex items-center justify-center text-xs">🔥</div>
-              <span className="text-sm font-medium text-slate-700">Hotspots</span>
+              <div className="w-5 h-5 rounded-full bg-destructive/20 border-2 border-destructive flex items-center justify-center text-xs">🔥</div>
+              <span className="text-sm font-medium text-foreground">Hotspots</span>
             </div>
             <input
               type="checkbox"
               checked={showHotspots}
               onChange={(e) => setShowHotspots(e.target.checked)}
-              className="w-4 h-4 text-red-600 rounded"
+              className="w-4 h-4 accent-destructive rounded"
             />
           </label>
 
           {/* Routes Toggle */}
-          <label className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg border-2 border-slate-200 bg-white hover:border-purple-400 transition-all cursor-pointer">
+          <label className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg border-2 border-input bg-surface-elevated hover:border-primary transition-colors cursor-pointer">
             <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} strokeDasharray="4 4" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
-              <span className="text-sm font-medium text-slate-700">Routes</span>
+              <span className="text-sm font-medium text-foreground">Routes</span>
               {activeRoutesCount > 0 && (
-                <span className="text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full">
+                <span className="text-xs bg-primary/15 text-primary px-1.5 py-0.5 rounded-full">
                   {activeRoutesCount}
                 </span>
               )}
@@ -518,33 +519,33 @@ export default function AdminMapPage() {
               type="checkbox"
               checked={showRoutes}
               onChange={(e) => setShowRoutes(e.target.checked)}
-              className="w-4 h-4 text-purple-600 rounded"
+              className="w-4 h-4 accent-primary rounded"
             />
           </label>
 
           {/* Your Location Indicator */}
           {location && (
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border-2 border-blue-400 bg-blue-50">
-              <div className="w-4 h-4 rounded-full bg-blue-600 border-2 border-white shadow"></div>
-              <span className="text-sm font-medium text-blue-700">Your Location</span>
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg border-2 border-info/40 bg-info/10">
+              <div className="w-4 h-4 rounded-full bg-info border-2 border-card shadow"></div>
+              <span className="text-sm font-medium text-info">Your Location</span>
             </div>
           )}
         </div>
       </div>
 
       {/* Map Container */}
-      <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden" style={{ height: '600px' }}>
+      <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden" style={{ height: '600px' }}>
         <div className="h-full w-full">
           {loading ? (
             <div className="h-full flex items-center justify-center">
               <div className="text-center">
-                <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-                <p className="text-slate-600">Loading rescues...</p>
+                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Loading rescues...</p>
               </div>
             </div>
           ) : error ? (
             <div className="h-full flex items-center justify-center">
-              <div className="text-center text-red-600">
+              <div className="text-center text-destructive">
                 <AlertCircle className="h-12 w-12 mx-auto mb-4" />
                 <p>Failed to load rescues</p>
                 <Button onClick={() => refetch()} className="mt-4">
@@ -607,11 +608,11 @@ export default function AdminMapPage() {
 
       {/* Location Error Alert */}
       {locationError && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3">
-          <AlertCircle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+        <div className="bg-warning/10 border border-warning/30 rounded-lg p-4 flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-sm font-semibold text-yellow-900">Location Access Required</p>
-            <p className="text-xs text-yellow-700 mt-1">
+            <p className="text-sm font-semibold text-foreground">Location Access Required</p>
+            <p className="text-xs text-muted-foreground mt-1">
               Enable location permissions to see distances and your position on the map.
             </p>
           </div>

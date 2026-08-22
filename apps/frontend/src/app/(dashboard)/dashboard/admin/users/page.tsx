@@ -53,7 +53,7 @@ export default function AdminUsersPage() {
 
 
   const users = data?.users?.edges || []
-  const userNodes = users.map((edge: any) => edge.node)
+  const userNodes = users
 
   // Calculate stats
   const stats = useMemo(() => {

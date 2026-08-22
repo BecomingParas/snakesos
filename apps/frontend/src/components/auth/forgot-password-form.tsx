@@ -55,11 +55,11 @@ export function ForgotPasswordForm() {
             <KeyRound className="h-8 w-8 text-blue-600" />
           </div>
           
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Forgot Password?
           </h1>
           
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm text-muted-foreground">
             Enter your email address and we'll send you a link to reset your password
           </p>
         </div>
@@ -67,7 +67,7 @@ export function ForgotPasswordForm() {
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-slate-700 font-medium">
+            <Label htmlFor="email" className="text-foreground font-medium">
               Email Address
             </Label>
             <Input
@@ -101,7 +101,7 @@ export function ForgotPasswordForm() {
         <div className="text-center pt-4 border-t">
           <Link 
             href="/login" 
-            className="text-sm text-slate-600 hover:text-slate-900 font-medium"
+            className="text-sm text-muted-foreground hover:text-foreground font-medium"
           >
             ← Back to Sign In
           </Link>

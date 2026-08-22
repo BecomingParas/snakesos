@@ -553,6 +553,7 @@ export type HospitalWhereInput = {
   sources?: Prisma.TreatmentCenterSourceListRelationFilter
   historicalCases?: Prisma.SnakebiteCaseListRelationFilter
   nearestTo?: Prisma.RescueRequestListRelationFilter
+  rescueVisits?: Prisma.RescueRequestListRelationFilter
 }
 
 export type HospitalOrderByWithRelationInput = {
@@ -606,6 +607,7 @@ export type HospitalOrderByWithRelationInput = {
   sources?: Prisma.TreatmentCenterSourceOrderByRelationAggregateInput
   historicalCases?: Prisma.SnakebiteCaseOrderByRelationAggregateInput
   nearestTo?: Prisma.RescueRequestOrderByRelationAggregateInput
+  rescueVisits?: Prisma.RescueRequestOrderByRelationAggregateInput
 }
 
 export type HospitalWhereUniqueInput = Prisma.AtLeast<{
@@ -662,6 +664,7 @@ export type HospitalWhereUniqueInput = Prisma.AtLeast<{
   sources?: Prisma.TreatmentCenterSourceListRelationFilter
   historicalCases?: Prisma.SnakebiteCaseListRelationFilter
   nearestTo?: Prisma.RescueRequestListRelationFilter
+  rescueVisits?: Prisma.RescueRequestListRelationFilter
 }, "id">
 
 export type HospitalOrderByWithAggregationInput = {
@@ -819,6 +822,7 @@ export type HospitalCreateInput = {
   sources?: Prisma.TreatmentCenterSourceCreateNestedManyWithoutTreatmentCenterInput
   historicalCases?: Prisma.SnakebiteCaseCreateNestedManyWithoutTreatmentCenterInput
   nearestTo?: Prisma.RescueRequestCreateNestedManyWithoutNearestHospitalInput
+  rescueVisits?: Prisma.RescueRequestCreateNestedManyWithoutHospitalVisitInput
 }
 
 export type HospitalUncheckedCreateInput = {
@@ -872,6 +876,7 @@ export type HospitalUncheckedCreateInput = {
   sources?: Prisma.TreatmentCenterSourceUncheckedCreateNestedManyWithoutTreatmentCenterInput
   historicalCases?: Prisma.SnakebiteCaseUncheckedCreateNestedManyWithoutTreatmentCenterInput
   nearestTo?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutNearestHospitalInput
+  rescueVisits?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutHospitalVisitInput
 }
 
 export type HospitalUpdateInput = {
@@ -925,6 +930,7 @@ export type HospitalUpdateInput = {
   sources?: Prisma.TreatmentCenterSourceUpdateManyWithoutTreatmentCenterNestedInput
   historicalCases?: Prisma.SnakebiteCaseUpdateManyWithoutTreatmentCenterNestedInput
   nearestTo?: Prisma.RescueRequestUpdateManyWithoutNearestHospitalNestedInput
+  rescueVisits?: Prisma.RescueRequestUpdateManyWithoutHospitalVisitNestedInput
 }
 
 export type HospitalUncheckedUpdateInput = {
@@ -978,6 +984,7 @@ export type HospitalUncheckedUpdateInput = {
   sources?: Prisma.TreatmentCenterSourceUncheckedUpdateManyWithoutTreatmentCenterNestedInput
   historicalCases?: Prisma.SnakebiteCaseUncheckedUpdateManyWithoutTreatmentCenterNestedInput
   nearestTo?: Prisma.RescueRequestUncheckedUpdateManyWithoutNearestHospitalNestedInput
+  rescueVisits?: Prisma.RescueRequestUncheckedUpdateManyWithoutHospitalVisitNestedInput
 }
 
 export type HospitalCreateManyInput = {
@@ -1298,6 +1305,12 @@ export type HospitalCreateNestedOneWithoutNearestToInput = {
   connect?: Prisma.HospitalWhereUniqueInput
 }
 
+export type HospitalCreateNestedOneWithoutRescueVisitsInput = {
+  create?: Prisma.XOR<Prisma.HospitalCreateWithoutRescueVisitsInput, Prisma.HospitalUncheckedCreateWithoutRescueVisitsInput>
+  connectOrCreate?: Prisma.HospitalCreateOrConnectWithoutRescueVisitsInput
+  connect?: Prisma.HospitalWhereUniqueInput
+}
+
 export type HospitalUpdateOneWithoutNearestToNestedInput = {
   create?: Prisma.XOR<Prisma.HospitalCreateWithoutNearestToInput, Prisma.HospitalUncheckedCreateWithoutNearestToInput>
   connectOrCreate?: Prisma.HospitalCreateOrConnectWithoutNearestToInput
@@ -1306,6 +1319,16 @@ export type HospitalUpdateOneWithoutNearestToNestedInput = {
   delete?: Prisma.HospitalWhereInput | boolean
   connect?: Prisma.HospitalWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.HospitalUpdateToOneWithWhereWithoutNearestToInput, Prisma.HospitalUpdateWithoutNearestToInput>, Prisma.HospitalUncheckedUpdateWithoutNearestToInput>
+}
+
+export type HospitalUpdateOneWithoutRescueVisitsNestedInput = {
+  create?: Prisma.XOR<Prisma.HospitalCreateWithoutRescueVisitsInput, Prisma.HospitalUncheckedCreateWithoutRescueVisitsInput>
+  connectOrCreate?: Prisma.HospitalCreateOrConnectWithoutRescueVisitsInput
+  upsert?: Prisma.HospitalUpsertWithoutRescueVisitsInput
+  disconnect?: Prisma.HospitalWhereInput | boolean
+  delete?: Prisma.HospitalWhereInput | boolean
+  connect?: Prisma.HospitalWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.HospitalUpdateToOneWithWhereWithoutRescueVisitsInput, Prisma.HospitalUpdateWithoutRescueVisitsInput>, Prisma.HospitalUncheckedUpdateWithoutRescueVisitsInput>
 }
 
 export type HospitalCreatespecializationsInput = {
@@ -1441,6 +1464,7 @@ export type HospitalCreateWithoutNearestToInput = {
   reports?: Prisma.HospitalReportCreateNestedManyWithoutHospitalInput
   sources?: Prisma.TreatmentCenterSourceCreateNestedManyWithoutTreatmentCenterInput
   historicalCases?: Prisma.SnakebiteCaseCreateNestedManyWithoutTreatmentCenterInput
+  rescueVisits?: Prisma.RescueRequestCreateNestedManyWithoutHospitalVisitInput
 }
 
 export type HospitalUncheckedCreateWithoutNearestToInput = {
@@ -1493,11 +1517,123 @@ export type HospitalUncheckedCreateWithoutNearestToInput = {
   reports?: Prisma.HospitalReportUncheckedCreateNestedManyWithoutHospitalInput
   sources?: Prisma.TreatmentCenterSourceUncheckedCreateNestedManyWithoutTreatmentCenterInput
   historicalCases?: Prisma.SnakebiteCaseUncheckedCreateNestedManyWithoutTreatmentCenterInput
+  rescueVisits?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutHospitalVisitInput
 }
 
 export type HospitalCreateOrConnectWithoutNearestToInput = {
   where: Prisma.HospitalWhereUniqueInput
   create: Prisma.XOR<Prisma.HospitalCreateWithoutNearestToInput, Prisma.HospitalUncheckedCreateWithoutNearestToInput>
+}
+
+export type HospitalCreateWithoutRescueVisitsInput = {
+  id?: string
+  name: string
+  address: string
+  municipality: string
+  ward?: number | null
+  district: string
+  province: string
+  phone?: string | null
+  email?: string | null
+  emergencyPhone?: string | null
+  latitude: number
+  longitude: number
+  emergencyAvailable?: boolean
+  emergency24x7?: boolean
+  snakebiteTreatmentAvailable?: boolean
+  treatmentCenterType?: string | null
+  antivenomStatus?: $Enums.AntivenomStatus
+  antivenomStockQuantity?: number | null
+  antivenomLastVerifiedAt?: Date | string | null
+  antivenomVerifiedBy?: string | null
+  antivenomStockPublic?: boolean
+  ventilatorAvailable?: boolean
+  icuAvailable?: boolean
+  ambulanceAvailable?: boolean
+  bloodBankAvailable?: boolean
+  source?: string | null
+  sourceYear?: string | null
+  sourceUrl?: string | null
+  verificationStatus?: $Enums.VerificationStatus
+  officialTreatmentCenter?: boolean
+  status?: $Enums.HospitalStatus
+  hospitalType?: string | null
+  bedCapacity?: number | null
+  specializations?: Prisma.HospitalCreatespecializationsInput | string[]
+  edcdCertified?: boolean
+  edcdCertificationDate?: Date | string | null
+  treatmentCenterCategory?: $Enums.TreatmentCenterType | null
+  populationCoverage?: number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Date | string | null
+  notes?: string | null
+  internalNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  verificationRecords?: Prisma.HospitalVerificationCreateNestedManyWithoutHospitalInput
+  reports?: Prisma.HospitalReportCreateNestedManyWithoutHospitalInput
+  sources?: Prisma.TreatmentCenterSourceCreateNestedManyWithoutTreatmentCenterInput
+  historicalCases?: Prisma.SnakebiteCaseCreateNestedManyWithoutTreatmentCenterInput
+  nearestTo?: Prisma.RescueRequestCreateNestedManyWithoutNearestHospitalInput
+}
+
+export type HospitalUncheckedCreateWithoutRescueVisitsInput = {
+  id?: string
+  name: string
+  address: string
+  municipality: string
+  ward?: number | null
+  district: string
+  province: string
+  phone?: string | null
+  email?: string | null
+  emergencyPhone?: string | null
+  latitude: number
+  longitude: number
+  emergencyAvailable?: boolean
+  emergency24x7?: boolean
+  snakebiteTreatmentAvailable?: boolean
+  treatmentCenterType?: string | null
+  antivenomStatus?: $Enums.AntivenomStatus
+  antivenomStockQuantity?: number | null
+  antivenomLastVerifiedAt?: Date | string | null
+  antivenomVerifiedBy?: string | null
+  antivenomStockPublic?: boolean
+  ventilatorAvailable?: boolean
+  icuAvailable?: boolean
+  ambulanceAvailable?: boolean
+  bloodBankAvailable?: boolean
+  source?: string | null
+  sourceYear?: string | null
+  sourceUrl?: string | null
+  verificationStatus?: $Enums.VerificationStatus
+  officialTreatmentCenter?: boolean
+  status?: $Enums.HospitalStatus
+  hospitalType?: string | null
+  bedCapacity?: number | null
+  specializations?: Prisma.HospitalCreatespecializationsInput | string[]
+  edcdCertified?: boolean
+  edcdCertificationDate?: Date | string | null
+  treatmentCenterCategory?: $Enums.TreatmentCenterType | null
+  populationCoverage?: number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Date | string | null
+  notes?: string | null
+  internalNotes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  verificationRecords?: Prisma.HospitalVerificationUncheckedCreateNestedManyWithoutHospitalInput
+  reports?: Prisma.HospitalReportUncheckedCreateNestedManyWithoutHospitalInput
+  sources?: Prisma.TreatmentCenterSourceUncheckedCreateNestedManyWithoutTreatmentCenterInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedCreateNestedManyWithoutTreatmentCenterInput
+  nearestTo?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutNearestHospitalInput
+}
+
+export type HospitalCreateOrConnectWithoutRescueVisitsInput = {
+  where: Prisma.HospitalWhereUniqueInput
+  create: Prisma.XOR<Prisma.HospitalCreateWithoutRescueVisitsInput, Prisma.HospitalUncheckedCreateWithoutRescueVisitsInput>
 }
 
 export type HospitalUpsertWithoutNearestToInput = {
@@ -1561,6 +1697,7 @@ export type HospitalUpdateWithoutNearestToInput = {
   reports?: Prisma.HospitalReportUpdateManyWithoutHospitalNestedInput
   sources?: Prisma.TreatmentCenterSourceUpdateManyWithoutTreatmentCenterNestedInput
   historicalCases?: Prisma.SnakebiteCaseUpdateManyWithoutTreatmentCenterNestedInput
+  rescueVisits?: Prisma.RescueRequestUpdateManyWithoutHospitalVisitNestedInput
 }
 
 export type HospitalUncheckedUpdateWithoutNearestToInput = {
@@ -1613,6 +1750,124 @@ export type HospitalUncheckedUpdateWithoutNearestToInput = {
   reports?: Prisma.HospitalReportUncheckedUpdateManyWithoutHospitalNestedInput
   sources?: Prisma.TreatmentCenterSourceUncheckedUpdateManyWithoutTreatmentCenterNestedInput
   historicalCases?: Prisma.SnakebiteCaseUncheckedUpdateManyWithoutTreatmentCenterNestedInput
+  rescueVisits?: Prisma.RescueRequestUncheckedUpdateManyWithoutHospitalVisitNestedInput
+}
+
+export type HospitalUpsertWithoutRescueVisitsInput = {
+  update: Prisma.XOR<Prisma.HospitalUpdateWithoutRescueVisitsInput, Prisma.HospitalUncheckedUpdateWithoutRescueVisitsInput>
+  create: Prisma.XOR<Prisma.HospitalCreateWithoutRescueVisitsInput, Prisma.HospitalUncheckedCreateWithoutRescueVisitsInput>
+  where?: Prisma.HospitalWhereInput
+}
+
+export type HospitalUpdateToOneWithWhereWithoutRescueVisitsInput = {
+  where?: Prisma.HospitalWhereInput
+  data: Prisma.XOR<Prisma.HospitalUpdateWithoutRescueVisitsInput, Prisma.HospitalUncheckedUpdateWithoutRescueVisitsInput>
+}
+
+export type HospitalUpdateWithoutRescueVisitsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  municipality?: Prisma.StringFieldUpdateOperationsInput | string
+  ward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  district?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  emergencyAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emergency24x7?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snakebiteTreatmentAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  treatmentCenterType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antivenomStatus?: Prisma.EnumAntivenomStatusFieldUpdateOperationsInput | $Enums.AntivenomStatus
+  antivenomStockQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  antivenomLastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  antivenomVerifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antivenomStockPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ventilatorAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  icuAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ambulanceAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bloodBankAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  officialTreatmentCenter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumHospitalStatusFieldUpdateOperationsInput | $Enums.HospitalStatus
+  hospitalType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bedCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  specializations?: Prisma.HospitalUpdatespecializationsInput | string[]
+  edcdCertified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  edcdCertificationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  treatmentCenterCategory?: Prisma.NullableEnumTreatmentCenterTypeFieldUpdateOperationsInput | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationRecords?: Prisma.HospitalVerificationUpdateManyWithoutHospitalNestedInput
+  reports?: Prisma.HospitalReportUpdateManyWithoutHospitalNestedInput
+  sources?: Prisma.TreatmentCenterSourceUpdateManyWithoutTreatmentCenterNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUpdateManyWithoutTreatmentCenterNestedInput
+  nearestTo?: Prisma.RescueRequestUpdateManyWithoutNearestHospitalNestedInput
+}
+
+export type HospitalUncheckedUpdateWithoutRescueVisitsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  municipality?: Prisma.StringFieldUpdateOperationsInput | string
+  ward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  district?: Prisma.StringFieldUpdateOperationsInput | string
+  province?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emergencyPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  latitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  longitude?: Prisma.FloatFieldUpdateOperationsInput | number
+  emergencyAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emergency24x7?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  snakebiteTreatmentAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  treatmentCenterType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antivenomStatus?: Prisma.EnumAntivenomStatusFieldUpdateOperationsInput | $Enums.AntivenomStatus
+  antivenomStockQuantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  antivenomLastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  antivenomVerifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antivenomStockPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ventilatorAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  icuAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  ambulanceAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  bloodBankAvailable?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  source?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceYear?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationStatus?: Prisma.EnumVerificationStatusFieldUpdateOperationsInput | $Enums.VerificationStatus
+  officialTreatmentCenter?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumHospitalStatusFieldUpdateOperationsInput | $Enums.HospitalStatus
+  hospitalType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bedCapacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  specializations?: Prisma.HospitalUpdatespecializationsInput | string[]
+  edcdCertified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  edcdCertificationDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  treatmentCenterCategory?: Prisma.NullableEnumTreatmentCenterTypeFieldUpdateOperationsInput | $Enums.TreatmentCenterType | null
+  populationCoverage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  travelTimeCoverage?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastOperationalCheck?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verificationRecords?: Prisma.HospitalVerificationUncheckedUpdateManyWithoutHospitalNestedInput
+  reports?: Prisma.HospitalReportUncheckedUpdateManyWithoutHospitalNestedInput
+  sources?: Prisma.TreatmentCenterSourceUncheckedUpdateManyWithoutTreatmentCenterNestedInput
+  historicalCases?: Prisma.SnakebiteCaseUncheckedUpdateManyWithoutTreatmentCenterNestedInput
+  nearestTo?: Prisma.RescueRequestUncheckedUpdateManyWithoutNearestHospitalNestedInput
 }
 
 export type HospitalCreateWithoutVerificationRecordsInput = {
@@ -1665,6 +1920,7 @@ export type HospitalCreateWithoutVerificationRecordsInput = {
   sources?: Prisma.TreatmentCenterSourceCreateNestedManyWithoutTreatmentCenterInput
   historicalCases?: Prisma.SnakebiteCaseCreateNestedManyWithoutTreatmentCenterInput
   nearestTo?: Prisma.RescueRequestCreateNestedManyWithoutNearestHospitalInput
+  rescueVisits?: Prisma.RescueRequestCreateNestedManyWithoutHospitalVisitInput
 }
 
 export type HospitalUncheckedCreateWithoutVerificationRecordsInput = {
@@ -1717,6 +1973,7 @@ export type HospitalUncheckedCreateWithoutVerificationRecordsInput = {
   sources?: Prisma.TreatmentCenterSourceUncheckedCreateNestedManyWithoutTreatmentCenterInput
   historicalCases?: Prisma.SnakebiteCaseUncheckedCreateNestedManyWithoutTreatmentCenterInput
   nearestTo?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutNearestHospitalInput
+  rescueVisits?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutHospitalVisitInput
 }
 
 export type HospitalCreateOrConnectWithoutVerificationRecordsInput = {
@@ -1785,6 +2042,7 @@ export type HospitalUpdateWithoutVerificationRecordsInput = {
   sources?: Prisma.TreatmentCenterSourceUpdateManyWithoutTreatmentCenterNestedInput
   historicalCases?: Prisma.SnakebiteCaseUpdateManyWithoutTreatmentCenterNestedInput
   nearestTo?: Prisma.RescueRequestUpdateManyWithoutNearestHospitalNestedInput
+  rescueVisits?: Prisma.RescueRequestUpdateManyWithoutHospitalVisitNestedInput
 }
 
 export type HospitalUncheckedUpdateWithoutVerificationRecordsInput = {
@@ -1837,6 +2095,7 @@ export type HospitalUncheckedUpdateWithoutVerificationRecordsInput = {
   sources?: Prisma.TreatmentCenterSourceUncheckedUpdateManyWithoutTreatmentCenterNestedInput
   historicalCases?: Prisma.SnakebiteCaseUncheckedUpdateManyWithoutTreatmentCenterNestedInput
   nearestTo?: Prisma.RescueRequestUncheckedUpdateManyWithoutNearestHospitalNestedInput
+  rescueVisits?: Prisma.RescueRequestUncheckedUpdateManyWithoutHospitalVisitNestedInput
 }
 
 export type HospitalCreateWithoutReportsInput = {
@@ -1889,6 +2148,7 @@ export type HospitalCreateWithoutReportsInput = {
   sources?: Prisma.TreatmentCenterSourceCreateNestedManyWithoutTreatmentCenterInput
   historicalCases?: Prisma.SnakebiteCaseCreateNestedManyWithoutTreatmentCenterInput
   nearestTo?: Prisma.RescueRequestCreateNestedManyWithoutNearestHospitalInput
+  rescueVisits?: Prisma.RescueRequestCreateNestedManyWithoutHospitalVisitInput
 }
 
 export type HospitalUncheckedCreateWithoutReportsInput = {
@@ -1941,6 +2201,7 @@ export type HospitalUncheckedCreateWithoutReportsInput = {
   sources?: Prisma.TreatmentCenterSourceUncheckedCreateNestedManyWithoutTreatmentCenterInput
   historicalCases?: Prisma.SnakebiteCaseUncheckedCreateNestedManyWithoutTreatmentCenterInput
   nearestTo?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutNearestHospitalInput
+  rescueVisits?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutHospitalVisitInput
 }
 
 export type HospitalCreateOrConnectWithoutReportsInput = {
@@ -2009,6 +2270,7 @@ export type HospitalUpdateWithoutReportsInput = {
   sources?: Prisma.TreatmentCenterSourceUpdateManyWithoutTreatmentCenterNestedInput
   historicalCases?: Prisma.SnakebiteCaseUpdateManyWithoutTreatmentCenterNestedInput
   nearestTo?: Prisma.RescueRequestUpdateManyWithoutNearestHospitalNestedInput
+  rescueVisits?: Prisma.RescueRequestUpdateManyWithoutHospitalVisitNestedInput
 }
 
 export type HospitalUncheckedUpdateWithoutReportsInput = {
@@ -2061,6 +2323,7 @@ export type HospitalUncheckedUpdateWithoutReportsInput = {
   sources?: Prisma.TreatmentCenterSourceUncheckedUpdateManyWithoutTreatmentCenterNestedInput
   historicalCases?: Prisma.SnakebiteCaseUncheckedUpdateManyWithoutTreatmentCenterNestedInput
   nearestTo?: Prisma.RescueRequestUncheckedUpdateManyWithoutNearestHospitalNestedInput
+  rescueVisits?: Prisma.RescueRequestUncheckedUpdateManyWithoutHospitalVisitNestedInput
 }
 
 export type HospitalCreateWithoutHistoricalCasesInput = {
@@ -2113,6 +2376,7 @@ export type HospitalCreateWithoutHistoricalCasesInput = {
   reports?: Prisma.HospitalReportCreateNestedManyWithoutHospitalInput
   sources?: Prisma.TreatmentCenterSourceCreateNestedManyWithoutTreatmentCenterInput
   nearestTo?: Prisma.RescueRequestCreateNestedManyWithoutNearestHospitalInput
+  rescueVisits?: Prisma.RescueRequestCreateNestedManyWithoutHospitalVisitInput
 }
 
 export type HospitalUncheckedCreateWithoutHistoricalCasesInput = {
@@ -2165,6 +2429,7 @@ export type HospitalUncheckedCreateWithoutHistoricalCasesInput = {
   reports?: Prisma.HospitalReportUncheckedCreateNestedManyWithoutHospitalInput
   sources?: Prisma.TreatmentCenterSourceUncheckedCreateNestedManyWithoutTreatmentCenterInput
   nearestTo?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutNearestHospitalInput
+  rescueVisits?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutHospitalVisitInput
 }
 
 export type HospitalCreateOrConnectWithoutHistoricalCasesInput = {
@@ -2233,6 +2498,7 @@ export type HospitalUpdateWithoutHistoricalCasesInput = {
   reports?: Prisma.HospitalReportUpdateManyWithoutHospitalNestedInput
   sources?: Prisma.TreatmentCenterSourceUpdateManyWithoutTreatmentCenterNestedInput
   nearestTo?: Prisma.RescueRequestUpdateManyWithoutNearestHospitalNestedInput
+  rescueVisits?: Prisma.RescueRequestUpdateManyWithoutHospitalVisitNestedInput
 }
 
 export type HospitalUncheckedUpdateWithoutHistoricalCasesInput = {
@@ -2285,6 +2551,7 @@ export type HospitalUncheckedUpdateWithoutHistoricalCasesInput = {
   reports?: Prisma.HospitalReportUncheckedUpdateManyWithoutHospitalNestedInput
   sources?: Prisma.TreatmentCenterSourceUncheckedUpdateManyWithoutTreatmentCenterNestedInput
   nearestTo?: Prisma.RescueRequestUncheckedUpdateManyWithoutNearestHospitalNestedInput
+  rescueVisits?: Prisma.RescueRequestUncheckedUpdateManyWithoutHospitalVisitNestedInput
 }
 
 export type HospitalCreateWithoutSourcesInput = {
@@ -2337,6 +2604,7 @@ export type HospitalCreateWithoutSourcesInput = {
   reports?: Prisma.HospitalReportCreateNestedManyWithoutHospitalInput
   historicalCases?: Prisma.SnakebiteCaseCreateNestedManyWithoutTreatmentCenterInput
   nearestTo?: Prisma.RescueRequestCreateNestedManyWithoutNearestHospitalInput
+  rescueVisits?: Prisma.RescueRequestCreateNestedManyWithoutHospitalVisitInput
 }
 
 export type HospitalUncheckedCreateWithoutSourcesInput = {
@@ -2389,6 +2657,7 @@ export type HospitalUncheckedCreateWithoutSourcesInput = {
   reports?: Prisma.HospitalReportUncheckedCreateNestedManyWithoutHospitalInput
   historicalCases?: Prisma.SnakebiteCaseUncheckedCreateNestedManyWithoutTreatmentCenterInput
   nearestTo?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutNearestHospitalInput
+  rescueVisits?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutHospitalVisitInput
 }
 
 export type HospitalCreateOrConnectWithoutSourcesInput = {
@@ -2457,6 +2726,7 @@ export type HospitalUpdateWithoutSourcesInput = {
   reports?: Prisma.HospitalReportUpdateManyWithoutHospitalNestedInput
   historicalCases?: Prisma.SnakebiteCaseUpdateManyWithoutTreatmentCenterNestedInput
   nearestTo?: Prisma.RescueRequestUpdateManyWithoutNearestHospitalNestedInput
+  rescueVisits?: Prisma.RescueRequestUpdateManyWithoutHospitalVisitNestedInput
 }
 
 export type HospitalUncheckedUpdateWithoutSourcesInput = {
@@ -2509,6 +2779,7 @@ export type HospitalUncheckedUpdateWithoutSourcesInput = {
   reports?: Prisma.HospitalReportUncheckedUpdateManyWithoutHospitalNestedInput
   historicalCases?: Prisma.SnakebiteCaseUncheckedUpdateManyWithoutTreatmentCenterNestedInput
   nearestTo?: Prisma.RescueRequestUncheckedUpdateManyWithoutNearestHospitalNestedInput
+  rescueVisits?: Prisma.RescueRequestUncheckedUpdateManyWithoutHospitalVisitNestedInput
 }
 
 
@@ -2522,6 +2793,7 @@ export type HospitalCountOutputType = {
   sources: number
   historicalCases: number
   nearestTo: number
+  rescueVisits: number
 }
 
 export type HospitalCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2530,6 +2802,7 @@ export type HospitalCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   sources?: boolean | HospitalCountOutputTypeCountSourcesArgs
   historicalCases?: boolean | HospitalCountOutputTypeCountHistoricalCasesArgs
   nearestTo?: boolean | HospitalCountOutputTypeCountNearestToArgs
+  rescueVisits?: boolean | HospitalCountOutputTypeCountRescueVisitsArgs
 }
 
 /**
@@ -2574,6 +2847,13 @@ export type HospitalCountOutputTypeCountHistoricalCasesArgs<ExtArgs extends runt
  * HospitalCountOutputType without action
  */
 export type HospitalCountOutputTypeCountNearestToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RescueRequestWhereInput
+}
+
+/**
+ * HospitalCountOutputType without action
+ */
+export type HospitalCountOutputTypeCountRescueVisitsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.RescueRequestWhereInput
 }
 
@@ -2629,6 +2909,7 @@ export type HospitalSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   sources?: boolean | Prisma.Hospital$sourcesArgs<ExtArgs>
   historicalCases?: boolean | Prisma.Hospital$historicalCasesArgs<ExtArgs>
   nearestTo?: boolean | Prisma.Hospital$nearestToArgs<ExtArgs>
+  rescueVisits?: boolean | Prisma.Hospital$rescueVisitsArgs<ExtArgs>
   _count?: boolean | Prisma.HospitalCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["hospital"]>
 
@@ -2783,6 +3064,7 @@ export type HospitalInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   sources?: boolean | Prisma.Hospital$sourcesArgs<ExtArgs>
   historicalCases?: boolean | Prisma.Hospital$historicalCasesArgs<ExtArgs>
   nearestTo?: boolean | Prisma.Hospital$nearestToArgs<ExtArgs>
+  rescueVisits?: boolean | Prisma.Hospital$rescueVisitsArgs<ExtArgs>
   _count?: boolean | Prisma.HospitalCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type HospitalIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -2796,6 +3078,7 @@ export type $HospitalPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     sources: Prisma.$TreatmentCenterSourcePayload<ExtArgs>[]
     historicalCases: Prisma.$SnakebiteCasePayload<ExtArgs>[]
     nearestTo: Prisma.$RescueRequestPayload<ExtArgs>[]
+    rescueVisits: Prisma.$RescueRequestPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3242,6 +3525,7 @@ export interface Prisma__HospitalClient<T, Null = never, ExtArgs extends runtime
   sources<T extends Prisma.Hospital$sourcesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hospital$sourcesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TreatmentCenterSourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   historicalCases<T extends Prisma.Hospital$historicalCasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hospital$historicalCasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SnakebiteCasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   nearestTo<T extends Prisma.Hospital$nearestToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hospital$nearestToArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RescueRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  rescueVisits<T extends Prisma.Hospital$rescueVisitsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Hospital$rescueVisitsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RescueRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3808,6 +4092,30 @@ export type Hospital$historicalCasesArgs<ExtArgs extends runtime.Types.Extension
  * Hospital.nearestTo
  */
 export type Hospital$nearestToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RescueRequest
+   */
+  select?: Prisma.RescueRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RescueRequest
+   */
+  omit?: Prisma.RescueRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RescueRequestInclude<ExtArgs> | null
+  where?: Prisma.RescueRequestWhereInput
+  orderBy?: Prisma.RescueRequestOrderByWithRelationInput | Prisma.RescueRequestOrderByWithRelationInput[]
+  cursor?: Prisma.RescueRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RescueRequestScalarFieldEnum | Prisma.RescueRequestScalarFieldEnum[]
+}
+
+/**
+ * Hospital.rescueVisits
+ */
+export type Hospital$rescueVisitsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the RescueRequest
    */

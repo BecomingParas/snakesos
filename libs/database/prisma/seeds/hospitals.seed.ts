@@ -38,8 +38,9 @@ const hospitals = [
   },
   {
     name: 'Bir Hospital (National Trauma Center)',
-    address: 'Tundikhel, Kathmandu',
+    address: 'Mahabouddha, Kathmandu',
     municipality: 'Kathmandu',
+    ward: 1,
     district: 'Kathmandu',
     province: 'Bagmati',
     latitude: 27.7042,
@@ -61,6 +62,7 @@ const hospitals = [
     verificationStatus: 'HISTORICAL',
     hospitalType: 'GOVERNMENT',
     status: 'ACTIVE',
+    notes: 'National referral center for trauma and emergency cases. Call to confirm current antivenom availability.',
   },
   {
     name: 'Tribhuvan University Teaching Hospital (TUTH)',
@@ -1500,6 +1502,9 @@ async function seedHospitals() {
   console.log(`   Total: ${hospitals.length} hospitals processed`);
 }
 
+// Export the function so it can be used by seed-full.ts
+export { seedHospitals };
+
 async function main() {
   try {
     await seedHospitals();
@@ -1510,11 +1515,14 @@ async function main() {
   }
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+// Only run main() if this file is executed directly (not imported)
+if (import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}`) {
+  main()
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
+    });
+}

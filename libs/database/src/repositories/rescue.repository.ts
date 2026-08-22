@@ -85,20 +85,101 @@ export class RescueRepository extends BaseRepository<
   }
 
   /**
-   * Assign volunteer to rescue
+   * Find available rescues for queue (PENDING, unassigned)
+   * Optionally filter by location proximity
+   */
+  async findAvailableForQueue(options?: {
+    municipality?: string;
+    maxDistance?: number;
+    rescuerLat?: number;
+    rescuerLng?: number;
+    limit?: number;
+  }): Promise<RescueRequest[]> {
+    const whereClause: any = {
+      status: RescueStatus.PENDING,
+      volunteerId: null,
+      stillPresent: true, // Only show if snake still present
+    };
+
+    // Filter by municipality if provided
+    if (options?.municipality) {
+      whereClause.municipality = options.municipality;
+    }
+
+    // TODO: Implement geospatial distance filtering when rescuerLat/Lng provided
+    // For now, return all pending rescues
+
+    return this.model.findMany({
+      where: whereClause,
+      include: {
+        reporter: true,
+        species: true,
+      },
+      orderBy: [
+        { priority: 'desc' },  // High priority first
+        { createdAt: 'asc' },  // Oldest first
+      ],
+      take: options?.limit || 50,
+    });
+  }
+
+  /**
+   * Assign volunteer to rescue (ATOMIC - prevents double assignment)
+   * 
+   * Uses updateMany with conditional WHERE to ensure:
+   * 1. Rescue is still PENDING
+   * 2. No volunteer is already assigned
+   * 
+   * This prevents race conditions when multiple rescuers try to accept simultaneously.
    */
   async assignVolunteer(rescueId: string, volunteerId: string): Promise<RescueRequest> {
-    return this.model.update({
-      where: { id: rescueId },
+    // Atomic update with conditions
+    const result = await this.model.updateMany({
+      where: {
+        id: rescueId,
+        status: RescueStatus.PENDING,  // Must still be PENDING
+        volunteerId: null,              // Must not be assigned yet
+      },
       data: {
         volunteerId,
         status: RescueStatus.ASSIGNED,
+        assignedAt: new Date(),
       },
+    });
+
+    // Check if update actually happened
+    if (result.count === 0) {
+      // Fetch rescue to determine specific error
+      const existingRescue = await this.model.findUnique({
+        where: { id: rescueId },
+      });
+
+      if (!existingRescue) {
+        throw new Error('RESCUE_NOT_FOUND: Rescue request not found');
+      }
+
+      if (existingRescue.volunteerId) {
+        throw new Error('RESCUE_ALREADY_ASSIGNED: This rescue has already been assigned to another rescuer');
+      }
+
+      // Status is not PENDING
+      throw new Error(`INVALID_STATUS: Cannot assign rescue with status ${existingRescue.status}. Only PENDING rescues can be assigned.`);
+    }
+
+    // Fetch updated rescue with relations
+    const updatedRescue = await this.model.findUnique({
+      where: { id: rescueId },
       include: {
         volunteer: true,
         reporter: true,
       },
     });
+
+    if (!updatedRescue) {
+      throw new Error('RESCUE_NOT_FOUND: Rescue was assigned but could not be retrieved');
+    }
+
+    return updatedRescue;
   }
 
   /**
@@ -241,6 +322,31 @@ export class RescueRepository extends BaseRepository<
         rescueCount: {
           increment: 1,
         },
+      },
+    });
+  }
+
+  /**
+   * Create hospital visit record (links rescue to hospital analytics)
+   */
+  async createHospitalVisit(data: {
+    rescueId: string;
+    hospitalId: string;
+    antivenomAdministered: boolean;
+    antivenomType?: string;
+    admission: boolean;
+    notes?: string;
+  }) {
+    // Update rescue with hospital information
+    return this.prisma.rescueRequest.update({
+      where: { id: data.rescueId },
+      data: {
+        victimWentToHospital: true,
+        hospitalId: data.hospitalId,
+        antivenomAdministered: data.antivenomAdministered,
+        antivenomType: data.antivenomType,
+        hospitalAdmission: data.admission,
+        hospitalNotes: data.notes,
       },
     });
   }

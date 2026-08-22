@@ -615,20 +615,20 @@ export function RescueMap({
               html: `
                 <div style="
                   background: ${hospitalColor};
-                  width: 30px;
-                  height: 30px;
+                  width: 44px;
+                  height: 44px;
                   border-radius: 50%;
-                  border: 3px solid white;
-                  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                  border: 4px solid white;
+                  box-shadow: 0 2px 12px rgba(0,0,0,0.5);
                   display: flex;
                   align-items: center;
                   justify-content: center;
-                  font-size: 14px;
+                  font-size: 22px;
                   cursor: pointer;
                 ">🏥</div>
               `,
-              iconSize: [30, 30],
-              iconAnchor: [15, 15],
+              iconSize: [44, 44],
+              iconAnchor: [22, 22],
             })}
             eventHandlers={{
               click: () => onHospitalClick?.(hospital.id),

@@ -68,6 +68,21 @@ extend type Query {
   activeRescues(
     pagination: PaginationInput
   ): RescueRequestConnection! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+  
+  """
+  Get available rescues for queue (rescuer can self-accept)
+  Shows PENDING unassigned rescues sorted by priority and age
+  """
+  availableRescues(
+    pagination: PaginationInput
+    filter: RescueRequestFilterInput
+  ): RescueRequestConnection! @auth(requires: [VOLUNTEER, VERIFIED_RESCUER, DISTRICT_COORDINATOR])
+  
+  """
+  Find available volunteers near a location
+  Used for admin assignment
+  """
+  availableVolunteers(input: FindAvailableVolunteersInput!): [AvailableVolunteer!]! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
 }
 
 """

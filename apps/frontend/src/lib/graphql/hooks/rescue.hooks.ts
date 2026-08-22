@@ -134,6 +134,13 @@ export interface CompleteRescueInput {
   releaseLat?: number;
   releaseLng?: number;
   releaseLocation?: string;
+  // Hospital verification fields
+  victimWentToHospital?: boolean;
+  hospitalId?: string;
+  antivenomAdministered?: boolean;
+  antivenomType?: string;
+  hospitalAdmission?: boolean;
+  hospitalNotes?: string;
 }
 
 export interface RescueRequestConnection {
@@ -252,6 +259,12 @@ const COMPLETE_RESCUE = gql`
         id
         name
       }
+      victimWentToHospital
+      hospitalId
+      antivenomAdministered
+      antivenomType
+      hospitalAdmission
+      hospitalNotes
       updatedAt
     }
   }
@@ -542,6 +555,73 @@ const AVAILABLE_VOLUNTEERS = gql`
   }
 `;
 
+const AVAILABLE_RESCUES = gql`
+  query AvailableRescues(
+    $pagination: PaginationInput
+    $filter: RescueRequestFilterInput
+  ) {
+    availableRescues(pagination: $pagination, filter: $filter) {
+      edges {
+        node {
+          id
+          referenceNumber
+          status
+          priority
+          municipality
+          ward
+          address
+          landmark
+          lat
+          lng
+          snakeDescription
+          snakeSize
+          snakeColor
+          isEmergency
+          hasBite
+          createdAt
+          distance
+          user {
+            id
+            name
+            phone
+          }
+          species {
+            id
+            name
+            scientificName
+            venomous
+          }
+        }
+        cursor
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+      totalCount
+    }
+  }
+`;
+
+const ACCEPT_FROM_QUEUE = gql`
+  mutation AcceptFromQueue($input: AcceptRescueInput!) {
+    acceptFromQueue(input: $input) {
+      id
+      referenceNumber
+      status
+      acceptedAt
+      assignedAt
+      assignedVolunteer {
+        id
+        name
+      }
+      updatedAt
+    }
+  }
+`;
+
 // ===================================================================
 // HOOKS
 // ===================================================================
@@ -712,4 +792,36 @@ export function useAvailableVolunteersQuery(
     { availableVolunteers: AvailableVolunteer[] },
     { input: FindAvailableVolunteersInput }
   >(AVAILABLE_VOLUNTEERS, options);
+}
+
+/**
+ * Get available rescues for queue (rescuer can accept)
+ * Shows PENDING unassigned rescues
+ */
+export function useAvailableRescuesQuery(
+  options?: QueryHookOptions<
+    { availableRescues: RescueRequestConnection },
+    { pagination?: PaginationInput; filter?: RescueRequestFilterInput }
+  >
+) {
+  return useQuery<
+    { availableRescues: RescueRequestConnection },
+    { pagination?: PaginationInput; filter?: RescueRequestFilterInput }
+  >(AVAILABLE_RESCUES, options);
+}
+
+/**
+ * Accept rescue from queue (self-service)
+ * ATOMIC - prevents race condition
+ */
+export function useAcceptFromQueueMutation(
+  options?: MutationHookOptions<
+    { acceptFromQueue: RescueRequest },
+    { input: AcceptRescueInput }
+  >
+) {
+  return useMutation<
+    { acceptFromQueue: RescueRequest },
+    { input: AcceptRescueInput }
+  >(ACCEPT_FROM_QUEUE, options);
 }

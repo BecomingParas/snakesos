@@ -14,7 +14,7 @@ export function TwoColumnAuthLayout({
   subtitle,
 }: TwoColumnAuthLayoutProps) {
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-slate-50">
+    <div className="flex h-screen w-full overflow-hidden bg-slate-50 dark:bg-background">
       {/* ============================================================
           LEFT — BRAND PANEL
       ============================================================ */}
@@ -144,7 +144,7 @@ export function TwoColumnAuthLayout({
               </h2>
 
               {subtitle && (
-                <p className="mt-2 text-sm leading-6 text-slate-600">
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
                   {subtitle}
                 </p>
               )}

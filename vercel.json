@@ -1,7 +1,7 @@
 {
   "buildCommand": "NODE_PATH=./node_modules:./apps/frontend/node_modules ./node_modules/.bin/nx build frontend --prod",
   "framework": "nextjs",
-  "installCommand": "npm install --legacy-peer-deps",
+  "installCommand": "npm install --legacy-peer-deps --include=dev",
   "outputDirectory": "apps/frontend/.next",
   "ignoreCommand": "exit 1",
   "github": {

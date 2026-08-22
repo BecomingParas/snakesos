@@ -58,44 +58,17 @@ async function main() {
   await prisma.user.deleteMany();
   console.log('✓ Cleared all tables\n');
 
-  // ===== CREATE 70+ HOSPITALS =====
-  console.log('🏥 Creating 70 hospitals...');
-  const { default: hospitalSeedData } = await import('./seeds/hospitals.seed.js');
-  // The hospital seed file exports a hospitals array with 67+ hospitals
-  // We'll import and use it directly
-  const hospitals = [];
+  // ===== CREATE REAL HOSPITALS FROM AUTHORITATIVE SEED DATA =====
+  console.log('🏥 Creating hospitals from authoritative seed data...');
   
-  for (let i = 0; i < 70; i++) {
-    const hospital = await prisma.hospital.create({
-      data: {
-        name: `${municipalities[i % municipalities.length]} Hospital ${Math.floor(i / municipalities.length) + 1}`,
-        address: `Ward ${(i % 20) + 1}, ${municipalities[i % municipalities.length]}`,
-        municipality: municipalities[i % municipalities.length],
-        ward: (i % 20) + 1,
-        district: districts[i % districts.length],
-        province: i < 15 ? 'Bagmati' : i < 30 ? 'Madhesh' : i < 45 ? 'Lumbini' : i < 60 ? 'Koshi' : 'Gandaki',
-        latitude: 27.7 + (Math.random() - 0.5) * 2,
-        longitude: 85.3 + (Math.random() - 0.5) * 4,
-        phone: `0${21 + (i % 9)}-${520000 + i}`,
-        emergencyPhone: `0${21 + (i % 9)}-${520000 + i}`,
-        emergencyAvailable: true,
-        emergency24x7: i % 3 !== 0,
-        snakebiteTreatmentAvailable: true,
-        treatmentCenterType: i % 10 === 0 ? 'REFERRAL' : i % 5 === 0 ? 'SPECIALIZED' : 'DISTRICT',
-        antivenomStatus: i % 4 === 0 ? 'AVAILABLE' : i % 4 === 1 ? 'LOW_STOCK' : i % 4 === 2 ? 'OUT_OF_STOCK' : 'UNKNOWN',
-        ventilatorAvailable: i % 3 !== 0,
-        icuAvailable: i % 2 === 0,
-        ambulanceAvailable: i % 2 === 0,
-        bloodBankAvailable: i % 5 === 0,
-        officialTreatmentCenter: i % 2 === 0,
-        verificationStatus: i % 3 === 0 ? 'VERIFIED' : 'HISTORICAL',
-        hospitalType: i % 8 === 0 ? 'PRIVATE' : 'GOVERNMENT',
-        status: 'ACTIVE',
-      },
-    });
-    hospitals.push(hospital);
-  }
-  console.log(`✓ Created ${hospitals.length} hospitals\n`);
+  // Import the seedHospitals function from hospitals.seed.ts
+  const { seedHospitals } = await import('./seeds/hospitals.seed.js');
+  
+  // Execute the hospital seeding
+  await seedHospitals();
+  
+  const hospitalCount = await prisma.hospital.count();
+  console.log(`✓ Created ${hospitalCount} hospitals from authoritative data\n`);
 
   // ===== CREATE 70+ VOLUNTEER/RESCUER USERS =====
   console.log('👥 Creating 70+ rescuers/volunteers...');
@@ -193,6 +166,15 @@ async function main() {
     const experience = i < 30 ? 'EXPERT' : i < 55 ? 'INTERMEDIATE' : 'BEGINNER';
     const experienceYears = i < 30 ? 5 + (i % 5) : i < 55 ? 2 + (i % 3) : 1;
     
+    // Generate Nepal coordinates within bounds
+    const getNepalCoordinates = () => {
+      const lat = 26.3 + Math.random() * (30.4 - 26.3);
+      const lng = 80.0 + Math.random() * (88.2 - 80.0);
+      return { lat, lng };
+    };
+    
+    const coords = getNepalCoordinates();
+    
     const profile = await prisma.volunteer.create({
       data: {
         userId: user.id,
@@ -220,6 +202,10 @@ async function main() {
         totalRescues: experience === 'EXPERT' ? 220 + (i * 10) : experience === 'INTERMEDIATE' ? 60 + (i * 5) : (i * 2) + 3,
         rating: 4.3 + (Math.random() * 0.7),
         verifiedAt: new Date(Date.now() - (i * 24 * 60 * 60 * 1000)),
+        // Add location coordinates so they can be found by proximity search
+        lastKnownLatitude: coords.lat,
+        lastKnownLongitude: coords.lng,
+        lastLocationUpdate: new Date(),
       },
     });
     
@@ -277,6 +263,19 @@ async function main() {
   // ===== CREATE 50+ RESCUE REQUESTS =====
   console.log('🚨 Creating 50+ rescue requests...');
   
+  // Nepal bounding box
+  const NEPAL_LAT_MIN = 26.3;
+  const NEPAL_LAT_MAX = 30.4;
+  const NEPAL_LNG_MIN = 80.0;
+  const NEPAL_LNG_MAX = 88.2;
+  
+  // Function to generate random coordinates within Nepal
+  const getNepalCoordinates = () => {
+    const lat = NEPAL_LAT_MIN + Math.random() * (NEPAL_LAT_MAX - NEPAL_LAT_MIN);
+    const lng = NEPAL_LNG_MIN + Math.random() * (NEPAL_LNG_MAX - NEPAL_LNG_MIN);
+    return { lat, lng };
+  };
+  
   for (let i = 0; i < 55; i++) {
     const citizen = citizenUsers[i % citizenUsers.length];
     const snakeSpecies = species[i % species.length];
@@ -284,6 +283,8 @@ async function main() {
     
     const statuses = [RescueStatus.PENDING, RescueStatus.ASSIGNED, RescueStatus.IN_PROGRESS, RescueStatus.COMPLETED, RescueStatus.CANCELLED];
     const status = statuses[i % statuses.length];
+    
+    const { lat, lng } = getNepalCoordinates();
     
     await prisma.rescueRequest.create({
       data: {
@@ -295,8 +296,8 @@ async function main() {
         address: `House ${i + 1}, ${municipalities[i % municipalities.length]}`,
         municipality: municipalities[i % municipalities.length],
         ward: (i % 20) + 1,
-        lat: 27.7 + (Math.random() - 0.5) * 2,
-        lng: 85.3 + (Math.random() - 0.5) * 4,
+        lat,
+        lng,
         notes: `Rescue request #${i + 1}`,
         status,
         priority: i % 4 === 0 ? RescuePriority.CRITICAL : i % 4 === 1 ? RescuePriority.HIGH : i % 4 === 2 ? RescuePriority.MEDIUM : RescuePriority.LOW,

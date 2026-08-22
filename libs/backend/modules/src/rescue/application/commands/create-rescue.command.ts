@@ -32,7 +32,8 @@ export class CreateRescueCommand {
       snakeDescription: input.snakeDescription,
       snakeSize: input.snakeSize,
       snakeColor: input.snakeColor,
-      snakeImageUrl: input.snakeImageUrl,
+      snakeImageUrl: input.snakeImageUrl ?? input.snakeImages?.[0],
+      snakeImages: input.snakeImages ?? [],
       
       // Rescue Details
       priority: input.priority as any,

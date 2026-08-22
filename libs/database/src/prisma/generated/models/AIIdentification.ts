@@ -789,10 +789,6 @@ export type FloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type NullableBoolFieldUpdateOperationsInput = {
-  set?: boolean | null
-}
-
 export type AIIdentificationUpdatecolorDetectedInput = {
   set?: string[]
   push?: string | string[]

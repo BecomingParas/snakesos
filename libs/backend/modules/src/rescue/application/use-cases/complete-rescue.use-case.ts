@@ -19,6 +19,13 @@ export interface CompleteRescueInput {
     lat: number;
     lng: number;
   };
+  // Hospital verification fields
+  victimWentToHospital?: boolean;
+  hospitalId?: string;
+  antivenomAdministered?: boolean;
+  antivenomType?: string;
+  hospitalAdmission?: boolean;
+  hospitalNotes?: string;
 }
 
 export class CompleteRescueUseCase {
@@ -69,6 +76,26 @@ export class CompleteRescueUseCase {
       updateData.speciesId = input.speciesId;
     }
 
+    // Update hospital information if provided
+    if (input.victimWentToHospital !== undefined) {
+      updateData.victimWentToHospital = input.victimWentToHospital;
+    }
+    if (input.hospitalId) {
+      updateData.hospitalId = input.hospitalId;
+    }
+    if (input.antivenomAdministered !== undefined) {
+      updateData.antivenomAdministered = input.antivenomAdministered;
+    }
+    if (input.antivenomType) {
+      updateData.antivenomType = input.antivenomType;
+    }
+    if (input.hospitalAdmission !== undefined) {
+      updateData.hospitalAdmission = input.hospitalAdmission;
+    }
+    if (input.hospitalNotes) {
+      updateData.hospitalNotes = input.hospitalNotes;
+    }
+
     // 6. Update rescue
     const updatedRescue = await this.rescueRepository.update(rescue.id, updateData);
 
@@ -84,21 +111,50 @@ export class CompleteRescueUseCase {
         outcome: input.outcome,
         duration: rescueDuration,
         imagesCount: input.rescueImages?.length || 0,
+        hospitalVisit: input.victimWentToHospital,
+        hospitalId: input.hospitalId,
       },
     });
 
-    // 8. Update volunteer statistics
+    // 8. Link to hospital if victim went to hospital
+    if (input.victimWentToHospital && input.hospitalId) {
+      await this.linkRescueToHospital(rescue.id, input.hospitalId, input);
+    }
+
+    // 9. Update volunteer statistics
     await this.updateVolunteerStats(input.volunteerId, true);
 
-    // 9. Update species rescue count
+    // 10. Update species rescue count
     if (input.speciesId) {
       await this.updateSpeciesStats(input.speciesId);
     }
 
-    // 10. Create notifications
+    // 11. Create notifications
     await this.createNotifications(rescue, input);
 
     return updatedRescue;
+  }
+
+  private async linkRescueToHospital(
+    rescueId: string,
+    hospitalId: string,
+    input: CompleteRescueInput
+  ): Promise<void> {
+    try {
+      // Create hospital visit record (if your schema supports this)
+      // This links the rescue to hospital analytics
+      await this.rescueRepository.createHospitalVisit({
+        rescueId,
+        hospitalId,
+        antivenomAdministered: input.antivenomAdministered || false,
+        antivenomType: input.antivenomType,
+        admission: input.hospitalAdmission || false,
+        notes: input.hospitalNotes,
+      });
+    } catch (error) {
+      console.error('Failed to link rescue to hospital:', error);
+      // Don't throw - hospital link failure shouldn't prevent rescue completion
+    }
   }
 
   private async updateVolunteerStats(volunteerId: string, success: boolean): Promise<void> {

@@ -1,6 +1,6 @@
 'use client'
 
-import {  createContext, useContext } from 'react'
+import { createContext, useContext } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -21,6 +21,12 @@ import {
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 
 // Create context for sidebar collapse state
 export const SidebarContext = createContext<{
@@ -33,24 +39,43 @@ export const SidebarContext = createContext<{
 
 export const useSidebar = () => useContext(SidebarContext)
 
+type Role =
+  | 'CITIZEN'
+  | 'ADMIN'
+  | 'SUPER_ADMIN'
+  | 'DISTRICT_COORDINATOR'
+  | 'VERIFIED_RESCUER'
+  | 'VOLUNTEER'
+
 interface SidebarProps {
-  role: 'CITIZEN' | 'ADMIN' | 'SUPER_ADMIN' | 'DISTRICT_COORDINATOR' | 'VERIFIED_RESCUER' | 'VOLUNTEER'
+  role: Role
+}
+
+// Accent color per role — gives each dashboard a distinct identity at a glance
+const roleAccent: Record<Role, string> = {
+  CITIZEN: 'bg-primary',
+  ADMIN: 'bg-primary',
+  SUPER_ADMIN: 'bg-warning',
+  DISTRICT_COORDINATOR: 'bg-info',
+  VERIFIED_RESCUER: 'bg-success',
+  VOLUNTEER: 'bg-success',
 }
 
 export function Sidebar({ role }: SidebarProps) {
   const { collapsed, setCollapsed } = useSidebar()
   const pathname = usePathname()
 
-  // Update CSS variable when collapsed state changes
   if (typeof document !== 'undefined') {
     document.documentElement.style.setProperty(
       '--sidebar-width',
-      collapsed ? '70px' : '280px'
+      collapsed ? '76px' : '272px'
     )
   }
 
-  // Role-specific configuration
-  const roleConfig = {
+  const roleConfig: Record<
+    Role,
+    { title: string; subtitle: string; basePath: string; links: { href: string; label: string; icon: typeof LayoutDashboard }[] }
+  > = {
     CITIZEN: {
       title: 'Citizen',
       subtitle: 'Public reporter',
@@ -142,133 +167,150 @@ export function Sidebar({ role }: SidebarProps) {
   }
 
   const config = roleConfig[role] || roleConfig.CITIZEN
+  const accent = roleAccent[role] || roleAccent.CITIZEN
 
   const isActive = (href: string) => {
     const fullPath = `${config.basePath}${href}`
-    if (href === '') {
-      return pathname === config.basePath
-    }
+    if (href === '') return pathname === config.basePath
     return pathname.startsWith(fullPath)
   }
 
   return (
-    <aside
-      className={cn(
-        'fixed left-0 top-0 z-40 h-screen border-r border-border/20 bg-background/60 backdrop-blur-2xl shadow-sm transition-all duration-300',
-        collapsed ? 'w-[70px]' : 'w-[280px]'
-      )}
-    >
-      <div className="flex h-full flex-col">
+    <TooltipProvider delayDuration={0}>
+      <aside
+        className={cn(
+          'fixed left-0 top-0 z-40 h-screen border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-sm transition-[width] duration-300 ease-in-out',
+          collapsed ? 'w-[76px]' : 'w-[272px]'
+        )}
+      >
+        <div className="flex h-full flex-col">
 
-        {/* Header */}
-        <div className={cn('border-b border-border/20 p-4', collapsed && 'px-2')}>
-          {!collapsed ? (
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 shadow-sm overflow-hidden">
-                <img 
-                  src="/snakesoslogo.png" 
-                  alt="SnakeSOS Logo" 
-                  className="h-9 w-9 object-contain transition-transform group-hover:scale-105"
+          {/* Header */}
+          <div className={cn('flex items-center border-b border-border/20 p-4', collapsed && 'justify-center px-2')}>
+            <Link href="/" className="flex items-center gap-3 group min-w-0">
+              <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 shadow-sm overflow-hidden ring-1 ring-primary/10">
+                <img
+                  src="/snakesoslogo.png"
+                  alt="SnakeSOS Logo"
+                  className="h-9 w-9 object-contain transition-transform duration-300 group-hover:scale-110"
                 />
               </div>
-              <div className="min-w-0 flex-1">
-                <h2 className="truncate text-sm font-bold text-foreground">
-                  Snake<span className="text-primary">SOS</span>
-                </h2>
-                <p className="truncate text-xs text-muted-foreground font-medium">{config.subtitle}</p>
-              </div>
-            </Link>
-          ) : (
-            <Link href="/" className="flex justify-center group">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 shadow-sm overflow-hidden">
-                <img 
-                  src="/snakesoslogo.png" 
-                  alt="SnakeSOS Logo" 
-                  className="h-9 w-9 object-contain transition-transform group-hover:scale-105"
-                />
-              </div>
-            </Link>
-          )}
-        </div>
-
-        {/* Navigation */}
-        <ScrollArea className="flex-1 px-3 py-4">
-          <nav className="space-y-1">
-            {config.links.map((link, index) => {
-              const Icon = link.icon
-              const active = isActive(link.href)
-              const fullPath = `${config.basePath}${link.href}`
-              const isEmergency = link.label === 'Emergency'
-
-              if (index === 1 && !collapsed) {
-                return (
-                  <div key={`group-${index}`}>
-                    <div className="mb-2 mt-4 px-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                      Workspace
-                    </div>
-                    <Link
-                      href={fullPath}
-                      className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all',
-                        active
-                          ? 'bg-primary/10 text-primary shadow-sm'
-                          : 'text-foreground hover:bg-secondary/50 hover:text-foreground'
-                      )}
-                    >
-                      <Icon className="h-5 w-5 shrink-0" />
-                      <span className="truncate">{link.label}</span>
-                    </Link>
+              {!collapsed && (
+                <div className="min-w-0 flex-1">
+                  <h2 className="truncate text-sm font-bold text-foreground tracking-tight">
+                    Snake<span className="text-primary">SOS</span>
+                  </h2>
+                  <div className="flex items-center gap-1.5">
+                    <span className={cn('h-1.5 w-1.5 rounded-full', accent)} />
+                    <p className="truncate text-xs text-muted-foreground font-medium">{config.subtitle}</p>
                   </div>
+                </div>
+              )}
+            </Link>
+          </div>
+
+          {/* Navigation */}
+          <ScrollArea className="flex-1 px-3 py-4">
+            <nav className="space-y-0.5">
+              {config.links.map((link, index) => {
+                const Icon = link.icon
+                const active = isActive(link.href)
+                const fullPath = `${config.basePath}${link.href}`
+                const isEmergency = link.label === 'Emergency'
+
+                const navItem = (
+                  <Link
+                    key={link.href || 'overview'}
+                    href={fullPath}
+                    className={cn(
+                      'group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all duration-200',
+                      isEmergency
+                        ? active
+                          ? 'bg-destructive/15 text-destructive shadow-sm'
+                          : 'text-destructive hover:bg-destructive/10'
+                        : active
+                        ? 'bg-secondary/60 text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:bg-secondary/40 hover:text-foreground',
+                      collapsed && 'justify-center px-2'
+                    )}
+                  >
+                    {/* Active indicator bar */}
+                    {active && (
+                      <span
+                        className={cn(
+                          'absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full',
+                          isEmergency ? 'bg-destructive' : accent
+                        )}
+                      />
+                    )}
+
+                    <span className="relative shrink-0">
+                      <Icon
+                        className={cn(
+                          'h-5 w-5 transition-transform duration-200 group-hover:scale-110',
+                          active && !isEmergency && 'text-primary'
+                        )}
+                      />
+                      {isEmergency && !collapsed && (
+                        <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-destructive animate-ping" />
+                      )}
+                    </span>
+
+                    {!collapsed && <span className="truncate">{link.label}</span>}
+                  </Link>
                 )
-              }
 
-              return (
-                <Link
-                  key={link.href || 'overview'}
-                  href={fullPath}
-                  className={cn(
-                    'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all',
-                    isEmergency
-                      ? active
-                        ? 'bg-red-600/15 dark:bg-destructive/15 text-red-700 dark:text-destructive shadow-sm'
-                        : 'text-red-600 dark:text-destructive hover:bg-red-600/10 dark:hover:bg-destructive/10 hover:text-red-700 dark:hover:text-destructive'
-                      : active
-                      ? 'bg-primary/10 text-primary shadow-sm'
-                      : 'text-foreground hover:bg-secondary/50 hover:text-foreground',
-                    collapsed && 'justify-center px-2'
-                  )}
-                  title={collapsed ? link.label : undefined}
-                >
-                  <Icon className={cn('h-5 w-5 shrink-0', isEmergency && 'animate-pulse')} />
-                  {!collapsed && <span className="truncate">{link.label}</span>}
-                </Link>
-              )
-            })}
-          </nav>
-        </ScrollArea>
+                const withGroupLabel =
+                  index === 1 && !collapsed ? (
+                    <div key={`group-${index}`}>
+                      <div className="mb-1.5 mt-5 px-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70">
+                        Workspace
+                      </div>
+                      {navItem}
+                    </div>
+                  ) : (
+                    navItem
+                  )
 
-        {/* Collapse Button */}
-        <div className="border-t border-border/20 p-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setCollapsed(!collapsed)}
-            className={cn(
-              'w-full text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-all',
-              collapsed ? 'justify-center px-2' : 'justify-start'
-            )}
-          >
-            {collapsed ? (
-              <ChevronRight className="h-4 w-4" />
-            ) : (
-              <>
-                <ChevronLeft className="mr-2 h-4 w-4" />
-                Collapse
-              </>
-            )}
-          </Button>
+                if (collapsed) {
+                  return (
+                    <Tooltip key={link.href || 'overview'}>
+                      <TooltipTrigger asChild>{withGroupLabel}</TooltipTrigger>
+                      <TooltipContent side="right" className="font-medium">
+                        {link.label}
+                      </TooltipContent>
+                    </Tooltip>
+                  )
+                }
+
+                return withGroupLabel
+              })}
+            </nav>
+          </ScrollArea>
+
+          {/* Collapse Button */}
+          <div className="border-t border-border/20 p-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCollapsed(!collapsed)}
+              className={cn(
+                'w-full text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-all',
+                collapsed ? 'justify-center px-2' : 'justify-start'
+              )}
+            >
+              {collapsed ? (
+                <ChevronRight className="h-4 w-4" />
+              ) : (
+                <>
+                  <ChevronLeft className="mr-2 h-4 w-4" />
+                  Collapse
+                </>
+              )}
+            </Button>
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+    </TooltipProvider>
   )
 }

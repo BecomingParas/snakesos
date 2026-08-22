@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, Phone, LayoutDashboard, User, LogOut, ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme";
@@ -30,6 +31,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [nepali, setNepali] = useState(false);
   const pathname = usePathname();
+  const { resolvedTheme, setTheme } = useTheme();
   
   // Get actual auth state
   const { user, loading } = useCurrentUser({ skip: false });
@@ -118,7 +120,7 @@ export function Header() {
                     )}
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64 rounded-lg bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-border/40 shadow-2xl">
+                <DropdownMenuContent align="end" className="w-64 rounded-lg border-border bg-popover shadow-elevated">
                   {/* User Info Section */}
                   <div className="flex items-center gap-3 p-3 border-b border-border/20 bg-transparent">
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary font-bold">
@@ -140,8 +142,8 @@ export function Header() {
                   {/* Menu Items */}
                   <DropdownMenuItem asChild className="cursor-pointer">
                     <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2.5">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
-                        <LayoutDashboard className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                        <LayoutDashboard className="h-4 w-4 text-primary" />
                       </div>
                       <span className="font-medium">Dashboard</span>
                     </Link>
@@ -149,8 +151,8 @@ export function Header() {
                   
                   <DropdownMenuItem asChild className="cursor-pointer">
                     <Link href="/profile" className="flex items-center gap-3 px-3 py-2.5">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
-                        <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                        <User className="h-4 w-4 text-primary" />
                       </div>
                       <span className="font-medium">Profile Settings</span>
                     </Link>
@@ -163,8 +165,8 @@ export function Header() {
                     className="cursor-pointer focus:bg-destructive/10 focus:text-destructive"
                   >
                     <div className="flex items-center gap-3 px-3 py-2.5 w-full">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-                        <LogOut className="h-4 w-4 text-red-600 dark:text-red-400" />
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-destructive/10">
+                        <LogOut className="h-4 w-4 text-destructive" />
                       </div>
                       <span className="font-medium text-destructive">Sign Out</span>
                     </div>
@@ -179,7 +181,7 @@ export function Header() {
           </div>
           
           {/* Emergency Button */}
-          <Button asChild variant="destructive" className="h-9 rounded-lg px-4 font-semibold bg-red-600 hover:bg-red-700 dark:bg-destructive dark:hover:bg-destructive/90 text-white shadow-md hover:shadow-lg transition-all">
+          <Button asChild variant="destructive" className="h-9 rounded-lg px-4 font-semibold">
             <Link href="/emergency" className="flex items-center gap-2">
               <Phone className="h-4 w-4" />
               <span className="hidden sm:inline">Emergency</span>
@@ -226,11 +228,7 @@ export function Header() {
               {/* Theme Toggle */}
               <button
                 onClick={() => {
-                  const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-                  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                  document.documentElement.classList.remove(currentTheme);
-                  document.documentElement.classList.add(newTheme);
-                  localStorage.setItem('theme', newTheme);
+                  setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
                 }}
                 className="flex w-full items-center justify-between rounded-lg px-4 py-3 text-base font-medium text-foreground hover:bg-secondary/50 transition-colors"
               >
@@ -287,8 +285,8 @@ export function Header() {
                   onClick={() => setOpen(false)}
                   className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-foreground hover:bg-secondary/50 transition-colors"
                 >
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
-                    <LayoutDashboard className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                    <LayoutDashboard className="h-4 w-4 text-primary" />
                   </div>
                   Dashboard
                 </Link>
@@ -297,8 +295,8 @@ export function Header() {
                   onClick={() => setOpen(false)}
                   className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-foreground hover:bg-secondary/50 transition-colors"
                 >
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
-                    <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+                    <User className="h-4 w-4 text-primary" />
                   </div>
                   Profile Settings
                 </Link>
@@ -309,8 +307,8 @@ export function Header() {
                   }}
                   className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
                 >
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-                    <LogOut className="h-4 w-4 text-red-600 dark:text-red-400" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-destructive/10">
+                    <LogOut className="h-4 w-4 text-destructive" />
                   </div>
                   Sign Out
                 </button>
@@ -322,4 +320,3 @@ export function Header() {
     </header>
   );
 }
-

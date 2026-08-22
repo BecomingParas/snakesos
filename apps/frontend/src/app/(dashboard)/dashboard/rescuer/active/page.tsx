@@ -1,552 +1,492 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  ArrowLeft,
-  Navigation,
-  MapPin,
-  Phone,
   CheckCircle,
-  Camera,
-  Upload,
-  AlertCircle,
   Clock,
+  MapPin,
+  Navigation,
+  Phone,
+  AlertTriangle,
+  Building2,
+  Syringe,
+  FileText,
   Loader2,
+  ArrowLeft,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Switch } from '@/components/ui/switch'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import {
   useMyAssignedRescuesQuery,
-  useUpdateRescueProgressMutation,
   useCompleteRescueMutation,
+  useUpdateRescueProgressMutation,
 } from '@/lib/graphql/hooks/rescue.hooks'
+import { useSearchHospitals } from '@/lib/graphql/hooks/hospital.hooks'
 import { toast } from 'sonner'
 
 /**
- * Active Rescue Management Page
- * Allows rescuer to:
- * - Update rescue status (En Route, Arrived, In Progress)
- * - Complete rescue with report
- * - Upload photos
- * - Contact citizen
+ * Active Rescue Page
+ * Shows current active rescue for rescuer with ability to:
+ * - Update progress status
+ * - Navigate to location
+ * - Call citizen
+ * - Complete rescue with hospital information
  */
 
-// Mock data
-const mockActiveRescue = {
-  id: 'rescue-active-1',
-  referenceNumber: 'BR-2024-102',
-  status: 'ACCEPTED', // ACCEPTED, IN_PROGRESS, COMPLETED
-  priority: 'HIGH',
-  municipality: 'Butwal',
-  ward: 12,
-  address: 'Traffic Chowk, Main Road',
-  landmark: 'Near City Mall',
-  lat: 27.7,
-  lng: 83.46,
-  snakeDescription: 'Large brown snake, approximately 4 feet long',
-  snakeSize: 'LARGE',
-  snakeColor: 'Brown',
-  citizenName: 'Rita Sharma',
-  citizenPhone: '9841234567',
-  acceptedAt: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
-  arrivedAt: null,
-  startedAt: null,
-}
+const OUTCOMES = [
+  { value: 'RESCUED_RELOCATED', label: 'Rescued & Relocated', icon: CheckCircle },
+  { value: 'ALREADY_GONE', label: 'Already Gone', icon: AlertTriangle },
+  { value: 'FALSE_ALARM', label: 'False Alarm', icon: AlertTriangle },
+  { value: 'NO_SNAKE_FOUND', label: 'No Snake Found', icon: AlertTriangle },
+  { value: 'DECEASED', label: 'Snake Deceased', icon: AlertTriangle },
+]
 
-const OUTCOME_OPTIONS = [
-  { value: 'RESCUED_RELOCATED', label: 'Snake Rescued & Relocated', description: 'Successfully captured and relocated to safe habitat' },
-  { value: 'ALREADY_GONE', label: 'Snake Already Gone', description: 'Snake had left before arrival' },
-  { value: 'FALSE_ALARM', label: 'False Alarm', description: 'Not a dangerous situation' },
-  { value: 'NO_SNAKE_FOUND', label: 'Snake Not Found', description: 'Could not locate the snake' },
-  { value: 'DECEASED', label: 'Snake Deceased', description: 'Snake was found dead' },
+const ANTIVENOM_TYPES = [
+  'Polyvalent Anti-snake Venom',
+  'Monovalent Anti-snake Venom',
+  'Anti-Viper Venom',
+  'Anti-Cobra Venom',
+  'Anti-Krait Venom',
+  'Other',
 ]
 
 export default function ActiveRescuePage() {
   const router = useRouter()
   const [showCompleteForm, setShowCompleteForm] = useState(false)
-  
-  // Completion form state
-  const [outcome, setOutcome] = useState('')
-  const [rescueReport, setRescueReport] = useState('')
-  const [rescueImages, setRescueImages] = useState<string[]>([])
+  const [searchQuery, setSearchQuery] = useState('')
 
   // Fetch active rescue
   const { data, loading, refetch } = useMyAssignedRescuesQuery({
     variables: {
-      filter: { statuses: ['ACCEPTED', 'IN_PROGRESS', 'ARRIVED'] }
+      filter: { statuses: ['ACCEPTED', 'IN_PROGRESS', 'ARRIVED'] },
     },
-    pollInterval: 10000,
     fetchPolicy: 'cache-and-network',
   })
 
-  // Update progress mutation
+  // Progress mutation
   const [updateProgress, { loading: updating }] = useUpdateRescueProgressMutation({
     onCompleted: () => {
-      toast.success('Status updated!')
+      toast.success('Status updated')
       refetch()
     },
     onError: (error) => {
       toast.error(`Failed to update: ${error.message}`)
-    }
+    },
   })
 
-  // Complete rescue mutation
-  const [completeRescue, { loading: submitting }] = useCompleteRescueMutation({
+  // Complete mutation
+  const [completeRescue, { loading: completing }] = useCompleteRescueMutation({
     onCompleted: () => {
-      toast.success('Rescue completed successfully!')
-      router.push('/dashboard/rescuer?completed=true')
+      toast.success('Rescue completed! Well done! 🎉')
+      setTimeout(() => {
+        router.push('/dashboard/rescuer')
+      }, 2000)
     },
     onError: (error) => {
       toast.error(`Failed to complete: ${error.message}`)
-    }
+    },
   })
 
-  // Extract active rescue
-  const activeRescue = data?.myAssignedRescues?.edges?.[0]?.node
-  
-  // Redirect if no active rescue
-  useEffect(() => {
-    if (!loading && !activeRescue) {
-      toast.error('No active rescue found')
-      router.push('/dashboard/rescuer')
-    }
-  }, [loading, activeRescue, router])
+  // Form state
+  const [outcome, setOutcome] = useState('')
+  const [rescueReport, setRescueReport] = useState('')
+  const [rescueImages, setRescueImages] = useState<string[]>([])
+  const [victimWentToHospital, setVictimWentToHospital] = useState<boolean | null>(null)
+  const [selectedHospital, setSelectedHospital] = useState('')
+  const [antivenomAdministered, setAntivenomAdministered] = useState(false)
+  const [antivenomType, setAntivenomType] = useState('')
+  const [hospitalAdmission, setHospitalAdmission] = useState(false)
+  const [hospitalNotes, setHospitalNotes] = useState('')
 
-  const handleStatusUpdate = async (newStatus: string, notes?: string) => {
+  // Hospital search
+  const { data: hospitalsData } = useSearchHospitals(searchQuery, 20)
+  const hospitals = (hospitalsData as any)?.searchHospitals || []
+
+  const activeRescue = data?.myAssignedRescues?.edges?.[0]?.node
+
+  const handleUpdateStatus = async (newStatus: string) => {
     if (!activeRescue) return
 
-    try {
-      await updateProgress({
-        variables: {
-          input: {
-            rescueId: activeRescue.id,
-            status: newStatus,
-            notes,
-          }
-        }
-      })
-    } catch (error) {
-      console.error('Failed to update status:', error)
-    }
+    await updateProgress({
+      variables: {
+        input: {
+          rescueId: activeRescue.id,
+          status: newStatus,
+        },
+      },
+    })
   }
 
-  const handleCompleteRescue = async () => {
-    if (!outcome || !rescueReport) {
-      toast.error('Please select outcome and provide rescue report')
+  const handleComplete = async () => {
+    if (!activeRescue || !outcome || !rescueReport) {
+      toast.error('Please fill in all required fields')
       return
     }
 
-    if (!activeRescue) return
-
-    try {
-      await completeRescue({
-        variables: {
-          input: {
-            rescueId: activeRescue.id,
-            outcome,
-            rescueReport,
-            rescueImages: rescueImages.length > 0 ? rescueImages : undefined,
-          }
-        }
-      })
-    } catch (error) {
-      console.error('Failed to complete rescue:', error)
+    if (victimWentToHospital && !selectedHospital) {
+      toast.error('Please select a hospital')
+      return
     }
+
+    await completeRescue({
+      variables: {
+        input: {
+          rescueId: activeRescue.id,
+          outcome,
+          rescueReport,
+          rescueImages,
+          victimWentToHospital: victimWentToHospital || false,
+          hospitalId: victimWentToHospital ? selectedHospital : undefined,
+          antivenomAdministered: victimWentToHospital ? antivenomAdministered : undefined,
+          antivenomType: antivenomAdministered ? antivenomType : undefined,
+          hospitalAdmission: victimWentToHospital ? hospitalAdmission : undefined,
+          hospitalNotes: victimWentToHospital ? hospitalNotes : undefined,
+        },
+      },
+    })
   }
 
-  const openNavigation = () => {
-    if (!activeRescue?.lat || !activeRescue?.lng) return
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${activeRescue.lat},${activeRescue.lng}`
-    window.open(url, '_blank')
-  }
-
-  // Loading state
-  if (loading || !activeRescue) {
+  if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Loading active rescue...</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  if (!activeRescue) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+        <div className="mx-auto max-w-2xl">
+          <Card className="p-12 text-center">
+            <AlertTriangle className="mx-auto h-12 w-12 text-yellow-500 mb-4" />
+            <h2 className="text-2xl font-bold mb-2">No Active Rescue</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              You don't have any active rescues at the moment.
+            </p>
+            <Button onClick={() => router.push('/dashboard/rescuer')}>
+              Back to Dashboard
+            </Button>
+          </Card>
         </div>
       </div>
     )
   }
 
-  const canMarkEnRoute = activeRescue.status === 'ACCEPTED'
-  const canMarkArrived = activeRescue.status === 'ACCEPTED' || (activeRescue.status === 'IN_PROGRESS' && !activeRescue.arrivedAt)
-  const canMarkStarted = activeRescue.arrivedAt && activeRescue.status === 'IN_PROGRESS' && !activeRescue.startedAt
-  const canComplete = activeRescue.status === 'IN_PROGRESS'
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
-      <div className="mx-auto max-w-5xl">
-        
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+      <div className="mx-auto max-w-4xl space-y-6">
         {/* Header */}
-        <div className="mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => router.back()}
-            className="mb-4"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
-          
-          <div className="flex items-start justify-between">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button variant="outline" size="icon" onClick={() => router.push('/dashboard/rescuer')}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                Active Rescue
-              </h1>
-              <p className="mt-1 text-lg text-gray-600 dark:text-gray-400">
+              <h1 className="text-3xl font-bold">Active Rescue</h1>
+              <p className="text-gray-600 dark:text-gray-400">
                 {activeRescue.referenceNumber}
               </p>
             </div>
-            <Badge className="bg-green-500 text-white">
-              {activeRescue.status === 'ACCEPTED' ? 'Accepted' : activeRescue.status.replace('_', ' ')}
-            </Badge>
           </div>
+          <Badge
+            className={cn(
+              'text-white',
+              activeRescue.status === 'ACCEPTED' && 'bg-blue-500',
+              activeRescue.status === 'IN_PROGRESS' && 'bg-green-500',
+              activeRescue.status === 'ARRIVED' && 'bg-purple-500'
+            )}
+          >
+            {activeRescue.status.replace('_', ' ')}
+          </Badge>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            
-            {/* Status Update Actions */}
-            {!showCompleteForm && (
-              <Card className="p-6">
-                <h2 className="text-xl font-semibold mb-4">Update Status</h2>
-                
-                <div className="space-y-3">
-                  {canMarkEnRoute && (
-                    <Button
-                      className="w-full h-auto flex-col items-start gap-1 p-4"
-                      onClick={() => handleStatusUpdate('IN_PROGRESS', 'En route to location')}
-                      disabled={updating}
-                    >
-                      {updating ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-2 w-full">
-                            <Navigation className="h-5 w-5" />
-                            <span className="font-semibold">Mark En Route</span>
-                          </div>
-                          <span className="text-xs opacity-80 text-left">
-                            Let the citizen know you're on your way
-                          </span>
-                        </>
-                      )}
-                    </Button>
-                  )}
+        {/* Rescue Details */}
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold mb-4">Rescue Information</h2>
+          <div className="space-y-3">
+            <div className="flex items-start gap-3">
+              <MapPin className="h-5 w-5 text-gray-500 mt-0.5" />
+              <div>
+                <p className="font-medium">Location</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {activeRescue.address}, {activeRescue.municipality}
+                  {activeRescue.ward && ` (Ward ${activeRescue.ward})`}
+                </p>
+              </div>
+            </div>
 
-                  {canMarkArrived && (
-                    <Button
-                      className="w-full h-auto flex-col items-start gap-1 p-4"
-                      onClick={() => handleStatusUpdate('IN_PROGRESS', 'Arrived at location')}
-                      disabled={updating}
-                    >
-                      {updating ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-2 w-full">
-                            <MapPin className="h-5 w-5" />
-                            <span className="font-semibold">Mark Arrived</span>
-                          </div>
-                          <span className="text-xs opacity-80 text-left">
-                            Confirm you've reached the rescue location
-                          </span>
-                        </>
-                      )}
-                    </Button>
-                  )}
-
-                  {canMarkStarted && (
-                    <Button
-                      className="w-full h-auto flex-col items-start gap-1 p-4"
-                      onClick={() => handleStatusUpdate('IN_PROGRESS', 'Starting rescue operation')}
-                      disabled={updating}
-                    >
-                      {updating ? (
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-2 w-full">
-                            <Clock className="h-5 w-5" />
-                            <span className="font-semibold">Start Rescue</span>
-                          </div>
-                          <span className="text-xs opacity-80 text-left">
-                            Begin the rescue operation
-                          </span>
-                        </>
-                      )}
-                    </Button>
-                  )}
-
-                  {canComplete && (
-                    <Button
-                      className="w-full h-auto flex-col items-start gap-1 p-4 bg-green-600 hover:bg-green-700"
-                      onClick={() => setShowCompleteForm(true)}
-                    >
-                      <div className="flex items-center gap-2 w-full">
-                        <CheckCircle className="h-5 w-5" />
-                        <span className="font-semibold">Complete Rescue</span>
-                      </div>
-                      <span className="text-xs opacity-80 text-left">
-                        Mark this rescue as completed
-                      </span>
-                    </Button>
-                  )}
-                </div>
-              </Card>
-            )}
-
-            {/* Complete Rescue Form */}
-            {showCompleteForm && (
-              <Card className="p-6">
-                <h2 className="text-xl font-semibold mb-6">Complete Rescue</h2>
-                
-                <div className="space-y-6">
-                  {/* Outcome Selection */}
-                  <div>
-                    <Label className="text-base">Rescue Outcome *</Label>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                      Select what happened during the rescue
-                    </p>
-                    <div className="space-y-2">
-                      {OUTCOME_OPTIONS.map((option) => (
-                        <label
-                          key={option.value}
-                          className={cn(
-                            'flex cursor-pointer items-start gap-3 rounded-lg border-2 p-4 transition-all hover:bg-gray-50 dark:hover:bg-gray-800',
-                            outcome === option.value
-                              ? 'border-primary bg-primary/5'
-                              : 'border-gray-200 dark:border-gray-700'
-                          )}
-                        >
-                          <input
-                            type="radio"
-                            name="outcome"
-                            value={option.value}
-                            checked={outcome === option.value}
-                            onChange={(e) => setOutcome(e.target.value)}
-                            className="mt-1"
-                          />
-                          <div className="flex-1">
-                            <span className="font-semibold">{option.label}</span>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {option.description}
-                            </p>
-                          </div>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Rescue Report */}
-                  <div>
-                    <Label htmlFor="report" className="text-base">Rescue Report *</Label>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      Describe what happened and any important details
-                    </p>
-                    <Textarea
-                      id="report"
-                      value={rescueReport}
-                      onChange={(e) => setRescueReport(e.target.value)}
-                      placeholder="Describe the rescue operation, snake behavior, safety measures taken, and any other relevant details..."
-                      rows={6}
-                      required
-                    />
-                  </div>
-
-                  {/* Photo Upload */}
-                  <div>
-                    <Label className="text-base">Rescue Photos (Optional)</Label>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      Upload photos of the snake or rescue operation
-                    </p>
-                    <div className="mt-2 flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-6 dark:border-gray-700">
-                      <div className="text-center">
-                        <Camera className="mx-auto h-12 w-12 text-gray-400" />
-                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                          Click to upload or drag and drop
-                        </p>
-                        <p className="text-xs text-gray-500">PNG, JPG up to 10MB</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-3">
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowCompleteForm(false)}
-                      disabled={submitting}
-                      className="flex-1"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleCompleteRescue}
-                      disabled={!outcome || !rescueReport || submitting}
-                      className="flex-1 bg-green-600 hover:bg-green-700"
-                    >
-                      {submitting ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Submitting...
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle className="mr-2 h-4 w-4" />
-                          Submit & Complete
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            )}
-
-            {/* Rescue Details */}
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Rescue Details</h3>
-              
-              <div className="space-y-4">
+            {activeRescue.snakeDescription && (
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="h-5 w-5 text-gray-500 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Location</p>
-                  <p className="mt-1">{activeRescue.address}</p>
+                  <p className="font-medium">Snake Description</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Ward {activeRescue.ward}, {activeRescue.municipality}
+                    {activeRescue.snakeDescription}
                   </p>
-                  {activeRescue.landmark && (
-                    <p className="text-sm text-gray-500 mt-1">Near: {activeRescue.landmark}</p>
-                  )}
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Snake Description</p>
-                  <p className="mt-1">{activeRescue.snakeDescription || 'No description available'}</p>
-                  {(activeRescue.snakeSize || activeRescue.snakeColor) && (
-                    <div className="mt-2 flex gap-4 text-sm text-gray-600 dark:text-gray-400">
-                      {activeRescue.snakeSize && <span>Size: {activeRescue.snakeSize}</span>}
-                      {activeRescue.snakeColor && <span>Color: {activeRescue.snakeColor}</span>}
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Timeline</p>
-                  <div className="mt-2 space-y-1 text-sm">
-                    <p className="text-gray-600 dark:text-gray-400">
-                      Accepted: {new Date(activeRescue.acceptedAt || activeRescue.assignedAt || activeRescue.createdAt).toLocaleTimeString()}
-                    </p>
-                    {activeRescue.arrivedAt && (
-                      <p className="text-gray-600 dark:text-gray-400">
-                        Arrived: {new Date(activeRescue.arrivedAt).toLocaleTimeString()}
-                      </p>
-                    )}
-                    {activeRescue.startedAt && (
-                      <p className="text-gray-600 dark:text-gray-400">
-                        Started: {new Date(activeRescue.startedAt).toLocaleTimeString()}
-                      </p>
-                    )}
-                  </div>
                 </div>
               </div>
-            </Card>
+            )}
+
+            {activeRescue.user && (
+              <div className="flex items-start gap-3">
+                <Phone className="h-5 w-5 text-gray-500 mt-0.5" />
+                <div>
+                  <p className="font-medium">Citizen Contact</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {activeRescue.user.name} - {activeRescue.user.phone}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            
-            {/* Navigation */}
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Navigation</h3>
-              <Button
-                className="w-full"
-                onClick={openNavigation}
-                disabled={!activeRescue.lat || !activeRescue.lng}
-              >
-                <Navigation className="mr-2 h-4 w-4" />
-                Open in Maps
-              </Button>
-            </Card>
+          {/* Action Buttons */}
+          <div className="grid grid-cols-2 gap-3 mt-6">
+            <Button
+              variant="outline"
+              onClick={() => {
+                if (activeRescue.user?.phone) {
+                  window.location.href = `tel:${activeRescue.user.phone}`
+                }
+              }}
+            >
+              <Phone className="mr-2 h-4 w-4" />
+              Call Citizen
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                if (activeRescue.lat && activeRescue.lng) {
+                  window.open(
+                    `https://www.google.com/maps/dir/?api=1&destination=${activeRescue.lat},${activeRescue.lng}`,
+                    '_blank'
+                  )
+                }
+              }}
+            >
+              <Navigation className="mr-2 h-4 w-4" />
+              Navigate
+            </Button>
+          </div>
+        </Card>
 
-            {/* Citizen Contact */}
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Citizen Contact</h3>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm text-gray-500">Name</p>
-                  <p className="font-medium">{activeRescue.user?.name || 'Unknown'}</p>
+        {/* Status Updates */}
+        {!showCompleteForm && (
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4">Update Status</h2>
+            <div className="grid grid-cols-2 gap-3">
+              {activeRescue.status === 'ACCEPTED' && (
+                <Button
+                  onClick={() => handleUpdateStatus('IN_PROGRESS')}
+                  disabled={updating}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  <Clock className="mr-2 h-4 w-4" />
+                  Start Rescue
+                </Button>
+              )}
+              {(activeRescue.status === 'ACCEPTED' || activeRescue.status === 'IN_PROGRESS') && (
+                <Button
+                  onClick={() => handleUpdateStatus('ARRIVED')}
+                  disabled={updating}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  <MapPin className="mr-2 h-4 w-4" />
+                  Mark Arrived
+                </Button>
+              )}
+              <Button
+                onClick={() => setShowCompleteForm(true)}
+                className="col-span-2 bg-green-600 hover:bg-green-700"
+              >
+                <CheckCircle className="mr-2 h-4 w-4" />
+                Complete Rescue
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {/* Complete Form */}
+        {showCompleteForm && (
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-6">Complete Rescue</h2>
+            
+            <div className="space-y-6">
+              {/* Outcome */}
+              <div>
+                <Label>Outcome *</Label>
+                <RadioGroup value={outcome} onValueChange={setOutcome} className="grid grid-cols-2 gap-3 mt-2">
+                  {OUTCOMES.map((item) => (
+                    <div key={item.value} className="flex items-center space-x-2">
+                      <RadioGroupItem value={item.value} id={item.value} />
+                      <Label htmlFor={item.value} className="cursor-pointer">
+                        {item.label}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </div>
+
+              {/* Rescue Report */}
+              <div>
+                <Label htmlFor="report">Rescue Report *</Label>
+                <Textarea
+                  id="report"
+                  value={rescueReport}
+                  onChange={(e) => setRescueReport(e.target.value)}
+                  placeholder="Describe what happened during the rescue..."
+                  rows={4}
+                  className="mt-2"
+                />
+              </div>
+
+              {/* Hospital Section */}
+              <div className="border-t pt-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Building2 className="h-5 w-5 text-gray-500" />
+                  <h3 className="text-lg font-semibold">Hospital Information</h3>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-500">Phone</p>
-                  <p className="font-medium">{activeRescue.user?.phone || 'N/A'}</p>
+
+                {/* Did victim go to hospital? */}
+                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg mb-4">
+                  <Label htmlFor="hospital-visit">Did the victim go to a hospital?</Label>
+                  <Switch
+                    id="hospital-visit"
+                    checked={victimWentToHospital === true}
+                    onCheckedChange={(checked) => setVictimWentToHospital(checked)}
+                  />
                 </div>
-                {activeRescue.user?.phone && (
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => window.location.href = `tel:${activeRescue.user?.phone}`}
-                  >
-                    <Phone className="mr-2 h-4 w-4" />
-                    Call Citizen
-                  </Button>
+
+                {victimWentToHospital && (
+                  <div className="space-y-4 pl-4 border-l-2 border-blue-500">
+                    {/* Hospital Selection */}
+                    <div>
+                      <Label>Select Hospital *</Label>
+                      <Input
+                        type="text"
+                        placeholder="Search hospital by name..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="mt-2 mb-2"
+                      />
+                      <Select value={selectedHospital} onValueChange={setSelectedHospital}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a hospital" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {hospitals.map((hospital: any) => (
+                            <SelectItem key={hospital.id} value={hospital.id}>
+                              {hospital.name} - {hospital.municipality}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Antivenom */}
+                    <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded">
+                      <div className="flex items-center gap-2">
+                        <Syringe className="h-4 w-4" />
+                        <Label htmlFor="antivenom">Antivenom Administered?</Label>
+                      </div>
+                      <Switch
+                        id="antivenom"
+                        checked={antivenomAdministered}
+                        onCheckedChange={setAntivenomAdministered}
+                      />
+                    </div>
+
+                    {antivenomAdministered && (
+                      <div>
+                        <Label>Antivenom Type</Label>
+                        <Select value={antivenomType} onValueChange={setAntivenomType}>
+                          <SelectTrigger className="mt-2">
+                            <SelectValue placeholder="Select antivenom type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {ANTIVENOM_TYPES.map((type) => (
+                              <SelectItem key={type} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                    {/* Hospital Admission */}
+                    <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded">
+                      <Label htmlFor="admission">Patient Admitted to Hospital?</Label>
+                      <Switch
+                        id="admission"
+                        checked={hospitalAdmission}
+                        onCheckedChange={setHospitalAdmission}
+                      />
+                    </div>
+
+                    {/* Hospital Notes */}
+                    <div>
+                      <Label htmlFor="hospital-notes">Hospital Notes (Optional)</Label>
+                      <Textarea
+                        id="hospital-notes"
+                        value={hospitalNotes}
+                        onChange={(e) => setHospitalNotes(e.target.value)}
+                        placeholder="Any additional notes about hospital visit..."
+                        rows={3}
+                        className="mt-2"
+                      />
+                    </div>
+                  </div>
                 )}
               </div>
-            </Card>
 
-            {/* Safety Tips */}
-            <Card className="p-6 border-yellow-200 bg-yellow-50 dark:border-yellow-900 dark:bg-yellow-950">
-              <div className="flex items-start gap-2 mb-3">
-                <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
-                <h3 className="font-semibold text-yellow-900 dark:text-yellow-100">
-                  Safety Reminder
-                </h3>
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowCompleteForm(false)}
+                  className="flex-1"
+                  disabled={completing}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleComplete}
+                  disabled={completing || !outcome || !rescueReport}
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                >
+                  {completing ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Completing...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      Complete Rescue
+                    </>
+                  )}
+                </Button>
               </div>
-              <ul className="space-y-2 text-sm text-yellow-800 dark:text-yellow-200">
-                <li className="flex gap-2">
-                  <span>•</span>
-                  <span>Always wear protective gear</span>
-                </li>
-                <li className="flex gap-2">
-                  <span>•</span>
-                  <span>Never approach venomous snakes without equipment</span>
-                </li>
-                <li className="flex gap-2">
-                  <span>•</span>
-                  <span>Keep citizen at safe distance</span>
-                </li>
-                <li className="flex gap-2">
-                  <span>•</span>
-                  <span>Call emergency support if needed</span>
-                </li>
-              </ul>
-            </Card>
-
-            {/* Emergency Contact */}
-            <Card className="p-6 border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950">
-              <h3 className="text-lg font-semibold mb-2 text-red-900 dark:text-red-100">
-                Emergency Support
-              </h3>
-              <p className="text-sm text-red-800 dark:text-red-200 mb-4">
-                Need immediate help?
-              </p>
-              <Button className="w-full bg-red-600 hover:bg-red-700 text-white">
-                <Phone className="mr-2 h-4 w-4" />
-                Call Emergency: 102
-              </Button>
-            </Card>
-          </div>
-        </div>
+            </div>
+          </Card>
+        )}
       </div>
     </div>
   )

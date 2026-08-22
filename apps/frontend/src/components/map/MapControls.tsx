@@ -97,7 +97,7 @@ export function MapControls({
       <CardContent className="space-y-4">
         {/* Legend */}
         <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-slate-600">Map Legend</h4>
+          <h4 className="text-xs font-semibold text-muted-foreground">Map Legend</h4>
           <div className="space-y-2">
             {/* Incident Markers */}
             <div className="space-y-1.5">
@@ -117,15 +117,15 @@ export function MapControls({
                 )}
               </div>
               <div className="pl-8 space-y-0.5">
-                <div className="flex items-center gap-2 text-[10px] text-slate-600">
+                <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
                   <div className="w-3 h-3 rounded-full bg-red-600 border border-white"></div>
                   <span>Critical Priority</span>
                 </div>
-                <div className="flex items-center gap-2 text-[10px] text-slate-600">
+                <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
                   <div className="w-3 h-3 rounded-full bg-orange-600 border border-white"></div>
                   <span>High Priority</span>
                 </div>
-                <div className="flex items-center gap-2 text-[10px] text-slate-600">
+                <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
                   <div className="w-3 h-3 rounded-full bg-yellow-600 border border-white"></div>
                   <span>Medium Priority</span>
                 </div>
@@ -152,15 +152,15 @@ export function MapControls({
                 )}
               </div>
               <div className="pl-8 space-y-0.5">
-                <div className="flex items-center gap-2 text-[10px] text-slate-600">
+                <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
                   <div className="w-3 h-3 rounded-full bg-green-600 border border-white"></div>
                   <span>Available</span>
                 </div>
-                <div className="flex items-center gap-2 text-[10px] text-slate-600">
+                <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
                   <div className="w-3 h-3 rounded-full bg-blue-600 border border-white"></div>
                   <span>En Route</span>
                 </div>
-                <div className="flex items-center gap-2 text-[10px] text-slate-600">
+                <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
                   <div className="w-3 h-3 rounded-full bg-yellow-600 border border-white"></div>
                   <span>On Site</span>
                 </div>
@@ -187,19 +187,19 @@ export function MapControls({
                 )}
               </div>
               <div className="pl-8 space-y-0.5">
-                <div className="flex items-center gap-2 text-[10px] text-slate-600">
+                <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
                   <div className="w-3 h-3 rounded-full bg-green-600 border border-white"></div>
                   <span>Verified Antivenom</span>
                 </div>
-                <div className="flex items-center gap-2 text-[10px] text-slate-600">
+                <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
                   <div className="w-3 h-3 rounded-full bg-yellow-600 border border-white"></div>
                   <span>Treatment Available (Unverified)</span>
                 </div>
-                <div className="flex items-center gap-2 text-[10px] text-slate-600">
+                <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
                   <div className="w-3 h-3 rounded-full bg-red-600 border border-white"></div>
                   <span>Out of Stock</span>
                 </div>
-                <div className="flex items-center gap-2 text-[10px] text-slate-600">
+                <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
                   <div className="w-3 h-3 rounded-full bg-gray-500 border border-white"></div>
                   <span>General Hospital</span>
                 </div>
@@ -230,7 +230,7 @@ export function MapControls({
           <>
             <Separator />
             <div className="space-y-2">
-              <h4 className="text-xs font-semibold text-slate-600">View Controls</h4>
+              <h4 className="text-xs font-semibold text-muted-foreground">View Controls</h4>
               <div className="grid grid-cols-3 gap-2">
                 {onZoomIn && (
                   <Button variant="outline" size="sm" onClick={onZoomIn} className="text-xs">
@@ -257,7 +257,7 @@ export function MapControls({
 
         {/* Info */}
         <div className="pt-2 border-t">
-          <p className="text-[10px] text-slate-500 text-center">
+          <p className="text-[10px] text-muted-foreground text-center">
             Click markers for detailed information
           </p>
         </div>

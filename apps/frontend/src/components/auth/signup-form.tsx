@@ -79,7 +79,7 @@ export function SignupForm() {
   return (
     <>
       {/* Tab Switcher */}
-      <div className="flex gap-2 mb-6 p-1 bg-slate-100 rounded-lg">
+      <div className="flex gap-2 mb-6 p-1 bg-secondary rounded-lg">
         <button
           type="button"
           onClick={() => {
@@ -101,7 +101,7 @@ export function SignupForm() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
         <div className="space-y-1">
-          <Label htmlFor="name" className="text-slate-700 font-medium text-sm">
+          <Label htmlFor="name" className="text-foreground font-medium text-sm">
             Full Name
           </Label>
           <Input
@@ -111,7 +111,7 @@ export function SignupForm() {
             autoComplete="name"
             aria-invalid={Boolean(errors.name)}
             aria-describedby={errors.name ? 'name-error' : undefined}
-            className="h-9 bg-white border-slate-300 focus:bg-white text-sm text-slate-900 placeholder:text-slate-400"
+            className="h-9"
             {...register('name')}
           />
           {errors.name?.message && (
@@ -122,7 +122,7 @@ export function SignupForm() {
         </div>
 
         <div className="space-y-1">
-          <Label htmlFor="email" className="text-slate-700 font-medium text-sm">
+          <Label htmlFor="email" className="text-foreground font-medium text-sm">
             Email
           </Label>
           <Input
@@ -132,7 +132,7 @@ export function SignupForm() {
             autoComplete="email"
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? 'email-error' : undefined}
-            className="h-9 bg-white border-slate-300 focus:bg-white text-sm text-slate-900 placeholder:text-slate-400"
+            className="h-9"
             {...register('email')}
           />
           {errors.email?.message && (
@@ -143,7 +143,7 @@ export function SignupForm() {
         </div>
 
         <div className="space-y-1">
-          <Label htmlFor="password" className="text-slate-700 font-medium text-sm">
+          <Label htmlFor="password" className="text-foreground font-medium text-sm">
             Password
           </Label>
           <PasswordInput
@@ -152,7 +152,7 @@ export function SignupForm() {
             autoComplete="new-password"
             aria-invalid={Boolean(errors.password)}
             aria-describedby={errors.password ? 'password-error' : undefined}
-            className="h-9 bg-white border-slate-300 focus:bg-white text-sm text-slate-900 placeholder:text-slate-400"
+            className="h-9"
             {...register('password')}
           />
           {errors.password?.message && (
@@ -163,7 +163,7 @@ export function SignupForm() {
         </div>
 
         <div className="space-y-1">
-          <Label htmlFor="confirmPassword" className="text-slate-700 font-medium text-sm">
+          <Label htmlFor="confirmPassword" className="text-foreground font-medium text-sm">
             Confirm Password
           </Label>
           <PasswordInput
@@ -172,7 +172,7 @@ export function SignupForm() {
             autoComplete="new-password"
             aria-invalid={Boolean(errors.confirmPassword)}
             aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
-            className="h-9 bg-white border-slate-300 focus:bg-white text-sm text-slate-900 placeholder:text-slate-400"
+            className="h-9"
             {...register('confirmPassword')}
           />
           {errors.confirmPassword?.message && (
@@ -197,7 +197,7 @@ export function SignupForm() {
             <div className="w-full border-t border-slate-300"></div>
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-2 text-slate-500">Or continue with</span>
+            <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
           </div>
         </div>
 
@@ -205,7 +205,7 @@ export function SignupForm() {
         <Button
           type="button"
           variant="outline"
-          className="w-full h-9 bg-white border-slate-300 hover:bg-slate-50 text-slate-700 font-medium text-sm"
+          className="w-full h-9 font-medium text-sm"
           onClick={() => toast.info('Google OAuth coming soon!')}
         >
           <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -218,7 +218,7 @@ export function SignupForm() {
         </Button>
 
         <div className="text-center pt-2">
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-muted-foreground">
             Already have an account?{' '}
             <Link href="/login" className="text-blue-600 hover:text-blue-700 font-medium hover:underline">
               Sign in
@@ -226,13 +226,13 @@ export function SignupForm() {
           </p>
         </div>
 
-        <p className="text-xs text-center text-slate-500 mt-2 pt-2 border-t">
+        <p className="text-xs text-center text-muted-foreground mt-2 pt-2 border-t">
           By creating an account, you agree to our{' '}
-          <Link href="/terms" className="underline hover:text-slate-700">
+          <Link href="/terms" className="underline hover:text-foreground">
             Terms of Service
           </Link>{' '}
           and{' '}
-          <Link href="/privacy" className="underline hover:text-slate-700">
+          <Link href="/privacy" className="underline hover:text-foreground">
             Privacy Policy
           </Link>
         </p>

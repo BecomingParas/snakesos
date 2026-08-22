@@ -45,7 +45,7 @@ const RescueMap = dynamic(
   { 
     ssr: false,
     loading: () => (
-      <div className="h-full flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+      <div className="h-full flex items-center justify-center bg-slate-50 dark:bg-[hsl(210,8%,15%)]">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
           <p className="text-slate-600 dark:text-slate-400">Loading map...</p>
@@ -267,7 +267,7 @@ export default function AdminCommandCenter() {
   }
 
   return (
-    <div className="h-[calc(100vh-3.5rem)] flex flex-col bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 dark:from-slate-950 dark:via-blue-950/30 dark:to-indigo-950/20">
+    <div className="h-[calc(100vh-3.5rem)] flex flex-col bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 dark:from-[hsl(210,9%,10%)] dark:via-[hsl(210,8%,12%)] dark:to-[hsl(210,8%,11%)]">
       {loading && !data ? (
         <div className="flex justify-center items-center h-full">
           <div className="text-center">
@@ -302,7 +302,7 @@ export default function AdminCommandCenter() {
         >
         
         {/* LEFT PANEL: Request Queue - ALWAYS VISIBLE */}
-        <div className="border-r border-slate-200/60 dark:border-white/10 bg-white/80 dark:bg-slate-950/40 backdrop-blur-2xl flex flex-col overflow-hidden shadow-xl">
+        <div className="border-r border-slate-200/60 dark:border-white/10 bg-white/80 dark:bg-[hsl(210,8%,15%)]/95 backdrop-blur-2xl flex flex-col overflow-hidden shadow-xl">
           {/* Header */}
           <div className="p-5 border-b border-slate-200/60 dark:border-white/10 bg-gradient-to-br from-white/90 to-slate-50/90 dark:from-white/5 dark:to-transparent backdrop-blur-xl">
                 <h2 className="text-lg font-bold mb-4 text-slate-900 dark:text-white">Rescue Queue</h2>
@@ -410,7 +410,7 @@ export default function AdminCommandCenter() {
         {/* CENTER PANEL: Map */}
         <div className="relative overflow-hidden min-w-0">
           {filteredRescues.length === 0 ? (
-            <div className="absolute inset-0 bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
+            <div className="absolute inset-0 bg-slate-50 dark:bg-[hsl(210,8%,15%)] flex items-center justify-center">
               <div className="text-center">
                 <MapPin className="mx-auto h-12 w-12 text-slate-400 dark:text-slate-600" />
                 <p className="mt-2 text-slate-700 dark:text-slate-400">
@@ -469,7 +469,7 @@ export default function AdminCommandCenter() {
         </div>
 
         {/* RIGHT PANEL: Selected Rescue Details */}
-        <div className="border-l border-slate-200/60 dark:border-white/10 bg-white/80 dark:bg-slate-950/40 backdrop-blur-2xl overflow-y-auto min-w-0 shadow-xl">
+        <div className="border-l border-slate-200/60 dark:border-white/10 bg-white/80 dark:bg-[hsl(210,8%,15%)]/95 backdrop-blur-2xl overflow-y-auto min-w-0 shadow-xl">
           {selectedRescue ? (
             <div className="p-6 space-y-5">
               {/* Header */}

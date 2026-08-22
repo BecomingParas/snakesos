@@ -44,10 +44,7 @@ export interface SaveEmergencyContactInput {
 }
 
 export interface UserConnection {
-  edges: Array<{
-    node: User;
-    cursor: string;
-  }>;
+  edges: Array<User>;
   pageInfo: {
     hasNextPage: boolean;
     hasPreviousPage: boolean;

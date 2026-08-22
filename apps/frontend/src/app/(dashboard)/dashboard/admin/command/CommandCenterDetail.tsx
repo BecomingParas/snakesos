@@ -43,7 +43,7 @@ const RescueMap = dynamic(
   { 
     ssr: false,
     loading: () => (
-      <div className="h-64 flex items-center justify-center bg-slate-100 dark:bg-slate-900 rounded-lg">
+      <div className="h-64 flex items-center justify-center bg-slate-100 dark:bg-[hsl(210,8%,15%)] rounded-lg">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     ),

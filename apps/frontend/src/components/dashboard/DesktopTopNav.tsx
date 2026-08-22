@@ -53,7 +53,7 @@ export function DesktopTopNav({ user, onLogout }: DesktopTopNavProps) {
         <Button
           size="sm"
           variant="destructive"
-          className="h-10 bg-red-600 hover:bg-red-700 dark:bg-destructive dark:hover:bg-destructive/90 text-white shadow-md hover:shadow-lg transition-all font-bold"
+          className="h-10 font-bold"
           onClick={() => toast.error('Emergency dispatch alerted', { description: 'Hotline 1166 notified' })}
         >
           <Phone className="mr-2 h-4 w-4" />

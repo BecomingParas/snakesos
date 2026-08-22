@@ -72,11 +72,11 @@ export function ResetPasswordForm() {
               <AlertCircle className="h-8 w-8 text-red-600" />
             </div>
             
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
               Invalid Reset Link
             </h1>
             
-            <p className="mt-2 text-sm text-slate-600">
+            <p className="mt-2 text-sm text-muted-foreground">
               The password reset link is missing email information
             </p>
           </div>
@@ -127,11 +127,11 @@ export function ResetPasswordForm() {
               <CheckCircle2 className="h-8 w-8 text-green-600" />
             </div>
             
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
               Password Reset Complete!
             </h1>
             
-            <p className="mt-2 text-sm text-slate-600">
+            <p className="mt-2 text-sm text-muted-foreground">
               Your password has been successfully reset
             </p>
           </div>
@@ -172,11 +172,11 @@ export function ResetPasswordForm() {
             <KeyRound className="h-8 w-8 text-blue-600" />
           </div>
           
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Create New Password
           </h1>
           
-          <p className="mt-2 text-sm text-slate-600">
+          <p className="mt-2 text-sm text-muted-foreground">
             We sent a 6-digit code to <span className="font-semibold">{email}</span>
           </p>
         </div>
@@ -184,7 +184,7 @@ export function ResetPasswordForm() {
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="code" className="text-slate-700 font-medium">
+            <Label htmlFor="code" className="text-foreground font-medium">
               Verification Code
             </Label>
             <Input
@@ -195,7 +195,7 @@ export function ResetPasswordForm() {
               autoComplete="off"
               aria-invalid={Boolean(errors.code)}
               aria-describedby={errors.code ? 'code-error' : undefined}
-              className={`h-11 text-center text-lg tracking-widest text-slate-900 placeholder:text-slate-400 ${errors.code ? 'border-red-500' : ''}`}
+              className={`h-11 text-center text-lg tracking-widest text-foreground placeholder:text-muted-foreground ${errors.code ? 'border-red-500' : ''}`}
               {...register('code')}
             />
             {errors.code?.message && (
@@ -206,7 +206,7 @@ export function ResetPasswordForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-slate-700 font-medium">
+            <Label htmlFor="password" className="text-foreground font-medium">
               New Password
             </Label>
             <PasswordInput
@@ -215,7 +215,7 @@ export function ResetPasswordForm() {
               autoComplete="new-password"
               aria-invalid={Boolean(errors.password)}
               aria-describedby={errors.password ? 'password-error' : undefined}
-              className={`h-11 text-slate-900 placeholder:text-slate-400 ${errors.password ? 'border-red-500' : ''}`}
+              className={`h-11 text-foreground placeholder:text-muted-foreground ${errors.password ? 'border-red-500' : ''}`}
               {...register('password')}
             />
             {errors.password?.message && (
@@ -226,7 +226,7 @@ export function ResetPasswordForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-slate-700 font-medium">
+            <Label htmlFor="confirmPassword" className="text-foreground font-medium">
               Confirm New Password
             </Label>
             <PasswordInput
@@ -235,7 +235,7 @@ export function ResetPasswordForm() {
               autoComplete="new-password"
               aria-invalid={Boolean(errors.confirmPassword)}
               aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
-              className={`h-11 text-slate-900 placeholder:text-slate-400 ${errors.confirmPassword ? 'border-red-500' : ''}`}
+              className={`h-11 text-foreground placeholder:text-muted-foreground ${errors.confirmPassword ? 'border-red-500' : ''}`}
               {...register('confirmPassword')}
             />
             {errors.confirmPassword?.message && (
@@ -276,7 +276,7 @@ export function ResetPasswordForm() {
           <Button
             variant="ghost"
             onClick={() => router.push('/forgot-password')}
-            className="text-sm text-slate-600 hover:text-slate-900"
+            className="text-sm text-muted-foreground hover:text-foreground"
           >
             Didn't receive code? Request new one
           </Button>

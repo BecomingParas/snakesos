@@ -61,7 +61,7 @@ export function StatisticsCard({ stat, loading }: { stat: StatDef; loading?: boo
   const iconClass = iconColorClasses[stat.icon] || 'icon-emerald';
 
   return (
-    <div className="group relative rounded-xl border border-border/40 bg-white/70 dark:bg-card/60 p-5 backdrop-blur-md transition-all hover:border-primary/30 hover:shadow-float dark:hover:border-primary/40">
+    <div className="group relative rounded-xl border border-border/40 bg-card text-card-foreground p-5 backdrop-blur-md transition-all hover:border-primary/30 hover:shadow-float dark:hover:border-primary/40">
       {/* Subtle gradient overlay for depth (light mode only) */}
       <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/40 to-transparent opacity-60 dark:opacity-0" />
       
@@ -135,7 +135,7 @@ export function ChartCard({
   };
 
   return (
-    <div className="rounded-xl border border-border/70 bg-gradient-to-br from-card via-card to-primary/5 p-4 backdrop-blur-sm shadow-lg overflow-hidden">
+    <div className="rounded-xl border border-border/70 bg-gradient-to-br from-card via-card to-primary/5 text-card-foreground p-4 backdrop-blur-sm shadow-lg overflow-hidden">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="w-1 h-6 bg-gradient-to-b from-primary to-chart-4 rounded-full" />
@@ -549,7 +549,7 @@ export function SectionPanel({
   children: React.ReactNode;
 }) {
   return (
-    <div className="group relative rounded-xl border border-border/40 bg-white/70 dark:bg-card/60 p-5 backdrop-blur-md shadow-soft hover:shadow-float transition-all">
+    <div className="group relative rounded-xl border border-border/40 bg-card text-card-foreground p-5 backdrop-blur-md shadow-soft hover:shadow-float transition-all">
       {/* Subtle top gradient (light mode) */}
       <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-primary/3 to-transparent rounded-t-xl opacity-70 dark:opacity-0" />
       

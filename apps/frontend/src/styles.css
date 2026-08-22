@@ -7,243 +7,256 @@
    ============================================================================ */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Tailwind CSS v4 consumes semantic utilities from this CSS-first theme
+ * declaration. Values stay in the tokens below so changing theme only means
+ * swapping variables on :root/.dark — never rebuilding a colour palette in a
+ * component.
+ */
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-surface: hsl(var(--surface));
+  --color-surface-foreground: hsl(var(--surface-foreground));
+  --color-surface-elevated: hsl(var(--surface-elevated));
+  --color-surface-elevated-foreground: hsl(var(--surface-elevated-foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+  --color-warning: hsl(var(--warning));
+  --color-warning-foreground: hsl(var(--warning-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-info: hsl(var(--info));
+  --color-info-foreground: hsl(var(--info-foreground));
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+}
+
 /* ============================================================================
    SNAKE RESCUE - DESIGN TOKENS
-   Comprehensive Light & Dark Theme System (Tailwind v4)
+   Facebook-Inspired Light & Dark Theme System (Tailwind v4)
    ============================================================================ */
 
 @layer base {
   /* ============================================================================
-     LIGHT THEME (Default) - PREMIUM GLASSY VERSION
-     Professional, colorful wildlife rescue platform aesthetic
+     LIGHT THEME (Facebook-style)
+     Clean, bright surfaces on a soft gray canvas
+     Colors: #ffffff cards on #f0f2f5 background
      ============================================================================ */
 
   :root {
-    /* Base - Soft neutral with subtle warmth */
-    --background: 210 20% 98%;
-    --foreground: 222 47% 11%;
+    /* Base — Facebook light canvas */
+    --background: 220 17% 96%;         /* calm page canvas */
+    --foreground: 222 22% 12%;
+
+    /* Layered content surfaces */
+    --surface: 0 0% 100%;
+    --surface-foreground: 222 22% 12%;
+    --surface-elevated: 0 0% 100%;
+    --surface-elevated-foreground: 222 22% 12%;
     
-    /* Cards & Surfaces - Premium glass effect */
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    /* Cards & Surfaces — Pure white like Facebook cards */
+    --card: var(--surface);
+    --card-foreground: var(--surface-foreground);
     
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover: var(--surface-elevated);
+    --popover-foreground: var(--surface-elevated-foreground);
     
-    /* Brand - Professional Rescue Green (unchanged) */
-    --primary: 145 63% 49%;
+    /* Brand — trustworthy emergency blue */
+    --primary: 211 100% 46%;
     --primary-foreground: 0 0% 100%;
     
-    /* Secondary - Softer */
-    --secondary: 210 30% 97%;
-    --secondary-foreground: 222 47% 11%;
+    /* Secondary — Facebook-style light gray surface */
+    --secondary: 220 14% 93%;
+    --secondary-foreground: 222 22% 16%;
     
-    /* Muted - More elegant */
-    --muted: 210 30% 96%;
-    --muted-foreground: 215 18% 45%;
+    /* Muted — Subtle gray for inactive elements */
+    --muted: 220 14% 93%;
+    --muted-foreground: 220 9% 37%;
     
-    /* Accent - Subtle teal tint */
-    --accent: 180 30% 96%;
-    --accent-foreground: 222 47% 11%;
+    /* Accent — Slight blue-gray tint like Facebook hover */
+    --accent: 211 22% 92%;
+    --accent-foreground: 211 72% 30%;
     
-    /* Destructive - Emergency */
+    /* Destructive — Emergency red */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     
     /* Success */
-    --success: 145 63% 49%;
+    --success: 145 63% 42%;
     --success-foreground: 0 0% 100%;
     
     /* Warning */
     --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
+    --warning-foreground: 28 30% 12%;
     
     /* Info */
-    --info: 221 83% 53%;
+    --info: 214 89% 52%;               /* Facebook blue */
     --info-foreground: 0 0% 100%;
     
-    /* Border & Input - More subtle */
-    --border: 214 20% 88%;
-    --input: 214 20% 88%;
-    --ring: 145 63% 49%;
+    /* Border & Input — Facebook-style subtle borders */
+    --border: 220 13% 86%;
+    --input: 220 13% 80%;
+    --ring: 211 100% 46%;
     
-    /* Chart Colors - Richer palette */
-    --chart-1: 145 63% 49%;
+    /* Chart Colors */
+    --chart-1: 211 100% 46%;
     --chart-2: 38 92% 50%;
     --chart-3: 0 84% 60%;
-    --chart-4: 221 83% 53%;
+    --chart-4: 214 89% 52%;
     --chart-5: 262 83% 58%;
     
-    /* Chart color references for Recharts */
-    --color-chart-1: hsl(145 63% 49%);
-    --color-chart-2: hsl(38 92% 50%);
-    --color-chart-3: hsl(0 84% 60%);
-    --color-chart-4: hsl(221 83% 53%);
-    --color-chart-5: hsl(262 83% 58%);
-    
-    /* Sidebar - Soft elevated surface with glass */
-    --sidebar-background: 210 25% 97%;
-    --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 145 63% 49%;
+    /* Sidebar — Slightly elevated surface */
+    --sidebar: var(--surface);
+    --sidebar-background: var(--sidebar);
+    --sidebar-foreground: 222 22% 12%;
+    --sidebar-primary: 211 100% 46%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 30% 95%;
-    --sidebar-accent-foreground: 222 47% 11%;
-    --sidebar-border: 220 15% 90%;
-    --sidebar-ring: 145 63% 49%;
+    --sidebar-accent: 211 22% 92%;
+    --sidebar-accent-foreground: 211 72% 30%;
+    --sidebar-border: 220 13% 88%;
+    --sidebar-ring: 211 100% 46%;
     
     /* Rescue-specific Status Colors */
     --status-emergency: 0 84% 60%;
     --status-pending: 38 92% 50%;
-    --status-assigned: 221 83% 53%;
-    --status-enroute: 145 63% 49%;
+    --status-assigned: 214 89% 52%;
+    --status-enroute: 211 100% 46%;
     --status-arrived: 199 89% 48%;
-    --status-rescued: 145 63% 49%;
-    --status-completed: 145 63% 49%;
-    --status-cancelled: 215 16% 47%;
+    --status-rescued: 145 63% 42%;
+    --status-completed: 145 63% 42%;
+    --status-cancelled: 220 2% 42%;
     --status-rejected: 0 84% 60%;
-    --status-available: 145 63% 49%;
-    --status-offline: 215 16% 47%;
+    --status-available: 145 63% 42%;
+    --status-offline: 220 2% 42%;
     
     --radius: 0.5rem;
-    
-    /* Expose theme colors for JavaScript/Recharts access */
-    --color-background: hsl(210 20% 98%);
-    --color-foreground: hsl(222 47% 11%);
-    --color-card: hsl(0 0% 100%);
-    --color-card-foreground: hsl(222 47% 11%);
-    --color-popover: hsl(0 0% 100%);
-    --color-popover-foreground: hsl(222 47% 11%);
-    --color-primary: hsl(145 63% 49%);
-    --color-primary-foreground: hsl(0 0% 100%);
-    --color-secondary: hsl(210 30% 97%);
-    --color-secondary-foreground: hsl(222 47% 11%);
-    --color-muted: hsl(210 30% 96%);
-    --color-muted-foreground: hsl(215 18% 45%);
-    --color-accent: hsl(180 30% 96%);
-    --color-destructive: hsl(0 84% 60%);
-    --color-border: hsl(214 20% 88%);
-    --color-input: hsl(214 20% 88%);
-    --color-ring: hsl(145 63% 49%);
-    --color-success: hsl(145 63% 49%);
-    --color-warning: hsl(38 92% 50%);
-    --color-info: hsl(221 83% 53%);
   }
 
   /* ============================================================================
-     DARK THEME (UNCHANGED - Preserving existing dark mode exactly)
-     Professional dark mode for wildlife rescue operations
-     Elevated surfaces with proper contrast and visibility
+     DARK THEME (Facebook-style)
+     Neutral dark grays — NO navy or blue tints
+     Colors: #18191a background, #242526 cards, #3a3b3c elevated
      ============================================================================ */
 
   .dark {
-    /* Base - Professional dark neutral */
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
+    /* Base — Facebook dark canvas */
+    --background: 210 3% 10%;          /* #18191a */
+    --foreground: 220 12% 91%;         /* #e4e6eb */
+
+    /* Three distinct dark elevations prevent a flat black interface. */
+    --surface: 210 3% 14%;             /* #242526 */
+    --surface-foreground: 220 12% 91%;
+    --surface-elevated: 210 3% 18%;    /* popovers, inputs, dialogs */
+    --surface-elevated-foreground: 220 12% 91%;
     
-    /* Cards & Surfaces - Elevated dark surfaces */
-    --card: 217 33% 17%;
-    --card-foreground: 210 40% 98%;
+    /* Cards & Surfaces — Facebook elevated surface */
+    --card: var(--surface);
+    --card-foreground: var(--surface-foreground);
     
-    --popover: 224 71% 4%;
-    --popover-foreground: 210 40% 98%;
+    --popover: var(--surface-elevated);
+    --popover-foreground: var(--surface-elevated-foreground);
     
-    /* Brand - Professional Rescue Green (adjusted for dark) */
-    --primary: 145 63% 49%;
-    --primary-foreground: 222 47% 11%;
+    /* Brand — bright enough to retain contrast on layered dark surfaces */
+    --primary: 211 100% 62%;
+    --primary-foreground: 0 0% 100%;
     
-    /* Secondary */
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
+    /* Secondary — Facebook secondary dark surface */
+    --secondary: 210 3% 19%;          /* #2f3031 */
+    --secondary-foreground: 220 12% 91%;
     
     /* Muted */
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 210 3% 19%;             /* #2f3031 */
+    --muted-foreground: 220 9% 70%;   /* #b0b3b8 */
     
-    /* Accent */
-    --accent: 217 33% 17%;
-    --accent-foreground: 210 40% 98%;
+    /* Accent — Facebook hover surface */
+    --accent: 211 16% 24%;
+    --accent-foreground: 211 100% 78%;
     
-    /* Destructive - Emergency (slightly adjusted for dark) */
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
+    /* Destructive */
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 0 0% 100%;
     
     /* Success */
-    --success: 145 63% 42%;
-    --success-foreground: 222 47% 11%;
+    --success: 145 63% 45%;
+    --success-foreground: 0 0% 100%;
     
     /* Warning */
-    --warning: 38 92% 50%;
-    --warning-foreground: 222 47% 11%;
+    --warning: 38 92% 52%;
+    --warning-foreground: 28 30% 12%;
     
     /* Info */
-    --info: 221 83% 53%;
-    --info-foreground: 210 40% 98%;
+    --info: 214 80% 58%;
+    --info-foreground: 0 0% 100%;
     
-    /* Border & Input */
-    --border: 217 33% 22%;
-    --input: 217 33% 22%;
-    --ring: 145 63% 49%;
+    /* Border & Input — Facebook dark borders */
+    --border: 210 3% 25%;             /* #3e4042 */
+    --input: 210 3% 25%;
+    --ring: 211 100% 62%;
     
-    /* Chart Colors (adjusted for dark background) */
-    --chart-1: 145 63% 49%;
-    --chart-2: 38 92% 50%;
-    --chart-3: 0 84% 60%;
-    --chart-4: 221 83% 53%;
-    --chart-5: 262 83% 58%;
+    /* Chart Colors (slightly brightened for contrast) */
+    --chart-1: 211 100% 62%;
+    --chart-2: 38 92% 55%;
+    --chart-3: 0 80% 62%;
+    --chart-4: 214 85% 60%;
+    --chart-5: 262 80% 62%;
     
-    /* Chart color references for Recharts */
-    --color-chart-1: hsl(145 63% 49%);
-    --color-chart-2: hsl(38 92% 50%);
-    --color-chart-3: hsl(0 84% 60%);
-    --color-chart-4: hsl(221 83% 53%);
-    --color-chart-5: hsl(262 83% 58%);
+    /* Sidebar — Same surface as card (Facebook-style) */
+    --sidebar: var(--surface);
+    --sidebar-background: var(--sidebar);
+    --sidebar-foreground: 220 12% 91%;
+    --sidebar-primary: 211 100% 62%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 211 16% 24%;
+    --sidebar-accent-foreground: 211 100% 78%;
+    --sidebar-border: 210 3% 25%;     /* #3e4042 — border */
+    --sidebar-ring: 211 100% 62%;
     
-    /* Sidebar - Dark elevated surface */
-    --sidebar-background: 222 47% 11%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 145 63% 49%;
-    --sidebar-primary-foreground: 222 47% 11%;
-    --sidebar-accent: 217 33% 17%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 33% 22%;
-    --sidebar-ring: 145 63% 49%;
-    
-    /* Rescue-specific Status Colors (dark mode adjusted) */
-    --status-emergency: 0 84% 60%;
-    --status-pending: 38 92% 50%;
-    --status-assigned: 221 83% 53%;
+    /* Rescue-specific Status Colors (dark mode) */
+    --status-emergency: 0 80% 62%;
+    --status-pending: 38 92% 55%;
+    --status-assigned: 214 85% 60%;
     --status-enroute: 145 63% 49%;
-    --status-arrived: 199 89% 48%;
+    --status-arrived: 199 89% 52%;
     --status-rescued: 145 63% 49%;
     --status-completed: 145 63% 49%;
-    --status-cancelled: 215 20% 65%;
-    --status-rejected: 0 84% 60%;
+    --status-cancelled: 220 9% 65%;
+    --status-rejected: 0 80% 62%;
     --status-available: 145 63% 49%;
-    --status-offline: 215 20% 65%;
-    
-    /* Expose theme colors for JavaScript/Recharts access */
-    --color-background: hsl(222 47% 11%);
-    --color-foreground: hsl(210 40% 98%);
-    --color-card: hsl(217 33% 17%);
-    --color-card-foreground: hsl(210 40% 98%);
-    --color-popover: hsl(224 71% 4%);
-    --color-popover-foreground: hsl(210 40% 98%);
-    --color-primary: hsl(145 63% 49%);
-    --color-primary-foreground: hsl(222 47% 11%);
-    --color-secondary: hsl(217 33% 17%);
-    --color-secondary-foreground: hsl(210 40% 98%);
-    --color-muted: hsl(217 33% 17%);
-    --color-muted-foreground: hsl(215 20% 65%);
-    --color-accent: hsl(217 33% 17%);
-    --color-destructive: hsl(0 63% 31%);
-    --color-border: hsl(217 33% 22%);
-    --color-input: hsl(217 33% 22%);
-    --color-ring: hsl(145 63% 49%);
-    --color-success: hsl(145 63% 42%);
-    --color-warning: hsl(38 92% 50%);
-    --color-info: hsl(221 83% 53%);
+    --status-offline: 220 9% 65%;
   }
 }
+
+/* ============================================================================
+   BASE ELEMENT STYLES
+   Single source of truth — --color-* computed from base tokens
+   ============================================================================ */
 
 @layer base {
   * {
@@ -253,46 +266,43 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
+    color-scheme: light;
     font-family: Inter, sans-serif;
     scroll-behavior: smooth;
   }
-  
-  /* Chart color CSS variables for JavaScript access */
-  :root {
-    --color-background: hsl(var(--background));
-    --color-foreground: hsl(var(--foreground));
-    --color-card: hsl(var(--card));
-    --color-primary: hsl(var(--primary));
-    --color-secondary: hsl(var(--secondary));
-    --color-muted: hsl(var(--muted));
-    --color-muted-foreground: hsl(var(--muted-foreground));
-    --color-border: hsl(var(--border));
-    --color-popover: hsl(var(--popover));
-  }
-  
+
+  /* Computed color references for JavaScript / Recharts */
+  :root,
   .dark {
     --color-background: hsl(var(--background));
     --color-foreground: hsl(var(--foreground));
     --color-card: hsl(var(--card));
+    --color-card-foreground: hsl(var(--card-foreground));
+    --color-popover: hsl(var(--popover));
+    --color-popover-foreground: hsl(var(--popover-foreground));
     --color-primary: hsl(var(--primary));
+    --color-primary-foreground: hsl(var(--primary-foreground));
     --color-secondary: hsl(var(--secondary));
+    --color-secondary-foreground: hsl(var(--secondary-foreground));
     --color-muted: hsl(var(--muted));
     --color-muted-foreground: hsl(var(--muted-foreground));
+    --color-accent: hsl(var(--accent));
     --color-border: hsl(var(--border));
-    --color-popover: hsl(var(--popover));
+    --color-input: hsl(var(--input));
+    --color-ring: hsl(var(--ring));
+    --color-success: hsl(var(--success));
+    --color-warning: hsl(var(--warning));
+    --color-info: hsl(var(--info));
+    --color-destructive: hsl(var(--destructive));
+    --color-chart-1: hsl(var(--chart-1));
+    --color-chart-2: hsl(var(--chart-2));
+    --color-chart-3: hsl(var(--chart-3));
+    --color-chart-4: hsl(var(--chart-4));
+    --color-chart-5: hsl(var(--chart-5));
   }
-  
-  /* ============================================================================
-     PREMIUM LIGHT BACKGROUND (Light mode only)
-     Subtle ambient glow effect with emerald and blue tints
-     ============================================================================ */
-  body:not(.dark) {
-    position: relative;
-    background: 
-      radial-gradient(ellipse 80% 50% at 50% -20%, hsl(145 50% 90% / 0.15), transparent),
-      radial-gradient(ellipse 60% 50% at 100% 50%, hsl(200 60% 90% / 0.12), transparent),
-      radial-gradient(ellipse 60% 50% at 0% 100%, hsl(180 50% 92% / 0.1), transparent),
-      hsl(var(--background));
+
+  .dark body {
+    color-scheme: dark;
   }
 }
 
@@ -323,27 +333,14 @@
    ============================================================================ */
 
 .glass {
-  backdrop-filter: blur(24px);
-  background-color: hsl(var(--background) / 0.7);
-  border: 1px solid hsl(var(--border) / 0.5);
+  background-color: hsl(var(--surface) / 0.94);
+  border: 1px solid hsl(var(--border));
 }
 
-/* Premium glass for light mode cards */
-:not(.dark) .glass-card {
-  backdrop-filter: blur(12px) saturate(180%);
-  background-color: hsl(0 0% 100% / 0.7);
-  border: 1px solid hsl(var(--border) / 0.5);
-  box-shadow: 
-    0 1px 2px hsl(0 0% 0% / 0.02),
-    0 4px 8px hsl(0 0% 0% / 0.03),
-    0 8px 16px hsl(0 0% 0% / 0.04);
-}
-
-/* Dark mode glass unchanged */
-.dark .glass-card {
-  backdrop-filter: blur(16px);
-  background-color: hsl(var(--card) / 0.85);
-  border: 1px solid hsl(var(--border) / 0.6);
+.glass-card {
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 1px 2px hsl(220 20% 10% / 0.06);
 }
 
 .glass-emerald {
@@ -380,75 +377,102 @@
   }
 }
 
-/* ============================================================================
-   PREMIUM SHADOWS (Light mode only)
-   ============================================================================ */
-
-/* Soft elevation for stat cards */
-:not(.dark) .shadow-soft {
-  box-shadow: 
-    0 1px 2px hsl(0 0% 0% / 0.03),
-    0 2px 4px hsl(0 0% 0% / 0.03),
-    0 4px 8px hsl(0 0% 0% / 0.04);
-}
-
-/* Medium elevation for important cards */
-:not(.dark) .shadow-float {
-  box-shadow: 
-    0 2px 4px hsl(0 0% 0% / 0.03),
-    0 4px 8px hsl(0 0% 0% / 0.04),
-    0 8px 16px hsl(0 0% 0% / 0.05);
-}
-
-/* Strong elevation for modals/dialogs */
-:not(.dark) .shadow-elevated {
-  box-shadow: 
-    0 4px 8px hsl(0 0% 0% / 0.04),
-    0 8px 16px hsl(0 0% 0% / 0.06),
-    0 16px 32px hsl(0 0% 0% / 0.08);
-}
+/* Content surfaces stay calm: borders provide separation; shadows are reserved
+   for transient elevation such as dialogs and menus. */
+.shadow-soft { box-shadow: 0 1px 2px hsl(220 20% 10% / 0.06); }
+.shadow-float { box-shadow: 0 4px 14px hsl(220 20% 10% / 0.10); }
+.shadow-elevated { box-shadow: 0 12px 32px hsl(220 20% 10% / 0.18); }
 
 /* ============================================================================
    COLORFUL ICON CONTAINERS (Light mode)
    ============================================================================ */
 
 /* Icon backgrounds with subtle color tints */
-:not(.dark) .icon-emerald {
+html:not(.dark) .icon-emerald {
   background: linear-gradient(135deg, hsl(145 60% 95%), hsl(145 50% 92%));
   color: hsl(145 63% 45%);
 }
 
-:not(.dark) .icon-blue {
+html:not(.dark) .icon-blue {
   background: linear-gradient(135deg, hsl(221 70% 95%), hsl(221 60% 92%));
   color: hsl(221 83% 48%);
 }
 
-:not(.dark) .icon-violet {
+html:not(.dark) .icon-violet {
   background: linear-gradient(135deg, hsl(262 70% 95%), hsl(262 60% 92%));
   color: hsl(262 83% 53%);
 }
 
-:not(.dark) .icon-amber {
+html:not(.dark) .icon-amber {
   background: linear-gradient(135deg, hsl(38 80% 95%), hsl(38 70% 90%));
   color: hsl(38 92% 45%);
 }
 
-:not(.dark) .icon-rose {
+html:not(.dark) .icon-rose {
   background: linear-gradient(135deg, hsl(0 70% 95%), hsl(0 60% 92%));
   color: hsl(0 84% 55%);
 }
 
-:not(.dark) .icon-teal {
+html:not(.dark) .icon-teal {
   background: linear-gradient(135deg, hsl(180 60% 95%), hsl(180 50% 92%));
   color: hsl(180 70% 40%);
 }
 
 /* ============================================================================
-   LEAFLET MAP DARK MODE FILTER
+   LEAFLET MAP DARK MODE STYLING
+   Uses CartoDB Dark Matter tiles via component — no CSS filter needed
    ============================================================================ */
 
-.dark .leaflet-container {
-  filter: brightness(0.9) invert(1) contrast(3) hue-rotate(200deg) saturate(0.4);
+/* Dark mode popups - override Leaflet's white background */
+.dark .leaflet-popup-content-wrapper {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--card-foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+}
+
+.dark .leaflet-popup-tip {
+  background-color: hsl(var(--card)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
+
+/* Fix text colors in dark mode popups */
+.dark .leaflet-popup-content strong {
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .leaflet-popup-content p {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+/* Close button in dark mode */
+.dark .leaflet-popup-close-button {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.dark .leaflet-popup-close-button:hover {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Dark mode zoom controls */
+.dark .leaflet-control-zoom a {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.dark .leaflet-control-zoom a:hover {
+  background-color: hsl(var(--accent)) !important;
+}
+
+/* Dark mode attribution */
+.dark .leaflet-control-attribution {
+  background-color: hsl(var(--card) / 0.8) !important;
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.dark .leaflet-control-attribution a {
+  color: hsl(var(--primary)) !important;
 }
 
 /* ============================================================================
@@ -482,7 +506,12 @@
     transition: background-color 0.2s ease, color 0.2s ease;
   }
   
-  * {
+  button,
+  a,
+  input,
+  textarea,
+  select,
+  [role="button"] {
     transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   }
 }
@@ -494,34 +523,26 @@
 
 /* Mobile glass header (light mode) */
 @media (max-width: 768px) {
-  :not(.dark) .mobile-glass-header {
-    backdrop-filter: blur(20px) saturate(180%);
-    background-color: hsl(0 0% 100% / 0.72);
-    border-bottom: 1px solid hsl(var(--border) / 0.4);
-    box-shadow: 0 1px 0 hsl(0 0% 0% / 0.03);
+  html:not(.dark) .mobile-glass-header {
+    background-color: hsl(var(--surface) / 0.96);
+    border-bottom: 1px solid hsl(var(--border));
   }
   
   /* Mobile glass cards (light mode) */
-  :not(.dark) .mobile-glass-card {
-    backdrop-filter: blur(16px) saturate(160%);
-    background-color: hsl(0 0% 100% / 0.65);
-    border: 1px solid hsl(var(--border) / 0.3);
-    box-shadow: 
-      0 1px 2px hsl(0 0% 0% / 0.02),
-      0 2px 6px hsl(0 0% 0% / 0.03),
-      0 4px 12px hsl(0 0% 0% / 0.04);
+  html:not(.dark) .mobile-glass-card {
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    box-shadow: 0 1px 2px hsl(220 20% 10% / 0.06);
   }
   
   /* Mobile bottom nav glass (light mode) */
-  :not(.dark) .mobile-glass-nav {
-    backdrop-filter: blur(24px) saturate(180%);
-    background-color: hsl(0 0% 100% / 0.75);
-    border-top: 1px solid hsl(var(--border) / 0.35);
-    box-shadow: 0 -1px 0 hsl(0 0% 0% / 0.02), 0 -2px 8px hsl(0 0% 0% / 0.03);
+  html:not(.dark) .mobile-glass-nav {
+    background-color: hsl(var(--surface) / 0.96);
+    border-top: 1px solid hsl(var(--border));
   }
   
   /* Mobile touch states */
-  :not(.dark) .mobile-touch-active:active {
+  html:not(.dark) .mobile-touch-active:active {
     transform: scale(0.98);
     opacity: 0.92;
     transition: transform 0.1s ease, opacity 0.1s ease;
@@ -529,10 +550,13 @@
   
   /* Preserve dark mode mobile styling */
   .dark .mobile-glass-header,
-  .dark .mobile-glass-card,
   .dark .mobile-glass-nav {
-    backdrop-filter: blur(20px);
-    background-color: hsl(var(--card) / 0.85);
-    border-color: hsl(var(--border) / 0.5);
+    background-color: hsl(var(--surface));
+    border-color: hsl(var(--border));
+  }
+
+  .dark .mobile-glass-card {
+    background-color: hsl(var(--card));
+    border-color: hsl(var(--border));
   }
 }

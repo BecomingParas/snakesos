@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Diagnostic</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            padding: 2rem;
+            background: #18191A;
+            color: #E4E6EB;
+        }
+        .test-box {
+            margin: 1rem 0;
+            padding: 1rem;
+            border: 1px solid #3E4042;
+        }
+        .card {
+            background: #242526;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+        code {
+            background: #2F3031;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', monospace;
+        }
+        h1 { color: #E4E6EB; }
+        h2 { color: #B0B3B8; }
+    </style>
+</head>
+<body>
+    <h1>🔍 SnakeSOS Dark Theme Diagnostic</h1>
+    
+    <div class="card">
+        <h2>Expected Facebook Dark Theme Colors:</h2>
+        <ul>
+            <li>Background: <code>#18191A</code> (current page bg)</li>
+            <li>Card: <code>#242526</code> (this card bg)</li>
+            <li>Text: <code>#E4E6EB</code> (this text)</li>
+            <li>Border: <code>#3E4042</code></li>
+            <li>Muted Text: <code>#B0B3B8</code> (headers)</li>
+        </ul>
+    </div>
+
+    <div class="test-box">
+        <p>✅ If you can read this text clearly with dark backgrounds, the Facebook theme is working!</p>
+        <p style="color: #B0B3B8;">This is muted text (#B0B3B8)</p>
+    </div>
+
+    <h2>Browser Instructions:</h2>
+    <ol>
+        <li><strong>Hard Refresh:</strong> Press <code>Ctrl+Shift+R</code> (Windows) or <code>Cmd+Shift+R</code> (Mac)</li>
+        <li><strong>Clear Cache:</strong> Press <code>Ctrl+Shift+Delete</code>, select "Cached images and files", click Clear</li>
+        <li><strong>Check Dev Tools:</strong> Press <code>F12</code>, go to Elements tab, check if <code>&lt;html class="dark"&gt;</code> exists</li>
+        <li><strong>Check CSS Variables:</strong> In Console tab, run:
+            <pre style="background: #2F3031; padding: 1rem; border-radius: 0.5rem; margin-top: 0.5rem;">
+getComputedStyle(document.documentElement).getPropertyValue('--background')
+// Should return: 210 11% 9%
+
+getComputedStyle(document.documentElement).getPropertyValue('--card')
+// Should return: 210 10% 14%
+
+getComputedStyle(document.documentElement).getPropertyValue('--foreground')
+// Should return: 216 12% 92%
+            </pre>
+        </li>
+    </ol>
+
+    <div class="card">
+        <h2>If still seeing gray text/backgrounds:</h2>
+        <ol>
+            <li>Stop the dev server (<code>Ctrl+C</code> in terminal)</li>
+            <li>Delete <code>.next</code> folder: <code>rm -rf apps/frontend/.next</code></li>
+            <li>Restart: <code>npm run dev:frontend</code></li>
+            <li>Hard refresh browser again</li>
+        </ol>
+    </div>
+
+    <p style="margin-top: 2rem; color: #B0B3B8; font-size: 0.875rem;">
+        If this diagnostic page shows correctly but your dashboard doesn't, the CSS is compiled correctly but not loading in the app.
+    </p>
+</body>
+</html>

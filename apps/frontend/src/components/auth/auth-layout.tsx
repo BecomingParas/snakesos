@@ -18,7 +18,7 @@ export function AuthLayout({
   subtitle,
 }: AuthLayoutProps) {
   return (
-    <div className="min-h-screen w-full bg-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen w-full bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo and Branding */}
         <div className="mb-8 text-center">
@@ -32,7 +32,7 @@ export function AuthLayout({
               <h1 className="font-display text-2xl font-bold uppercase tracking-wider text-white">
                 Snake<span className="text-green-400">SOS</span>
               </h1>
-              <p className="text-xs text-slate-400">Wildlife Rescue Management</p>
+              <p className="text-xs text-muted-foreground">Wildlife Rescue Management</p>
             </div>
           </Link>
         </div>
@@ -40,9 +40,9 @@ export function AuthLayout({
         {/* Auth Card */}
         <div className="rounded-2xl bg-slate-50 shadow-2xl p-8">
           <div className="mb-6 text-center">
-            <h2 className="text-2xl font-bold text-slate-900">{title}</h2>
+            <h2 className="text-2xl font-bold text-foreground">{title}</h2>
             {subtitle && (
-              <p className="text-sm text-slate-600 mt-1">{subtitle}</p>
+              <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
             )}
           </div>
 

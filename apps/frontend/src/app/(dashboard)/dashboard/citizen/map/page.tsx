@@ -22,10 +22,10 @@ const RescueMap = dynamic(
   { 
     ssr: false,
     loading: () => (
-      <div className="h-[calc(100vh-200px)] flex items-center justify-center bg-slate-100 rounded-lg">
+      <div className="h-[calc(100vh-200px)] flex items-center justify-center bg-muted rounded-lg">
         <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading map...</p>
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading map...</p>
         </div>
       </div>
     ),
@@ -114,8 +114,8 @@ export default function CitizenMapPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Track My Rescue</h1>
-          <p className="text-sm text-slate-600 mt-1">
+          <h1 className="text-2xl font-bold text-foreground">Track My Rescue</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Monitor rescue status and rescuer location in real-time
           </p>
         </div>
@@ -128,42 +128,42 @@ export default function CitizenMapPage() {
 
       {/* Active Rescue Alert */}
       {activeRescue && (
-        <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+        <div className="bg-info/10 dark:bg-info/15 border-2 border-info/30 rounded-lg p-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <Navigation2 className="h-5 w-5 text-blue-600" />
-                <h3 className="text-sm font-bold text-blue-900">
+                <Navigation2 className="h-5 w-5 text-info" />
+                <h3 className="text-sm font-bold text-foreground">
                   {activeRescue.status === 'IN_PROGRESS' ? 'Rescuer En Route!' : 'Rescue Assigned'}
                 </h3>
               </div>
               
               <div className="space-y-1 text-sm">
-                <p className="text-blue-800">
+                <p className="text-foreground/80">
                   <strong>Location:</strong> {activeRescue.address}
                 </p>
-                <p className="text-blue-700">
+                <p className="text-muted-foreground">
                   <strong>Status:</strong>{' '}
                   <span className={`px-2 py-0.5 rounded text-xs ${
                     activeRescue.status === 'IN_PROGRESS'
-                      ? 'bg-purple-100 text-purple-800'
-                      : 'bg-blue-100 text-blue-800'
+                      ? 'bg-purple-500/15 text-purple-700 dark:text-purple-400'
+                      : 'bg-info/15 text-info'
                   }`}>
                     {activeRescue.status === 'IN_PROGRESS' ? 'In Progress' : 'Assigned'}
                   </span>
                 </p>
                 
                 {rescuerDistance !== null && (
-                  <div className="flex items-center gap-4 mt-3 pt-3 border-t border-blue-200">
+                  <div className="flex items-center gap-4 mt-3 pt-3 border-t border-info/20">
                     <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-blue-600" />
-                      <span className="font-semibold text-blue-900">
+                      <MapPin className="h-4 w-4 text-info" />
+                      <span className="font-semibold text-foreground">
                         {formatDistance(rescuerDistance)}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-blue-600" />
-                      <span className="text-blue-700">
+                      <Clock className="h-4 w-4 text-info" />
+                      <span className="text-muted-foreground">
                         ETA: {estimateTravelTime(rescuerDistance)}
                       </span>
                     </div>
@@ -176,7 +176,7 @@ export default function CitizenMapPage() {
               <Button
                 onClick={handleCallRescuer}
                 size="sm"
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-info hover:bg-info/90 text-info-foreground"
               >
                 <Phone className="h-4 w-4 mr-2" />
                 Call Rescuer
@@ -188,49 +188,49 @@ export default function CitizenMapPage() {
 
       {/* Statistics Bar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
+        <div className="bg-card rounded-lg shadow-sm border border-border p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-600 uppercase">My Requests</p>
-              <p className="text-2xl font-bold text-slate-900">{rescues.length}</p>
+              <p className="text-xs text-muted-foreground uppercase">My Requests</p>
+              <p className="text-2xl font-bold text-foreground">{rescues.length}</p>
             </div>
-            <MapPin className="h-8 w-8 text-blue-600" />
+            <MapPin className="h-8 w-8 text-info" />
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-yellow-200 p-4">
+        <div className="bg-card rounded-lg shadow-sm border border-warning/30 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-600 uppercase">Pending</p>
-              <p className="text-2xl font-bold text-yellow-600">
+              <p className="text-xs text-muted-foreground uppercase">Pending</p>
+              <p className="text-2xl font-bold text-warning">
                 {rescues.filter((r: any) => r.status === 'PENDING').length}
               </p>
             </div>
-            <Clock className="h-8 w-8 text-yellow-600" />
+            <Clock className="h-8 w-8 text-warning" />
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-blue-200 p-4">
+        <div className="bg-card rounded-lg shadow-sm border border-info/30 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-600 uppercase">Assigned</p>
-              <p className="text-2xl font-bold text-blue-600">
+              <p className="text-xs text-muted-foreground uppercase">Assigned</p>
+              <p className="text-2xl font-bold text-info">
                 {rescues.filter((r: any) => r.status === 'ASSIGNED').length}
               </p>
             </div>
-            <Navigation2 className="h-8 w-8 text-blue-600" />
+            <Navigation2 className="h-8 w-8 text-info" />
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-purple-200 p-4">
+        <div className="bg-card rounded-lg shadow-sm border border-purple-500/30 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-600 uppercase">Active</p>
-              <p className="text-2xl font-bold text-purple-600">
+              <p className="text-xs text-muted-foreground uppercase">Active</p>
+              <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                 {rescues.filter((r: any) => r.status === 'IN_PROGRESS').length}
               </p>
             </div>
-            <MapPin className="h-8 w-8 text-purple-600" />
+            <MapPin className="h-8 w-8 text-purple-600 dark:text-purple-400" />
           </div>
         </div>
       </div>
@@ -238,24 +238,24 @@ export default function CitizenMapPage() {
       {/* Main Content - Split Layout */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Rescue List */}
-        <div className="lg:col-span-1 bg-white rounded-lg shadow-sm border border-slate-200 p-4 overflow-auto">
-          <h3 className="text-sm font-semibold text-slate-900 mb-4">My Rescue Requests</h3>
+        <div className="lg:col-span-1 bg-card rounded-lg shadow-sm border border-border p-4 overflow-auto">
+          <h3 className="text-sm font-semibold text-foreground mb-4">My Rescue Requests</h3>
           
           {loading ? (
             <div className="text-center py-8">
-              <div className="animate-spin h-6 w-6 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-2"></div>
-              <p className="text-sm text-slate-600">Loading...</p>
+              <div className="animate-spin h-6 w-6 border-4 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
+              <p className="text-sm text-muted-foreground">Loading...</p>
             </div>
           ) : error ? (
             <div className="text-center py-8">
-              <AlertCircle className="h-8 w-8 text-red-600 mx-auto mb-2" />
-              <p className="text-sm text-red-600">Failed to load requests</p>
+              <AlertCircle className="h-8 w-8 text-destructive mx-auto mb-2" />
+              <p className="text-sm text-destructive">Failed to load requests</p>
             </div>
           ) : rescues.length === 0 ? (
             <div className="text-center py-8">
-              <MapPin className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-              <p className="text-sm text-slate-600">No active requests</p>
-              <p className="text-xs text-slate-500 mt-1">Create a rescue request to see it here</p>
+              <MapPin className="h-12 w-12 text-muted-foreground/40 mx-auto mb-3" />
+              <p className="text-sm text-muted-foreground">No active requests</p>
+              <p className="text-xs text-muted-foreground/70 mt-1">Create a rescue request to see it here</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -268,19 +268,19 @@ export default function CitizenMapPage() {
                     key={rescue.id}
                     className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
                       isSelected 
-                        ? 'ring-2 ring-blue-500 border-blue-300 bg-blue-50' 
+                        ? 'ring-2 ring-info border-info/40 bg-info/10' 
                         : isActive
-                        ? 'border-blue-300 bg-blue-50'
-                        : 'border-slate-300 bg-white hover:border-slate-400'
+                        ? 'border-info/30 bg-info/5'
+                        : 'border-border bg-card hover:border-border/80 hover:bg-accent/50'
                     }`}
                     onClick={() => handleRescueClick(rescue.id)}
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-slate-900">
+                        <p className="text-sm font-semibold text-foreground">
                           {rescue.address?.substring(0, 40)}...
                         </p>
-                        <p className="text-xs text-slate-600 mt-0.5">
+                        <p className="text-xs text-muted-foreground mt-0.5">
                           {rescue.municipality}
                         </p>
                       </div>
@@ -289,12 +289,12 @@ export default function CitizenMapPage() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className={`text-xs px-2 py-0.5 rounded ${
                         rescue.status === 'PENDING'
-                          ? 'bg-yellow-100 text-yellow-800'
+                          ? 'bg-warning/15 text-warning dark:text-warning'
                           : rescue.status === 'ASSIGNED'
-                          ? 'bg-blue-100 text-blue-800'
+                          ? 'bg-info/15 text-info'
                           : rescue.status === 'IN_PROGRESS'
-                          ? 'bg-purple-100 text-purple-800'
-                          : 'bg-green-100 text-green-800'
+                          ? 'bg-purple-500/15 text-purple-700 dark:text-purple-400'
+                          : 'bg-primary/15 text-primary'
                       }`}>
                         {rescue.status === 'PENDING' ? 'Waiting' : 
                          rescue.status === 'ASSIGNED' ? 'Assigned' :
@@ -303,17 +303,17 @@ export default function CitizenMapPage() {
                       
                       <span className={`text-xs px-2 py-0.5 rounded ${
                         rescue.priority === 'CRITICAL'
-                          ? 'bg-red-100 text-red-800'
+                          ? 'bg-destructive/15 text-destructive'
                           : rescue.priority === 'HIGH'
-                          ? 'bg-orange-100 text-orange-800'
-                          : 'bg-slate-100 text-slate-800'
+                          ? 'bg-warning/15 text-warning'
+                          : 'bg-muted text-muted-foreground'
                       }`}>
                         {rescue.priority}
                       </span>
                     </div>
 
                     {rescue.snakeDescription && (
-                      <p className="text-xs text-slate-600 mt-2">
+                      <p className="text-xs text-muted-foreground mt-2">
                         🐍 {rescue.snakeDescription.substring(0, 50)}...
                       </p>
                     )}
@@ -325,18 +325,18 @@ export default function CitizenMapPage() {
         </div>
 
         {/* Map */}
-        <div className="lg:col-span-2 bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden" style={{ height: '600px' }}>
+        <div className="lg:col-span-2 bg-card rounded-lg shadow-sm border border-border overflow-hidden" style={{ height: '600px' }}>
           <div className="h-full w-full">
             {loading ? (
               <div className="h-full flex items-center justify-center">
                 <div className="text-center">
-                  <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-                  <p className="text-slate-600">Loading map...</p>
+                  <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">Loading map...</p>
                 </div>
               </div>
             ) : error ? (
               <div className="h-full flex items-center justify-center">
-                <div className="text-center text-red-600">
+                <div className="text-center text-destructive">
                   <AlertCircle className="h-12 w-12 mx-auto mb-4" />
                   <p>Failed to load map</p>
                   <Button onClick={() => refetch()} className="mt-4">
@@ -371,43 +371,43 @@ export default function CitizenMapPage() {
       </div>
 
       {/* Map Legend */}
-      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
-        <h3 className="text-sm font-semibold text-slate-900 mb-3">Map Legend</h3>
+      <div className="bg-card rounded-lg shadow-sm border border-border p-4">
+        <h3 className="text-sm font-semibold text-foreground mb-3">Map Legend</h3>
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white border-2 border-white shadow">🐍</div>
-            <span className="text-slate-600">My Request</span>
+            <div className="w-7 h-7 rounded-full bg-info flex items-center justify-center text-white border-2 border-card shadow">🐍</div>
+            <span className="text-muted-foreground">My Request</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-green-500 flex items-center justify-center border-2 border-white shadow">👨‍⚕️</div>
-            <span className="text-slate-600">Rescuer</span>
+            <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center border-2 border-card shadow">👨‍⚕️</div>
+            <span className="text-muted-foreground">Rescuer</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center border-2 border-white shadow text-xs">🏥</div>
-            <span className="text-slate-600">Hospital (Antivenom)</span>
+            <div className="w-6 h-6 rounded-full bg-emerald-600 flex items-center justify-center border-2 border-card shadow text-xs">🏥</div>
+            <span className="text-muted-foreground">Hospital (Antivenom)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-yellow-600 flex items-center justify-center border-2 border-white shadow text-xs">🏥</div>
-            <span className="text-slate-600">Hospital (Unknown)</span>
+            <div className="w-6 h-6 rounded-full bg-warning flex items-center justify-center border-2 border-card shadow text-xs">🏥</div>
+            <span className="text-muted-foreground">Hospital (Unknown)</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded-full bg-blue-600 border-2 border-white shadow"></div>
-            <span className="text-slate-600">Your Location</span>
+            <div className="w-5 h-5 rounded-full bg-info border-2 border-card shadow"></div>
+            <span className="text-muted-foreground">Your Location</span>
           </div>
           <div className="flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-blue-600" />
-            <span className="text-slate-600">Distance</span>
+            <MapPin className="h-5 w-5 text-info" />
+            <span className="text-muted-foreground">Distance</span>
           </div>
         </div>
       </div>
 
       {/* Location Error Alert */}
       {locationError && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3">
-          <AlertCircle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+        <div className="bg-warning/10 border border-warning/30 rounded-lg p-4 flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <p className="text-sm font-semibold text-yellow-900">Location Access Required</p>
-            <p className="text-xs text-yellow-700 mt-1">
+            <p className="text-sm font-semibold text-foreground">Location Access Required</p>
+            <p className="text-xs text-muted-foreground mt-1">
               Enable location to track rescuer distance in real-time.
             </p>
           </div>

@@ -266,7 +266,13 @@ export const RescueRequestScalarFieldEnum = {
   routeDistance: 'routeDistance',
   routeGeometry: 'routeGeometry',
   nearestHospitalId: 'nearestHospitalId',
-  vehicleId: 'vehicleId'
+  vehicleId: 'vehicleId',
+  victimWentToHospital: 'victimWentToHospital',
+  hospitalId: 'hospitalId',
+  antivenomAdministered: 'antivenomAdministered',
+  antivenomType: 'antivenomType',
+  hospitalAdmission: 'hospitalAdmission',
+  hospitalNotes: 'hospitalNotes'
 } as const
 
 export type RescueRequestScalarFieldEnum = (typeof RescueRequestScalarFieldEnum)[keyof typeof RescueRequestScalarFieldEnum]

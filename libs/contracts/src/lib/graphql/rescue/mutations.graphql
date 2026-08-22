@@ -19,9 +19,15 @@ extend type Mutation {
   assignRescue(input: AssignRescueInput!): RescueRequest! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
   
   """
-  Volunteer accepts rescue assignment
+  Volunteer accepts rescue assignment (pre-assigned by admin)
   """
   acceptRescue(input: AcceptRescueInput!): RescueRequest! @auth(requires: [VOLUNTEER, VERIFIED_RESCUER])
+  
+  """
+  Volunteer accepts rescue from queue (self-service)
+  ATOMIC - prevents race condition when multiple rescuers try to accept same rescue
+  """
+  acceptFromQueue(input: AcceptRescueInput!): RescueRequest! @auth(requires: [VOLUNTEER, VERIFIED_RESCUER, DISTRICT_COORDINATOR])
   
   """
   Update rescue progress (volunteer)

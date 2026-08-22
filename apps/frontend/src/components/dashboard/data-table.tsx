@@ -132,7 +132,7 @@ export function DataTable({
 
   if (loading) {
     return (
-      <div className="space-y-3 rounded-xl border border-border/70 bg-card/60 p-4">
+      <div className="space-y-3 rounded-xl border border-border/70 bg-card text-card-foreground dark:bg-card dark:text-card-foreground p-4">
         {Array.from({ length: 6 }).map((_, i) => (
           <Skeleton key={i} className="h-10 w-full" />
         ))}
@@ -141,7 +141,7 @@ export function DataTable({
   }
 
   return (
-    <div className="rounded-xl border border-border/70 bg-card/60 backdrop-blur-sm">
+    <div className="rounded-xl border border-border/70 bg-card text-card-foreground dark:bg-card dark:text-card-foreground backdrop-blur-sm">
       <div className="flex flex-wrap items-center gap-2 border-b border-border/70 p-3">
         <div className="relative min-w-[200px] flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

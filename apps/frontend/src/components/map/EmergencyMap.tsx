@@ -392,7 +392,10 @@ export function EmergencyMap({
 
         {/* ========== HOSPITAL MARKERS ========== */}
         {showHospitals && hospitalsWithDistance.map((hospital) => {
-          if (!isValidCoordinate(hospital.latitude, hospital.longitude)) return null;
+          if (!isValidCoordinate(hospital.latitude, hospital.longitude)) {
+            console.warn(`Invalid coordinates for hospital ${hospital.name}:`, hospital.latitude, hospital.longitude);
+            return null;
+          }
           
           const markerColor = getHospitalMarkerColor(hospital);
 
@@ -405,20 +408,20 @@ export function EmergencyMap({
                 html: `
                   <div style="
                     background: ${markerColor};
-                    width: 36px;
-                    height: 36px;
+                    width: 44px;
+                    height: 44px;
                     border-radius: 50%;
-                    border: 3px solid white;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                    border: 4px solid white;
+                    box-shadow: 0 2px 12px rgba(0,0,0,0.5);
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 18px;
+                    font-size: 22px;
                     cursor: pointer;
                   ">🏥</div>
                 `,
-                iconSize: [36, 36],
-                iconAnchor: [18, 18],
+                iconSize: [44, 44],
+                iconAnchor: [22, 22],
               })}
               eventHandlers={{
                 click: () => {

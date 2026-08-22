@@ -8,8 +8,10 @@ export * from './application/dto/index.js';
 export * from './application/commands/create-rescue.command.js';
 export * from './application/queries/get-rescue.query.js';
 export * from './application/queries/list-rescues.query.js';
+export * from './application/queries/available-rescues.query.js';
 export * from './application/use-cases/create-rescue.use-case.js';
 export * from './application/use-cases/assign-volunteer.use-case.js';
+export * from './application/use-cases/accept-from-queue.use-case.js';
 
 // Infrastructure Layer
 export * from './infrastructure/validators/rescue.validator.js';

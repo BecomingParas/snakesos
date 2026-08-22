@@ -8,6 +8,7 @@ import { prisma, RescueRepository } from '@snake-rescue/database';
 import { CreateRescueUseCase } from '../../../application/use-cases/create-rescue.use-case.js';
 import { AssignVolunteerUseCase } from '../../../application/use-cases/assign-volunteer.use-case.js';
 import { AcceptRescueUseCase } from '../../../application/use-cases/accept-rescue.use-case.js';
+import { AcceptFromQueueUseCase } from '../../../application/use-cases/accept-from-queue.use-case.js';
 import { UpdateRescueStatusUseCase } from '../../../application/use-cases/update-status.use-case.js';
 import { CompleteRescueUseCase } from '../../../application/use-cases/complete-rescue.use-case.js';
 import { CancelRescueUseCase } from '../../../application/use-cases/cancel-rescue.use-case.js';
@@ -57,7 +58,7 @@ export const rescueMutationResolvers = {
     },
 
     /**
-     * Volunteer accepts rescue assignment
+     * Volunteer accepts rescue assignment (pre-assigned by admin)
      */
     acceptRescue: async (_parent: any, args: { input: any }, context: GraphQLContext) => {
       context.requireAuth();
@@ -74,6 +75,37 @@ export const rescueMutationResolvers = {
 
       const rescueRepository = new RescueRepository(prisma);
       const useCase = new AcceptRescueUseCase(rescueRepository);
+      
+      return await useCase.execute(
+        {
+          rescueId: args.input.rescueId,
+          volunteerId: volunteer.id,
+          estimatedArrivalTime: args.input.estimatedArrivalTime,
+          notes: args.input.notes,
+        },
+        context.user.id
+      );
+    },
+
+    /**
+     * Volunteer accepts rescue from queue (self-service)
+     * ATOMIC - prevents race condition when multiple rescuers try to accept same rescue
+     */
+    acceptFromQueue: async (_parent: any, args: { input: any }, context: GraphQLContext) => {
+      context.requireAuth();
+      context.requireRole(['VOLUNTEER', 'VERIFIED_RESCUER', 'DISTRICT_COORDINATOR']);
+
+      // Get volunteer profile
+      const volunteer = await prisma.volunteer.findUnique({
+        where: { userId: context.user.id },
+      });
+
+      if (!volunteer) {
+        throw new Error('Volunteer profile not found');
+      }
+
+      const rescueRepository = new RescueRepository(prisma);
+      const useCase = new AcceptFromQueueUseCase(rescueRepository);
       
       return await useCase.execute(
         {

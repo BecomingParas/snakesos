@@ -299,6 +299,15 @@ model RescueRequest {
   vehicleId String?
   vehicle   RescueVehicle? @relation("VehicleRescues", fields: [vehicleId], references: [id])
 
+  // Hospital visit after rescue (for analytics)
+  victimWentToHospital  Boolean?
+  hospitalId            String?
+  hospitalVisit         Hospital? @relation("RescueHospitalVisits", fields: [hospitalId], references: [id])
+  antivenomAdministered Boolean?
+  antivenomType         String?
+  hospitalAdmission     Boolean?
+  hospitalNotes         String? @db.Text
+
   // Relations
   timeline      RescueTimeline[]
   notifications Notification[]
@@ -1076,6 +1085,7 @@ model Hospital {
   sources             TreatmentCenterSource[] @relation("TreatmentCenterSources")
   historicalCases     SnakebiteCase[]         @relation("HistoricalCases")
   nearestTo           RescueRequest[]         @relation("NearestHospital")
+  rescueVisits        RescueRequest[]         @relation("RescueHospitalVisits")
 
   @@index([latitude, longitude])
   @@index([snakebiteTreatmentAvailable])

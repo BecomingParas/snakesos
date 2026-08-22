@@ -20,10 +20,14 @@ export const CreateRescueInputSchema = z.object({
   lng: z.number().optional(),
   
   // Snake Information (matches Prisma: snakeDescription, snakeSize, snakeColor, snakeImageUrl)
-  snakeDescription: z.string().min(10, 'Snake description required'),
+  snakeDescription: z
+    .string()
+    .min(10, 'Snake description must be at least 10 characters')
+    .optional(),
   snakeSize: z.enum(['Small (<1ft)', 'Medium (1-3ft)', 'Large (>3ft)']).optional(),
   snakeColor: z.string().optional(),
   snakeImageUrl: z.string().optional(),
+  snakeImages: z.array(z.string()).optional(),
   
   // Rescue Details (matches Prisma: priority, notes, isEmergency)
   priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).optional(),

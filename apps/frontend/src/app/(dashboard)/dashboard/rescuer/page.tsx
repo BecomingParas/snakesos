@@ -435,6 +435,15 @@ export default function RescuerDashboard() {
               <div className="space-y-2">
                 <Button
                   variant="outline"
+                  className="w-full justify-start bg-green-50 hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-900 border-green-200 dark:border-green-800"
+                  onClick={() => router.push('/dashboard/rescuer/queue')}
+                >
+                  <Activity className="mr-2 h-4 w-4 text-green-600 dark:text-green-400" />
+                  View Rescue Queue
+                  {/* TODO: Add badge with queue count */}
+                </Button>
+                <Button
+                  variant="outline"
                   className="w-full justify-start"
                   onClick={() => router.push('/dashboard/rescuer/assignments')}
                 >
