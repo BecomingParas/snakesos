@@ -28,6 +28,7 @@ import {
   useAcceptFromQueueMutation,
 } from '@/lib/graphql/hooks/rescue.hooks'
 import { toast } from 'sonner'
+import { DashboardPagination } from '@/components/dashboard/dashboard-pagination'
 
 /**
  * Rescue Queue Page
@@ -58,10 +59,17 @@ export default function RescueQueuePage() {
   const [municipality, setMunicipality] = useState('')
   const [sortBy, setSortBy] = useState('PRIORITY')
   const [autoRefresh, setAutoRefresh] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(10)
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [municipality, sortBy])
 
   // Fetch available rescues
   const { data, loading, refetch } = useAvailableRescuesQuery({
     variables: {
+      pagination: { limit: pageSize, page: currentPage },
       filter: {
         municipality: municipality || undefined,
       },
@@ -72,9 +80,9 @@ export default function RescueQueuePage() {
   // Accept from queue mutation
   const [acceptFromQueue, { loading: accepting }] = useAcceptFromQueueMutation({
     onCompleted: () => {
-      toast.success('Rescue accepted! Redirecting to active rescue...')
+      toast.success('Rescue claimed. Review and accept the assignment to begin.')
       setTimeout(() => {
-        router.push('/dashboard/rescuer/active')
+        router.push('/dashboard/rescuer/assignments')
       }, 1500)
     },
     onError: (error) => {
@@ -116,7 +124,7 @@ export default function RescueQueuePage() {
           <div>
             <h1 className="text-3xl font-bold">Rescue Queue</h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Available rescues waiting for assignment
+              Open rescue alerts available for a qualified rescuer to claim
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -281,7 +289,7 @@ export default function RescueQueuePage() {
                       <div className="flex items-start gap-2">
                         <MapPin className="h-4 w-4 text-gray-500 mt-0.5" />
                         <span className="text-gray-600 dark:text-gray-400">
-                          {rescue.address}, {rescue.municipality}
+                          {rescue.municipality}
                           {rescue.ward && ` (Ward ${rescue.ward})`}
                         </span>
                       </div>
@@ -324,24 +332,9 @@ export default function RescueQueuePage() {
                       ) : (
                         <>
                           <CheckCircle className="mr-2 h-4 w-4" />
-                          Accept
+                          Claim
                         </>
                       )}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        if (rescue.lat && rescue.lng) {
-                          window.open(
-                            `https://www.google.com/maps/dir/?api=1&destination=${rescue.lat},${rescue.lng}`,
-                            '_blank'
-                          )
-                        }
-                      }}
-                    >
-                      <Navigation className="mr-2 h-3 w-3" />
-                      Navigate
                     </Button>
                   </div>
                 </div>
@@ -349,6 +342,17 @@ export default function RescueQueuePage() {
             ))}
           </div>
         )}
+        <DashboardPagination
+          page={currentPage}
+          pageSize={pageSize}
+          totalCount={data?.availableRescues?.totalCount || 0}
+          pageInfo={data?.availableRescues?.pageInfo}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(nextPageSize) => {
+            setPageSize(nextPageSize)
+            setCurrentPage(1)
+          }}
+        />
       </div>
     </div>
   )

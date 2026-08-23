@@ -17,6 +17,7 @@ import {
   UserCheck,
   Bell,
   Map,
+  Hospital,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -99,6 +100,7 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/command', label: 'Command Center', icon: Activity },
         { href: '/rescues', label: 'All Rescues', icon: List },
         { href: '/map', label: 'Live Map', icon: Map },
+        { href: '/hospitals', label: 'Hospitals', icon: Hospital },
         { href: '/rescuers', label: 'Rescuers', icon: Users },
         { href: '/users', label: 'Citizens', icon: UserCheck },
         { href: '/analytics', label: 'Analytics', icon: BarChart3 },
@@ -115,6 +117,7 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/command', label: 'Command Center', icon: Activity },
         { href: '/rescues', label: 'All Rescues', icon: List },
         { href: '/map', label: 'Live Map', icon: Map },
+        { href: '/hospitals', label: 'Hospitals', icon: Hospital },
         { href: '/rescuers', label: 'Rescuers', icon: Users },
         { href: '/users', label: 'Citizens', icon: UserCheck },
         { href: '/analytics', label: 'Analytics', icon: BarChart3 },

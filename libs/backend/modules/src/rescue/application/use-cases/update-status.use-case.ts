@@ -5,7 +5,10 @@
 
 import { RescueRepository } from '@snake-rescue/database';
 import { BadRequestError } from '@snake-rescue/shared';
-import { RescueStatusMachine, RescueStatus } from '../../domain/rescue-status-machine.js';
+import {
+  RescueStatusMachine,
+  RescueStatus,
+} from '../../domain/rescue-status-machine.js';
 
 export interface UpdateRescueStatusInput {
   rescueId: string;
@@ -31,7 +34,7 @@ export class UpdateRescueStatusUseCase {
     // 2. Validate status transition
     RescueStatusMachine.validateTransition(
       rescue.status as RescueStatus,
-      input.status
+      input.status,
     );
 
     // 3. Prepare update data
@@ -56,7 +59,8 @@ export class UpdateRescueStatusUseCase {
         // Calculate rescue duration
         if (rescue.startedAt) {
           const duration = Math.floor(
-            (new Date().getTime() - new Date(rescue.startedAt).getTime()) / 60000
+            (new Date().getTime() - new Date(rescue.startedAt).getTime()) /
+              60000,
           );
           updateData.rescueDuration = duration;
         }
@@ -64,7 +68,10 @@ export class UpdateRescueStatusUseCase {
     }
 
     // 4. Update rescue
-    const updatedRescue = await this.rescueRepository.update(rescue.id, updateData);
+    const updatedRescue = await this.rescueRepository.update(
+      rescue.id,
+      updateData,
+    );
 
     // 5. Create timeline event
     const timelineEvent = RescueStatusMachine.getTimelineEvent(input.status);
@@ -98,7 +105,10 @@ export class UpdateRescueStatusUseCase {
     return descriptions[status] || 'Status updated';
   }
 
-  private async createNotifications(rescue: any, newStatus: RescueStatus): Promise<void> {
+  private async createNotifications(
+    rescue: any,
+    newStatus: RescueStatus,
+  ): Promise<void> {
     const notifications: Array<{
       userId: string;
       type: string;
@@ -110,7 +120,10 @@ export class UpdateRescueStatusUseCase {
 
     // Notify citizen based on status
     if (rescue.userId) {
-      const citizenNotification = this.getCitizenNotification(newStatus, rescue);
+      const citizenNotification = this.getCitizenNotification(
+        newStatus,
+        rescue,
+      );
       if (citizenNotification) {
         notifications.push({
           userId: rescue.userId,
@@ -122,10 +135,15 @@ export class UpdateRescueStatusUseCase {
 
     // Notify assigned volunteer (if applicable)
     if (rescue.assignedTo) {
-      const volunteerNotification = this.getVolunteerNotification(newStatus, rescue);
+      const volunteerNotification = this.getVolunteerNotification(
+        newStatus,
+        rescue,
+      );
       if (volunteerNotification) {
         // Get volunteer's userId
-        const volunteer = await this.rescueRepository.getVolunteerById(rescue.assignedTo);
+        const volunteer = await this.rescueRepository.getVolunteerById(
+          rescue.assignedTo,
+        );
         if (volunteer?.userId) {
           notifications.push({
             userId: volunteer.userId,
@@ -136,12 +154,46 @@ export class UpdateRescueStatusUseCase {
       }
     }
 
+    const dispatchUsers = await this.rescueRepository.getDispatchUsers();
+    const notificationType = this.getNotificationType(newStatus);
+    for (const admin of dispatchUsers) {
+      if (admin.id !== rescue.userId) {
+        notifications.push({
+          userId: admin.id,
+          rescueId: rescue.id,
+          type: notificationType,
+          title: `Rescue ${newStatus.toLowerCase().replace('_', ' ')}`,
+          message: `Rescue ${rescue.referenceNumber || rescue.id} is now ${newStatus.toLowerCase().replace('_', ' ')}.`,
+          priority: 'HIGH',
+        });
+      }
+    }
+
     if (notifications.length > 0) {
       await this.rescueRepository.createNotifications(notifications);
     }
   }
 
-  private getCitizenNotification(status: RescueStatus, rescue: any): any | null {
+  private getNotificationType(status: RescueStatus): string {
+    switch (status) {
+      case RescueStatus.COMPLETED:
+        return 'RESCUE_COMPLETED';
+      case RescueStatus.CANCELLED:
+        return 'RESCUE_CANCELLED';
+      case RescueStatus.ASSIGNED:
+        return 'RESCUE_ASSIGNED';
+      case RescueStatus.ACCEPTED:
+      case RescueStatus.IN_PROGRESS:
+        return 'RESCUE_ACCEPTED';
+      default:
+        return 'SYSTEM_ALERT';
+    }
+  }
+
+  private getCitizenNotification(
+    status: RescueStatus,
+    rescue: any,
+  ): any | null {
     switch (status) {
       case RescueStatus.ACCEPTED:
         return {
@@ -152,7 +204,7 @@ export class UpdateRescueStatusUseCase {
         };
       case RescueStatus.IN_PROGRESS:
         return {
-          type: 'RESCUE_IN_PROGRESS',
+          type: 'RESCUE_ACCEPTED',
           title: 'Rescue In Progress',
           message: `The rescuer has arrived and the rescue operation is underway.`,
           priority: 'HIGH',
@@ -176,7 +228,10 @@ export class UpdateRescueStatusUseCase {
     }
   }
 
-  private getVolunteerNotification(status: RescueStatus, rescue: any): any | null {
+  private getVolunteerNotification(
+    status: RescueStatus,
+    rescue: any,
+  ): any | null {
     switch (status) {
       case RescueStatus.CANCELLED:
         return {

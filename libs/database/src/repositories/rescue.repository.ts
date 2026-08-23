@@ -3,7 +3,12 @@
  * Database operations for RescueRequest entity
  */
 
-import { PrismaClient, RescueRequest, Prisma, RescueStatus } from '../prisma/generated/client.js';
+import {
+  PrismaClient,
+  RescueRequest,
+  Prisma,
+  RescueStatus,
+} from '../prisma/generated/client.js';
 import { BaseRepository } from './base.repository.js';
 
 export class RescueRepository extends BaseRepository<
@@ -23,11 +28,13 @@ export class RescueRepository extends BaseRepository<
     return this.model.findUnique({
       where: { id },
       include: {
-        reporter: true,
-        volunteer: true,
+        user: true,
+        assignedVolunteer: {
+          include: { user: true },
+        },
         species: true,
         timeline: {
-          orderBy: { timestamp: 'asc' },
+          orderBy: { createdAt: 'asc' },
         },
       },
     });
@@ -41,13 +48,15 @@ export class RescueRepository extends BaseRepository<
     options?: {
       skip?: number;
       take?: number;
-    }
+    },
   ): Promise<RescueRequest[]> {
     return this.model.findMany({
       where: { status },
       include: {
-        reporter: true,
-        volunteer: true,
+        user: true,
+        assignedVolunteer: {
+          include: { user: true },
+        },
       },
       orderBy: { createdAt: 'desc' },
       ...options,
@@ -59,9 +68,12 @@ export class RescueRepository extends BaseRepository<
    */
   async findByVolunteer(volunteerId: string): Promise<RescueRequest[]> {
     return this.model.findMany({
-      where: { volunteerId },
+      where: { assignedTo: volunteerId },
       include: {
-        reporter: true,
+        user: true,
+        assignedVolunteer: {
+          include: { user: true },
+        },
         species: true,
       },
       orderBy: { createdAt: 'desc' },
@@ -75,10 +87,10 @@ export class RescueRepository extends BaseRepository<
     return this.model.findMany({
       where: {
         status: RescueStatus.PENDING,
-        volunteerId: null,
+        assignedTo: null,
       },
       include: {
-        reporter: true,
+        user: true,
       },
       orderBy: { createdAt: 'asc' },
     });
@@ -97,7 +109,7 @@ export class RescueRepository extends BaseRepository<
   }): Promise<RescueRequest[]> {
     const whereClause: any = {
       status: RescueStatus.PENDING,
-      volunteerId: null,
+      assignedTo: null,
       stillPresent: true, // Only show if snake still present
     };
 
@@ -112,12 +124,12 @@ export class RescueRepository extends BaseRepository<
     return this.model.findMany({
       where: whereClause,
       include: {
-        reporter: true,
+        user: true,
         species: true,
       },
       orderBy: [
-        { priority: 'desc' },  // High priority first
-        { createdAt: 'asc' },  // Oldest first
+        { priority: 'desc' }, // High priority first
+        { createdAt: 'asc' }, // Oldest first
       ],
       take: options?.limit || 50,
     });
@@ -125,25 +137,30 @@ export class RescueRepository extends BaseRepository<
 
   /**
    * Assign volunteer to rescue (ATOMIC - prevents double assignment)
-   * 
+   *
    * Uses updateMany with conditional WHERE to ensure:
    * 1. Rescue is still PENDING
    * 2. No volunteer is already assigned
-   * 
+   *
    * This prevents race conditions when multiple rescuers try to accept simultaneously.
    */
-  async assignVolunteer(rescueId: string, volunteerId: string): Promise<RescueRequest> {
+  async assignVolunteer(
+    rescueId: string,
+    volunteerId: string,
+    assignedBy?: string,
+  ): Promise<RescueRequest> {
     // Atomic update with conditions
     const result = await this.model.updateMany({
       where: {
         id: rescueId,
-        status: RescueStatus.PENDING,  // Must still be PENDING
-        volunteerId: null,              // Must not be assigned yet
+        status: RescueStatus.PENDING, // Must still be PENDING
+        assignedTo: null, // Must not be assigned yet
       },
       data: {
-        volunteerId,
+        assignedTo: volunteerId,
         status: RescueStatus.ASSIGNED,
         assignedAt: new Date(),
+        assignedBy,
       },
     });
 
@@ -158,25 +175,137 @@ export class RescueRepository extends BaseRepository<
         throw new Error('RESCUE_NOT_FOUND: Rescue request not found');
       }
 
-      if (existingRescue.volunteerId) {
-        throw new Error('RESCUE_ALREADY_ASSIGNED: This rescue has already been assigned to another rescuer');
+      if (existingRescue.assignedTo) {
+        throw new Error(
+          'RESCUE_ALREADY_ASSIGNED: This rescue has already been assigned to another rescuer',
+        );
       }
 
       // Status is not PENDING
-      throw new Error(`INVALID_STATUS: Cannot assign rescue with status ${existingRescue.status}. Only PENDING rescues can be assigned.`);
+      throw new Error(
+        `INVALID_STATUS: Cannot assign rescue with status ${existingRescue.status}. Only PENDING rescues can be assigned.`,
+      );
     }
 
     // Fetch updated rescue with relations
     const updatedRescue = await this.model.findUnique({
       where: { id: rescueId },
       include: {
-        volunteer: true,
-        reporter: true,
+        user: true,
+        assignedVolunteer: {
+          include: { user: true },
+        },
       },
     });
 
     if (!updatedRescue) {
-      throw new Error('RESCUE_NOT_FOUND: Rescue was assigned but could not be retrieved');
+      throw new Error(
+        'RESCUE_NOT_FOUND: Rescue was assigned but could not be retrieved',
+      );
+    }
+
+    return updatedRescue;
+  }
+
+  /**
+   * Replace an unaccepted assignment.
+   *
+   * Dispatch may change a responder only while the rescue is still ASSIGNED.
+   * Once a responder has accepted or started the rescue, a separate hand-off
+   * workflow is required so an active incident is never silently reassigned.
+   */
+  async reassignVolunteer(
+    rescueId: string,
+    volunteerId: string,
+    assignedBy: string,
+  ): Promise<RescueRequest> {
+    const result = await this.model.updateMany({
+      where: {
+        id: rescueId,
+        status: RescueStatus.ASSIGNED,
+        assignedTo: { not: null },
+      },
+      data: {
+        assignedTo: volunteerId,
+        assignedAt: new Date(),
+        assignedBy,
+      },
+    });
+
+    if (result.count === 0) {
+      const rescue = await this.model.findUnique({ where: { id: rescueId } });
+
+      if (!rescue) {
+        throw new Error('RESCUE_NOT_FOUND: Rescue request not found');
+      }
+
+      throw new Error(
+        `INVALID_STATUS: Cannot reassign rescue with status ${rescue.status}. Only unaccepted ASSIGNED rescues can be reassigned.`,
+      );
+    }
+
+    const updatedRescue = await this.model.findUnique({
+      where: { id: rescueId },
+      include: {
+        user: true,
+        assignedVolunteer: {
+          include: { user: true },
+        },
+      },
+    });
+
+    if (!updatedRescue) {
+      throw new Error(
+        'RESCUE_NOT_FOUND: Rescue was reassigned but could not be retrieved',
+      );
+    }
+
+    return updatedRescue;
+  }
+
+  /**
+   * Atomically accept an assignment owned by the current rescuer.
+   * The conditional update makes duplicate clicks and concurrent requests safe.
+   */
+  async acceptAssignedRescue(
+    rescueId: string,
+    volunteerId: string,
+  ): Promise<RescueRequest> {
+    const result = await this.model.updateMany({
+      where: {
+        id: rescueId,
+        assignedTo: volunteerId,
+        status: RescueStatus.ASSIGNED,
+      },
+      data: {
+        status: RescueStatus.ACCEPTED,
+        acceptedAt: new Date(),
+      },
+    });
+
+    if (result.count === 0) {
+      const rescue = await this.model.findUnique({ where: { id: rescueId } });
+
+      if (!rescue) {
+        throw new Error('RESCUE_NOT_FOUND: Rescue request not found');
+      }
+
+      if (rescue.assignedTo !== volunteerId) {
+        throw new Error('RESCUE_NOT_ASSIGNED_TO_VOLUNTEER');
+      }
+
+      throw new Error(
+        `INVALID_STATUS: Cannot accept rescue with status ${rescue.status}`,
+      );
+    }
+
+    const updatedRescue = await this.model.findUnique({
+      where: { id: rescueId },
+    });
+    if (!updatedRescue) {
+      throw new Error(
+        'RESCUE_NOT_FOUND: Rescue was accepted but could not be retrieved',
+      );
     }
 
     return updatedRescue;
@@ -185,7 +314,10 @@ export class RescueRepository extends BaseRepository<
   /**
    * Update rescue status
    */
-  async updateStatus(rescueId: string, status: RescueStatus): Promise<RescueRequest> {
+  async updateStatus(
+    rescueId: string,
+    status: RescueStatus,
+  ): Promise<RescueRequest> {
     return this.model.update({
       where: { id: rescueId },
       data: { status },
@@ -212,13 +344,15 @@ export class RescueRepository extends BaseRepository<
   /**
    * Find recent rescues
    */
-  async findRecent(limit: number = 10): Promise<RescueRequest[]> {
+  async findRecent(limit = 10): Promise<RescueRequest[]> {
     return this.model.findMany({
       take: limit,
       orderBy: { createdAt: 'desc' },
       include: {
-        reporter: true,
-        volunteer: true,
+        user: true,
+        assignedVolunteer: {
+          include: { user: true },
+        },
       },
     });
   }
@@ -228,7 +362,7 @@ export class RescueRepository extends BaseRepository<
    */
   async searchByLocation(
     municipality: string,
-    ward?: string
+    ward?: string,
   ): Promise<RescueRequest[]> {
     return this.model.findMany({
       where: {
@@ -236,8 +370,10 @@ export class RescueRepository extends BaseRepository<
         ...(ward && { ward }),
       },
       include: {
-        reporter: true,
-        volunteer: true,
+        user: true,
+        assignedVolunteer: {
+          include: { user: true },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -279,7 +415,7 @@ export class RescueRepository extends BaseRepository<
       message: string;
       rescueId: string;
       priority?: string;
-    }>
+    }>,
   ) {
     return this.prisma.notification.createMany({
       data: notifications.map((n) => ({
@@ -290,6 +426,19 @@ export class RescueRepository extends BaseRepository<
         rescueId: n.rescueId,
         priority: n.priority || 'NORMAL',
       })),
+    });
+  }
+
+  /**
+   * Get active admin users who should receive dispatch updates.
+   */
+  async getDispatchUsers() {
+    return this.prisma.user.findMany({
+      where: {
+        role: { in: ['ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR'] },
+        status: 'ACTIVE',
+      },
+      select: { id: true },
     });
   }
 

@@ -1,15 +1,24 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { ArrowLeft, MapPin, Clock, AlertCircle, CheckCircle, Eye, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { cn } from '@/lib/utils'
-import { useMyRescueRequestsQuery } from '@/lib/graphql/hooks/rescue.hooks'
-import { toast } from 'sonner'
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  ArrowLeft,
+  MapPin,
+  Clock,
+  AlertCircle,
+  CheckCircle,
+  Eye,
+  Loader2,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
+import { useMyRescueRequestsQuery } from '@/lib/graphql/hooks/rescue.hooks';
+import { toast } from 'sonner';
+import { DashboardPagination } from '@/components/dashboard/dashboard-pagination';
 
 /**
  * Citizen Requests List Page
@@ -55,56 +64,64 @@ const mockRequests = [
     snakeDescription: 'Snake already gone',
     createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
   },
-]
+];
 
 const STATUS_CONFIG = {
   PENDING: { label: 'Pending', color: 'bg-yellow-500', icon: Clock },
   ASSIGNED: { label: 'Assigned', color: 'bg-blue-500', icon: AlertCircle },
   ACCEPTED: { label: 'Accepted', color: 'bg-green-500', icon: CheckCircle },
-  IN_PROGRESS: { label: 'In Progress', color: 'bg-purple-500', icon: AlertCircle },
+  IN_PROGRESS: {
+    label: 'In Progress',
+    color: 'bg-purple-500',
+    icon: AlertCircle,
+  },
   COMPLETED: { label: 'Completed', color: 'bg-green-600', icon: CheckCircle },
   CANCELLED: { label: 'Cancelled', color: 'bg-red-500', icon: AlertCircle },
-}
-
-
+};
 
 export default function CitizenRequestsListPage() {
-  const router = useRouter()
-  const [activeTab, setActiveTab] = useState('active')
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('active');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   // Map tabs to statuses
   const statusMap: Record<string, string[] | undefined> = {
     active: ['PENDING', 'ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'],
     completed: ['COMPLETED'],
     cancelled: ['CANCELLED'],
-  }
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab]);
 
   // Fetch real data from GraphQL
   const { data, loading, error } = useMyRescueRequestsQuery({
     variables: {
-      pagination: { limit: 50, page: 1 },
+      pagination: { limit: pageSize, page: currentPage },
       filter: statusMap[activeTab] ? { statuses: statusMap[activeTab] } : {},
     },
     pollInterval: 10000, // Real-time updates every 10 seconds
     fetchPolicy: 'cache-and-network',
-  })
+  });
 
   // Extract requests
-  const allRequests = data?.myRescueRequests?.edges?.map(e => e.node) || []
-  
+  const allRequests = data?.myRescueRequests?.edges?.map((e) => e.node) || [];
+
   // Use real data if available, otherwise fallback to mock data
-  const requests = allRequests.length > 0 ? allRequests : mockRequests
+  const requests = data?.myRescueRequests ? allRequests : mockRequests;
 
   // Filter by tab
-  const activeRequests = requests.filter(r =>
-    ['PENDING', 'ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'].includes(r.status)
-  )
-  const completedRequests = requests.filter(r => r.status === 'COMPLETED')
-  const cancelledRequests = requests.filter(r => r.status === 'CANCELLED')
+  const activeRequests = requests.filter((r) =>
+    ['PENDING', 'ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'].includes(r.status),
+  );
+  const completedRequests = requests.filter((r) => r.status === 'COMPLETED');
+  const cancelledRequests = requests.filter((r) => r.status === 'CANCELLED');
 
   // Show error toast if query fails
   if (error) {
-    toast.error(`Failed to load requests: ${error.message}`)
+    toast.error(`Failed to load requests: ${error.message}`);
   }
 
   // Loading state
@@ -113,15 +130,18 @@ export default function CitizenRequestsListPage() {
       <div className="flex justify-center items-center min-h-screen">
         <div className="text-center">
           <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400">Loading your requests...</p>
+          <p className="text-gray-600 dark:text-gray-400">
+            Loading your requests...
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
-  const renderRequestCard = (request: typeof mockRequests[0]) => {
-    const statusConfig = STATUS_CONFIG[request.status as keyof typeof STATUS_CONFIG]
-    const StatusIcon = statusConfig.icon
+  const renderRequestCard = (request: (typeof mockRequests)[0]) => {
+    const statusConfig =
+      STATUS_CONFIG[request.status as keyof typeof STATUS_CONFIG];
+    const StatusIcon = statusConfig.icon;
 
     return (
       <Card
@@ -165,13 +185,12 @@ export default function CitizenRequestsListPage() {
           </Button>
         </div>
       </Card>
-    )
-  }
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
       <div className="mx-auto max-w-6xl">
-        
         {/* Header */}
         <div className="mb-6">
           <Button
@@ -182,7 +201,7 @@ export default function CitizenRequestsListPage() {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
-          
+
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -205,8 +224,12 @@ export default function CitizenRequestsListPage() {
             <p className="mt-1 text-3xl font-bold">{activeRequests.length}</p>
           </Card>
           <Card className="p-6">
-            <p className="text-sm text-gray-600 dark:text-gray-400">Completed</p>
-            <p className="mt-1 text-3xl font-bold">{completedRequests.length}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Completed
+            </p>
+            <p className="mt-1 text-3xl font-bold">
+              {completedRequests.length}
+            </p>
           </Card>
           <Card className="p-6">
             <p className="text-sm text-gray-600 dark:text-gray-400">Total</p>
@@ -215,7 +238,11 @@ export default function CitizenRequestsListPage() {
         </div>
 
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList>
             <TabsTrigger value="active">
               Active ({activeRequests.length})
@@ -234,7 +261,9 @@ export default function CitizenRequestsListPage() {
             ) : (
               <Card className="p-12 text-center">
                 <AlertCircle className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-4 text-lg font-semibold">No Active Requests</h3>
+                <h3 className="mt-4 text-lg font-semibold">
+                  No Active Requests
+                </h3>
                 <p className="mt-2 text-gray-600 dark:text-gray-400">
                   You don't have any active rescue requests
                 </p>
@@ -254,7 +283,9 @@ export default function CitizenRequestsListPage() {
             ) : (
               <Card className="p-12 text-center">
                 <CheckCircle className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-4 text-lg font-semibold">No Completed Requests</h3>
+                <h3 className="mt-4 text-lg font-semibold">
+                  No Completed Requests
+                </h3>
                 <p className="mt-2 text-gray-600 dark:text-gray-400">
                   You haven't completed any rescue requests yet
                 </p>
@@ -268,7 +299,9 @@ export default function CitizenRequestsListPage() {
             ) : (
               <Card className="p-12 text-center">
                 <AlertCircle className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-4 text-lg font-semibold">No Cancelled Requests</h3>
+                <h3 className="mt-4 text-lg font-semibold">
+                  No Cancelled Requests
+                </h3>
                 <p className="mt-2 text-gray-600 dark:text-gray-400">
                   You haven't cancelled any requests
                 </p>
@@ -276,7 +309,18 @@ export default function CitizenRequestsListPage() {
             )}
           </TabsContent>
         </Tabs>
+        <DashboardPagination
+          page={currentPage}
+          pageSize={pageSize}
+          totalCount={data?.myRescueRequests?.totalCount || 0}
+          pageInfo={data?.myRescueRequests?.pageInfo}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(nextPageSize) => {
+            setPageSize(nextPageSize);
+            setCurrentPage(1);
+          }}
+        />
       </div>
     </div>
-  )
+  );
 }

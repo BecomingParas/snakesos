@@ -51,7 +51,7 @@ export const rescueMutationResolvers = {
       // 2. Execute use case
       const rescueRepository = new RescueRepository(prisma);
       const useCase = new AssignVolunteerUseCase(rescueRepository);
-      const result = await useCase.execute(input);
+      const result = await useCase.execute(input, context.user.id);
 
       // 3. Return response
       return result;

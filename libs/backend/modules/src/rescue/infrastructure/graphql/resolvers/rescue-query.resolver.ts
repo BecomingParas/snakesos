@@ -5,16 +5,44 @@
 
 import { GraphQLContext } from '@snake-rescue/core';
 import { prisma, RescueRepository } from '@snake-rescue/database';
+import { AuthorizationError } from '@snake-rescue/shared';
 import { GetRescueQuery } from '../../../application/queries/get-rescue.query.js';
 import { ListRescuesQuery } from '../../../application/queries/list-rescues.query.js';
 import { AvailableRescuesQuery } from '../../../application/queries/available-rescues.query.js';
 
+const RESCUE_MANAGEMENT_ROLES = [
+  'ADMIN',
+  'SUPER_ADMIN',
+  'DISTRICT_COORDINATOR',
+];
+
 export const rescueQueryResolvers = {
+  RescueRequest: {
+    assignedBy: async (parent: {
+      assignedBy?: string | { id: string } | null;
+    }) => {
+      if (!parent.assignedBy) {
+        return null;
+      }
+
+      if (typeof parent.assignedBy !== 'string') {
+        return parent.assignedBy;
+      }
+
+      return prisma.user.findUnique({
+        where: { id: parent.assignedBy },
+      });
+    },
+  },
   Query: {
     /**
      * Get a single rescue request by ID
      */
-    rescueRequest: async (_parent: any, args: { id: string }, context: GraphQLContext) => {
+    rescueRequest: async (
+      _parent: any,
+      args: { id: string },
+      context: GraphQLContext,
+    ) => {
       // Authentication required
       context.requireAuth();
 
@@ -22,6 +50,19 @@ export const rescueQueryResolvers = {
       const rescueRepository = new RescueRepository(prisma);
       const query = new GetRescueQuery(rescueRepository);
       const rescue = await query.execute(args.id);
+
+      const canManageRescues = RESCUE_MANAGEMENT_ROLES.includes(
+        context.user.role,
+      );
+      const isReporter = rescue.userId === context.user.id;
+      const isAssignedVolunteer =
+        rescue.assignedVolunteer?.userId === context.user.id;
+
+      if (!canManageRescues && !isReporter && !isAssignedVolunteer) {
+        throw new AuthorizationError(
+          'You do not have permission to view this rescue request',
+        );
+      }
 
       return rescue;
     },
@@ -42,10 +83,11 @@ export const rescueQueryResolvers = {
           limit?: number;
         };
       },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       // Authentication required
       context.requireAuth();
+      context.requireRole(RESCUE_MANAGEMENT_ROLES);
 
       // Execute query
       const rescueRepository = new RescueRepository(prisma);
@@ -61,7 +103,7 @@ export const rescueQueryResolvers = {
     rescueStats: async (_parent: any, _args: any, context: GraphQLContext) => {
       // Admin only
       context.requireAuth();
-      context.requireRole(['ADMIN', 'SUPER_ADMIN']);
+      context.requireRole(RESCUE_MANAGEMENT_ROLES);
 
       const rescueRepository = new RescueRepository(prisma);
       const stats = await rescueRepository.getStatistics();
@@ -78,7 +120,7 @@ export const rescueQueryResolvers = {
         pagination?: { limit?: number; page?: number };
         filter?: any;
       },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       context.requireAuth();
 
@@ -147,10 +189,14 @@ export const rescueQueryResolvers = {
         pagination?: { limit?: number; page?: number };
         filter?: any;
       },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       context.requireAuth();
-      context.requireRole(['VOLUNTEER', 'VERIFIED_RESCUER', 'DISTRICT_COORDINATOR']);
+      context.requireRole([
+        'VOLUNTEER',
+        'VERIFIED_RESCUER',
+        'DISTRICT_COORDINATOR',
+      ]);
 
       // Get volunteer profile
       const volunteer = await prisma.volunteer.findUnique({
@@ -173,10 +219,15 @@ export const rescueQueryResolvers = {
       const limit = args.pagination?.limit || 10;
       const page = args.pagination?.page || 1;
       const skip = (page - 1) * limit;
+      const statuses =
+        args.filter?.statuses ||
+        (args.filter?.status
+          ? [args.filter.status]
+          : ['ASSIGNED', 'ACCEPTED', 'IN_PROGRESS']);
 
       const where: any = {
         assignedTo: volunteer.id,
-        status: { in: ['ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'] },
+        status: { in: statuses },
       };
 
       const [rescues, totalCount] = await Promise.all([
@@ -185,6 +236,15 @@ export const rescueQueryResolvers = {
           take: limit,
           skip,
           orderBy: { createdAt: 'desc' },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                phone: true,
+              },
+            },
+          },
         }),
         prisma.rescueRequest.count({ where }),
       ]);
@@ -213,7 +273,7 @@ export const rescueQueryResolvers = {
     activeRescues: async (
       _parent: any,
       args: { pagination?: { limit?: number; page?: number } },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       context.requireAuth();
       context.requireRole(['ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR']);
@@ -278,10 +338,14 @@ export const rescueQueryResolvers = {
           limit?: number;
         };
       },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       context.requireAuth();
-      context.requireRole(['VOLUNTEER', 'VERIFIED_RESCUER', 'DISTRICT_COORDINATOR']);
+      context.requireRole([
+        'VOLUNTEER',
+        'VERIFIED_RESCUER',
+        'DISTRICT_COORDINATOR',
+      ]);
 
       // Get volunteer profile for location
       const volunteer = await prisma.volunteer.findUnique({
@@ -303,27 +367,58 @@ export const rescueQueryResolvers = {
 
       const rescueRepository = new RescueRepository(prisma);
       const query = new AvailableRescuesQuery(rescueRepository);
-      
+
       const rescues = await query.execute({
-        municipality: args.filter?.municipality || volunteer.municipality,
+        municipality: args.filter?.municipality,
         rescuerLat: volunteer.lastKnownLatitude || undefined,
         rescuerLng: volunteer.lastKnownLongitude || undefined,
         maxDistance: args.filter?.maxDistance || 50,
         limit: args.pagination?.limit || 50,
       });
 
+      // Open alerts deliberately expose only the information a responder needs
+      // to decide whether to claim a rescue. Exact address, coordinates, citizen
+      // identity, contact information, and operational notes are available only
+      // after the responder owns the assignment.
+      const openAlerts = rescues.map((rescue: any) => ({
+        id: rescue.id,
+        referenceNumber: rescue.referenceNumber,
+        status: rescue.status,
+        priority: rescue.priority,
+        municipality: rescue.municipality,
+        ward: rescue.ward,
+        address: 'Exact address is shared after you claim this rescue.',
+        landmark: rescue.landmark,
+        lat: null,
+        lng: null,
+        snakeDescription: rescue.snakeDescription,
+        snakeSize: rescue.snakeSize,
+        snakeColor: rescue.snakeColor,
+        snakeImageUrl: null,
+        snakeImages: [],
+        isEmergency: rescue.isEmergency,
+        hasBite: rescue.hasBite,
+        stillPresent: rescue.stillPresent,
+        name: 'Withheld until claim',
+        phone: 'Not available',
+        source: rescue.source,
+        createdAt: rescue.createdAt,
+        updatedAt: rescue.updatedAt,
+        species: rescue.species,
+      }));
+
       return {
-        edges: rescues.map((rescue) => ({
+        edges: openAlerts.map((rescue) => ({
           node: rescue,
           cursor: rescue.id,
         })),
         pageInfo: {
           hasNextPage: false,
           hasPreviousPage: false,
-          startCursor: rescues[0]?.id || null,
-          endCursor: rescues[rescues.length - 1]?.id || null,
+          startCursor: openAlerts[0]?.id || null,
+          endCursor: openAlerts[openAlerts.length - 1]?.id || null,
         },
-        totalCount: rescues.length,
+        totalCount: openAlerts.length,
       };
     },
 
@@ -336,65 +431,65 @@ export const rescueQueryResolvers = {
         input: {
           lat: number;
           lng: number;
-          radius?: number;
+          radiusKm: number;
           limit?: number;
         };
       },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       context.requireAuth();
       context.requireRole(['ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR']);
 
-      const { lat, lng, radius = 50, limit = 10 } = args.input;
+      const { lat, lng, radiusKm, limit = 10 } = args.input;
 
       // Find volunteers within radius using Haversine formula
       // Haversine formula: a = sin²(Δφ/2) + cos φ1 ⋅ cos φ2 ⋅ sin²(Δλ/2)
       // c = 2 ⋅ atan2( √a, √(1−a) )
       // d = R ⋅ c (where R = 6371 km)
-      
-      const volunteers = await prisma.$queryRaw<Array<{
-        id: string;
-        userId: string;
-        distance: number;
-        lastKnownLatitude: number;
-        lastKnownLongitude: number;
-        isAvailableNow: boolean;
-        experienceLevel: string;
-        specializations: any;
-        lastLocationUpdate: Date | null;
-      }>>`
+
+      const volunteers = await prisma.$queryRaw<
+        Array<{
+          id: string;
+          userId: string;
+          distance: number | null;
+          currentLat: number | null;
+          currentLng: number | null;
+          isAvailableNow: boolean;
+          status: string;
+          lastLocationUpdate: Date | null;
+        }>
+      >`
         SELECT 
           v.id,
           v."userId",
-          v."lastKnownLatitude",
-          v."lastKnownLongitude",
+          v."currentLat",
+          v."currentLng",
           v."isAvailableNow",
-          v."experienceLevel",
-          v."specializations",
+          v."status",
           v."lastLocationUpdate",
           (
             6371 * acos(
               cos(radians(${lat})) * 
-              cos(radians(v."lastKnownLatitude")) * 
-              cos(radians(v."lastKnownLongitude") - radians(${lng})) + 
+              cos(radians(v."currentLat")) * 
+              cos(radians(v."currentLng") - radians(${lng})) + 
               sin(radians(${lat})) * 
-              sin(radians(v."lastKnownLatitude"))
+              sin(radians(v."currentLat"))
             )
           ) AS distance
-        FROM "Volunteer" v
+        FROM "volunteers" v
         WHERE v."isAvailableNow" = true
-          AND v."lastKnownLatitude" IS NOT NULL
-          AND v."lastKnownLongitude" IS NOT NULL
-          AND v."verificationStatus" = 'VERIFIED'
-        HAVING (
-          6371 * acos(
-            cos(radians(${lat})) * 
-            cos(radians(v."lastKnownLatitude")) * 
-            cos(radians(v."lastKnownLongitude") - radians(${lng})) + 
-            sin(radians(${lat})) * 
-            sin(radians(v."lastKnownLatitude"))
+          AND v."status" = 'VERIFIED'
+        AND (
+          v."currentLat" IS NULL OR v."currentLng" IS NULL OR (
+            6371 * acos(
+              cos(radians(${lat})) * 
+              cos(radians(v."currentLat")) * 
+              cos(radians(v."currentLng") - radians(${lng})) + 
+              sin(radians(${lat})) * 
+              sin(radians(v."currentLat"))
+            ) <= ${radiusKm}
           )
-        ) <= ${radius}
+        )
         ORDER BY distance ASC
         LIMIT ${limit}
       `;
@@ -402,27 +497,27 @@ export const rescueQueryResolvers = {
       // Enrich with user data
       const volunteersWithUsers = await Promise.all(
         volunteers.map(async (v) => {
-          const user = await prisma.user.findUnique({
-            where: { id: v.userId },
-            select: {
-              id: true,
-              name: true,
-              phone: true,
-            },
-          });
-
           const volunteerFull = await prisma.volunteer.findUnique({
             where: { id: v.id },
             include: {
               user: true,
             },
           });
+          const currentlyAssigned = await prisma.rescueRequest.count({
+            where: { assignedTo: v.id },
+          });
 
           return {
             volunteer: volunteerFull,
-            distance: Number(v.distance.toFixed(2)), // Round to 2 decimal places
+            distance:
+              v.distance === null ? undefined : Number(v.distance.toFixed(2)), // Round to 2 decimal places
+            estimatedArrival:
+              v.distance === null
+                ? undefined
+                : Math.max(1, Math.round(v.distance * 3 + 5)),
+            currentlyAssigned,
           };
-        })
+        }),
       );
 
       return volunteersWithUsers.filter((v) => v.volunteer !== null);

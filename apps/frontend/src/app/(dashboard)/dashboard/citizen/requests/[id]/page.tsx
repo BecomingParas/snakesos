@@ -19,6 +19,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { PaymentMethod, PaymentMethodSelector } from '@/components/payment'
 import { cn } from '@/lib/utils'
 import { useRescueRequestQuery, useCancelRescueMutation } from '@/lib/graphql/hooks/rescue.hooks'
 import { toast } from 'sonner'
@@ -97,6 +99,10 @@ export default function RequestTrackingPage({ params }: PageProps) {
       toast.error(`Failed to cancel: ${error.message}`)
     }
   })
+
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>()
+  const [paymentAmount, setPaymentAmount] = useState('')
+  const [processingPayment, setProcessingPayment] = useState(false)
 
   if (loading && !data) {
     return (
@@ -193,6 +199,39 @@ export default function RequestTrackingPage({ params }: PageProps) {
         reason: 'Cancelled by citizen'
       }
     })
+  }
+
+  const handlePaymentProceed = async () => {
+    if (!paymentMethod || !paymentAmount || Number(paymentAmount) < 1) {
+      toast.error('Please select a payment method and enter a valid amount')
+      return
+    }
+
+    if (paymentMethod !== 'stripe') {
+      toast.error('Please select Credit/Debit Card via Stripe')
+      return
+    }
+
+    setProcessingPayment(true)
+    try {
+      const response = await fetch('/api/stripe/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: Math.round((Number(paymentAmount) / 130) * 100),
+        }),
+      })
+      const result = await response.json()
+
+      if (!response.ok || !result.url) {
+        throw new Error(result.error || 'Unable to start Stripe checkout')
+      }
+
+      window.location.assign(result.url)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Payment failed')
+      setProcessingPayment(false)
+    }
   }
 
   return (
@@ -402,6 +441,58 @@ export default function RequestTrackingPage({ params }: PageProps) {
                 </div>
               </Card>
             )}
+
+            {/* Payment */}
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-2">Support This Rescue</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Help cover rescue equipment and operating costs.
+              </p>
+
+              <div className="mb-4">
+                <label
+                  htmlFor="request-payment-amount"
+                  className="block text-sm font-medium mb-2"
+                >
+                  Amount (NPR)
+                </label>
+                <Input
+                  id="request-payment-amount"
+                  type="number"
+                  min="1"
+                  value={paymentAmount}
+                  onChange={(event) => setPaymentAmount(event.target.value)}
+                  placeholder="Enter amount"
+                />
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {[100, 500, 1000, 2000, 5000].map((quickAmount) => (
+                    <Button
+                      key={quickAmount}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPaymentAmount(String(quickAmount))}
+                    >
+                      NPR {quickAmount}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              <PaymentMethodSelector
+                selectedMethod={paymentMethod}
+                onSelect={setPaymentMethod}
+              />
+
+              <Button
+                type="button"
+                onClick={handlePaymentProceed}
+                disabled={!paymentMethod || !paymentAmount || processingPayment}
+                className="w-full mt-4 bg-emerald-600 hover:bg-emerald-700"
+              >
+                {processingPayment ? 'Opening Stripe...' : 'Proceed to Payment'}
+              </Button>
+            </Card>
 
             {/* Actions */}
             <Card className="p-6">

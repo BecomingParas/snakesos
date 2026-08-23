@@ -5,7 +5,10 @@
 
 import { RescueRepository } from '@snake-rescue/database';
 import { BadRequestError } from '@snake-rescue/shared';
-import { RescueStatusMachine, RescueStatus } from '../../domain/rescue-status-machine.js';
+import {
+  RescueStatusMachine,
+  RescueStatus,
+} from '../../domain/rescue-status-machine.js';
 
 export interface AcceptRescueInput {
   rescueId: string;
@@ -32,14 +35,30 @@ export class AcceptRescueUseCase {
     // 3. Validate status transition
     RescueStatusMachine.validateTransition(
       rescue.status as RescueStatus,
-      RescueStatus.ACCEPTED
+      RescueStatus.ACCEPTED,
     );
 
-    // 4. Update rescue status
-    const updatedRescue = await this.rescueRepository.update(rescue.id, {
-      status: RescueStatus.ACCEPTED,
-      acceptedAt: new Date(),
-    });
+    // 4. Update status atomically. The assignment and state are repeated in
+    // the database predicate so concurrent acceptance attempts cannot both win.
+    let updatedRescue;
+    try {
+      updatedRescue = await this.rescueRepository.acceptAssignedRescue(
+        rescue.id,
+        input.volunteerId,
+      );
+    } catch (error: any) {
+      if (error.message === 'RESCUE_NOT_ASSIGNED_TO_VOLUNTEER') {
+        throw new BadRequestError('Rescue not assigned to you');
+      }
+
+      if (error.message?.startsWith('INVALID_STATUS:')) {
+        throw new BadRequestError(
+          'Rescue assignment can no longer be accepted',
+        );
+      }
+
+      throw error;
+    }
 
     // 5. Create timeline event
     await this.rescueRepository.addTimelineEvent({
@@ -61,7 +80,10 @@ export class AcceptRescueUseCase {
     return updatedRescue;
   }
 
-  private async createNotifications(rescue: any, input: AcceptRescueInput): Promise<void> {
+  private async createNotifications(
+    rescue: any,
+    input: AcceptRescueInput,
+  ): Promise<void> {
     const notifications: Array<{
       userId: string;
       type: string;
@@ -82,7 +104,18 @@ export class AcceptRescueUseCase {
     }
 
     // Notify admins (could be enhanced with admin notification preferences)
-    // For now, we'll create a system notification
+    const dispatchUsers = await this.rescueRepository.getDispatchUsers();
+    for (const admin of dispatchUsers) {
+      if (admin.id !== rescue.userId) {
+        notifications.push({
+          userId: admin.id,
+          type: 'RESCUE_ACCEPTED',
+          title: 'Rescue accepted',
+          message: `Rescue ${rescue.referenceNumber || rescue.id} was accepted by the assigned rescuer.`,
+          rescueId: rescue.id,
+        });
+      }
+    }
 
     if (notifications.length > 0) {
       await this.rescueRepository.createNotifications(notifications);

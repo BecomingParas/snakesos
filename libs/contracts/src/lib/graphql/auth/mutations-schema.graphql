@@ -64,6 +64,16 @@ extend type Mutation {
   Delete user account (soft delete)
   """
   deleteAccount(password: String!): Boolean!
+
+  """
+  Update a user's account status (admin only)
+  """
+  updateUserStatus(userId: ID!, status: UserStatus!): User! @auth(requires: [ADMIN, SUPER_ADMIN])
+
+  """
+  Soft-delete a user account (super admin only)
+  """
+  deleteUser(userId: ID!): SuccessResponse! @auth(requires: [SUPER_ADMIN])
 }
 
 """

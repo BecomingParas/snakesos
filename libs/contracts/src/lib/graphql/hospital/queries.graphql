@@ -13,6 +13,7 @@ extend type Query {
     sort: HospitalSortInput
     first: Int
     after: String
+    pagination: PaginationInput
   ): HospitalConnection!
   
   # Find nearby hospitals (with distance)

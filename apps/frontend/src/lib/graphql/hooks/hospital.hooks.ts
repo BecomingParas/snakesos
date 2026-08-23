@@ -39,12 +39,13 @@ export function useHospital(id: string) {
 /**
  * List hospitals with filters and pagination
  */
-export function useHospitals(filters?: unknown, options?: { first?: number; after?: string }) {
+export function useHospitals(filters?: unknown, options?: { first?: number; after?: string; page?: number }) {
   return useQuery(LIST_HOSPITALS, {
     variables: { 
       filter: filters, 
       first: options?.first || 100,
       after: options?.after,
+      pagination: { limit: options?.first || 100, page: options?.page || 1 },
     },
     fetchPolicy: 'cache-and-network', // Always fetch fresh data from network
   });

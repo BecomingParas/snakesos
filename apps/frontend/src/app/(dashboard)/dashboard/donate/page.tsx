@@ -34,8 +34,8 @@ export default function DonatePage() {
       case 'khalti':
         alert(`Redirecting to Khalti for payment of NPR ${amount}`);
         break;
-      case 'bank':
-        alert(`Processing bank transfer of NPR ${amount}`);
+      case 'stripe':
+        window.location.href = `/donate?amount=${encodeURIComponent(amount)}&method=stripe`;
         break;
     }
   };

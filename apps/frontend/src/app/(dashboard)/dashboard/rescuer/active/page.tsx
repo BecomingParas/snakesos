@@ -1,7 +1,7 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   CheckCircle,
   Clock,
@@ -14,30 +14,31 @@ import {
   FileText,
   Loader2,
   ArrowLeft,
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Switch } from '@/components/ui/switch'
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Switch } from '@/components/ui/switch';
+import { PaymentMethod, PaymentMethodSelector } from '@/components/payment';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { cn } from '@/lib/utils'
+} from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 import {
   useMyAssignedRescuesQuery,
   useCompleteRescueMutation,
   useUpdateRescueProgressMutation,
-} from '@/lib/graphql/hooks/rescue.hooks'
-import { useSearchHospitals } from '@/lib/graphql/hooks/hospital.hooks'
-import { toast } from 'sonner'
+} from '@/lib/graphql/hooks/rescue.hooks';
+import { useSearchHospitals } from '@/lib/graphql/hooks/hospital.hooks';
+import { toast } from 'sonner';
 
 /**
  * Active Rescue Page
@@ -49,12 +50,16 @@ import { toast } from 'sonner'
  */
 
 const OUTCOMES = [
-  { value: 'RESCUED_RELOCATED', label: 'Rescued & Relocated', icon: CheckCircle },
+  {
+    value: 'RESCUED_RELOCATED',
+    label: 'Rescued & Relocated',
+    icon: CheckCircle,
+  },
   { value: 'ALREADY_GONE', label: 'Already Gone', icon: AlertTriangle },
   { value: 'FALSE_ALARM', label: 'False Alarm', icon: AlertTriangle },
   { value: 'NO_SNAKE_FOUND', label: 'No Snake Found', icon: AlertTriangle },
   { value: 'DECEASED', label: 'Snake Deceased', icon: AlertTriangle },
-]
+];
 
 const ANTIVENOM_TYPES = [
   'Polyvalent Anti-snake Venom',
@@ -63,64 +68,70 @@ const ANTIVENOM_TYPES = [
   'Anti-Cobra Venom',
   'Anti-Krait Venom',
   'Other',
-]
+];
 
 export default function ActiveRescuePage() {
-  const router = useRouter()
-  const [showCompleteForm, setShowCompleteForm] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
+  const router = useRouter();
+  const [showCompleteForm, setShowCompleteForm] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>();
+  const [paymentAmount, setPaymentAmount] = useState('');
+  const [processingPayment, setProcessingPayment] = useState(false);
 
   // Fetch active rescue
   const { data, loading, refetch } = useMyAssignedRescuesQuery({
     variables: {
-      filter: { statuses: ['ACCEPTED', 'IN_PROGRESS', 'ARRIVED'] },
+      filter: { statuses: ['ACCEPTED', 'IN_PROGRESS'] },
     },
     fetchPolicy: 'cache-and-network',
-  })
+  });
 
   // Progress mutation
-  const [updateProgress, { loading: updating }] = useUpdateRescueProgressMutation({
-    onCompleted: () => {
-      toast.success('Status updated')
-      refetch()
-    },
-    onError: (error) => {
-      toast.error(`Failed to update: ${error.message}`)
-    },
-  })
+  const [updateProgress, { loading: updating }] =
+    useUpdateRescueProgressMutation({
+      onCompleted: () => {
+        toast.success('Status updated');
+        refetch();
+      },
+      onError: (error) => {
+        toast.error(`Failed to update: ${error.message}`);
+      },
+    });
 
   // Complete mutation
   const [completeRescue, { loading: completing }] = useCompleteRescueMutation({
     onCompleted: () => {
-      toast.success('Rescue completed! Well done! 🎉')
+      toast.success('Rescue completed! Well done! 🎉');
       setTimeout(() => {
-        router.push('/dashboard/rescuer')
-      }, 2000)
+        router.push('/dashboard/rescuer');
+      }, 2000);
     },
     onError: (error) => {
-      toast.error(`Failed to complete: ${error.message}`)
+      toast.error(`Failed to complete: ${error.message}`);
     },
-  })
+  });
 
   // Form state
-  const [outcome, setOutcome] = useState('')
-  const [rescueReport, setRescueReport] = useState('')
-  const [rescueImages, setRescueImages] = useState<string[]>([])
-  const [victimWentToHospital, setVictimWentToHospital] = useState<boolean | null>(null)
-  const [selectedHospital, setSelectedHospital] = useState('')
-  const [antivenomAdministered, setAntivenomAdministered] = useState(false)
-  const [antivenomType, setAntivenomType] = useState('')
-  const [hospitalAdmission, setHospitalAdmission] = useState(false)
-  const [hospitalNotes, setHospitalNotes] = useState('')
+  const [outcome, setOutcome] = useState('');
+  const [rescueReport, setRescueReport] = useState('');
+  const [rescueImages, setRescueImages] = useState<string[]>([]);
+  const [victimWentToHospital, setVictimWentToHospital] = useState<
+    boolean | null
+  >(null);
+  const [selectedHospital, setSelectedHospital] = useState('');
+  const [antivenomAdministered, setAntivenomAdministered] = useState(false);
+  const [antivenomType, setAntivenomType] = useState('');
+  const [hospitalAdmission, setHospitalAdmission] = useState(false);
+  const [hospitalNotes, setHospitalNotes] = useState('');
 
   // Hospital search
-  const { data: hospitalsData } = useSearchHospitals(searchQuery, 20)
-  const hospitals = (hospitalsData as any)?.searchHospitals || []
+  const { data: hospitalsData } = useSearchHospitals(searchQuery, 20);
+  const hospitals = (hospitalsData as any)?.searchHospitals || [];
 
-  const activeRescue = data?.myAssignedRescues?.edges?.[0]?.node
+  const activeRescue = data?.myAssignedRescues?.edges?.[0]?.node;
 
   const handleUpdateStatus = async (newStatus: string) => {
-    if (!activeRescue) return
+    if (!activeRescue) return;
 
     await updateProgress({
       variables: {
@@ -129,18 +140,51 @@ export default function ActiveRescuePage() {
           status: newStatus,
         },
       },
-    })
-  }
+    });
+  };
+
+  const handlePaymentProceed = async () => {
+    if (!paymentMethod || !paymentAmount || Number(paymentAmount) < 1) {
+      toast.error('Please select a payment method and enter a valid amount');
+      return;
+    }
+
+    if (paymentMethod !== 'stripe') {
+      toast.error('Please select Credit/Debit Card via Stripe');
+      return;
+    }
+
+    setProcessingPayment(true);
+    try {
+      const response = await fetch('/api/stripe/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: Math.round((Number(paymentAmount) / 130) * 100),
+        }),
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result.url) {
+        throw new Error(result.error || 'Unable to start Stripe checkout');
+      }
+
+      window.location.assign(result.url);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Payment failed');
+      setProcessingPayment(false);
+    }
+  };
 
   const handleComplete = async () => {
     if (!activeRescue || !outcome || !rescueReport) {
-      toast.error('Please fill in all required fields')
-      return
+      toast.error('Please fill in all required fields');
+      return;
     }
 
     if (victimWentToHospital && !selectedHospital) {
-      toast.error('Please select a hospital')
-      return
+      toast.error('Please select a hospital');
+      return;
     }
 
     await completeRescue({
@@ -152,21 +196,25 @@ export default function ActiveRescuePage() {
           rescueImages,
           victimWentToHospital: victimWentToHospital || false,
           hospitalId: victimWentToHospital ? selectedHospital : undefined,
-          antivenomAdministered: victimWentToHospital ? antivenomAdministered : undefined,
+          antivenomAdministered: victimWentToHospital
+            ? antivenomAdministered
+            : undefined,
           antivenomType: antivenomAdministered ? antivenomType : undefined,
-          hospitalAdmission: victimWentToHospital ? hospitalAdmission : undefined,
+          hospitalAdmission: victimWentToHospital
+            ? hospitalAdmission
+            : undefined,
           hospitalNotes: victimWentToHospital ? hospitalNotes : undefined,
         },
       },
-    })
-  }
+    });
+  };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
-    )
+    );
   }
 
   if (!activeRescue) {
@@ -185,7 +233,7 @@ export default function ActiveRescuePage() {
           </Card>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -194,7 +242,11 @@ export default function ActiveRescuePage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="icon" onClick={() => router.push('/dashboard/rescuer')}>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => router.push('/dashboard/rescuer')}
+            >
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
@@ -209,7 +261,7 @@ export default function ActiveRescuePage() {
               'text-white',
               activeRescue.status === 'ACCEPTED' && 'bg-blue-500',
               activeRescue.status === 'IN_PROGRESS' && 'bg-green-500',
-              activeRescue.status === 'ARRIVED' && 'bg-purple-500'
+              activeRescue.status === 'IN_PROGRESS' && 'bg-purple-500',
             )}
           >
             {activeRescue.status.replace('_', ' ')}
@@ -262,7 +314,7 @@ export default function ActiveRescuePage() {
               variant="outline"
               onClick={() => {
                 if (activeRescue.user?.phone) {
-                  window.location.href = `tel:${activeRescue.user.phone}`
+                  window.location.href = `tel:${activeRescue.user.phone}`;
                 }
               }}
             >
@@ -275,8 +327,8 @@ export default function ActiveRescuePage() {
                 if (activeRescue.lat && activeRescue.lng) {
                   window.open(
                     `https://www.google.com/maps/dir/?api=1&destination=${activeRescue.lat},${activeRescue.lng}`,
-                    '_blank'
-                  )
+                    '_blank',
+                  );
                 }
               }}
             >
@@ -284,6 +336,58 @@ export default function ActiveRescuePage() {
               Navigate
             </Button>
           </div>
+        </Card>
+
+        {/* Payment */}
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold mb-2">Payment</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+            Support this rescue operation with a secure contribution.
+          </p>
+
+          <div className="mb-6">
+            <label
+              htmlFor="rescue-payment-amount"
+              className="block text-sm font-medium mb-2"
+            >
+              Payment Amount (NPR)
+            </label>
+            <Input
+              id="rescue-payment-amount"
+              type="number"
+              min="1"
+              value={paymentAmount}
+              onChange={(event) => setPaymentAmount(event.target.value)}
+              placeholder="Enter amount"
+            />
+            <div className="flex flex-wrap gap-2 mt-3">
+              {[100, 500, 1000, 2000, 5000].map((quickAmount) => (
+                <Button
+                  key={quickAmount}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPaymentAmount(String(quickAmount))}
+                >
+                  NPR {quickAmount}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <PaymentMethodSelector
+            selectedMethod={paymentMethod}
+            onSelect={setPaymentMethod}
+          />
+
+          <Button
+            type="button"
+            onClick={handlePaymentProceed}
+              disabled={!paymentMethod || !paymentAmount || processingPayment}
+            className="w-full mt-6 bg-emerald-600 hover:bg-emerald-700"
+          >
+              {processingPayment ? 'Opening Stripe...' : 'Proceed to Payment'}
+          </Button>
         </Card>
 
         {/* Status Updates */}
@@ -301,16 +405,6 @@ export default function ActiveRescuePage() {
                   Start Rescue
                 </Button>
               )}
-              {(activeRescue.status === 'ACCEPTED' || activeRescue.status === 'IN_PROGRESS') && (
-                <Button
-                  onClick={() => handleUpdateStatus('ARRIVED')}
-                  disabled={updating}
-                  className="bg-purple-600 hover:bg-purple-700"
-                >
-                  <MapPin className="mr-2 h-4 w-4" />
-                  Mark Arrived
-                </Button>
-              )}
               <Button
                 onClick={() => setShowCompleteForm(true)}
                 className="col-span-2 bg-green-600 hover:bg-green-700"
@@ -326,14 +420,21 @@ export default function ActiveRescuePage() {
         {showCompleteForm && (
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-6">Complete Rescue</h2>
-            
+
             <div className="space-y-6">
               {/* Outcome */}
               <div>
                 <Label>Outcome *</Label>
-                <RadioGroup value={outcome} onValueChange={setOutcome} className="grid grid-cols-2 gap-3 mt-2">
+                <RadioGroup
+                  value={outcome}
+                  onValueChange={setOutcome}
+                  className="grid grid-cols-2 gap-3 mt-2"
+                >
                   {OUTCOMES.map((item) => (
-                    <div key={item.value} className="flex items-center space-x-2">
+                    <div
+                      key={item.value}
+                      className="flex items-center space-x-2"
+                    >
                       <RadioGroupItem value={item.value} id={item.value} />
                       <Label htmlFor={item.value} className="cursor-pointer">
                         {item.label}
@@ -360,16 +461,22 @@ export default function ActiveRescuePage() {
               <div className="border-t pt-6">
                 <div className="flex items-center gap-2 mb-4">
                   <Building2 className="h-5 w-5 text-gray-500" />
-                  <h3 className="text-lg font-semibold">Hospital Information</h3>
+                  <h3 className="text-lg font-semibold">
+                    Hospital Information
+                  </h3>
                 </div>
 
                 {/* Did victim go to hospital? */}
                 <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg mb-4">
-                  <Label htmlFor="hospital-visit">Did the victim go to a hospital?</Label>
+                  <Label htmlFor="hospital-visit">
+                    Did the victim go to a hospital?
+                  </Label>
                   <Switch
                     id="hospital-visit"
                     checked={victimWentToHospital === true}
-                    onCheckedChange={(checked) => setVictimWentToHospital(checked)}
+                    onCheckedChange={(checked) =>
+                      setVictimWentToHospital(checked)
+                    }
                   />
                 </div>
 
@@ -385,7 +492,10 @@ export default function ActiveRescuePage() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="mt-2 mb-2"
                       />
-                      <Select value={selectedHospital} onValueChange={setSelectedHospital}>
+                      <Select
+                        value={selectedHospital}
+                        onValueChange={setSelectedHospital}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select a hospital" />
                         </SelectTrigger>
@@ -403,7 +513,9 @@ export default function ActiveRescuePage() {
                     <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded">
                       <div className="flex items-center gap-2">
                         <Syringe className="h-4 w-4" />
-                        <Label htmlFor="antivenom">Antivenom Administered?</Label>
+                        <Label htmlFor="antivenom">
+                          Antivenom Administered?
+                        </Label>
                       </div>
                       <Switch
                         id="antivenom"
@@ -415,7 +527,10 @@ export default function ActiveRescuePage() {
                     {antivenomAdministered && (
                       <div>
                         <Label>Antivenom Type</Label>
-                        <Select value={antivenomType} onValueChange={setAntivenomType}>
+                        <Select
+                          value={antivenomType}
+                          onValueChange={setAntivenomType}
+                        >
                           <SelectTrigger className="mt-2">
                             <SelectValue placeholder="Select antivenom type" />
                           </SelectTrigger>
@@ -432,7 +547,9 @@ export default function ActiveRescuePage() {
 
                     {/* Hospital Admission */}
                     <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded">
-                      <Label htmlFor="admission">Patient Admitted to Hospital?</Label>
+                      <Label htmlFor="admission">
+                        Patient Admitted to Hospital?
+                      </Label>
                       <Switch
                         id="admission"
                         checked={hospitalAdmission}
@@ -442,7 +559,9 @@ export default function ActiveRescuePage() {
 
                     {/* Hospital Notes */}
                     <div>
-                      <Label htmlFor="hospital-notes">Hospital Notes (Optional)</Label>
+                      <Label htmlFor="hospital-notes">
+                        Hospital Notes (Optional)
+                      </Label>
                       <Textarea
                         id="hospital-notes"
                         value={hospitalNotes}
@@ -489,5 +608,5 @@ export default function ActiveRescuePage() {
         )}
       </div>
     </div>
-  )
+  );
 }

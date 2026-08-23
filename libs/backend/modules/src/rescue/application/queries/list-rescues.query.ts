@@ -25,7 +25,7 @@ export class ListRescuesQuery {
     const where: any = {};
     if (filters.status) where.status = filters.status;
     if (filters.municipality) where.municipality = filters.municipality;
-    if (filters.volunteerId) where.volunteerId = filters.volunteerId;
+    if (filters.volunteerId) where.assignedTo = filters.volunteerId;
 
     // Get rescues
     const [rescues, total] = await Promise.all([

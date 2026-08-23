@@ -2,14 +2,15 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { CreditCard } from 'lucide-react';
 
-export type PaymentMethod = 'esewa' | 'khalti' | 'bank';
+export type PaymentMethod = 'esewa' | 'khalti' | 'stripe';
 
 export interface PaymentMethodOption {
   id: PaymentMethod;
   name: string;
   description: string;
-  logo: string;
+  logo: string | null;
 }
 
 interface PaymentMethodSelectorProps {
@@ -32,10 +33,10 @@ const paymentMethods: PaymentMethodOption[] = [
     logo: '/wallets/khalti.png',
   },
   {
-    id: 'bank',
-    name: 'Bank Transfer',
-    description: 'Nepal Bank',
-    logo: '/wallets/bank.jpg',
+    id: 'stripe',
+    name: 'Credit/Debit Card',
+    description: 'via Stripe',
+    logo: null,
   },
 ];
 
@@ -77,13 +78,17 @@ export function PaymentMethodSelector({
           >
             {/* Logo */}
             <div className="w-14 h-14 rounded-lg bg-white/90 flex items-center justify-center flex-shrink-0 overflow-hidden">
-              <Image
-                src={method.logo}
-                alt={method.name}
-                width={56}
-                height={56}
-                className="object-contain p-1"
-              />
+              {method.logo ? (
+                <Image
+                  src={method.logo}
+                  alt={method.name}
+                  width={56}
+                  height={56}
+                  className="object-contain p-1"
+                />
+              ) : (
+                <CreditCard className="h-7 w-7 text-emerald-600" />
+              )}
             </div>
 
             {/* Name and Description */}

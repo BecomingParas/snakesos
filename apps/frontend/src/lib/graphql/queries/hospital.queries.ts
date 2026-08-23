@@ -26,6 +26,7 @@ export const HOSPITAL_FRAGMENT = gql`
     snakebiteTreatmentAvailable
     treatmentCenterType
     antivenomStatus
+    antivenomVerificationFreshness
     antivenomLastVerifiedAt
     antivenomVerifiedBy
     ventilatorAvailable
@@ -47,7 +48,7 @@ export const GET_HOSPITAL = gql`
   query GetHospital($id: ID!) {
     hospital(id: $id) {
       ...HospitalFields
-      verifications {
+      verificationRecords {
         id
         verifiedBy
         verificationDate
@@ -63,8 +64,18 @@ export const GET_HOSPITAL = gql`
  */
 export const LIST_HOSPITALS = gql`
   ${HOSPITAL_FRAGMENT}
-  query ListHospitals($filter: HospitalFilterInput, $first: Int, $after: String) {
-    hospitals(filter: $filter, first: $first, after: $after) {
+  query ListHospitals(
+    $filter: HospitalFilterInput
+    $first: Int
+    $after: String
+    $pagination: PaginationInput
+  ) {
+    hospitals(
+      filter: $filter
+      first: $first
+      after: $after
+      pagination: $pagination
+    ) {
       edges {
         node {
           ...HospitalFields
@@ -77,6 +88,7 @@ export const LIST_HOSPITALS = gql`
         startCursor
         endCursor
       }
+      totalCount
     }
   }
 `;
@@ -164,7 +176,11 @@ export const SEARCH_HOSPITALS = gql`
  */
 export const GET_HOSPITALS_BY_PROVINCE = gql`
   ${HOSPITAL_FRAGMENT}
-  query GetHospitalsByProvince($province: String!, $first: Int, $after: String) {
+  query GetHospitalsByProvince(
+    $province: String!
+    $first: Int
+    $after: String
+  ) {
     hospitalsByProvince(province: $province, first: $first, after: $after) {
       edges {
         node {
@@ -187,7 +203,11 @@ export const GET_HOSPITALS_BY_PROVINCE = gql`
  */
 export const GET_HOSPITALS_BY_DISTRICT = gql`
   ${HOSPITAL_FRAGMENT}
-  query GetHospitalsByDistrict($district: String!, $first: Int, $after: String) {
+  query GetHospitalsByDistrict(
+    $district: String!
+    $first: Int
+    $after: String
+  ) {
     hospitalsByDistrict(district: $district, first: $first, after: $after) {
       edges {
         node {

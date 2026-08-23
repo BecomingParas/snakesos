@@ -18,6 +18,17 @@ export interface User {
   role: string;
   isActive: boolean;
   isEmailVerified: boolean;
+  status?: string;
+  emailVerified?: boolean;
+  volunteerProfile?: {
+    id: string;
+    status: string;
+    totalRescues: number;
+    completedRescues: number;
+  } | null;
+  rescueRequests?: {
+    totalCount: number;
+  } | null;
   lastLoginAt?: string;
   createdAt: string;
   updatedAt: string;
@@ -184,6 +195,51 @@ const GET_USERS = gql`
   }
 `;
 
+const GET_USER = gql`
+  query GetUser($id: ID!) {
+    user(id: $id) {
+      id
+      name
+      email
+      phone
+      role
+      status
+      emailVerified
+      verifiedAt
+      lastLoginAt
+      createdAt
+      updatedAt
+      rescueRequests(pagination: { limit: 1, page: 1 }) {
+        totalCount
+      }
+      volunteerProfile {
+        id
+        status
+        totalRescues
+        completedRescues
+      }
+    }
+  }
+`;
+
+const ADMIN_UPDATE_USER_STATUS = gql`
+  mutation AdminUpdateUserStatus($userId: ID!, $status: UserStatus!) {
+    updateUserStatus(userId: $userId, status: $status) {
+      id
+      status
+    }
+  }
+`;
+
+const ADMIN_DELETE_USER = gql`
+  mutation AdminDeleteUser($userId: ID!) {
+    deleteUser(userId: $userId) {
+      success
+      message
+    }
+  }
+`;
+
 // ===================================================================
 // HOOKS
 // ===================================================================
@@ -192,7 +248,7 @@ export function useUpdateUserProfileMutation(
   options?: MutationHookOptions<
     { updateUserProfile: User },
     { input: UpdateUserProfileInput }
-  >
+  >,
 ) {
   return useMutation<
     { updateUserProfile: User },
@@ -204,7 +260,7 @@ export function useSaveEmergencyContactMutation(
   options?: MutationHookOptions<
     { saveEmergencyContact: EmergencyContact },
     { input: SaveEmergencyContactInput }
-  >
+  >,
 ) {
   return useMutation<
     { saveEmergencyContact: EmergencyContact },
@@ -216,7 +272,7 @@ export function useUpdateUserStatusMutation(
   options?: MutationHookOptions<
     { updateUserStatus: User },
     { input: UpdateUserStatusInput }
-  >
+  >,
 ) {
   return useMutation<
     { updateUserStatus: User },
@@ -228,20 +284,20 @@ export function useUpdateUserRoleMutation(
   options?: MutationHookOptions<
     { updateUserRole: User },
     { input: UpdateUserRoleInput }
-  >
+  >,
 ) {
-  return useMutation<
-    { updateUserRole: User },
-    { input: UpdateUserRoleInput }
-  >(UPDATE_USER_ROLE, options);
+  return useMutation<{ updateUserRole: User }, { input: UpdateUserRoleInput }>(
+    UPDATE_USER_ROLE,
+    options,
+  );
 }
 
 export function useMyProfileQuery(
-  options?: QueryHookOptions<{ me: User | null }, Record<string, never>>
+  options?: QueryHookOptions<{ me: User | null }, Record<string, never>>,
 ) {
   return useQuery<{ me: User | null }, Record<string, never>>(
     GET_MY_PROFILE,
-    options
+    options,
   );
 }
 
@@ -249,7 +305,7 @@ export function useEmergencyContactQuery(
   options?: QueryHookOptions<
     { myEmergencyContact: EmergencyContact | null },
     Record<string, never>
-  >
+  >,
 ) {
   return useQuery<
     { myEmergencyContact: EmergencyContact | null },
@@ -261,10 +317,40 @@ export function useUsersQuery(
   options?: QueryHookOptions<
     { users: UserConnection },
     { pagination?: PaginationInput; filter?: UserFilterInput }
-  >
+  >,
 ) {
   return useQuery<
     { users: UserConnection },
     { pagination?: PaginationInput; filter?: UserFilterInput }
   >(GET_USERS, options);
+}
+
+export function useUserQuery(
+  options?: QueryHookOptions<{ user: User | null }, { id: string }>,
+) {
+  return useQuery<{ user: User | null }, { id: string }>(GET_USER, options);
+}
+
+export function useAdminUpdateUserStatusMutation(
+  options?: MutationHookOptions<
+    { updateUserStatus: User },
+    { userId: string; status: string }
+  >,
+) {
+  return useMutation<
+    { updateUserStatus: User },
+    { userId: string; status: string }
+  >(ADMIN_UPDATE_USER_STATUS, options);
+}
+
+export function useAdminDeleteUserMutation(
+  options?: MutationHookOptions<
+    { deleteUser: { success: boolean; message?: string } },
+    { userId: string }
+  >,
+) {
+  return useMutation<
+    { deleteUser: { success: boolean; message?: string } },
+    { userId: string }
+  >(ADMIN_DELETE_USER, options);
 }

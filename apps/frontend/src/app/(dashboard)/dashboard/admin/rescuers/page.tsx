@@ -1,15 +1,16 @@
-'use client'
+'use client';
 
-import { useState, useMemo } from 'react'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { 
-  Users, 
-  Search, 
-  UserCheck, 
-  Award, 
+import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import {
+  Users,
+  Search,
+  UserCheck,
+  Award,
   MapPin,
   Star,
   Activity,
@@ -17,65 +18,81 @@ import {
   Mail,
   Loader2,
   CheckCircle,
-} from 'lucide-react'
-import { useVolunteersQuery } from '@/lib/graphql/hooks/volunteer.hooks'
-import { toast } from 'sonner'
+} from 'lucide-react';
+import { useVolunteersQuery } from '@/lib/graphql/hooks/volunteer.hooks';
+import { toast } from 'sonner';
+import { DashboardPagination } from '@/components/dashboard/dashboard-pagination';
 
 /**
  * Admin Rescuers Management Page - NOW WITH GRAPHQL INTEGRATION ✅
  */
 
-type StatusFilter = 'all' | 'available' | 'busy' | 'verified' | 'pending'
+type StatusFilter = 'all' | 'available' | 'busy' | 'verified' | 'pending';
 
 export default function AdminRescuersPage() {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
+  const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter]);
 
   // Fetch volunteers
   const { data, loading, error } = useVolunteersQuery({
     variables: {
-      pagination: { limit: 100, page: 1 } ,
+      pagination: { limit: pageSize, page: currentPage },
       filter: {
-        status: statusFilter === 'verified' ? 'VERIFIED' : statusFilter === 'pending' ? 'PENDING' : undefined,
-        isAvailableNow: statusFilter === 'available' ? true : statusFilter === 'busy' ? false : undefined,
-      }
+        status:
+          statusFilter === 'verified'
+            ? 'VERIFIED'
+            : statusFilter === 'pending'
+              ? 'PENDING'
+              : undefined,
+        isAvailableNow:
+          statusFilter === 'available'
+            ? true
+            : statusFilter === 'busy'
+              ? false
+              : undefined,
+        search: searchTerm || undefined,
+      },
     },
     fetchPolicy: 'cache-and-network',
     pollInterval: 30000, // Poll every 30 seconds
-  })
+  });
 
-  const volunteers = data?.volunteers?.edges?.map(e => e.node) || []
+  const volunteers = data?.volunteers?.edges?.map((e) => e.node) || [];
 
   // Filter volunteers based on search
   const filteredVolunteers = useMemo(() => {
-    return volunteers.filter(volunteer => {
-      const matchesSearch = 
+    return volunteers.filter((volunteer) => {
+      const matchesSearch =
         volunteer.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        volunteer.user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        volunteer.user.email
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
         volunteer.user.phone?.includes(searchTerm) ||
-        volunteer.municipality.toLowerCase().includes(searchTerm.toLowerCase())
-      
-      return matchesSearch
-    })
-  }, [volunteers, searchTerm])
+        volunteer.municipality.toLowerCase().includes(searchTerm.toLowerCase());
+
+      return matchesSearch;
+    });
+  }, [volunteers, searchTerm]);
 
   // Calculate stats
   const stats = useMemo(() => {
     return {
       total: volunteers.length,
-      available: volunteers.filter(v => v.isAvailableNow).length,
-      verified: volunteers.filter(v => v.status === 'VERIFIED').length,
-      pending: volunteers.filter(v => v.status === 'PENDING').length,
-    }
-  }, [volunteers])
-
-  const handleVerify = async (volunteerId: string) => {
-    // TODO: Implement with proper verifyVolunteer mutation
-    toast.info('Volunteer verification feature coming soon')
-  }
+      available: volunteers.filter((v) => v.isAvailableNow).length,
+      verified: volunteers.filter((v) => v.status === 'VERIFIED').length,
+      pending: volunteers.filter((v) => v.status === 'PENDING').length,
+    };
+  }, [volunteers]);
 
   if (error) {
-    toast.error(`Failed to load rescuers: ${error.message}`)
+    toast.error(`Failed to load rescuers: ${error.message}`);
   }
 
   return (
@@ -101,7 +118,9 @@ export default function AdminRescuersPage() {
             </div>
             <div>
               <p className="text-2xl font-bold">{stats.total}</p>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Total Rescuers</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                Total Rescuers
+              </p>
             </div>
           </div>
         </Card>
@@ -113,7 +132,9 @@ export default function AdminRescuersPage() {
             </div>
             <div>
               <p className="text-2xl font-bold">{stats.available}</p>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Available Now</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                Available Now
+              </p>
             </div>
           </div>
         </Card>
@@ -125,7 +146,9 @@ export default function AdminRescuersPage() {
             </div>
             <div>
               <p className="text-2xl font-bold">{stats.verified}</p>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Verified</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                Verified
+              </p>
             </div>
           </div>
         </Card>
@@ -137,7 +160,9 @@ export default function AdminRescuersPage() {
             </div>
             <div>
               <p className="text-2xl font-bold">{stats.pending}</p>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Pending</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                Pending
+              </p>
             </div>
           </div>
         </Card>
@@ -199,7 +224,21 @@ export default function AdminRescuersPage() {
       {!loading && filteredVolunteers.length > 0 && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredVolunteers.map((volunteer) => (
-            <Card key={volunteer.id} className="p-6 hover:shadow-lg transition-shadow">
+            <Card
+              key={volunteer.id}
+              className="cursor-pointer p-6 transition-shadow hover:shadow-lg"
+              role="link"
+              tabIndex={0}
+              onClick={() =>
+                router.push(`/dashboard/admin/rescuers/${volunteer.id}`)
+              }
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  router.push(`/dashboard/admin/rescuers/${volunteer.id}`);
+                }
+              }}
+            >
               <div className="space-y-4">
                 {/* Header */}
                 <div className="flex items-start justify-between">
@@ -215,7 +254,11 @@ export default function AdminRescuersPage() {
                     </div>
                   </div>
 
-                  <Badge className={volunteer.isAvailableNow ? 'bg-green-500' : 'bg-gray-500'}>
+                  <Badge
+                    className={
+                      volunteer.isAvailableNow ? 'bg-green-500' : 'bg-gray-500'
+                    }
+                  >
                     {volunteer.isAvailableNow ? 'Available' : 'Busy'}
                   </Badge>
                 </div>
@@ -232,7 +275,10 @@ export default function AdminRescuersPage() {
                   </div>
                   <div className="flex items-center gap-2 col-span-2">
                     <MapPin className="h-4 w-4 text-gray-400" />
-                    <span>{volunteer.municipality}{volunteer.ward ? `, Ward ${volunteer.ward}` : ''}</span>
+                    <span>
+                      {volunteer.municipality}
+                      {volunteer.ward ? `, Ward ${volunteer.ward}` : ''}
+                    </span>
                   </div>
                 </div>
 
@@ -252,22 +298,31 @@ export default function AdminRescuersPage() {
 
                 {/* Status Badges */}
                 <div className="flex flex-wrap gap-2">
-                  <Badge 
-                    variant="outline" 
+                  <Badge
+                    variant="outline"
                     className={`text-xs ${
-                      volunteer.status === 'VERIFIED' ? 'border-green-500 text-green-700' :
-                      volunteer.status === 'PENDING' ? 'border-yellow-500 text-yellow-700' :
-                      volunteer.status === 'APPROVED' ? 'border-blue-500 text-blue-700' :
-                      'border-red-500 text-red-700'
+                      volunteer.status === 'VERIFIED'
+                        ? 'border-green-500 text-green-700'
+                        : volunteer.status === 'PENDING'
+                          ? 'border-yellow-500 text-yellow-700'
+                          : volunteer.status === 'APPROVED'
+                            ? 'border-blue-500 text-blue-700'
+                            : 'border-red-500 text-red-700'
                     }`}
                   >
-                    {volunteer.status === 'VERIFIED' ? '✓ Verified' : 
-                     volunteer.status === 'PENDING' ? '⏳ Pending' :
-                     volunteer.status === 'APPROVED' ? '✓ Approved' :
-                     '✗ Suspended'}
+                    {volunteer.status === 'VERIFIED'
+                      ? '✓ Verified'
+                      : volunteer.status === 'PENDING'
+                        ? '⏳ Pending'
+                        : volunteer.status === 'APPROVED'
+                          ? '✓ Approved'
+                          : '✗ Suspended'}
                   </Badge>
                   {volunteer.successRate && volunteer.successRate >= 90 && (
-                    <Badge variant="outline" className="text-xs border-purple-500 text-purple-700">
+                    <Badge
+                      variant="outline"
+                      className="text-xs border-purple-500 text-purple-700"
+                    >
                       ⭐ {volunteer.successRate.toFixed(0)}% Success
                     </Badge>
                   )}
@@ -276,11 +331,16 @@ export default function AdminRescuersPage() {
                 {/* Actions */}
                 <div className="flex gap-2">
                   {volunteer.status === 'PENDING' && (
-                    <Button 
-                      variant="default" 
-                      size="sm" 
+                    <Button
+                      variant="default"
+                      size="sm"
                       className="flex-1 bg-green-600 hover:bg-green-700"
-                      onClick={() => handleVerify(volunteer.id)}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        router.push(
+                          `/dashboard/admin/rescuers/${volunteer.id}`,
+                        );
+                      }}
                     >
                       <CheckCircle className="h-4 w-4 mr-1" />
                       Verify
@@ -298,10 +358,24 @@ export default function AdminRescuersPage() {
           <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">No rescuers found</h3>
           <p className="text-gray-600 dark:text-gray-400">
-            {searchTerm ? 'Try adjusting your search' : 'No rescuers registered yet'}
+            {searchTerm
+              ? 'Try adjusting your search'
+              : 'No rescuers registered yet'}
           </p>
         </Card>
       )}
+
+      <DashboardPagination
+        page={currentPage}
+        pageSize={pageSize}
+        totalCount={data?.volunteers?.totalCount || 0}
+        pageInfo={data?.volunteers?.pageInfo}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={(nextPageSize) => {
+          setPageSize(nextPageSize);
+          setCurrentPage(1);
+        }}
+      />
     </div>
-  )
+  );
 }

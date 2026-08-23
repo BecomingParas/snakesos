@@ -17,6 +17,7 @@
     "db:studio": "prisma studio --config libs/database/prisma.config.ts",
     "db:seed": "cross-env DATABASE_URL=\"postgresql://devuser:devpassword@localhost:5433/snake_rescue?schema=public\" tsx libs/database/prisma/seed.ts",
     "db:seed:full": "cross-env DATABASE_URL=\"postgresql://devuser:devpassword@localhost:5433/snake_rescue?schema=public\" tsx libs/database/prisma/seed-full.ts",
+    "seed:demo-workflow": "tsx scripts/seed-demo-workflow.ts",
     "graphql:codegen": "yarn workspace @snake-rescue/contracts codegen",
     "graphql:codegen:watch": "yarn workspace @snake-rescue/contracts codegen:watch",
     "graphql:generate": "yarn graphql:codegen",

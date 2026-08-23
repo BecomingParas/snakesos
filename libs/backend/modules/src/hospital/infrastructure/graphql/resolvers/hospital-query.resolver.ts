@@ -4,7 +4,10 @@
  */
 
 import type { GraphQLContext } from '@snake-rescue/core';
-import { HospitalService, type HospitalFilters } from '../../../application/hospital.service.js';
+import {
+  HospitalService,
+  type HospitalFilters,
+} from '../../../application/hospital.service.js';
 
 const hospitalService = new HospitalService();
 
@@ -14,11 +17,28 @@ interface PaginationInput {
 }
 
 export const hospitalQueryResolvers = {
+  Hospital: {
+    antivenomVerificationFreshness: (hospital: {
+      antivenomLastVerifiedAt?: Date | string | null;
+    }) => {
+      if (!hospital.antivenomLastVerifiedAt) return 'NEVER';
+
+      const lastVerified = new Date(hospital.antivenomLastVerifiedAt).getTime();
+      const hoursSinceVerification =
+        (Date.now() - lastVerified) / (1000 * 60 * 60);
+
+      return hoursSinceVerification < 24 ? 'FRESH' : 'STALE';
+    },
+  },
   Query: {
     /**
      * Get a single hospital by ID
      */
-    hospital: async (_parent: unknown, args: { id: string }, context: GraphQLContext) => {
+    hospital: async (
+      _parent: unknown,
+      args: { id: string },
+      context: GraphQLContext,
+    ) => {
       return hospitalService.getHospitalById(args.id);
     },
 
@@ -33,13 +53,16 @@ export const hospitalQueryResolvers = {
         after?: string;
         pagination?: PaginationInput;
       },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       // Support both Relay-style (first/after) and traditional (pagination) arguments
       const limit = args.first || args.pagination?.limit || 100; // Default to 100 for admin
       const page = args.pagination?.page || 1;
 
-      const result = await hospitalService.listHospitals(args.filter, { page, limit });
+      const result = await hospitalService.listHospitals(args.filter, {
+        page,
+        limit,
+      });
 
       return {
         edges: result.hospitals.map((hospital) => ({
@@ -68,7 +91,7 @@ export const hospitalQueryResolvers = {
         antivenomRequired?: boolean;
         limit?: number;
       },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       return hospitalService.getNearbyHospitals(args);
     },
@@ -84,7 +107,7 @@ export const hospitalQueryResolvers = {
         radiusKm?: number;
         limit?: number;
       },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       // Call nearbyHospitals with snakebite filter
       return hospitalService.getNearbyHospitals({
@@ -103,19 +126,23 @@ export const hospitalQueryResolvers = {
         longitude: number;
         hasBite?: boolean;
       },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       return hospitalService.getRecommendedHospitals(
         args.latitude,
         args.longitude,
-        args.hasBite || false
+        args.hasBite || false,
       );
     },
 
     /**
      * Get hospital statistics (admin only)
      */
-    hospitalStats: async (_parent: unknown, _args: unknown, context: GraphQLContext) => {
+    hospitalStats: async (
+      _parent: unknown,
+      _args: unknown,
+      context: GraphQLContext,
+    ) => {
       context.requireAuth();
       context.requireRole(['ADMIN', 'SUPER_ADMIN']);
 
@@ -125,7 +152,11 @@ export const hospitalQueryResolvers = {
     /**
      * Get hospital statistics (alias)
      */
-    hospitalStatistics: async (_parent: unknown, _args: unknown, context: GraphQLContext) => {
+    hospitalStatistics: async (
+      _parent: unknown,
+      _args: unknown,
+      context: GraphQLContext,
+    ) => {
       context.requireAuth();
       context.requireRole(['ADMIN', 'SUPER_ADMIN']);
 
@@ -141,11 +172,11 @@ export const hospitalQueryResolvers = {
         query: string;
         limit?: number;
       },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       const result = await hospitalService.listHospitals(
         { search: args.query },
-        { page: 1, limit: args.limit || 10 }
+        { page: 1, limit: args.limit || 10 },
       );
 
       return result.hospitals;
@@ -160,11 +191,11 @@ export const hospitalQueryResolvers = {
         province: string;
         pagination?: PaginationInput;
       },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       const result = await hospitalService.listHospitals(
         { province: args.province },
-        args.pagination
+        args.pagination,
       );
 
       return {
@@ -191,11 +222,11 @@ export const hospitalQueryResolvers = {
         district: string;
         pagination?: PaginationInput;
       },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       const result = await hospitalService.listHospitals(
         { district: args.district },
-        args.pagination
+        args.pagination,
       );
 
       return {

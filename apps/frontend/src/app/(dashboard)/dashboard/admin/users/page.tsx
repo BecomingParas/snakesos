@@ -1,22 +1,23 @@
-'use client'
+'use client';
 
-import { useState, useMemo } from 'react'
-import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { 
-  Users, 
-  Search, 
-  UserCheck, 
+import { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import {
+  Users,
+  Search,
+  UserCheck,
   Shield,
   Mail,
   Phone,
   Calendar,
   Loader2,
-} from 'lucide-react'
-import { useUsersQuery } from '@/lib/graphql/hooks/user.hooks'
-import { toast } from 'sonner'
+} from 'lucide-react';
+import { useUsersQuery } from '@/lib/graphql/hooks/user.hooks';
+import { toast } from 'sonner';
+import { DashboardPagination } from '@/components/dashboard/dashboard-pagination';
 
 /**
  * Admin Citizens Management Page - NOW WITH GRAPHQL INTEGRATION ✅
@@ -29,31 +30,47 @@ const roleColors = {
   DISTRICT_COORDINATOR: 'bg-orange-500',
   ADMIN: 'bg-red-500',
   SUPER_ADMIN: 'bg-red-700',
-}
+};
 
 export default function AdminUsersPage() {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [roleFilter, setRoleFilter] = useState<string>('all')
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all')
+  const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<
+    'all' | 'active' | 'inactive'
+  >('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, roleFilter, statusFilter]);
 
   // Fetch users
-  const { data, loading, error, refetch } = useUsersQuery({
+  const { data, loading, error } = useUsersQuery({
     variables: {
-      pagination: { limit: 200, page: 1 },
+      pagination: { limit: pageSize, page: currentPage },
       filter: {
         role: roleFilter !== 'all' ? roleFilter : undefined,
         search: searchTerm || undefined,
-      }
+        isActive:
+          statusFilter === 'all' ? undefined : statusFilter === 'active',
+      },
     },
     fetchPolicy: 'cache-and-network',
-  })
+  });
 
   // Debug logging
-  console.log('Users Query Debug:', { data, loading, error, users: data?.users })
+  console.log('Users Query Debug:', {
+    data,
+    loading,
+    error,
+    users: data?.users,
+  });
 
-
-  const users = data?.users?.edges || []
-  const userNodes = users
+  const users = data?.users?.edges || [];
+  const totalCount = data?.users?.totalCount || 0;
+  const userNodes = users;
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -61,12 +78,14 @@ export default function AdminUsersPage() {
       total: userNodes.length,
       active: userNodes.filter((u: any) => u?.status === 'ACTIVE').length,
       citizens: userNodes.filter((u: any) => u?.role === 'CITIZEN').length,
-      rescuers: userNodes.filter((u: any) => u?.role === 'VERIFIED_RESCUER' || u?.role === 'VOLUNTEER').length,
-    }
-  }, [userNodes])
+      rescuers: userNodes.filter(
+        (u: any) => u?.role === 'VERIFIED_RESCUER' || u?.role === 'VOLUNTEER',
+      ).length,
+    };
+  }, [userNodes]);
 
   if (error) {
-    toast.error(`Failed to load users: ${error.message}`)
+    toast.error(`Failed to load users: ${error.message}`);
   }
 
   return (
@@ -92,7 +111,9 @@ export default function AdminUsersPage() {
             </div>
             <div>
               <p className="text-2xl font-bold">{stats.total}</p>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Total Users</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                Total Users
+              </p>
             </div>
           </div>
         </Card>
@@ -104,7 +125,9 @@ export default function AdminUsersPage() {
             </div>
             <div>
               <p className="text-2xl font-bold">{stats.active}</p>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Active Users</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                Active Users
+              </p>
             </div>
           </div>
         </Card>
@@ -116,7 +139,9 @@ export default function AdminUsersPage() {
             </div>
             <div>
               <p className="text-2xl font-bold">{stats.citizens}</p>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Citizens</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                Citizens
+              </p>
             </div>
           </div>
         </Card>
@@ -128,7 +153,9 @@ export default function AdminUsersPage() {
             </div>
             <div>
               <p className="text-2xl font-bold">{stats.rescuers}</p>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Rescuers</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                Rescuers
+              </p>
             </div>
           </div>
         </Card>
@@ -162,7 +189,9 @@ export default function AdminUsersPage() {
 
           <select
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')}
+            onChange={(e) =>
+              setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')
+            }
             className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
             <option value="all">All Status</option>
@@ -194,9 +223,19 @@ export default function AdminUsersPage() {
               </thead>
               <tbody>
                 {userNodes.map((user: any) => (
-                  <tr 
+                  <tr
                     key={user.id}
-                    className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    className="cursor-pointer border-b border-gray-200 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+                    tabIndex={0}
+                    onClick={() =>
+                      router.push(`/dashboard/admin/users/${user.id}`)
+                    }
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        router.push(`/dashboard/admin/users/${user.id}`);
+                      }
+                    }}
                   >
                     <td className="p-4">
                       <div className="flex items-center gap-3">
@@ -205,7 +244,9 @@ export default function AdminUsersPage() {
                         </div>
                         <div>
                           <p className="font-semibold">{user.name}</p>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">{user.email}</p>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                            {user.email}
+                          </p>
                         </div>
                       </div>
                     </td>
@@ -219,22 +260,35 @@ export default function AdminUsersPage() {
                         )}
                         <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                           <Mail className="h-3 w-3" />
-                          <span className="truncate max-w-[200px]">{user.email}</span>
+                          <span className="truncate max-w-[200px]">
+                            {user.email}
+                          </span>
                         </div>
                       </div>
                     </td>
                     <td className="p-4">
-                      <Badge className={`${roleColors[user.role as keyof typeof roleColors] || 'bg-gray-500'} text-white`}>
+                      <Badge
+                        className={`${roleColors[user.role as keyof typeof roleColors] || 'bg-gray-500'} text-white`}
+                      >
                         {user.role.replace('_', ' ')}
                       </Badge>
                     </td>
                     <td className="p-4">
                       <div className="space-y-1">
-                        <Badge className={user.status === 'ACTIVE' ? 'bg-green-500' : 'bg-gray-500'}>
+                        <Badge
+                          className={
+                            user.status === 'ACTIVE'
+                              ? 'bg-green-500'
+                              : 'bg-gray-500'
+                          }
+                        >
                           {user.status}
                         </Badge>
                         {user.emailVerified && (
-                          <Badge variant="outline" className="ml-2 text-xs border-green-500 text-green-700">
+                          <Badge
+                            variant="outline"
+                            className="ml-2 text-xs border-green-500 text-green-700"
+                          >
                             ✓ Verified
                           </Badge>
                         )}
@@ -243,7 +297,9 @@ export default function AdminUsersPage() {
                     <td className="p-4">
                       <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                         <Calendar className="h-3 w-3" />
-                        <span>{new Date(user.createdAt).toLocaleDateString()}</span>
+                        <span>
+                          {new Date(user.createdAt).toLocaleDateString()}
+                        </span>
                       </div>
                     </td>
                   </tr>
@@ -259,10 +315,24 @@ export default function AdminUsersPage() {
           <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold mb-2">No citizens found</h3>
           <p className="text-gray-600 dark:text-gray-400">
-            {searchTerm ? 'Try adjusting your search or filters' : 'No citizens registered yet'}
+            {searchTerm
+              ? 'Try adjusting your search or filters'
+              : 'No citizens registered yet'}
           </p>
         </Card>
       )}
+
+      <DashboardPagination
+        page={currentPage}
+        pageSize={pageSize}
+        totalCount={totalCount}
+        pageInfo={data?.users?.pageInfo}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={(nextPageSize) => {
+          setPageSize(nextPageSize);
+          setCurrentPage(1);
+        }}
+      />
     </div>
-  )
+  );
 }

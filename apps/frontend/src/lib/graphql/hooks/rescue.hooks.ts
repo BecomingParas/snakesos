@@ -207,10 +207,6 @@ const ASSIGN_RESCUE = gql`
       referenceNumber
       status
       assignedAt
-      assignedBy {
-        id
-        name
-      }
       assignedVolunteer {
         id
         name
@@ -411,7 +407,9 @@ const MY_ASSIGNED_RESCUES = gql`
           snakeDescription
           snakeSize
           snakeColor
+          snakeImages
           isEmergency
+          createdAt
           assignedAt
           acceptedAt
           user {
@@ -579,12 +577,6 @@ const AVAILABLE_RESCUES = gql`
           isEmergency
           hasBite
           createdAt
-          distance
-          user {
-            id
-            name
-            phone
-          }
           species {
             id
             name
@@ -630,7 +622,7 @@ export function useCreateRescueRequestMutation(
   options?: MutationHookOptions<
     { createRescueRequest: RescueRequest },
     { input: CreateRescueRequestInput }
-  >
+  >,
 ) {
   return useMutation<
     { createRescueRequest: RescueRequest },
@@ -642,7 +634,7 @@ export function useAssignRescueMutation(
   options?: MutationHookOptions<
     { assignRescue: RescueRequest },
     { input: AssignRescueInput }
-  >
+  >,
 ) {
   return useMutation<
     { assignRescue: RescueRequest },
@@ -654,7 +646,7 @@ export function useAcceptRescueMutation(
   options?: MutationHookOptions<
     { acceptRescue: RescueRequest },
     { input: AcceptRescueInput }
-  >
+  >,
 ) {
   return useMutation<
     { acceptRescue: RescueRequest },
@@ -666,7 +658,7 @@ export function useUpdateRescueProgressMutation(
   options?: MutationHookOptions<
     { updateRescueProgress: RescueRequest },
     { input: UpdateRescueProgressInput }
-  >
+  >,
 ) {
   return useMutation<
     { updateRescueProgress: RescueRequest },
@@ -678,7 +670,7 @@ export function useCompleteRescueMutation(
   options?: MutationHookOptions<
     { completeRescue: RescueRequest },
     { input: CompleteRescueInput }
-  >
+  >,
 ) {
   return useMutation<
     { completeRescue: RescueRequest },
@@ -690,7 +682,7 @@ export function useCancelRescueMutation(
   options?: MutationHookOptions<
     { cancelRescue: RescueRequest },
     { rescueId: string; reason?: string }
-  >
+  >,
 ) {
   return useMutation<
     { cancelRescue: RescueRequest },
@@ -702,11 +694,11 @@ export function useRescueRequestQuery(
   options: QueryHookOptions<
     { rescueRequest: RescueRequest | null },
     { id: string }
-  >
+  >,
 ) {
   return useQuery<{ rescueRequest: RescueRequest | null }, { id: string }>(
     RESCUE_REQUEST,
-    options
+    options,
   );
 }
 
@@ -714,7 +706,7 @@ export function useMyRescueRequestsQuery(
   options?: QueryHookOptions<
     { myRescueRequests: RescueRequestConnection },
     { pagination?: PaginationInput; filter?: RescueRequestFilterInput }
-  >
+  >,
 ) {
   return useQuery<
     { myRescueRequests: RescueRequestConnection },
@@ -726,7 +718,7 @@ export function useMyAssignedRescuesQuery(
   options?: QueryHookOptions<
     { myAssignedRescues: RescueRequestConnection },
     { pagination?: PaginationInput; filter?: RescueRequestFilterInput }
-  >
+  >,
 ) {
   return useQuery<
     { myAssignedRescues: RescueRequestConnection },
@@ -738,7 +730,7 @@ export function useActiveRescuesQuery(
   options?: QueryHookOptions<
     { activeRescues: RescueRequestConnection },
     { pagination?: PaginationInput }
-  >
+  >,
 ) {
   return useQuery<
     { activeRescues: RescueRequestConnection },
@@ -750,11 +742,11 @@ export function useRescueWithTrackingQuery(
   options: QueryHookOptions<
     { rescueRequest: RescueRequest | null },
     { id: string }
-  >
+  >,
 ) {
   return useQuery<{ rescueRequest: RescueRequest | null }, { id: string }>(
     RESCUE_WITH_TRACKING,
-    options
+    options,
   );
 }
 
@@ -779,14 +771,14 @@ export interface FindAvailableVolunteersInput {
   lat: number;
   lng: number;
   limit?: number;
-  radius?: number;
+  radiusKm: number;
 }
 
 export function useAvailableVolunteersQuery(
   options?: QueryHookOptions<
     { availableVolunteers: AvailableVolunteer[] },
     { input: FindAvailableVolunteersInput }
-  >
+  >,
 ) {
   return useQuery<
     { availableVolunteers: AvailableVolunteer[] },
@@ -802,7 +794,7 @@ export function useAvailableRescuesQuery(
   options?: QueryHookOptions<
     { availableRescues: RescueRequestConnection },
     { pagination?: PaginationInput; filter?: RescueRequestFilterInput }
-  >
+  >,
 ) {
   return useQuery<
     { availableRescues: RescueRequestConnection },
@@ -818,7 +810,7 @@ export function useAcceptFromQueueMutation(
   options?: MutationHookOptions<
     { acceptFromQueue: RescueRequest },
     { input: AcceptRescueInput }
-  >
+  >,
 ) {
   return useMutation<
     { acceptFromQueue: RescueRequest },

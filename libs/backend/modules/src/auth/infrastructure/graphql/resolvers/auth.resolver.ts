@@ -1,7 +1,7 @@
 /**
  * Auth Resolvers
  * GraphQL resolvers for authentication
- * 
+ *
  * IMPORTANT: Resolvers should NEVER contain business logic.
  * They only:
  * 1. Validate input
@@ -32,7 +32,6 @@ export const authResolvers = {
      */
     me: async (_parent: any, _args: any, context: GraphQLContext) => {
       context.requireAuth();
-      
       // Fetch user with volunteerProfile included
       const user = await prisma.user.findUnique({
         where: { id: context.user.id },
@@ -42,6 +41,34 @@ export const authResolvers = {
       });
 
       return user;
+    },
+
+    user: async (
+      _parent: any,
+      args: { id: string },
+      context: GraphQLContext,
+    ) => {
+      context.requireAuth();
+      context.requireRole(['ADMIN', 'SUPER_ADMIN']);
+
+      return prisma.user.findFirst({
+        where: { id: args.id, deletedAt: null },
+        include: { volunteerProfile: true },
+      });
+    },
+
+    volunteer: async (
+      _parent: any,
+      args: { id: string },
+      context: GraphQLContext,
+    ) => {
+      context.requireAuth();
+      context.requireRole(['ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR']);
+
+      return prisma.volunteer.findFirst({
+        where: { id: args.id, deletedAt: null },
+        include: { user: true },
+      });
     },
 
     /**
@@ -58,7 +85,7 @@ export const authResolvers = {
           search?: string;
         };
       },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       // Require admin access
       context.requireAuth();
@@ -71,19 +98,19 @@ export const authResolvers = {
 
       // Build where clause
       const where: any = {};
-      
+
       if (filter?.role) {
         where.role = filter.role;
       }
-      
+
       if (filter?.status) {
         where.status = filter.status;
       }
-      
+
       if (filter?.emailVerified !== undefined) {
         where.emailVerified = filter.emailVerified;
       }
-      
+
       if (filter?.search) {
         where.OR = [
           { name: { contains: filter.search, mode: 'insensitive' } },
@@ -128,9 +155,10 @@ export const authResolvers = {
           experience?: string;
           municipality?: string;
           isAvailableNow?: boolean;
+          search?: string;
         };
       },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       try {
         // Require admin/coordinator access
@@ -144,22 +172,36 @@ export const authResolvers = {
 
         // Build where clause
         const where: any = {};
-        
+
         if (filter?.status) {
           where.status = filter.status;
         }
-        
+
         if (filter?.experience) {
           where.experience = filter.experience;
         }
-        
+
         if (filter?.municipality) {
-          where.municipality = { contains: filter.municipality, mode: 'insensitive' };
+          where.municipality = {
+            contains: filter.municipality,
+            mode: 'insensitive',
+          };
         }
-        
+
         if (filter?.isAvailableNow !== undefined) {
           where.isAvailableNow = filter.isAvailableNow;
         }
+
+        if (filter?.search) {
+          where.OR = [
+            { name: { contains: filter.search, mode: 'insensitive' } },
+            { email: { contains: filter.search, mode: 'insensitive' } },
+            { contact: { contains: filter.search } },
+            { municipality: { contains: filter.search, mode: 'insensitive' } },
+          ];
+        }
+
+        where.deletedAt = null;
 
         // Fetch volunteers and total count
         const [volunteers, totalCount] = await Promise.all([
@@ -185,7 +227,10 @@ export const authResolvers = {
             hasNextPage: skip + volunteers.length < totalCount,
             hasPreviousPage: page > 1,
             startCursor: volunteers.length > 0 ? volunteers[0].id : null,
-            endCursor: volunteers.length > 0 ? volunteers[volunteers.length - 1].id : null,
+            endCursor:
+              volunteers.length > 0
+                ? volunteers[volunteers.length - 1].id
+                : null,
           },
           totalCount,
         };
@@ -273,7 +318,7 @@ export const authResolvers = {
      */
     forgotPassword: async (_parent: any, args: { email: string }) => {
       const forgotPasswordUseCase = new ForgotPasswordUseCase();
-      
+
       const result = await forgotPasswordUseCase.execute({ email: args.email });
       return result;
     },
@@ -281,9 +326,12 @@ export const authResolvers = {
     /**
      * Reset password mutation
      */
-    resetPassword: async (_parent: any, args: { input: { email: string; code: string; newPassword: string } }) => {
+    resetPassword: async (
+      _parent: any,
+      args: { input: { email: string; code: string; newPassword: string } },
+    ) => {
       const resetPasswordUseCase = new ResetPasswordUseCase();
-      
+
       const result = await resetPasswordUseCase.execute(args.input);
       return result.success;
     },
@@ -291,9 +339,12 @@ export const authResolvers = {
     /**
      * Verify email mutation
      */
-    verifyEmail: async (_parent: any, args: { input: { email: string; code: string } }) => {
+    verifyEmail: async (
+      _parent: any,
+      args: { input: { email: string; code: string } },
+    ) => {
       const verifyEmailUseCase = new VerifyEmailUseCase();
-      
+
       const result = await verifyEmailUseCase.execute(args.input);
       return result;
     },
@@ -301,25 +352,195 @@ export const authResolvers = {
     /**
      * Resend verification email mutation
      */
-    resendVerification: async (_parent: any, args: { input: { email: string } }) => {
+    resendVerification: async (
+      _parent: any,
+      args: { input: { email: string } },
+    ) => {
       const resendVerificationUseCase = new ResendVerificationUseCase();
       const result = await resendVerificationUseCase.execute(args.input);
-      
+
       return result.success;
     },
 
     /**
      * Change password mutation (authenticated)
      */
-    changePassword: async (_parent: any, args: { input: any }, context: GraphQLContext) => {
+    changePassword: async (
+      _parent: any,
+      args: { input: any },
+      context: GraphQLContext,
+    ) => {
       context.requireAuth();
 
       const userRepository = new UserRepository(prisma);
       const authService = new AuthService();
-      const changePasswordUseCase = new ChangePasswordUseCase(userRepository, authService);
-      
-      const result = await changePasswordUseCase.execute(context.user.id, args.input);
+      const changePasswordUseCase = new ChangePasswordUseCase(
+        userRepository,
+        authService,
+      );
+
+      const result = await changePasswordUseCase.execute(
+        context.user.id,
+        args.input,
+      );
       return result;
+    },
+
+    reviewVolunteerApplication: async (
+      _parent: any,
+      args: {
+        input: {
+          volunteerId: string;
+          approved: boolean;
+          notes?: string;
+          assignedZone?: string;
+        };
+      },
+      context: GraphQLContext,
+    ) => {
+      context.requireAuth();
+      context.requireRole(['ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR']);
+
+      const { volunteerId, approved, notes, assignedZone } = args.input;
+      const volunteer = await prisma.volunteer.findFirstOrThrow({
+        where: { id: volunteerId, deletedAt: null },
+      });
+
+      return prisma.$transaction(async (transaction) => {
+        const updatedVolunteer = await transaction.volunteer.update({
+          where: { id: volunteer.id },
+          data: {
+            status: approved ? 'APPROVED' : 'REJECTED',
+            assignedZone,
+            rejectionReason: approved ? null : notes,
+            rejectedAt: approved ? null : new Date(),
+            rejectedBy: approved ? null : context.user.id,
+          } as any,
+          include: { user: true },
+        });
+
+        if (volunteer.userId && approved) {
+          await transaction.user.update({
+            where: { id: volunteer.userId },
+            data: { role: 'VOLUNTEER', status: 'ACTIVE' } as any,
+          });
+        }
+
+        return updatedVolunteer;
+      });
+    },
+
+    verifyVolunteer: async (
+      _parent: any,
+      args: { volunteerId: string; notes?: string },
+      context: GraphQLContext,
+    ) => {
+      context.requireAuth();
+      context.requireRole(['ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR']);
+
+      const volunteer = await prisma.volunteer.findFirstOrThrow({
+        where: { id: args.volunteerId, deletedAt: null },
+      });
+
+      return prisma.$transaction(async (transaction) => {
+        const updatedVolunteer = await transaction.volunteer.update({
+          where: { id: volunteer.id },
+          data: {
+            status: 'VERIFIED',
+            verifiedAt: new Date(),
+            verifiedBy: context.user.id,
+          } as any,
+          include: { user: true },
+        });
+
+        if (volunteer.userId) {
+          await transaction.user.update({
+            where: { id: volunteer.userId },
+            data: { role: 'VERIFIED_RESCUER', status: 'ACTIVE' } as any,
+          });
+        }
+
+        return updatedVolunteer;
+      });
+    },
+
+    suspendVolunteer: async (
+      _parent: any,
+      args: { volunteerId: string; reason: string },
+      context: GraphQLContext,
+    ) => {
+      context.requireAuth();
+      context.requireRole(['ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR']);
+
+      const volunteer = await prisma.volunteer.update({
+        where: { id: args.volunteerId },
+        data: { status: 'SUSPENDED', rejectionReason: args.reason } as any,
+        include: { user: true },
+      });
+
+      if (volunteer.userId) {
+        await prisma.user.update({
+          where: { id: volunteer.userId },
+          data: { status: 'SUSPENDED' } as any,
+        });
+      }
+
+      return volunteer;
+    },
+
+    reactivateVolunteer: async (
+      _parent: any,
+      args: { volunteerId: string },
+      context: GraphQLContext,
+    ) => {
+      context.requireAuth();
+      context.requireRole(['ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR']);
+
+      const volunteer = await prisma.volunteer.update({
+        where: { id: args.volunteerId },
+        data: { status: 'APPROVED', rejectionReason: null } as any,
+        include: { user: true },
+      });
+
+      if (volunteer.userId) {
+        await prisma.user.update({
+          where: { id: volunteer.userId },
+          data: { status: 'ACTIVE', role: 'VOLUNTEER' } as any,
+        });
+      }
+
+      return volunteer;
+    },
+
+    deleteVolunteer: async (
+      _parent: any,
+      args: { volunteerId: string },
+      context: GraphQLContext,
+    ) => {
+      context.requireAuth();
+      context.requireRole(['SUPER_ADMIN']);
+
+      const volunteer = await prisma.volunteer.update({
+        where: { id: args.volunteerId },
+        data: {
+          deletedAt: new Date(),
+          status: 'INACTIVE',
+          isAvailableNow: false,
+        } as any,
+      });
+
+      if (volunteer.userId) {
+        await prisma.user.update({
+          where: { id: volunteer.userId },
+          data: { status: 'INACTIVE' } as any,
+        });
+      }
+
+      return {
+        success: true,
+        message: 'Volunteer deleted successfully',
+        metadata: { volunteerId: args.volunteerId },
+      };
     },
   },
 };

@@ -1,6 +1,6 @@
 # Payment Method Selector Component
 
-A reusable payment method selector component for the Snake Rescue application, supporting eSewa, Khalti, and Bank Transfer payment methods.
+A reusable payment method selector component for the Snake Rescue application, supporting eSewa, Khalti, and Stripe card payments.
 
 ## Features
 
@@ -85,7 +85,7 @@ interface PaymentMethodOption {
 
 ## Payment Methods
 
-### 1. eSewa
+type PaymentMethod = 'esewa' | 'khalti' | 'stripe';
 - **ID**: `esewa`
 - **Name**: eSewa
 - **Description**: @snakesos01
@@ -109,10 +109,10 @@ The component uses Tailwind CSS and matches the app's dark theme:
 - Background: `#0d1a1a` (unselected), `#1a2a2a` (selected)
 - Border: Emerald (`#10b981`) for selected state
 - Text: White primary, gray secondary
-
-## Integration with Payment Gateways
-
-The component only handles UI selection. You'll need to integrate with actual payment gateways:
+- **ID**: `stripe`
+- **Name**: Credit/Debit Card
+- **Description**: via Stripe
+- **Logo**: null
 
 ### eSewa Integration
 ```typescript
@@ -150,15 +150,11 @@ if (method === 'bank') {
     accountNumber: "XXXX-XXXX-XXXX",
   });
 }
-```
+For Stripe, redirect the user to the secure checkout page:
 
 ## Example Page
-
-See `apps/frontend/src/app/(dashboard)/dashboard/donate/page.tsx` for a complete example with:
-- Amount input
-- Quick amount selection
-- Payment method selector
-- Proceed to payment button
+if (method === 'stripe') {
+  window.location.href = '/donate';
 - Information section
 
 ## Logo Requirements
@@ -175,7 +171,8 @@ Recommended logo size: 200x200px (will be scaled to 56x56px)
 - Keyboard navigation support
 - Proper ARIA labels
 - Visual feedback for selection
-- Disabled state handling
+- `bank.jpg` - Bank/generic payment logo (deprecated)
+- `stripe.png` - Stripe logo (add this logo)
 - Focus management
 
 ## Browser Support

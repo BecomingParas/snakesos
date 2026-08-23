@@ -46,11 +46,9 @@ export class AcceptFromQueueUseCase {
       // 4. Update volunteer statistics (mark as busy)
       await this.updateVolunteerAvailability(input.volunteerId, false);
 
-      return {
-        success: true,
-        rescue,
-        message: 'Rescue accepted successfully',
-      };
+      // The GraphQL mutation is declared to return RescueRequest, so return
+      // the assigned rescue itself rather than a wrapper object.
+      return rescue;
     } catch (error: any) {
       // Handle specific errors from atomic assignment
       if (error.message?.includes('RESCUE_ALREADY_ASSIGNED')) {

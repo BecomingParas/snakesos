@@ -16,8 +16,10 @@ export function createRescueLoader(prisma: PrismaClient) {
           },
         },
         include: {
-          reporter: true,
-          volunteer: true,
+          user: true,
+          assignedVolunteer: {
+            include: { user: true },
+          },
           species: true,
         },
       });
