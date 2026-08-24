@@ -1,0 +1,3 @@
+extend type Query {
+  adminSettings: AdminSettings! @auth(requires: [ADMIN, SUPER_ADMIN])
+}

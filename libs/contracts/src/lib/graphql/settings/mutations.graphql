@@ -1,0 +1,4 @@
+extend type Mutation {
+  updateAdminSettings(input: AdminSettingsInput!): AdminSettings!
+    @auth(requires: [ADMIN, SUPER_ADMIN])
+}

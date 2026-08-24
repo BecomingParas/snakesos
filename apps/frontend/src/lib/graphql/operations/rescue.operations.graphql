@@ -47,6 +47,14 @@ mutation AssignRescue($input: AssignRescueInput!) {
   }
 }
 
+mutation UpdateRescueRequest($id: ID!, $input: UpdateRescueRequestInput!) {
+  updateRescueRequest(id: $id, input: $input) {
+    id
+    priority
+    updatedAt
+  }
+}
+
 mutation AcceptRescue($input: AcceptRescueInput!) {
   acceptRescue(input: $input) {
     id

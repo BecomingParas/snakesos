@@ -6,10 +6,14 @@
 import { expressMiddleware } from '@as-integrations/express5';
 import type { Express, Request, Response } from 'express';
 import { createLogger } from '@snake-rescue/shared';
-import { createApolloServer, buildContext, type GraphQLContext } from '@snake-rescue/core';
-import { 
-  authResolvers, 
-  rescueQueryResolvers, 
+import {
+  createApolloServer,
+  buildContext,
+  type GraphQLContext,
+} from '@snake-rescue/core';
+import {
+  authResolvers,
+  rescueQueryResolvers,
   rescueMutationResolvers,
   analyticsResolvers,
   paymentsResolvers,
@@ -17,6 +21,8 @@ import {
   hospitalMutationResolvers,
   hospitalSubscriptionResolvers,
   mapQueryResolvers,
+  settingsResolvers,
+  notificationResolvers,
 } from '@snake-rescue/modules';
 import { config } from './config/index.js';
 
@@ -37,6 +43,8 @@ export async function setupApolloServer(app: Express) {
     hospitalMutationResolvers,
     hospitalSubscriptionResolvers,
     mapQueryResolvers,
+    settingsResolvers,
+    notificationResolvers,
   ];
 
   // Create Apollo Server with schema and resolvers
@@ -50,17 +58,25 @@ export async function setupApolloServer(app: Express) {
   app.use(
     config.graphqlPath,
     expressMiddleware(server as any, {
-      context: async ({ req, res }: { req: Request; res: Response }): Promise<GraphQLContext> => {
+      context: async ({
+        req,
+        res,
+      }: {
+        req: Request;
+        res: Response;
+      }): Promise<GraphQLContext> => {
         // Use buildContext to create fully-featured context with loaders, permissions, etc.
         return await buildContext({ req, res });
       },
-    })
+    }),
   );
 
   logger.info(`GraphQL endpoint: ${config.graphqlPath}`);
-  
+
   if (config.graphqlPlayground) {
-    logger.info(`GraphQL Playground: http://${config.host}:${config.port}${config.graphqlPath}`);
+    logger.info(
+      `GraphQL Playground: http://${config.host}:${config.port}${config.graphqlPath}`,
+    );
   }
 
   return server;

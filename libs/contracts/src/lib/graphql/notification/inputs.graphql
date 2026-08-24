@@ -68,6 +68,11 @@ enum NotificationSortField {
 Input for updating notification preferences
 """
 input UpdateNotificationPreferencesInput {
+  highPriorityRescueAlerts: Boolean
+  rescueCompletionNotifications: Boolean
+  newUserRegistrations: Boolean
+  systemAlerts: Boolean
+  dailySummaryReports: Boolean
   enableApp: Boolean
   enableEmail: Boolean
   enableSMS: Boolean

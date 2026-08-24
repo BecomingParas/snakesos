@@ -20,3 +20,6 @@ export * from '../analytics/index.js';
 
 // Payments Module (Development Testing Only)
 export * from '../payments/index.js';
+
+// Admin settings module
+export * from '../settings/index.js';

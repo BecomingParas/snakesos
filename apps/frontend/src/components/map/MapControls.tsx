@@ -9,8 +9,6 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import {
   MapIcon,
@@ -97,7 +95,9 @@ export function MapControls({
       <CardContent className="space-y-4">
         {/* Legend */}
         <div className="space-y-2">
-          <h4 className="text-xs font-semibold text-muted-foreground">Map Legend</h4>
+          <h4 className="text-xs font-semibold text-muted-foreground">
+            Map Legend
+          </h4>
           <div className="space-y-2">
             {/* Incident Markers */}
             <div className="space-y-1.5">
@@ -230,22 +230,39 @@ export function MapControls({
           <>
             <Separator />
             <div className="space-y-2">
-              <h4 className="text-xs font-semibold text-muted-foreground">View Controls</h4>
+              <h4 className="text-xs font-semibold text-muted-foreground">
+                View Controls
+              </h4>
               <div className="grid grid-cols-3 gap-2">
                 {onZoomIn && (
-                  <Button variant="outline" size="sm" onClick={onZoomIn} className="text-xs">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onZoomIn}
+                    className="text-xs"
+                  >
                     <Maximize2 className="h-3 w-3 mr-1" />
                     Zoom In
                   </Button>
                 )}
                 {onZoomOut && (
-                  <Button variant="outline" size="sm" onClick={onZoomOut} className="text-xs">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onZoomOut}
+                    className="text-xs"
+                  >
                     <Minimize2 className="h-3 w-3 mr-1" />
                     Zoom Out
                   </Button>
                 )}
                 {onFitBounds && (
-                  <Button variant="outline" size="sm" onClick={onFitBounds} className="text-xs">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onFitBounds}
+                    className="text-xs"
+                  >
                     <Layers className="h-3 w-3 mr-1" />
                     Fit All
                   </Button>
@@ -282,7 +299,11 @@ export function FloatingLegend({ className = '' }: { className?: string }) {
       >
         <Layers className="h-4 w-4 mr-2" />
         Legend
-        {isOpen ? <EyeOff className="h-3 w-3 ml-2" /> : <Eye className="h-3 w-3 ml-2" />}
+        {isOpen ? (
+          <EyeOff className="h-3 w-3 ml-2" />
+        ) : (
+          <Eye className="h-3 w-3 ml-2" />
+        )}
       </Button>
 
       {isOpen && (

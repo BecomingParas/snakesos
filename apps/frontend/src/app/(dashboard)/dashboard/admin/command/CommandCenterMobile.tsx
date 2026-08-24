@@ -1,249 +1,372 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react';
 import {
-  MapPin,
-  Clock,
+  Activity,
   AlertCircle,
-  Phone,
-  User,
+  AlertTriangle,
   ChevronRight,
+  ClipboardList,
+  Clock,
   Loader2,
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
-import { type RescueRequest } from '@/lib/graphql/hooks/rescue.hooks'
+  MapPin,
+  User,
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { type RescueRequest } from '@/lib/graphql/hooks/rescue.hooks';
+import { cn } from '@/lib/utils';
 
 interface CommandCenterMobileProps {
-  rescues: RescueRequest[]
-  loading: boolean
-  onRescueSelect: (rescue: RescueRequest) => void
+  rescues: RescueRequest[];
+  loading: boolean;
+  onRescueSelect: (rescue: RescueRequest) => void;
 }
 
 const STATUS_CONFIG = {
-  PENDING: { label: 'Pending', color: 'bg-yellow-500', textColor: 'text-yellow-700' },
-  ASSIGNED: { label: 'Assigned', color: 'bg-blue-500', textColor: 'text-blue-700' },
-  ACCEPTED: { label: 'Accepted', color: 'bg-green-500', textColor: 'text-green-700' },
-  IN_PROGRESS: { label: 'In Progress', color: 'bg-purple-500', textColor: 'text-purple-700' },
-  COMPLETED: { label: 'Completed', color: 'bg-green-600', textColor: 'text-green-800' },
-  CANCELLED: { label: 'Cancelled', color: 'bg-red-500', textColor: 'text-red-700' },
-}
+  PENDING: { label: 'Pending', color: 'bg-yellow-500' },
+  ASSIGNED: { label: 'Assigned', color: 'bg-blue-500' },
+  ACCEPTED: { label: 'Accepted', color: 'bg-green-500' },
+  IN_PROGRESS: { label: 'In Progress', color: 'bg-purple-500' },
+  COMPLETED: { label: 'Completed', color: 'bg-green-600' },
+  CANCELLED: { label: 'Cancelled', color: 'bg-red-500' },
+};
 
 const PRIORITY_CONFIG = {
   LOW: { color: 'bg-gray-500', label: 'Low' },
   MEDIUM: { color: 'bg-yellow-500', label: 'Medium' },
   HIGH: { color: 'bg-orange-500', label: 'High' },
   CRITICAL: { color: 'bg-red-600', label: 'Critical' },
+};
+
+const ACTIVE_STATUSES = ['ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'] as const;
+
+const PRIORITY_SECTIONS = [
+  {
+    key: 'CRITICAL',
+    label: 'Critical Priority',
+    icon: AlertTriangle,
+    className: 'text-destructive',
+  },
+  {
+    key: 'HIGH',
+    label: 'High Priority',
+    icon: AlertCircle,
+    className: 'text-orange-500',
+  },
+  {
+    key: 'STANDARD',
+    label: 'Standard Priority',
+    icon: null,
+    className: 'text-muted-foreground',
+  },
+] as const;
+
+function getRelativeTime(date: string) {
+  const minutes = Math.max(
+    0,
+    Math.floor((Date.now() - new Date(date).getTime()) / 60_000),
+  );
+  if (minutes < 1) return 'Just now';
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
 }
 
-/**
- * Mobile Command Center - Queue View
- * Shows rescue requests as cards with priority and status
- * Tapping a card navigates to detail view
- */
 export function CommandCenterMobile({
   rescues,
   loading,
   onRescueSelect,
 }: CommandCenterMobileProps) {
-  const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'active'>('all')
-
-  // Filter rescues by tab
+  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'active'>(
+    'all',
+  );
+  const pendingCount = rescues.filter(
+    ({ status }) => status === 'PENDING',
+  ).length;
+  const activeCount = rescues.filter(({ status }) =>
+    ACTIVE_STATUSES.includes(status as (typeof ACTIVE_STATUSES)[number]),
+  ).length;
+  const criticalCount = rescues.filter(
+    ({ priority }) => priority === 'CRITICAL',
+  ).length;
   const filteredRescues = rescues.filter((rescue) => {
-    if (activeTab === 'pending') return rescue.status === 'PENDING'
-    if (activeTab === 'active') return ['ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'].includes(rescue.status)
-    return true
-  })
-
-  // Group by priority
-  const criticalRescues = filteredRescues.filter(r => r.priority === 'CRITICAL')
-  const highRescues = filteredRescues.filter(r => r.priority === 'HIGH')
-  const otherRescues = filteredRescues.filter(r => !['CRITICAL', 'HIGH'].includes(r.priority))
+    if (activeTab === 'pending') return rescue.status === 'PENDING';
+    if (activeTab === 'active')
+      return ACTIVE_STATUSES.includes(
+        rescue.status as (typeof ACTIVE_STATUSES)[number],
+      );
+    return true;
+  });
+  const priorityGroups = {
+    CRITICAL: filteredRescues.filter(({ priority }) => priority === 'CRITICAL'),
+    HIGH: filteredRescues.filter(({ priority }) => priority === 'HIGH'),
+    STANDARD: filteredRescues.filter(
+      ({ priority }) => !['CRITICAL', 'HIGH'].includes(priority),
+    ),
+  };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-[50vh]">
+      <div className="flex h-[50vh] items-center justify-center">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-3" />
+          <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-primary" />
           <p className="text-sm text-muted-foreground">Loading rescues...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Stats Summary */}
-      <div className="p-4 border-b">
-        <div className="grid grid-cols-3 gap-3">
-          <Card className="p-3">
-            <p className="text-xs text-muted-foreground">Open</p>
-            <p className="text-2xl font-bold">{rescues.filter(r => r.status === 'PENDING').length}</p>
-          </Card>
-          <Card className="p-3">
-            <p className="text-xs text-muted-foreground">Active</p>
-            <p className="text-2xl font-bold">
-              {rescues.filter(r => ['ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'].includes(r.status)).length}
+    <div className="flex h-full flex-col bg-muted/20">
+      <header className="border-b bg-card px-4 pb-4 pt-5">
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+              Live operations
             </p>
-          </Card>
-          <Card className="p-3">
-            <p className="text-xs text-muted-foreground">Critical</p>
-            <p className="text-2xl font-bold text-destructive">{criticalRescues.length}</p>
-          </Card>
+            <h1 className="mt-1 text-xl font-bold tracking-tight">
+              Rescue Command Center
+            </h1>
+          </div>
+          <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+            <Activity className="h-3.5 w-3.5" /> Live
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <StatCard icon={ClipboardList} label="Open" value={pendingCount} />
+          <StatCard icon={Activity} label="Active" value={activeCount} />
+          <StatCard
+            icon={AlertTriangle}
+            label="Critical"
+            value={criticalCount}
+            tone="critical"
+          />
+        </div>
+      </header>
+
+      <div className="border-b bg-card px-4 py-3">
+        <div
+          className="flex gap-1 rounded-lg border bg-muted/50 p-1"
+          role="tablist"
+          aria-label="Rescue filters"
+        >
+          {(
+            [
+              ['all', 'All', rescues.length],
+              ['pending', 'Pending', pendingCount],
+              ['active', 'Active', activeCount],
+            ] as const
+          ).map(([tab, label, count]) => (
+            <Button
+              key={tab}
+              variant={activeTab === tab ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setActiveTab(tab)}
+              className="h-8 flex-1 px-2 text-xs"
+              role="tab"
+              aria-selected={activeTab === tab}
+            >
+              {label} <span className="ml-1 opacity-70">{count}</span>
+            </Button>
+          ))}
         </div>
       </div>
 
-      {/* Tab Filters */}
-      <div className="flex gap-2 p-4 border-b overflow-x-auto">
-        <Button
-          variant={activeTab === 'all' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setActiveTab('all')}
-          className="shrink-0"
-        >
-          All ({rescues.length})
-        </Button>
-        <Button
-          variant={activeTab === 'pending' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setActiveTab('pending')}
-          className="shrink-0"
-        >
-          Pending ({rescues.filter(r => r.status === 'PENDING').length})
-        </Button>
-        <Button
-          variant={activeTab === 'active' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setActiveTab('active')}
-          className="shrink-0"
-        >
-          Active ({rescues.filter(r => ['ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'].includes(r.status)).length})
-        </Button>
-      </div>
-
-      {/* Rescue List */}
       <div className="flex-1 overflow-y-auto">
         {filteredRescues.length === 0 ? (
-          <div className="flex items-center justify-center h-64">
+          <div className="flex h-64 items-center justify-center px-6">
             <div className="text-center">
-              <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground" />
-              <p className="mt-3 text-sm text-muted-foreground">No rescues found</p>
+              <ClipboardList className="mx-auto h-12 w-12 text-muted-foreground/60" />
+              <p className="mt-3 text-sm font-medium">Queue is clear</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                No rescues match this filter.
+              </p>
             </div>
           </div>
         ) : (
-          <div className="p-4 space-y-3">
-            {/* Critical Priority */}
-            {criticalRescues.length > 0 && (
-              <>
-                <div className="flex items-center gap-2 mb-2">
-                  <AlertCircle className="h-4 w-4 text-destructive" />
-                  <h3 className="text-sm font-semibold text-destructive">Critical Priority</h3>
-                </div>
-                {criticalRescues.map(rescue => (
-                  <RescueCard key={rescue.id} rescue={rescue} onClick={() => onRescueSelect(rescue)} />
-                ))}
-              </>
-            )}
-
-            {/* High Priority */}
-            {highRescues.length > 0 && (
-              <>
-                <div className="flex items-center gap-2 mb-2 mt-4">
-                  <AlertCircle className="h-4 w-4 text-orange-500" />
-                  <h3 className="text-sm font-semibold text-orange-500">High Priority</h3>
-                </div>
-                {highRescues.map(rescue => (
-                  <RescueCard key={rescue.id} rescue={rescue} onClick={() => onRescueSelect(rescue)} />
-                ))}
-              </>
-            )}
-
-            {/* Other Priority */}
-            {otherRescues.length > 0 && criticalRescues.length + highRescues.length > 0 && (
-              <div className="flex items-center gap-2 mb-2 mt-4">
-                <h3 className="text-sm font-semibold text-muted-foreground">Standard Priority</h3>
-              </div>
-            )}
-            {otherRescues.map(rescue => (
-              <RescueCard key={rescue.id} rescue={rescue} onClick={() => onRescueSelect(rescue)} />
-            ))}
+          <div className="space-y-5 p-4">
+            {PRIORITY_SECTIONS.map((section) => {
+              const sectionRescues = priorityGroups[section.key];
+              if (!sectionRescues.length) return null;
+              const Icon = section.icon;
+              return (
+                <section key={section.key} className="space-y-2.5">
+                  <div className="flex items-center gap-2">
+                    {Icon && (
+                      <Icon className={cn('h-4 w-4', section.className)} />
+                    )}
+                    <h2
+                      className={cn(
+                        'text-xs font-semibold uppercase tracking-wider',
+                        section.className,
+                      )}
+                    >
+                      {section.label}
+                    </h2>
+                    <span className="text-xs text-muted-foreground">
+                      {sectionRescues.length}
+                    </span>
+                  </div>
+                  <div className="space-y-3">
+                    {sectionRescues.map((rescue) => (
+                      <RescueCard
+                        key={rescue.id}
+                        rescue={rescue}
+                        onClick={() => onRescueSelect(rescue)}
+                      />
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }
 
-/**
- * Individual Rescue Card Component
- */
-function RescueCard({ rescue, onClick }: { rescue: RescueRequest; onClick: () => void }) {
-  const statusConfig = STATUS_CONFIG[rescue.status as keyof typeof STATUS_CONFIG]
-  const priorityConfig = PRIORITY_CONFIG[rescue.priority as keyof typeof PRIORITY_CONFIG]
-  const timeAgo = Math.round((Date.now() - new Date(rescue.createdAt).getTime()) / 60000)
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  tone = 'default',
+}: {
+  icon: typeof ClipboardList;
+  label: string;
+  value: number;
+  tone?: 'default' | 'critical';
+}) {
+  return (
+    <Card className="border-border/60 bg-background/70 p-2.5 shadow-none">
+      <div className="flex items-center justify-between gap-1">
+        <span className="text-[11px] font-medium text-muted-foreground">
+          {label}
+        </span>
+        <Icon
+          className={cn(
+            'h-3.5 w-3.5',
+            tone === 'critical' ? 'text-destructive' : 'text-primary',
+          )}
+        />
+      </div>
+      <p
+        className={cn(
+          'mt-1 text-2xl font-bold leading-none',
+          tone === 'critical' && 'text-destructive',
+        )}
+      >
+        {value}
+      </p>
+    </Card>
+  );
+}
+
+function RescueCard({
+  rescue,
+  onClick,
+}: {
+  rescue: RescueRequest;
+  onClick: () => void;
+}) {
+  const statusConfig =
+    STATUS_CONFIG[rescue.status as keyof typeof STATUS_CONFIG] ??
+    STATUS_CONFIG.PENDING;
+  const priorityConfig =
+    PRIORITY_CONFIG[rescue.priority as keyof typeof PRIORITY_CONFIG] ??
+    PRIORITY_CONFIG.LOW;
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onClick();
+    }
+  };
 
   return (
     <Card
-      className={cn(
-        'p-4 cursor-pointer transition-all active:scale-[0.98]',
-        rescue.priority === 'CRITICAL' && 'border-destructive/50',
-        rescue.priority === 'HIGH' && 'border-orange-500/50'
-      )}
+      role="button"
+      tabIndex={0}
+      aria-label={`Open rescue ${rescue.referenceNumber}`}
       onClick={onClick}
+      onKeyDown={handleKeyDown}
+      className={cn(
+        'group relative cursor-pointer overflow-hidden border-border/60 bg-card/80 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-[0.99]',
+        rescue.priority === 'CRITICAL' &&
+          'border-destructive/40 shadow-sm shadow-destructive/10',
+        rescue.priority === 'HIGH' &&
+          'border-orange-500/40 shadow-sm shadow-orange-500/10',
+      )}
     >
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <p className="font-semibold text-sm truncate">{rescue.referenceNumber}</p>
-            {rescue.isEmergency && (
-              <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
-                EMERGENCY
-              </Badge>
-            )}
+      <div
+        className={cn(
+          'absolute inset-y-0 left-0 w-1',
+          rescue.priority === 'CRITICAL' && 'bg-destructive',
+          rescue.priority === 'HIGH' && 'bg-orange-500',
+          rescue.priority === 'MEDIUM' && 'bg-yellow-500',
+          rescue.priority === 'LOW' && 'bg-muted',
+        )}
+      />
+      <div className="p-4 pl-5">
+        <div className="mb-3 flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="mb-1 flex flex-wrap items-center gap-2">
+              <p className="truncate text-sm font-semibold">
+                {rescue.referenceNumber}
+              </p>
+              {rescue.isEmergency && (
+                <Badge
+                  variant="destructive"
+                  className="px-1.5 py-0 text-[10px]"
+                >
+                  EMERGENCY
+                </Badge>
+              )}
+            </div>
+            <div className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+              <MapPin className="h-3 w-3 shrink-0" />
+              <span className="truncate">{rescue.address}</span>
+            </div>
           </div>
-          <p className="text-xs text-muted-foreground truncate">{rescue.address}</p>
+          <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
         </div>
-        <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0 ml-2" />
-      </div>
-
-      <div className="flex items-center gap-2 mb-3">
-        <Badge className={cn('text-xs text-white', statusConfig.color)}>
-          {statusConfig.label}
-        </Badge>
-        <Badge className={cn('text-xs text-white', priorityConfig.color)}>
-          {priorityConfig.label}
-        </Badge>
-      </div>
-
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <div className="flex items-center gap-1">
-          <Clock className="h-3 w-3" />
-          <span>{timeAgo}m ago</span>
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <Badge className={cn('text-xs text-white', statusConfig.color)}>
+            {statusConfig.label}
+          </Badge>
+          <Badge className={cn('text-xs text-white', priorityConfig.color)}>
+            {priorityConfig.label}
+          </Badge>
         </div>
-        {rescue.assignedVolunteer ? (
+        <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
           <div className="flex items-center gap-1">
-            <User className="h-3 w-3" />
-            <span className="truncate max-w-[100px]">{rescue.assignedVolunteer.name}</span>
+            <Clock className="h-3 w-3" />
+            <span>{getRelativeTime(rescue.createdAt)}</span>
           </div>
-        ) : (
-          <div className="flex items-center gap-1 text-yellow-500">
-            <AlertCircle className="h-3 w-3" />
-            <span>Unassigned</span>
+          {rescue.assignedVolunteer ? (
+            <div className="flex min-w-0 items-center gap-1">
+              <User className="h-3 w-3 shrink-0" />
+              <span className="max-w-25 truncate">
+                {rescue.assignedVolunteer.name}
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 text-yellow-500">
+              <AlertCircle className="h-3 w-3" />
+              <span>Unassigned</span>
+            </div>
+          )}
+        </div>
+        {rescue.snakeDescription && (
+          <div className="mt-3 border-t pt-2">
+            <p className="line-clamp-1 text-xs text-muted-foreground">
+              {rescue.snakeDescription}
+            </p>
           </div>
         )}
       </div>
-
-      {rescue.snakeDescription && (
-        <div className="mt-2 pt-2 border-t">
-          <p className="text-xs text-muted-foreground line-clamp-1">
-            🐍 {rescue.snakeDescription}
-          </p>
-        </div>
-      )}
     </Card>
-  )
+  );
 }

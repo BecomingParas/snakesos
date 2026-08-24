@@ -35,7 +35,7 @@ export const SidebarContext = createContext<{
   setCollapsed: (collapsed: boolean) => void
 }>({
   collapsed: false,
-  setCollapsed: () => {},
+  setCollapsed: () => undefined,
 })
 
 export const useSidebar = () => useContext(SidebarContext)

@@ -7,11 +7,14 @@
 'use client';
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { GoogleMap, LoadScript, Marker, InfoWindow, Polyline } from '@react-google-maps/api';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Phone, AlertTriangle, MapIcon, Navigation } from 'lucide-react';
-import { formatDistance, calculateDistance } from '@/lib/map/distance';
+import {
+  GoogleMap,
+  LoadScript,
+  Marker,
+  Polyline,
+} from '@react-google-maps/api';
+import { AlertTriangle } from 'lucide-react';
+import { calculateDistance } from '@/lib/map/distance';
 import { isValidCoordinate } from '@/lib/map/coordinates';
 import type { HospitalLocation } from './HospitalMap';
 import type { Route as RouteData } from '@/lib/map/routing.types';
@@ -47,32 +50,32 @@ export interface GoogleEmergencyMapProps {
   incident?: IncidentLocation;
   rescuers?: RescuerLocation[];
   hospitals?: HospitalLocation[];
-  
+
   // Route
   route?: RouteData;
   showRoute?: boolean;
-  
+
   // Map settings
   center?: { lat: number; lng: number };
   zoom?: number;
-  
+
   // Callbacks
   onIncidentClick?: () => void;
   onRescuerClick?: (rescuerId: string) => void;
   onHospitalClick?: (hospitalId: string) => void;
-  
+
   // Display options
   showRescuers?: boolean;
   showHospitals?: boolean;
   emergencyMode?: boolean;
-  
+
   // Google Maps API Key
   googleMapsApiKey?: string;
 }
 
 // ==================== CONSTANTS ====================
 
-const DEFAULT_CENTER = { lat: 27.7172, lng: 85.3240 }; // Kathmandu, Nepal
+const DEFAULT_CENTER = { lat: 27.7172, lng: 85.324 }; // Kathmandu, Nepal
 const DEFAULT_ZOOM = 8;
 
 // Nepal bounds for auto-centering
@@ -151,7 +154,10 @@ export function GoogleEmergencyMap({
   emergencyMode = false,
   googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
 }: GoogleEmergencyMapProps) {
-  const [selectedMarker, setSelectedMarker] = useState<{ type: string; id: string } | null>(null);
+  const [selectedMarker, setSelectedMarker] = useState<{
+    type: string;
+    id: string;
+  } | null>(null);
   const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -166,15 +172,23 @@ export function GoogleEmergencyMap({
 
   // Calculate hospitals with distance from incident
   const hospitalsWithDistance = useMemo(() => {
-    if (!incident || !isValidCoordinate(incident.latitude, incident.longitude)) {
+    if (
+      !incident ||
+      !isValidCoordinate(incident.latitude, incident.longitude)
+    ) {
       return hospitals;
     }
 
     return hospitals
-      .map(hospital => ({
+      .map((hospital) => ({
         ...hospital,
         distance: isValidCoordinate(hospital.latitude, hospital.longitude)
-          ? calculateDistance(incident.latitude, incident.longitude, hospital.latitude, hospital.longitude)
+          ? calculateDistance(
+              incident.latitude,
+              incident.longitude,
+              hospital.latitude,
+              hospital.longitude,
+            )
           : undefined,
       }))
       .sort((a, b) => (a.distance || Infinity) - (b.distance || Infinity));
@@ -195,7 +209,7 @@ export function GoogleEmergencyMap({
 
     // Add rescuers
     if (showRescuers) {
-      rescuers.forEach(rescuer => {
+      rescuers.forEach((rescuer) => {
         if (isValidCoordinate(rescuer.latitude, rescuer.longitude)) {
           bounds.extend({ lat: rescuer.latitude, lng: rescuer.longitude });
           hasValidBounds = true;
@@ -205,7 +219,7 @@ export function GoogleEmergencyMap({
 
     // Add hospitals
     if (showHospitals) {
-      hospitalsWithDistance.forEach(hospital => {
+      hospitalsWithDistance.forEach((hospital) => {
         if (isValidCoordinate(hospital.latitude, hospital.longitude)) {
           bounds.extend({ lat: hospital.latitude, lng: hospital.longitude });
           hasValidBounds = true;
@@ -216,7 +230,14 @@ export function GoogleEmergencyMap({
     if (hasValidBounds) {
       mapInstance.fitBounds(bounds);
     }
-  }, [mapInstance, incident, rescuers, hospitalsWithDistance, showRescuers, showHospitals]);
+  }, [
+    mapInstance,
+    incident,
+    rescuers,
+    hospitalsWithDistance,
+    showRescuers,
+    showHospitals,
+  ]);
 
   const onLoad = useCallback((map: google.maps.Map) => {
     setMapInstance(map);
@@ -227,57 +248,68 @@ export function GoogleEmergencyMap({
   }, []);
 
   // Simpler marker icons that don't require google.maps to be loaded
-  const getIncidentIcon = useCallback((priority: string) => {
-    if (!isLoaded || typeof google === 'undefined') return undefined;
-    
-    return {
-      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+  const getIncidentIcon = useCallback(
+    (priority: string) => {
+      if (!isLoaded || typeof google === 'undefined') return undefined;
+
+      return {
+        url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
           <circle cx="20" cy="20" r="18" fill="${getPriorityColor(priority as any)}" stroke="white" stroke-width="2"/>
           <text x="20" y="27" font-size="20" text-anchor="middle" fill="white">🐍</text>
         </svg>
       `)}`,
-      scaledSize: new google.maps.Size(40, 40),
-      anchor: new google.maps.Point(20, 20),
-    };
-  }, [isLoaded]);
+        scaledSize: new google.maps.Size(40, 40),
+        anchor: new google.maps.Point(20, 20),
+      };
+    },
+    [isLoaded],
+  );
 
-  const getRescuerIcon = useCallback((status: string) => {
-    if (!isLoaded || typeof google === 'undefined') return undefined;
-    
-    return {
-      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+  const getRescuerIcon = useCallback(
+    (status: string) => {
+      if (!isLoaded || typeof google === 'undefined') return undefined;
+
+      return {
+        url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
           <circle cx="18" cy="18" r="16" fill="${getRescuerStatusColor(status as any)}" stroke="white" stroke-width="2"/>
           <text x="18" y="24" font-size="18" text-anchor="middle" fill="white">🧑‍🚒</text>
         </svg>
       `)}`,
-      scaledSize: new google.maps.Size(36, 36),
-      anchor: new google.maps.Point(18, 18),
-    };
-  }, [isLoaded]);
+        scaledSize: new google.maps.Size(36, 36),
+        anchor: new google.maps.Point(18, 18),
+      };
+    },
+    [isLoaded],
+  );
 
-  const getHospitalIcon = useCallback((hospital: HospitalLocation) => {
-    if (!isLoaded || typeof google === 'undefined') return undefined;
-    
-    return {
-      url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+  const getHospitalIcon = useCallback(
+    (hospital: HospitalLocation) => {
+      if (!isLoaded || typeof google === 'undefined') return undefined;
+
+      return {
+        url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
           <circle cx="18" cy="18" r="16" fill="${getHospitalMarkerColor(hospital)}" stroke="white" stroke-width="2"/>
           <text x="18" y="24" font-size="18" text-anchor="middle" fill="white">🏥</text>
         </svg>
       `)}`,
-      scaledSize: new google.maps.Size(36, 36),
-      anchor: new google.maps.Point(18, 18),
-    };
-  }, [isLoaded]);
+        scaledSize: new google.maps.Size(36, 36),
+        anchor: new google.maps.Point(18, 18),
+      };
+    },
+    [isLoaded],
+  );
 
   if (!googleMapsApiKey) {
     return (
       <div className="w-full h-full min-h-[500px] bg-gray-100 flex items-center justify-center">
         <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-md">
           <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-          <h3 className="text-xl font-bold mb-2">Google Maps API Key Required</h3>
+          <h3 className="text-xl font-bold mb-2">
+            Google Maps API Key Required
+          </h3>
           <p className="text-gray-600 mb-4">
             Please add your Google Maps API key to your environment variables:
           </p>
@@ -299,7 +331,7 @@ export function GoogleEmergencyMap({
 
   return (
     <div className="w-full h-full relative">
-      <LoadScript 
+      <LoadScript
         googleMapsApiKey={googleMapsApiKey}
         onLoad={() => setIsLoaded(true)}
         onError={() => console.error('Error loading Google Maps')}
@@ -322,58 +354,69 @@ export function GoogleEmergencyMap({
           }}
         >
           {/* Incident Marker */}
-          {incident && isValidCoordinate(incident.latitude, incident.longitude) && (
-            <Marker
-              position={{ lat: incident.latitude, lng: incident.longitude }}
-              icon={getIncidentIcon(incident.priority)}
-              onClick={() => {
-                setSelectedMarker({ type: 'incident', id: incident.id });
-                onIncidentClick?.();
-              }}
-            />
-          )}
+          {incident &&
+            isValidCoordinate(incident.latitude, incident.longitude) && (
+              <Marker
+                position={{ lat: incident.latitude, lng: incident.longitude }}
+                icon={getIncidentIcon(incident.priority)}
+                onClick={() => {
+                  setSelectedMarker({ type: 'incident', id: incident.id });
+                  onIncidentClick?.();
+                }}
+              />
+            )}
 
           {/* Rescuer Markers */}
-          {showRescuers && rescuers.map((rescuer) => {
-            if (!isValidCoordinate(rescuer.latitude, rescuer.longitude)) return null;
+          {showRescuers &&
+            rescuers.map((rescuer) => {
+              if (!isValidCoordinate(rescuer.latitude, rescuer.longitude))
+                return null;
 
-            return (
-              <Marker
-                key={`rescuer-${rescuer.id}`}
-                position={{ lat: rescuer.latitude, lng: rescuer.longitude }}
-                icon={getRescuerIcon(rescuer.status)}
-                onClick={() => {
-                  setSelectedMarker({ type: 'rescuer', id: rescuer.id });
-                  onRescuerClick?.(rescuer.id);
-                }}
-              />
-            );
-          })}
+              return (
+                <Marker
+                  key={`rescuer-${rescuer.id}`}
+                  position={{ lat: rescuer.latitude, lng: rescuer.longitude }}
+                  icon={getRescuerIcon(rescuer.status)}
+                  onClick={() => {
+                    setSelectedMarker({ type: 'rescuer', id: rescuer.id });
+                    onRescuerClick?.(rescuer.id);
+                  }}
+                />
+              );
+            })}
 
           {/* Hospital Markers */}
-          {showHospitals && hospitalsWithDistance.map((hospital) => {
-            if (!isValidCoordinate(hospital.latitude, hospital.longitude)) {
-              console.warn(`Invalid coordinates for hospital ${hospital.name}:`, hospital.latitude, hospital.longitude);
-              return null;
-            }
+          {showHospitals &&
+            hospitalsWithDistance.map((hospital) => {
+              if (!isValidCoordinate(hospital.latitude, hospital.longitude)) {
+                console.warn(
+                  `Invalid coordinates for hospital ${hospital.name}:`,
+                  hospital.latitude,
+                  hospital.longitude,
+                );
+                return null;
+              }
 
-            return (
-              <Marker
-                key={`hospital-${hospital.id}`}
-                position={{ lat: hospital.latitude, lng: hospital.longitude }}
-                icon={getHospitalIcon(hospital)}
-                onClick={() => {
-                  setSelectedMarker({ type: 'hospital', id: hospital.id });
-                  onHospitalClick?.(hospital.id);
-                }}
-              />
-            );
-          })}
+              return (
+                <Marker
+                  key={`hospital-${hospital.id}`}
+                  position={{ lat: hospital.latitude, lng: hospital.longitude }}
+                  icon={getHospitalIcon(hospital)}
+                  onClick={() => {
+                    setSelectedMarker({ type: 'hospital', id: hospital.id });
+                    onHospitalClick?.(hospital.id);
+                  }}
+                />
+              );
+            })}
 
           {/* Route Polyline */}
           {showRoute && route && (route as any).geometry && (
             <Polyline
-              path={(route as any).geometry.map((point: number[]) => ({ lat: point[0], lng: point[1] }))}
+              path={(route as any).geometry.map((point: number[]) => ({
+                lat: point[0],
+                lng: point[1],
+              }))}
               options={{
                 strokeColor: emergencyMode ? '#dc2626' : '#2563eb',
                 strokeWeight: 4,

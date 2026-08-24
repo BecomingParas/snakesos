@@ -359,7 +359,9 @@ export default function RequestRescuePage() {
       return;
     }
     if (!isValidPhone(formData.phone)) {
-      setError('Phone must be a 10-digit Nepali mobile number (e.g. 98XXXXXXXX)');
+      setError(
+        'Phone must be a 10-digit Nepali mobile number (e.g. 98XXXXXXXX)',
+      );
       return;
     }
     if (
@@ -371,6 +373,11 @@ export default function RequestRescuePage() {
     }
 
     try {
+      const wardValue =
+        formData.ward.trim() !== ''
+          ? Number.parseInt(formData.ward, 10)
+          : undefined;
+
       await createRescue({
         variables: {
           input: {
@@ -378,11 +385,14 @@ export default function RequestRescuePage() {
             phone,
             email: formData.email || undefined,
             municipality: formData.municipality,
-            ward: formData.ward ? parseInt(formData.ward) : undefined,
+            ward:
+              typeof wardValue === 'number' && Number.isFinite(wardValue)
+                ? wardValue
+                : undefined,
             address: formData.address,
             landmark: formData.landmark || undefined,
-            lat: formData.lat || undefined,
-            lng: formData.lng || undefined,
+            lat: formData.lat ?? undefined,
+            lng: formData.lng ?? undefined,
             snakeDescription: formData.snakeDescription.trim() || undefined,
             snakeSize: formData.snakeSize || undefined,
             snakeColor: formData.snakeColor || undefined,
@@ -390,7 +400,7 @@ export default function RequestRescuePage() {
               formData.snakeImages.length > 0
                 ? formData.snakeImages.map((img) => img.dataUrl)
                 : undefined,
-            snakeImageUrl: formData.snakeImages[0]?.dataUrl,
+            snakeImageUrl: formData.snakeImages[0]?.dataUrl ?? undefined,
             isEmergency: formData.isEmergency,
             hasBite: formData.hasBite,
           },
@@ -779,7 +789,6 @@ export default function RequestRescuePage() {
                           key={img.id}
                           className="group relative aspect-square overflow-hidden rounded-lg border border-border"
                         >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={img.dataUrl}
                             alt="Snake photo"
@@ -900,87 +909,87 @@ export default function RequestRescuePage() {
                 </div>
 
                 <div className="space-y-3">
-                <div className="rounded-lg border border-border bg-muted/40 p-4">
-                  <h3 className="mb-1.5 text-sm font-semibold text-foreground">
-                    Request Type
-                  </h3>
-                  <div className="flex items-center gap-2">
-                    {selectedType && (
-                      <div
-                        className={cn(
-                          'icon-' + selectedType.tone,
-                          'flex h-7 w-7 items-center justify-center rounded-md',
-                        )}
-                      >
-                        <selectedType.icon className="h-4 w-4" />
+                  <div className="rounded-lg border border-border bg-muted/40 p-4">
+                    <h3 className="mb-1.5 text-sm font-semibold text-foreground">
+                      Request Type
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      {selectedType && (
+                        <div
+                          className={cn(
+                            'icon-' + selectedType.tone,
+                            'flex h-7 w-7 items-center justify-center rounded-md',
+                          )}
+                        >
+                          <selectedType.icon className="h-4 w-4" />
+                        </div>
+                      )}
+                      <p className="text-sm text-foreground">
+                        {selectedType?.label}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg border border-border bg-muted/40 p-4">
+                    <h3 className="mb-1.5 text-sm font-semibold text-foreground">
+                      Location
+                    </h3>
+                    <p className="text-sm text-foreground">
+                      {formData.address}
+                      {formData.ward ? `, Ward ${formData.ward}` : ''},{' '}
+                      {formData.municipality}
+                    </p>
+                    {formData.landmark && (
+                      <p className="text-sm text-muted-foreground">
+                        Near: {formData.landmark}
+                      </p>
+                    )}
+                    {formData.lat && formData.lng && (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        GPS: {formData.lat.toFixed(5)},{' '}
+                        {formData.lng.toFixed(5)}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="rounded-lg border border-border bg-muted/40 p-4">
+                    <h3 className="mb-1.5 text-sm font-semibold text-foreground">
+                      Snake Information
+                    </h3>
+                    {formData.snakeDescription ? (
+                      <p className="text-sm text-foreground">
+                        {formData.snakeDescription}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-muted-foreground italic">
+                        No description provided
+                      </p>
+                    )}
+                    <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                      <span>
+                        Size:{' '}
+                        {SNAKE_SIZE_OPTIONS.find(
+                          (o) => o.value === formData.snakeSize,
+                        )?.label ?? formData.snakeSize}
+                      </span>
+                      {formData.snakeColor && (
+                        <span>Color: {formData.snakeColor}</span>
+                      )}
+                    </div>
+
+                    {formData.snakeImages.length > 0 && (
+                      <div className="mt-3 grid grid-cols-4 gap-2">
+                        {formData.snakeImages.map((img) => (
+                          <img
+                            key={img.id}
+                            src={img.dataUrl}
+                            alt="Snake photo"
+                            className="aspect-square w-full rounded-md border border-border object-cover"
+                          />
+                        ))}
                       </div>
                     )}
-                    <p className="text-sm text-foreground">
-                      {selectedType?.label}
-                    </p>
                   </div>
-                </div>
-
-                <div className="rounded-lg border border-border bg-muted/40 p-4">
-                  <h3 className="mb-1.5 text-sm font-semibold text-foreground">
-                    Location
-                  </h3>
-                  <p className="text-sm text-foreground">
-                    {formData.address}
-                    {formData.ward ? `, Ward ${formData.ward}` : ''},{' '}
-                    {formData.municipality}
-                  </p>
-                  {formData.landmark && (
-                    <p className="text-sm text-muted-foreground">
-                      Near: {formData.landmark}
-                    </p>
-                  )}
-                  {formData.lat && formData.lng && (
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      GPS: {formData.lat.toFixed(5)}, {formData.lng.toFixed(5)}
-                    </p>
-                  )}
-                </div>
-
-                <div className="rounded-lg border border-border bg-muted/40 p-4">
-                  <h3 className="mb-1.5 text-sm font-semibold text-foreground">
-                    Snake Information
-                  </h3>
-                  {formData.snakeDescription ? (
-                    <p className="text-sm text-foreground">
-                      {formData.snakeDescription}
-                    </p>
-                  ) : (
-                    <p className="text-sm text-muted-foreground italic">
-                      No description provided
-                    </p>
-                  )}
-                  <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-                    <span>
-                      Size:{' '}
-                      {SNAKE_SIZE_OPTIONS.find(
-                        (o) => o.value === formData.snakeSize,
-                      )?.label ?? formData.snakeSize}
-                    </span>
-                    {formData.snakeColor && (
-                      <span>Color: {formData.snakeColor}</span>
-                    )}
-                  </div>
-
-                  {formData.snakeImages.length > 0 && (
-                    <div className="mt-3 grid grid-cols-4 gap-2">
-                      {formData.snakeImages.map((img) => (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          key={img.id}
-                          src={img.dataUrl}
-                          alt="Snake photo"
-                          className="aspect-square w-full rounded-md border border-border object-cover"
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
                 </div>
               </div>
             </div>

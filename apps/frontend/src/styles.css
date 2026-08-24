@@ -383,6 +383,74 @@
 .shadow-float { box-shadow: 0 4px 14px hsl(220 20% 10% / 0.10); }
 .shadow-elevated { box-shadow: 0 12px 32px hsl(220 20% 10% / 0.18); }
 
+.user-location-dot {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 3px solid white;
+  background: #3b82f6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.user-location-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #60a5fa;
+  animation: user-location-pulse 2s infinite;
+}
+
+.rescue-marker-icon,
+.rescuer-marker-icon,
+.hospital-marker-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rescue-marker-icon {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.rescuer-marker-icon {
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+}
+
+.hospital-marker-icon {
+  width: 44px;
+  height: 44px;
+  font-size: 22px;
+  border-width: 4px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes user-location-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
 /* ============================================================================
    COLORFUL ICON CONTAINERS (Light mode)
    ============================================================================ */

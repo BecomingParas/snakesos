@@ -40,18 +40,19 @@ const RescueMap = dynamic(
 // Types
 // ---------------------------------------------------------------------------
 
-type Priority = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+type Priority = 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW' | string;
 type RescueStatus =
   | 'PENDING'
   | 'ASSIGNED'
   | 'IN_PROGRESS'
   | 'COMPLETED'
-  | 'CANCELLED';
+  | 'CANCELLED'
+  | string;
 
 interface RescueRecord {
   id: string;
-  lat: number | null;
-  lng: number | null;
+  lat?: number | null;
+  lng?: number | null;
   address?: string;
   municipality?: string;
   status: RescueStatus;
@@ -205,6 +206,24 @@ function hasValidCoords(
   );
 }
 
+function unwrapConnectionNodes<T>(payload: unknown, field: string): T[] {
+  if (!payload || typeof payload !== 'object' || !(field in payload)) {
+    return [];
+  }
+
+  const connection = (payload as Record<string, unknown>)[field];
+  if (
+    !connection ||
+    typeof connection !== 'object' ||
+    !('edges' in connection)
+  ) {
+    return [];
+  }
+
+  const edges = (connection as { edges?: Array<{ node: T }> }).edges ?? [];
+  return edges.map((edge) => edge.node);
+}
+
 export default function AdminMapPage() {
   const [selectedRescueId, setSelectedRescueId] = useState<string | null>(null);
 
@@ -222,7 +241,9 @@ export default function AdminMapPage() {
 
   // Close the priority dropdown on outside click / Escape
   useEffect(() => {
-    if (!isPriorityDropdownOpen) return;
+    if (!isPriorityDropdownOpen) {
+      return undefined;
+    }
 
     const handlePointerDown = (event: MouseEvent) => {
       if (
@@ -276,7 +297,7 @@ export default function AdminMapPage() {
   });
 
   const rescues: RescueRecord[] = useMemo(
-    () => data?.activeRescues?.edges?.map((edge) => edge.node) ?? [],
+    () => unwrapConnectionNodes<RescueRecord>(data, 'activeRescues'),
     [data],
   );
 
@@ -288,7 +309,7 @@ export default function AdminMapPage() {
   } = useHospitals({ status: 'ACTIVE' }, { first: 100 });
 
   const hospitals: HospitalRecord[] = useMemo(
-    () => hospitalsData?.hospitals?.edges?.map((edge) => edge.node) ?? [],
+    () => unwrapConnectionNodes<HospitalRecord>(hospitalsData, 'hospitals'),
     [hospitalsData],
   );
 
@@ -304,7 +325,7 @@ export default function AdminMapPage() {
     });
 
   const allVolunteers: VolunteerRecord[] = useMemo(
-    () => volunteersData?.volunteers?.edges?.map((edge) => edge.node) ?? [],
+    () => unwrapConnectionNodes<VolunteerRecord>(volunteersData, 'volunteers'),
     [volunteersData],
   );
 
@@ -315,7 +336,15 @@ export default function AdminMapPage() {
     error: hotspotsError,
   } = useSnakebiteHotspots();
 
-  const hotspots: HotspotRecord[] = hotspotsData?.snakebiteHotspots ?? [];
+  const hotspots: HotspotRecord[] = useMemo(() => {
+    if (!hotspotsData || typeof hotspotsData !== 'object') {
+      return [];
+    }
+
+    const value = (hotspotsData as { snakebiteHotspots?: HotspotRecord[] })
+      .snakebiteHotspots;
+    return Array.isArray(value) ? value : [];
+  }, [hotspotsData]);
 
   // Surface fetch errors as toasts exactly once per error, not on every render
   useEffect(() => {
@@ -826,7 +855,12 @@ export default function AdminMapPage() {
                       name: h.name,
                       district: h.district,
                       province: h.province,
-                      riskLevel: h.riskLevel,
+                      riskLevel: h.riskLevel as
+                        | 'LOW'
+                        | 'MODERATE'
+                        | 'HIGH'
+                        | 'VERY_HIGH'
+                        | 'EXTREME',
                       riskScore: h.riskScore,
                       source: h.source,
                       sourceUrl: h.sourceUrl,

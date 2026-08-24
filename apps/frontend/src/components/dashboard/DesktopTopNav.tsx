@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, Search, Phone, LogOut, User } from 'lucide-react'
+import { Search, Phone, LogOut, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -13,12 +13,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { ThemeToggle } from '@/components/theme'
+import { NotificationDropdown } from '@/components/dashboard/notification-dropdown'
 import { toast } from 'sonner'
 
 interface DesktopTopNavProps {
   user: {
     name: string
     email: string
+    role: string
   }
   onLogout: () => void
 }
@@ -61,10 +63,7 @@ export function DesktopTopNav({ user, onLogout }: DesktopTopNavProps) {
         </Button>
 
         {/* Notifications */}
-        <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-secondary/50 transition-all">
-          <Bell className="h-4 w-4" />
-          <span className="sr-only">Notifications</span>
-        </Button>
+        <NotificationDropdown role={user.role} />
 
         {/* Theme Toggle */}
         <ThemeToggle />

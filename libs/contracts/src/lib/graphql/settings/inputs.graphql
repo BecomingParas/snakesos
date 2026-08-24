@@ -1,0 +1,24 @@
+input AdminSettingsInput {
+  systemName: String!
+  contactEmail: String!
+  contactPhone: String!
+  supportEmail: String!
+  smsEnabled: Boolean!
+  emailEnabled: Boolean!
+  pushEnabled: Boolean!
+  smsProvider: String!
+  emailProvider: String!
+  defaultRadius: Int!
+  maxAssignmentDistance: Int!
+  autoAssignEnabled: Boolean!
+  priorityThreshold: Int!
+  targetResponseTime: Int!
+  maxResponseTime: Int!
+  smsApiKey: String!
+  emailApiKey: String!
+  mapboxToken: String!
+  sessionTimeout: Int!
+  passwordMinLength: Int!
+  requireTwoFactor: Boolean!
+  maxLoginAttempts: Int!
+}

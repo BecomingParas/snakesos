@@ -19,7 +19,10 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useRescueRequestQuery } from '@/lib/graphql/hooks/rescue.hooks';
+import {
+  useRescueRequestQuery,
+  useUpdateRescueRequestMutation,
+} from '@/lib/graphql/hooks/rescue.hooks';
 import { cn } from '@/lib/utils';
 
 interface PageProps {
@@ -74,6 +77,8 @@ const statusStyles: Record<string, string> = {
   COMPLETED: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
   CANCELLED: 'bg-red-500/15 text-red-700 dark:text-red-400',
 };
+
+const priorityOptions = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'] as const;
 
 function StatTile({
   icon: Icon,
@@ -139,6 +144,10 @@ export default function AdminRescueDetailPage({ params }: PageProps) {
   const { id } = use(params);
   const router = useRouter();
   const { data, loading, error } = useRescueRequestQuery({ variables: { id } });
+  const [updateRescueRequest, { loading: updatingPriority }] =
+    useUpdateRescueRequestMutation({
+      refetchQueries: ['RescueRequest'],
+    });
   const rescue = (data as QueryData | undefined)?.rescueRequest;
 
   if (loading)
@@ -215,6 +224,29 @@ export default function AdminRescueDetailPage({ params }: PageProps) {
                 </Badge>
               )}
             </div>
+            <label className="mt-4 flex max-w-xs flex-col gap-1 text-sm font-medium">
+              Rescue priority
+              <select
+                aria-label="Rescue priority"
+                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+                disabled={updatingPriority}
+                value={rescue.priority}
+                onChange={(event) => {
+                  void updateRescueRequest({
+                    variables: {
+                      id,
+                      input: { priority: event.target.value },
+                    },
+                  });
+                }}
+              >
+                {priorityOptions.map((priority) => (
+                  <option key={priority} value={priority}>
+                    {priority}
+                  </option>
+                ))}
+              </select>
+            </label>
             <p className="mt-1 text-sm text-muted-foreground">
               Operational details and rescue timeline
             </p>

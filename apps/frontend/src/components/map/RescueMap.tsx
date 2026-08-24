@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import {
   MapContainer,
   TileLayer,
@@ -26,10 +26,31 @@ import {
   isValidCoordinate,
   filterValidCoordinates,
 } from '@/lib/map/coordinates';
+import type {
+  HospitalLocation,
+  HotspotLocation,
+  RescueLocation,
+  RescueMapProps,
+  RescuerLocation,
+  UserLocation,
+} from './map.types';
+import {
+  getHospitalColor,
+  getHotspotColor,
+  getPriorityColor,
+  getStatusBadgeColor,
+} from './mapColors';
+import {
+  createHospitalIcon,
+  createRescueIcon,
+  createRescuerIcon,
+  createUserLocationIcon,
+} from './mapIcons';
+import { MAP_CONFIG } from './mapConfig';
 
 // Fix for default marker icons in Next.js/Webpack
 if (typeof window !== 'undefined') {
-  delete (L.Icon.Default.prototype as any)._getIconUrl;
+  delete (L.Icon.Default.prototype as { _getIconUrl?: string })._getIconUrl;
   L.Icon.Default.mergeOptions({
     iconRetinaUrl:
       'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
@@ -40,74 +61,26 @@ if (typeof window !== 'undefined') {
   });
 }
 
-export interface RescueLocation {
-  id: string;
-  lat: number;
-  lng: number;
-  address: string;
-  municipality?: string;
-  status: string;
-  priority: string;
-  name?: string;
-  phone?: string;
-  snakeDescription?: string;
-  assignedVolunteerId?: string;
-}
-
-export interface RescuerLocation {
+interface RouteRescuer {
   id: string;
   name: string;
   lat: number;
   lng: number;
-  phone?: string;
-  status?: string;
-  experience?: string;
-  totalRescues?: number;
-  municipality?: string;
 }
 
-export interface HospitalLocation {
+interface RouteHospital {
   id: string;
   name: string;
   latitude: number;
   longitude: number;
-  address: string;
-  municipality?: string;
-  district?: string;
-  phone?: string;
-  emergencyPhone?: string;
-  antivenomStatus?: string;
-  emergency24x7?: boolean;
-  distance?: number;
-  distanceFormatted?: string;
 }
 
-export interface HotspotLocation {
-  id: string;
-  name: string;
-  district?: string;
-  province?: string;
-  riskLevel: 'LOW' | 'MODERATE' | 'HIGH' | 'VERY_HIGH' | 'EXTREME';
-  riskScore: number;
-  source: string;
-  sourceUrl?: string;
-  studyYear?: number;
-  populationAtRisk?: number;
-}
+function findNearest<T>(items: T[], distanceFn: (item: T) => number): T | null {
+  if (items.length === 0) return null;
 
-interface RescueMapProps {
-  rescues: RescueLocation[];
-  rescuers?: RescuerLocation[];
-  hospitals?: HospitalLocation[];
-  hotspots?: HotspotLocation[];
-  center?: [number, number];
-  zoom?: number;
-  userLocation?: { latitude: number; longitude: number } | null;
-  selectedRescueId?: string | null;
-  onRescueClick?: (rescueId: string) => void;
-  onHospitalClick?: (hospitalId: string) => void;
-  showAccuracyCircle?: boolean;
-  showRoutes?: boolean;
+  return items.reduce((nearest, current) =>
+    distanceFn(current) < distanceFn(nearest) ? current : nearest,
+  );
 }
 
 // Map updater component to handle center changes with smooth animation
@@ -141,40 +114,6 @@ function MapUpdater({
   return null;
 }
 
-// Get priority color
-function getPriorityColor(priority: string): string {
-  switch (priority?.toUpperCase()) {
-    case 'CRITICAL':
-      return '#dc2626'; // red-600
-    case 'HIGH':
-      return '#ea580c'; // orange-600
-    case 'MEDIUM':
-      return '#ca8a04'; // yellow-600
-    case 'LOW':
-      return '#16a34a'; // green-600
-    default:
-      return '#6b7280'; // gray-500
-  }
-}
-
-// Get status badge color
-function getStatusBadgeColor(status: string): string {
-  switch (status?.toUpperCase()) {
-    case 'PENDING':
-      return 'bg-yellow-100 text-yellow-800';
-    case 'ASSIGNED':
-      return 'bg-blue-100 text-blue-800';
-    case 'IN_PROGRESS':
-      return 'bg-purple-100 text-purple-800';
-    case 'COMPLETED':
-      return 'bg-green-100 text-green-800';
-    case 'CANCELLED':
-      return 'bg-gray-100 text-gray-800';
-    default:
-      return 'bg-slate-100 text-slate-800';
-  }
-}
-
 export function RescueMap({
   rescues,
   rescuers = [],
@@ -189,6 +128,7 @@ export function RescueMap({
   showAccuracyCircle = true,
   showRoutes = true,
 }: RescueMapProps) {
+  const mapInstanceKey = useId();
   const [mapCenter, setMapCenter] = useState<[number, number]>(center);
   const [mapZoom, setMapZoom] = useState(zoom);
   const [selectedRescueForRoute, setSelectedRescueForRoute] = useState<
@@ -239,33 +179,35 @@ export function RescueMap({
       let assignedRescuer = null;
 
       // Try to find assigned rescuer by ID
-      if ((rescue as any).assignedVolunteerId) {
+      if (rescue.assignedVolunteerId) {
         assignedRescuer = validRescuers.find(
-          (r) => r.id === (rescue as any).assignedVolunteerId,
+          (r) => r.id === rescue.assignedVolunteerId,
         );
       }
 
       // If no assigned rescuer, find nearest one
       if (!assignedRescuer) {
-        const nearestRescuer = validRescuers.reduce(
-          (nearest: any, rescuer: any) => {
-            const distance = calculateDistance(
-              rescue.lat,
-              rescue.lng,
-              rescuer.lat,
-              rescuer.lng,
-            );
+        const nearestRescuer = validRescuers.reduce<{
+          rescuer: RescuerLocation;
+          distance: number;
+        } | null>((nearest, rescuer) => {
+          const distance = calculateDistance(
+            rescue.lat,
+            rescue.lng,
+            rescuer.lat,
+            rescuer.lng,
+          );
 
-            if (!nearest || distance < nearest.distance) {
-              return { rescuer, distance };
-            }
-            return nearest;
-          },
-          null as any,
-        );
+          if (!nearest || distance < nearest.distance) {
+            return { rescuer, distance };
+          }
+          return nearest;
+        }, null);
 
-        if (nearestRescuer && nearestRescuer.distance < 50) {
-          // Only show routes within 50km
+        if (
+          nearestRescuer &&
+          nearestRescuer.distance <= MAP_CONFIG.maxRescuerRouteDistanceKm
+        ) {
           routes.push({
             rescueId: rescue.id,
             rescuerName: nearestRescuer.rescuer.name,
@@ -305,22 +247,22 @@ export function RescueMap({
       selectedRescueForRoute === rescue.id ||
       showHospitalRoute === rescue.id
     ) {
-      const nearestHospital = validHospitals.reduce(
-        (nearest: any, hospital: any) => {
-          const distance = calculateDistance(
-            rescue.lat,
-            rescue.lng,
-            hospital.latitude,
-            hospital.longitude,
-          );
+      const nearestHospital = validHospitals.reduce<{
+        hospital: HospitalLocation;
+        distance: number;
+      } | null>((nearest, hospital) => {
+        const distance = calculateDistance(
+          rescue.lat,
+          rescue.lng,
+          hospital.latitude,
+          hospital.longitude,
+        );
 
-          if (!nearest || distance < nearest.distance) {
-            return { hospital, distance };
-          }
-          return nearest;
-        },
-        null as any,
-      );
+        if (!nearest || distance < nearest.distance) {
+          return { hospital, distance };
+        }
+        return nearest;
+      }, null);
 
       if (nearestHospital) {
         // Debug logging for hospital coordinates
@@ -350,10 +292,13 @@ export function RescueMap({
     }
   });
 
-  // Show warning if some items were filtered out
+  // Show warning if rescue or hospital items were filtered out.
+  // Rescuer-only gaps are expected in assigned state when a volunteer has no
+  // live coordinates yet; they should not trigger the global invalid-location banner.
   const invalidRescueCount = rescues.length - validRescues.length;
-  const invalidRescuerCount = rescuers.length - validRescuers.length;
   const invalidHospitalCount = hospitals.length - validHospitals.length;
+  const showCoordinateWarning =
+    invalidRescueCount > 0 || invalidHospitalCount > 0;
 
   // Update center when prop changes (e.g., different rescue selected)
   // Use JSON.stringify to compare array values, not references
@@ -378,9 +323,7 @@ export function RescueMap({
   return (
     <>
       {/* Warning banner for invalid coordinates */}
-      {(invalidRescueCount > 0 ||
-        invalidRescuerCount > 0 ||
-        invalidHospitalCount > 0) && (
+      {showCoordinateWarning && (
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-[1000] max-w-md">
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg shadow-lg p-3 text-sm">
             <p className="text-yellow-800 font-medium">
@@ -388,14 +331,8 @@ export function RescueMap({
             </p>
             {invalidRescueCount > 0 && (
               <p className="text-yellow-700 text-xs mt-1">
-                {invalidRescueCount} rescue{invalidRescueCount > 1 ? 's' : ''}{' '}
-                not shown
-              </p>
-            )}
-            {invalidRescuerCount > 0 && (
-              <p className="text-yellow-700 text-xs">
-                {invalidRescuerCount} rescuer
-                {invalidRescuerCount > 1 ? 's' : ''} not shown
+                {invalidRescueCount} rescue
+                {invalidRescueCount > 1 ? 's' : ''} not shown
               </p>
             )}
             {invalidHospitalCount > 0 && (
@@ -409,6 +346,7 @@ export function RescueMap({
       )}
 
       <MapContainer
+        key={mapInstanceKey}
         center={mapCenter}
         zoom={mapZoom}
         style={{ height: '100%', width: '100%', borderRadius: '8px' }}
@@ -512,33 +450,7 @@ export function RescueMap({
           <>
             <Marker
               position={[userLocation.latitude, userLocation.longitude]}
-              icon={L.divIcon({
-                className: 'user-location-marker',
-                html: `
-                <div style="
-                  background: #3b82f6;
-                  width: 20px;
-                  height: 20px;
-                  border-radius: 50%;
-                  border: 3px solid white;
-                  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-                  position: relative;
-                "></div>
-                <div style="
-                  position: absolute;
-                  top: 50%;
-                  left: 50%;
-                  transform: translate(-50%, -50%);
-                  width: 12px;
-                  height: 12px;
-                  background: #60a5fa;
-                  border-radius: 50%;
-                  animation: pulse 2s infinite;
-                "></div>
-              `,
-                iconSize: [20, 20],
-                iconAnchor: [10, 10],
-              })}
+              icon={createUserLocationIcon()}
             >
               <Popup>
                 <div className="text-sm">
@@ -568,33 +480,14 @@ export function RescueMap({
 
         {/* Rescuer Markers */}
         {validRescuers.map((rescuer) => {
-          // Determine marker color based on status
           const rescuerColor =
-            rescuer.status === 'AVAILABLE' ? '#10b981' : '#f59e0b'; // green for available, amber for busy
+            rescuer.status === 'AVAILABLE' ? '#10b981' : '#f59e0b';
 
           return (
             <Marker
               key={`rescuer-${rescuer.id}`}
               position={[rescuer.lat, rescuer.lng]}
-              icon={L.divIcon({
-                className: 'rescuer-marker',
-                html: `
-                <div style="
-                  background: ${rescuerColor};
-                  width: 32px;
-                  height: 32px;
-                  border-radius: 50%;
-                  border: 3px solid white;
-                  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  font-size: 16px;
-                ">👨‍⚕️</div>
-              `,
-                iconSize: [32, 32],
-                iconAnchor: [16, 16],
-              })}
+              icon={createRescuerIcon(rescuerColor)}
             >
               <Popup>
                 <div className="text-sm min-w-[220px]">
@@ -650,19 +543,6 @@ export function RescueMap({
 
         {/* Hospital Markers */}
         {validHospitals.map((hospital) => {
-          // Determine hospital marker color based on antivenom status
-          const getHospitalColor = (status?: string): string => {
-            switch (status?.toUpperCase()) {
-              case 'AVAILABLE':
-                return '#16a34a'; // green-600 - Verified available
-              case 'OUT_OF_STOCK':
-                return '#dc2626'; // red-600 - Out of stock
-              case 'UNKNOWN':
-              default:
-                return '#ca8a04'; // yellow-600 - Unknown/not verified
-            }
-          };
-
           const hospitalColor = getHospitalColor(hospital.antivenomStatus);
 
           // Calculate distance if user location is available
@@ -680,26 +560,7 @@ export function RescueMap({
             <Marker
               key={`hospital-${hospital.id}`}
               position={[hospital.latitude, hospital.longitude]}
-              icon={L.divIcon({
-                className: 'hospital-marker',
-                html: `
-                <div style="
-                  background: ${hospitalColor};
-                  width: 44px;
-                  height: 44px;
-                  border-radius: 50%;
-                  border: 4px solid white;
-                  box-shadow: 0 2px 12px rgba(0,0,0,0.5);
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  font-size: 22px;
-                  cursor: pointer;
-                ">🏥</div>
-              `,
-                iconSize: [44, 44],
-                iconAnchor: [22, 22],
-              })}
+              icon={createHospitalIcon(hospitalColor)}
               eventHandlers={{
                 click: () => onHospitalClick?.(hospital.id),
               }}
@@ -779,26 +640,8 @@ export function RescueMap({
 
         {/* Snakebite Hotspot Markers (Research Data) */}
         {hotspots.map((hotspot) => {
-          // Determine hotspot marker color based on risk level
-          const getHotspotColor = (riskLevel: string): string => {
-            switch (riskLevel) {
-              case 'EXTREME':
-                return '#7f1d1d'; // red-900
-              case 'VERY_HIGH':
-                return '#dc2626'; // red-600
-              case 'HIGH':
-                return '#ea580c'; // orange-600
-              case 'MODERATE':
-                return '#f59e0b'; // amber-500
-              case 'LOW':
-              default:
-                return '#84cc16'; // lime-500
-            }
-          };
-
           const hotspotColor = getHotspotColor(hotspot.riskLevel);
 
-          // Use district center as approximate location (can be enhanced with geometry later)
           const districtCenters: Record<string, [number, number]> = {
             Sarlahi: [27.0, 85.5],
             Saptari: [26.7, 86.7],
@@ -811,15 +654,19 @@ export function RescueMap({
             Dang: [28.1, 82.3],
           };
 
-          const position = districtCenters[hotspot.district || ''] || [
-            27.7, 85.3,
-          ];
+          const position: [number, number] =
+            hotspot.latitude !== null &&
+            hotspot.longitude !== null &&
+            hotspot.latitude !== undefined &&
+            hotspot.longitude !== undefined
+              ? [hotspot.latitude, hotspot.longitude]
+              : districtCenters[hotspot.district || ''] || [27.7, 85.3];
 
           return (
             <Circle
               key={`hotspot-${hotspot.id}`}
               center={position}
-              radius={25000} // 25km radius
+              radius={MAP_CONFIG.hotspotRadiusMeters}
               pathOptions={{
                 color: hotspotColor,
                 fillColor: hotspotColor,
@@ -929,27 +776,7 @@ export function RescueMap({
             <Marker
               key={`rescue-${rescue.id}`}
               position={[rescue.lat, rescue.lng]}
-              icon={L.divIcon({
-                className: 'rescue-marker',
-                html: `
-                <div style="
-                  background: ${priorityColor};
-                  width: ${isSelected ? '40px' : '34px'};
-                  height: ${isSelected ? '40px' : '34px'};
-                  border-radius: 50%;
-                  border: ${isSelected ? '4px' : '3px'} solid white;
-                  box-shadow: 0 2px 8px rgba(0,0,0,${isSelected ? '0.5' : '0.3'});
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  font-size: ${isSelected ? '20px' : '18px'};
-                  cursor: pointer;
-                  transition: all 0.2s;
-                ">🐍</div>
-              `,
-                iconSize: [isSelected ? 40 : 34, isSelected ? 40 : 34],
-                iconAnchor: [isSelected ? 20 : 17, isSelected ? 20 : 17],
-              })}
+              icon={createRescueIcon(priorityColor, isSelected)}
               eventHandlers={{
                 click: () => onRescueClick?.(rescue.id),
               }}
@@ -1066,26 +893,4 @@ export function RescueMap({
       </MapContainer>
     </>
   );
-}
-
-// Add pulse animation styles
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
-  style.innerHTML = `
-    @keyframes pulse {
-      0% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-      }
-      50% {
-        transform: translate(-50%, -50%) scale(1.5);
-        opacity: 0.5;
-      }
-      100% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-      }
-    }
-  `;
-  document.head.appendChild(style);
 }

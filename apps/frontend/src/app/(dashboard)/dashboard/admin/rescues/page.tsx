@@ -531,17 +531,19 @@ export default function RescueRequestsPage() {
               </table>
             </div>
 
-            <DashboardPagination
-              page={currentPage}
-              pageSize={pageSize}
-              totalCount={totalCount}
-              pageInfo={data?.rescueRequests?.pageInfo}
-              onPageChange={setCurrentPage}
-              onPageSizeChange={(nextPageSize) => {
-                setPageSize(nextPageSize);
-                setCurrentPage(1);
-              }}
-            />
+            <div className="px-6 pb-6">
+              <DashboardPagination
+                page={currentPage}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                pageInfo={data?.rescueRequests?.pageInfo}
+                onPageChange={setCurrentPage}
+                onPageSizeChange={(nextPageSize) => {
+                  setPageSize(nextPageSize);
+                  setCurrentPage(1);
+                }}
+              />
+            </div>
           </>
         )}
       </div>

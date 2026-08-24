@@ -1,8 +1,9 @@
 'use client'
 
-import { Bell, Menu } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { NotificationDropdown } from '@/components/dashboard/notification-dropdown'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,20 +65,7 @@ export function MobileHeader({
         {/* Right: Notifications + Profile */}
         <div className="flex items-center gap-2 shrink-0">
           {/* Notifications */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onNotificationClick}
-            className="h-9 w-9 relative"
-          >
-            <Bell className="h-5 w-5" />
-            {notificationCount > 0 && (
-              <span className="absolute top-1 right-1 h-4 w-4 rounded-full bg-destructive text-[10px] font-bold text-white flex items-center justify-center">
-                {notificationCount > 9 ? '9+' : notificationCount}
-              </span>
-            )}
-            <span className="sr-only">Notifications</span>
-          </Button>
+          <NotificationDropdown role={user.role} />
 
           {/* User Menu */}
           <DropdownMenu>

@@ -84,6 +84,12 @@ Notification preferences
 """
 type NotificationPreferences {
   userId: ID!
+
+  highPriorityRescueAlerts: Boolean!
+  rescueCompletionNotifications: Boolean!
+  newUserRegistrations: Boolean!
+  systemAlerts: Boolean!
+  dailySummaryReports: Boolean!
   
   # Channel Preferences
   enableApp: Boolean!

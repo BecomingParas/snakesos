@@ -13,13 +13,18 @@ import { UpdateRescueStatusUseCase } from '../../../application/use-cases/update
 import { CompleteRescueUseCase } from '../../../application/use-cases/complete-rescue.use-case.js';
 import { CancelRescueUseCase } from '../../../application/use-cases/cancel-rescue.use-case.js';
 import { RescueValidator } from '../../validators/rescue.validator.js';
+import { createRescueNotifications } from '../../../../notifications.resolver.js';
 
 export const rescueMutationResolvers = {
   Mutation: {
     /**
      * Create a new rescue request
      */
-    createRescueRequest: async (_parent: any, args: { input: any }, context: GraphQLContext) => {
+    createRescueRequest: async (
+      _parent: any,
+      args: { input: any },
+      context: GraphQLContext,
+    ) => {
       // Authentication required
       context.requireAuth();
 
@@ -30,18 +35,73 @@ export const rescueMutationResolvers = {
       const rescueRepository = new RescueRepository(prisma);
       const useCase = new CreateRescueUseCase(rescueRepository);
       const result = await useCase.execute(input, context.user.id);
+      await createRescueNotifications(
+        result.id,
+        'RESCUE_CREATED',
+        'New rescue request',
+        `Rescue request ${result.referenceNumber || result.id} was created.`,
+        context.user.id,
+      );
 
       // 3. Return response
       return result;
     },
 
     /**
+     * Update the rescue priority from the admin command surface
+     */
+    updateRescueRequest: async (
+      _parent: any,
+      args: { id: string; input: { priority?: string } },
+      context: GraphQLContext,
+    ) => {
+      context.requireAuth();
+      context.requireRole(['ADMIN', 'SUPER_ADMIN']);
+
+      if (!args.input.priority) {
+        throw new Error('Priority is required');
+      }
+
+      const rescueRepository = new RescueRepository(prisma);
+      const rescue = await rescueRepository.findById(args.id);
+      if (!rescue) {
+        throw new Error('Rescue request not found');
+      }
+
+      const updatedRescue = await rescueRepository.update(args.id, {
+        priority: args.input.priority as any,
+      });
+
+      if (rescue.priority !== args.input.priority) {
+        await rescueRepository.addTimelineEvent({
+          rescueId: args.id,
+          event: 'PRIORITY_UPDATED',
+          description: `Priority changed from ${rescue.priority} to ${args.input.priority}`,
+          userId: context.user.id,
+        });
+      }
+
+      await createRescueNotifications(
+        args.id,
+        'SYSTEM_ALERT',
+        'Rescue priority updated',
+        `Priority changed for rescue ${args.id}.`,
+        context.user.id,
+      );
+      return updatedRescue;
+    },
+
+    /**
      * Assign a volunteer to a rescue request
      */
-    assignRescue: async (_parent: any, args: { input: any }, context: GraphQLContext) => {
+    assignRescue: async (
+      _parent: any,
+      args: { input: any },
+      context: GraphQLContext,
+    ) => {
       // Authentication required (coordinator or admin)
       context.requireAuth();
-      
+
       // Require appropriate role (District Coordinator or Admin)
       context.requireRole(['DISTRICT_COORDINATOR', 'ADMIN', 'SUPER_ADMIN']);
 
@@ -54,15 +114,30 @@ export const rescueMutationResolvers = {
       const result = await useCase.execute(input, context.user.id);
 
       // 3. Return response
+      await createRescueNotifications(
+        input.rescueId,
+        'RESCUE_ASSIGNED',
+        'Rescue assigned',
+        `Rescue ${input.rescueId} was assigned to a rescuer.`,
+        context.user.id,
+      );
       return result;
     },
 
     /**
      * Volunteer accepts rescue assignment (pre-assigned by admin)
      */
-    acceptRescue: async (_parent: any, args: { input: any }, context: GraphQLContext) => {
+    acceptRescue: async (
+      _parent: any,
+      args: { input: any },
+      context: GraphQLContext,
+    ) => {
       context.requireAuth();
-      context.requireRole(['VOLUNTEER', 'VERIFIED_RESCUER', 'DISTRICT_COORDINATOR']);
+      context.requireRole([
+        'VOLUNTEER',
+        'VERIFIED_RESCUER',
+        'DISTRICT_COORDINATOR',
+      ]);
 
       // Get volunteer profile
       const volunteer = await prisma.volunteer.findUnique({
@@ -75,25 +150,41 @@ export const rescueMutationResolvers = {
 
       const rescueRepository = new RescueRepository(prisma);
       const useCase = new AcceptRescueUseCase(rescueRepository);
-      
-      return await useCase.execute(
+
+      const result = await useCase.execute(
         {
           rescueId: args.input.rescueId,
           volunteerId: volunteer.id,
           estimatedArrivalTime: args.input.estimatedArrivalTime,
           notes: args.input.notes,
         },
-        context.user.id
+        context.user.id,
       );
+      await createRescueNotifications(
+        args.input.rescueId,
+        'RESCUE_ACCEPTED',
+        'Rescue accepted',
+        `A rescuer accepted rescue ${args.input.rescueId}.`,
+        context.user.id,
+      );
+      return result;
     },
 
     /**
      * Volunteer accepts rescue from queue (self-service)
      * ATOMIC - prevents race condition when multiple rescuers try to accept same rescue
      */
-    acceptFromQueue: async (_parent: any, args: { input: any }, context: GraphQLContext) => {
+    acceptFromQueue: async (
+      _parent: any,
+      args: { input: any },
+      context: GraphQLContext,
+    ) => {
       context.requireAuth();
-      context.requireRole(['VOLUNTEER', 'VERIFIED_RESCUER', 'DISTRICT_COORDINATOR']);
+      context.requireRole([
+        'VOLUNTEER',
+        'VERIFIED_RESCUER',
+        'DISTRICT_COORDINATOR',
+      ]);
 
       // Get volunteer profile
       const volunteer = await prisma.volunteer.findUnique({
@@ -106,29 +197,47 @@ export const rescueMutationResolvers = {
 
       const rescueRepository = new RescueRepository(prisma);
       const useCase = new AcceptFromQueueUseCase(rescueRepository);
-      
-      return await useCase.execute(
+
+      const result = await useCase.execute(
         {
           rescueId: args.input.rescueId,
           volunteerId: volunteer.id,
           estimatedArrivalTime: args.input.estimatedArrivalTime,
           notes: args.input.notes,
         },
-        context.user.id
+        context.user.id,
       );
+      await createRescueNotifications(
+        args.input.rescueId,
+        'RESCUE_ACCEPTED',
+        'Rescue accepted',
+        `A rescuer accepted rescue ${args.input.rescueId}.`,
+        context.user.id,
+      );
+      return result;
     },
 
     /**
      * Update rescue progress (generic status update)
      */
-    updateRescueProgress: async (_parent: any, args: { input: any }, context: GraphQLContext) => {
+    updateRescueProgress: async (
+      _parent: any,
+      args: { input: any },
+      context: GraphQLContext,
+    ) => {
       context.requireAuth();
-      context.requireRole(['VOLUNTEER', 'VERIFIED_RESCUER', 'ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR']);
+      context.requireRole([
+        'VOLUNTEER',
+        'VERIFIED_RESCUER',
+        'ADMIN',
+        'SUPER_ADMIN',
+        'DISTRICT_COORDINATOR',
+      ]);
 
       const rescueRepository = new RescueRepository(prisma);
       const useCase = new UpdateRescueStatusUseCase(rescueRepository);
-      
-      return await useCase.execute(
+
+      const result = await useCase.execute(
         {
           rescueId: args.input.rescueId,
           status: args.input.status,
@@ -136,14 +245,26 @@ export const rescueMutationResolvers = {
           location: args.input.location,
           metadata: args.input.metadata,
         },
-        context.user.id
+        context.user.id,
       );
+      await createRescueNotifications(
+        args.input.rescueId,
+        'SYSTEM_ALERT',
+        'Rescue status updated',
+        `Rescue ${args.input.rescueId} status changed to ${args.input.status}.`,
+        context.user.id,
+      );
+      return result;
     },
 
     /**
      * Mark rescue as completed
      */
-    completeRescue: async (_parent: any, args: { input: any }, context: GraphQLContext) => {
+    completeRescue: async (
+      _parent: any,
+      args: { input: any },
+      context: GraphQLContext,
+    ) => {
       context.requireAuth();
       context.requireRole(['VOLUNTEER', 'VERIFIED_RESCUER']);
 
@@ -158,8 +279,8 @@ export const rescueMutationResolvers = {
 
       const rescueRepository = new RescueRepository(prisma);
       const useCase = new CompleteRescueUseCase(rescueRepository);
-      
-      return await useCase.execute(
+
+      const result = await useCase.execute(
         {
           rescueId: args.input.rescueId,
           volunteerId: volunteer.id,
@@ -170,8 +291,16 @@ export const rescueMutationResolvers = {
           notes: args.input.notes,
           location: args.input.location,
         },
-        context.user.id
+        context.user.id,
       );
+      await createRescueNotifications(
+        args.input.rescueId,
+        'RESCUE_COMPLETED',
+        'Rescue completed',
+        `Rescue ${args.input.rescueId} was completed.`,
+        context.user.id,
+      );
+      return result;
     },
 
     /**
@@ -180,35 +309,49 @@ export const rescueMutationResolvers = {
     cancelRescue: async (
       _parent: any,
       args: { rescueId: string; reason: string },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       context.requireAuth();
 
-      const isAdmin = ['ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR'].includes(context.user.role);
+      const isAdmin = ['ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR'].includes(
+        context.user.role,
+      );
       const cancelledBy = isAdmin ? 'ADMIN' : 'CITIZEN';
 
       const rescueRepository = new RescueRepository(prisma);
       const useCase = new CancelRescueUseCase(rescueRepository);
-      
-      return await useCase.execute(
+
+      const result = await useCase.execute(
         {
           rescueId: args.rescueId,
           reason: args.reason || 'No reason provided',
           cancelledBy,
         },
         context.user.id,
-        context.user.role
+        context.user.role,
       );
+      await createRescueNotifications(
+        args.rescueId,
+        'RESCUE_CANCELLED',
+        'Rescue cancelled',
+        `Rescue ${args.rescueId} was cancelled.`,
+        context.user.id,
+      );
+      return result;
     },
 
     /**
      * Add timeline event to rescue
      */
-    addRescueTimelineEvent: async (_parent: any, args: { input: any }, context: GraphQLContext) => {
+    addRescueTimelineEvent: async (
+      _parent: any,
+      args: { input: any },
+      context: GraphQLContext,
+    ) => {
       context.requireAuth();
 
       const rescueRepository = new RescueRepository(prisma);
-      
+
       return await rescueRepository.addTimelineEvent({
         rescueId: args.input.rescueId,
         event: args.input.event,

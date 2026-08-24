@@ -93,15 +93,18 @@ export interface CreateRescueRequestInput {
   landmark?: string;
   lat?: number;
   lng?: number;
+  locationAccuracy?: number;
   snakeDescription?: string;
   snakeSize?: string;
   snakeColor?: string;
+  snakeImageUrl?: string;
   snakeImages?: string[];
   isEmergency?: boolean;
-  hasBite?: boolean;
   emergencyDetails?: string;
+  hasBite?: boolean;
   biteDetails?: string;
   notes?: string;
+  source?: string;
 }
 
 export interface AssignRescueInput {
@@ -211,6 +214,16 @@ const ASSIGN_RESCUE = gql`
         id
         name
       }
+      updatedAt
+    }
+  }
+`;
+
+const UPDATE_RESCUE_REQUEST = gql`
+  mutation UpdateRescueRequest($id: ID!, $input: UpdateRescueRequestInput!) {
+    updateRescueRequest(id: $id, input: $input) {
+      id
+      priority
       updatedAt
     }
   }
@@ -640,6 +653,18 @@ export function useAssignRescueMutation(
     { assignRescue: RescueRequest },
     { input: AssignRescueInput }
   >(ASSIGN_RESCUE, options);
+}
+
+export function useUpdateRescueRequestMutation(
+  options?: MutationHookOptions<
+    { updateRescueRequest: RescueRequest },
+    { id: string; input: { priority: string } }
+  >,
+) {
+  return useMutation<
+    { updateRescueRequest: RescueRequest },
+    { id: string; input: { priority: string } }
+  >(UPDATE_RESCUE_REQUEST, options);
 }
 
 export function useAcceptRescueMutation(
