@@ -1,9 +1,9 @@
-'use client'
+'use client';
 
-import { Menu } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { NotificationDropdown } from '@/components/dashboard/notification-dropdown'
+import { Menu } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { NotificationDropdown } from '@/components/dashboard/notification-dropdown';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,21 +11,21 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/ui/dropdown-menu';
 
 interface MobileHeaderProps {
-  title: string
+  title: string;
   user: {
-    name: string
-    email: string
-    role: string
-  }
-  onMenuClick?: () => void
-  onNotificationClick?: () => void
-  onProfileClick?: () => void
-  onLogoutClick?: () => void
-  notificationCount?: number
-  showMenu?: boolean
+    name: string;
+    email: string;
+    role: string;
+  };
+  onMenuClick?: () => void;
+  onNotificationClick?: () => void;
+  onProfileClick?: () => void;
+  onLogoutClick?: () => void;
+  notificationCount?: number;
+  showMenu?: boolean;
 }
 
 export function MobileHeader({
@@ -43,7 +43,7 @@ export function MobileHeader({
     .map((n) => n[0])
     .join('')
     .toUpperCase()
-    .slice(0, 2)
+    .slice(0, 2);
 
   return (
     <header className="sticky top-0 z-50 w-full md:mobile-glass-header border-b border-border/40 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
@@ -51,9 +51,9 @@ export function MobileHeader({
         {/* Left: Logo + Title */}
         <a href="/" className="flex items-center gap-2 min-w-0 group">
           <div className="h-8 w-8 rounded-lg overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
-            <img 
-              src="/snakesoslogo.png" 
-              alt="SnakeSOS Logo" 
+            <img
+              src="/snakesoslogo.png"
+              alt="SnakeSOS Logo"
               className="h-7 w-7 object-contain transition-transform group-hover:scale-105"
             />
           </div>
@@ -81,8 +81,12 @@ export function MobileHeader({
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{user.name}</p>
-                  <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                  <p className="text-sm font-medium leading-none">
+                    {user.name}
+                  </p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {user.email}
+                  </p>
                   <p className="text-xs leading-none text-muted-foreground mt-1">
                     Role: {user.role}
                   </p>
@@ -107,5 +111,5 @@ export function MobileHeader({
         </div>
       </div>
     </header>
-  )
+  );
 }

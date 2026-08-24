@@ -229,7 +229,9 @@ function NotificationPreferencesPanel() {
       }
     }
   `);
-  const [preferences, setPreferences] = useState(defaultNotificationPreferences);
+  const [preferences, setPreferences] = useState(
+    defaultNotificationPreferences,
+  );
 
   useEffect(() => {
     if (data?.myNotificationPreferences) {
@@ -240,7 +242,10 @@ function NotificationPreferencesPanel() {
     }
   }, [data]);
 
-  const updatePreference = (key: keyof NotificationPreferenceState, value: boolean) => {
+  const updatePreference = (
+    key: keyof NotificationPreferenceState,
+    value: boolean,
+  ) => {
     setPreferences((current) => ({ ...current, [key]: value }));
   };
 
@@ -261,13 +266,57 @@ function NotificationPreferencesPanel() {
         Notification Preferences
       </h2>
       <div className="space-y-3">
-        <Toggle icon={AlertCircle} iconColor="hsl(var(--destructive))" label="High priority rescue alerts" description="Get immediate alerts for urgent rescue requests" checked={preferences.highPriorityRescueAlerts} onChange={(value) => updatePreference('highPriorityRescueAlerts', value)} />
-        <Toggle icon={CheckCircle} iconColor="hsl(var(--success))" label="Rescue completion notifications" description="Notify administrators when a rescue is completed" checked={preferences.rescueCompletionNotifications} onChange={(value) => updatePreference('rescueCompletionNotifications', value)} />
-        <Toggle icon={Activity} iconColor="hsl(var(--primary))" label="New user registrations" description="Notify administrators when users or rescuers register" checked={preferences.newUserRegistrations} onChange={(value) => updatePreference('newUserRegistrations', value)} />
-        <Toggle icon={AlertTriangle} iconColor="hsl(var(--warning))" label="System alerts and errors" description="Show operational errors and service alerts" checked={preferences.systemAlerts} onChange={(value) => updatePreference('systemAlerts', value)} />
-        <Toggle icon={Clock} iconColor="hsl(var(--info))" label="Daily summary reports" description="Receive a daily overview of rescue activity" checked={preferences.dailySummaryReports} onChange={(value) => updatePreference('dailySummaryReports', value)} />
+        <Toggle
+          icon={AlertCircle}
+          iconColor="hsl(var(--destructive))"
+          label="High priority rescue alerts"
+          description="Get immediate alerts for urgent rescue requests"
+          checked={preferences.highPriorityRescueAlerts}
+          onChange={(value) =>
+            updatePreference('highPriorityRescueAlerts', value)
+          }
+        />
+        <Toggle
+          icon={CheckCircle}
+          iconColor="hsl(var(--success))"
+          label="Rescue completion notifications"
+          description="Notify administrators when a rescue is completed"
+          checked={preferences.rescueCompletionNotifications}
+          onChange={(value) =>
+            updatePreference('rescueCompletionNotifications', value)
+          }
+        />
+        <Toggle
+          icon={Activity}
+          iconColor="hsl(var(--primary))"
+          label="New user registrations"
+          description="Notify administrators when users or rescuers register"
+          checked={preferences.newUserRegistrations}
+          onChange={(value) => updatePreference('newUserRegistrations', value)}
+        />
+        <Toggle
+          icon={AlertTriangle}
+          iconColor="hsl(var(--warning))"
+          label="System alerts and errors"
+          description="Show operational errors and service alerts"
+          checked={preferences.systemAlerts}
+          onChange={(value) => updatePreference('systemAlerts', value)}
+        />
+        <Toggle
+          icon={Clock}
+          iconColor="hsl(var(--info))"
+          label="Daily summary reports"
+          description="Receive a daily overview of rescue activity"
+          checked={preferences.dailySummaryReports}
+          onChange={(value) => updatePreference('dailySummaryReports', value)}
+        />
       </div>
-      <Button type="button" className="mt-5" onClick={() => void savePreferences()} disabled={loading || saving}>
+      <Button
+        type="button"
+        className="mt-5"
+        onClick={() => void savePreferences()}
+        disabled={loading || saving}
+      >
         <Save className="mr-2 h-4 w-4" />
         {saving ? 'Saving...' : 'Save Preferences'}
       </Button>

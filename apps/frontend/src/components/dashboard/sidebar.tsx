@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
-import { createContext, useContext } from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { createContext, useContext } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   FileText,
@@ -18,27 +18,27 @@ import {
   Bell,
   Map,
   Hospital,
-} from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip'
+} from '@/components/ui/tooltip';
 
 // Create context for sidebar collapse state
 export const SidebarContext = createContext<{
-  collapsed: boolean
-  setCollapsed: (collapsed: boolean) => void
+  collapsed: boolean;
+  setCollapsed: (collapsed: boolean) => void;
 }>({
   collapsed: false,
   setCollapsed: () => undefined,
-})
+});
 
-export const useSidebar = () => useContext(SidebarContext)
+export const useSidebar = () => useContext(SidebarContext);
 
 type Role =
   | 'CITIZEN'
@@ -46,10 +46,10 @@ type Role =
   | 'SUPER_ADMIN'
   | 'DISTRICT_COORDINATOR'
   | 'VERIFIED_RESCUER'
-  | 'VOLUNTEER'
+  | 'VOLUNTEER';
 
 interface SidebarProps {
-  role: Role
+  role: Role;
 }
 
 // Accent color per role — gives each dashboard a distinct identity at a glance
@@ -60,22 +60,27 @@ const roleAccent: Record<Role, string> = {
   DISTRICT_COORDINATOR: 'bg-info',
   VERIFIED_RESCUER: 'bg-success',
   VOLUNTEER: 'bg-success',
-}
+};
 
 export function Sidebar({ role }: SidebarProps) {
-  const { collapsed, setCollapsed } = useSidebar()
-  const pathname = usePathname()
+  const { collapsed, setCollapsed } = useSidebar();
+  const pathname = usePathname();
 
   if (typeof document !== 'undefined') {
     document.documentElement.style.setProperty(
       '--sidebar-width',
-      collapsed ? '76px' : '272px'
-    )
+      collapsed ? '76px' : '272px',
+    );
   }
 
   const roleConfig: Record<
     Role,
-    { title: string; subtitle: string; basePath: string; links: { href: string; label: string; icon: typeof LayoutDashboard }[] }
+    {
+      title: string;
+      subtitle: string;
+      basePath: string;
+      links: { href: string; label: string; icon: typeof LayoutDashboard }[];
+    }
   > = {
     CITIZEN: {
       title: 'Citizen',
@@ -167,29 +172,33 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/profile', label: 'Profile', icon: Settings },
       ],
     },
-  }
+  };
 
-  const config = roleConfig[role] || roleConfig.CITIZEN
-  const accent = roleAccent[role] || roleAccent.CITIZEN
+  const config = roleConfig[role] || roleConfig.CITIZEN;
+  const accent = roleAccent[role] || roleAccent.CITIZEN;
 
   const isActive = (href: string) => {
-    const fullPath = `${config.basePath}${href}`
-    if (href === '') return pathname === config.basePath
-    return pathname.startsWith(fullPath)
-  }
+    const fullPath = `${config.basePath}${href}`;
+    if (href === '') return pathname === config.basePath;
+    return pathname.startsWith(fullPath);
+  };
 
   return (
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
           'fixed left-0 top-0 z-40 h-screen border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-sm transition-[width] duration-300 ease-in-out',
-          collapsed ? 'w-[76px]' : 'w-[272px]'
+          collapsed ? 'w-[76px]' : 'w-[272px]',
         )}
       >
         <div className="flex h-full flex-col">
-
           {/* Header */}
-          <div className={cn('flex items-center border-b border-border/20 p-4', collapsed && 'justify-center px-2')}>
+          <div
+            className={cn(
+              'flex items-center border-b border-border/20 p-4',
+              collapsed && 'justify-center px-2',
+            )}
+          >
             <Link href="/" className="flex items-center gap-3 group min-w-0">
               <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 shadow-sm overflow-hidden ring-1 ring-primary/10">
                 <img
@@ -205,7 +214,9 @@ export function Sidebar({ role }: SidebarProps) {
                   </h2>
                   <div className="flex items-center gap-1.5">
                     <span className={cn('h-1.5 w-1.5 rounded-full', accent)} />
-                    <p className="truncate text-xs text-muted-foreground font-medium">{config.subtitle}</p>
+                    <p className="truncate text-xs text-muted-foreground font-medium">
+                      {config.subtitle}
+                    </p>
                   </div>
                 </div>
               )}
@@ -216,10 +227,10 @@ export function Sidebar({ role }: SidebarProps) {
           <ScrollArea className="flex-1 px-3 py-4">
             <nav className="space-y-0.5">
               {config.links.map((link, index) => {
-                const Icon = link.icon
-                const active = isActive(link.href)
-                const fullPath = `${config.basePath}${link.href}`
-                const isEmergency = link.label === 'Emergency'
+                const Icon = link.icon;
+                const active = isActive(link.href);
+                const fullPath = `${config.basePath}${link.href}`;
+                const isEmergency = link.label === 'Emergency';
 
                 const navItem = (
                   <Link
@@ -232,9 +243,9 @@ export function Sidebar({ role }: SidebarProps) {
                           ? 'bg-destructive/15 text-destructive shadow-sm'
                           : 'text-destructive hover:bg-destructive/10'
                         : active
-                        ? 'bg-secondary/60 text-foreground shadow-sm'
-                        : 'text-muted-foreground hover:bg-secondary/40 hover:text-foreground',
-                      collapsed && 'justify-center px-2'
+                          ? 'bg-secondary/60 text-foreground shadow-sm'
+                          : 'text-muted-foreground hover:bg-secondary/40 hover:text-foreground',
+                      collapsed && 'justify-center px-2',
                     )}
                   >
                     {/* Active indicator bar */}
@@ -242,7 +253,7 @@ export function Sidebar({ role }: SidebarProps) {
                       <span
                         className={cn(
                           'absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full',
-                          isEmergency ? 'bg-destructive' : accent
+                          isEmergency ? 'bg-destructive' : accent,
                         )}
                       />
                     )}
@@ -251,7 +262,7 @@ export function Sidebar({ role }: SidebarProps) {
                       <Icon
                         className={cn(
                           'h-5 w-5 transition-transform duration-200 group-hover:scale-110',
-                          active && !isEmergency && 'text-primary'
+                          active && !isEmergency && 'text-primary',
                         )}
                       />
                       {isEmergency && !collapsed && (
@@ -259,9 +270,11 @@ export function Sidebar({ role }: SidebarProps) {
                       )}
                     </span>
 
-                    {!collapsed && <span className="truncate">{link.label}</span>}
+                    {!collapsed && (
+                      <span className="truncate">{link.label}</span>
+                    )}
                   </Link>
-                )
+                );
 
                 const withGroupLabel =
                   index === 1 && !collapsed ? (
@@ -273,7 +286,7 @@ export function Sidebar({ role }: SidebarProps) {
                     </div>
                   ) : (
                     navItem
-                  )
+                  );
 
                 if (collapsed) {
                   return (
@@ -283,10 +296,10 @@ export function Sidebar({ role }: SidebarProps) {
                         {link.label}
                       </TooltipContent>
                     </Tooltip>
-                  )
+                  );
                 }
 
-                return withGroupLabel
+                return withGroupLabel;
               })}
             </nav>
           </ScrollArea>
@@ -299,7 +312,7 @@ export function Sidebar({ role }: SidebarProps) {
               onClick={() => setCollapsed(!collapsed)}
               className={cn(
                 'w-full text-muted-foreground hover:bg-secondary/50 hover:text-foreground transition-all',
-                collapsed ? 'justify-center px-2' : 'justify-start'
+                collapsed ? 'justify-center px-2' : 'justify-start',
               )}
             >
               {collapsed ? (
@@ -315,5 +328,5 @@ export function Sidebar({ role }: SidebarProps) {
         </div>
       </aside>
     </TooltipProvider>
-  )
+  );
 }
