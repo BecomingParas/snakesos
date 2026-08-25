@@ -8,16 +8,16 @@ import { useQuery } from '@apollo/client/react';
 import { GET_DASHBOARD_STATS } from '@/lib/graphql/queries/dashboard.queries';
 import { handleGraphQLError } from '@/lib/graphql';
 
-export type AnalyticsTimePeriod = 
-  | 'TODAY' 
-  | 'YESTERDAY' 
-  | 'LAST_7_DAYS' 
-  | 'LAST_30_DAYS' 
-  | 'LAST_90_DAYS' 
-  | 'THIS_MONTH' 
-  | 'LAST_MONTH' 
-  | 'THIS_YEAR' 
-  | 'LAST_YEAR' 
+export type AnalyticsTimePeriod =
+  | 'TODAY'
+  | 'YESTERDAY'
+  | 'LAST_7_DAYS'
+  | 'LAST_30_DAYS'
+  | 'LAST_90_DAYS'
+  | 'THIS_MONTH'
+  | 'LAST_MONTH'
+  | 'THIS_YEAR'
+  | 'LAST_YEAR'
   | 'CUSTOM';
 
 export interface TrendData {
@@ -44,6 +44,14 @@ export interface DashboardStats {
   rescueTrend: TrendData;
   volunteerTrend: TrendData;
   donationTrend: TrendData;
+  recentRescues: Array<{
+    id: string;
+    name?: string | null;
+    municipality: string;
+    status: string;
+    priority: string;
+    createdAt: string;
+  }>;
 }
 
 export interface UseDashboardStatsOptions {

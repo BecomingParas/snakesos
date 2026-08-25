@@ -3,6 +3,15 @@
 # ===================================================================
 
 extend type Query {
+  paymentIntent(id: ID!): PaymentIntent @auth(requires: [ADMIN, SUPER_ADMIN])
+  settlement(id: ID!): Settlement @auth(requires: [ADMIN, SUPER_ADMIN])
+  payout(id: ID!): Payout @auth(requires: [ADMIN, SUPER_ADMIN])
+  settlements(status: SettlementStatus): [Settlement!]! @auth(requires: [ADMIN, SUPER_ADMIN])
+  payouts(status: PayoutStatus): [Payout!]! @auth(requires: [ADMIN, SUPER_ADMIN])
+  mySettlements: [Settlement!]! @auth
+  myPayouts: [Payout!]! @auth
+  myRescuePaymentIntent(rescueId: ID!): PaymentIntent @auth
+
   """
   Check Stripe connection status (DEVELOPMENT ONLY)
   This query is only available in non-production environments

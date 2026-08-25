@@ -21,6 +21,20 @@ export class RescueRepository extends BaseRepository<
     super(prisma, 'rescueRequest' as Prisma.ModelName);
   }
 
+  async runInTransaction<T>(
+    callback: (
+      repository: RescueRepository,
+      transaction: Prisma.TransactionClient,
+    ) => Promise<T>,
+  ): Promise<T> {
+    return this.prisma.$transaction(async (transaction) =>
+      callback(
+        new RescueRepository(transaction as unknown as PrismaClient),
+        transaction,
+      ),
+    );
+  }
+
   /**
    * Find rescue with full details
    */

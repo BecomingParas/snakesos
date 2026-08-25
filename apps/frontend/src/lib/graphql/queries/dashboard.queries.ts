@@ -40,6 +40,14 @@ export const DASHBOARD_STATS_FRAGMENT = gql`
       change
       direction
     }
+    recentRescues {
+      id
+      name
+      municipality
+      status
+      priority
+      createdAt
+    }
   }
 `;
 
@@ -86,7 +94,7 @@ export const RESCUE_REQUEST_FRAGMENT = gql`
  */
 export const GET_DASHBOARD_STATS = gql`
   ${DASHBOARD_STATS_FRAGMENT}
-  
+
   query GetDashboardStats($period: AnalyticsTimePeriod) {
     dashboardStats(period: $period) {
       ...DashboardStatsFields
@@ -99,8 +107,11 @@ export const GET_DASHBOARD_STATS = gql`
  */
 export const GET_MY_RESCUE_REQUESTS = gql`
   ${RESCUE_REQUEST_FRAGMENT}
-  
-  query GetMyRescueRequests($pagination: PaginationInput, $filter: RescueRequestFilterInput) {
+
+  query GetMyRescueRequests(
+    $pagination: PaginationInput
+    $filter: RescueRequestFilterInput
+  ) {
     myRescueRequests(pagination: $pagination, filter: $filter) {
       edges {
         node {
@@ -123,8 +134,11 @@ export const GET_MY_RESCUE_REQUESTS = gql`
  */
 export const GET_MY_ASSIGNED_RESCUES = gql`
   ${RESCUE_REQUEST_FRAGMENT}
-  
-  query GetMyAssignedRescues($pagination: PaginationInput, $filter: RescueRequestFilterInput) {
+
+  query GetMyAssignedRescues(
+    $pagination: PaginationInput
+    $filter: RescueRequestFilterInput
+  ) {
     myAssignedRescues(pagination: $pagination, filter: $filter) {
       edges {
         node {
@@ -147,7 +161,7 @@ export const GET_MY_ASSIGNED_RESCUES = gql`
  */
 export const GET_ACTIVE_RESCUES = gql`
   ${RESCUE_REQUEST_FRAGMENT}
-  
+
   query GetActiveRescues($pagination: PaginationInput) {
     activeRescues(pagination: $pagination) {
       edges {

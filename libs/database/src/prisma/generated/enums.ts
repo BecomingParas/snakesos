@@ -100,6 +100,74 @@ export const PostStatus = {
 export type PostStatus = (typeof PostStatus)[keyof typeof PostStatus]
 
 
+export const FinancialTransactionType = {
+  RESCUE_CHARGE: 'RESCUE_CHARGE',
+  DONATION: 'DONATION'
+} as const
+
+export type FinancialTransactionType = (typeof FinancialTransactionType)[keyof typeof FinancialTransactionType]
+
+
+export const FinancialTransactionStatus = {
+  PENDING: 'PENDING',
+  AUTHORIZED: 'AUTHORIZED',
+  PAID: 'PAID',
+  PARTIALLY_REFUNDED: 'PARTIALLY_REFUNDED',
+  REFUNDED: 'REFUNDED',
+  SETTLEMENT_PENDING: 'SETTLEMENT_PENDING',
+  SETTLED: 'SETTLED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type FinancialTransactionStatus = (typeof FinancialTransactionStatus)[keyof typeof FinancialTransactionStatus]
+
+
+export const PaymentIntentStatus = {
+  CREATED: 'CREATED',
+  REQUIRES_ACTION: 'REQUIRES_ACTION',
+  AUTHORIZED: 'AUTHORIZED',
+  SUCCEEDED: 'SUCCEEDED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type PaymentIntentStatus = (typeof PaymentIntentStatus)[keyof typeof PaymentIntentStatus]
+
+
+export const SettlementStatus = {
+  PENDING: 'PENDING',
+  ELIGIBLE: 'ELIGIBLE',
+  PROCESSING: 'PROCESSING',
+  SETTLED: 'SETTLED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type SettlementStatus = (typeof SettlementStatus)[keyof typeof SettlementStatus]
+
+
+export const PayoutStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  PROCESSING: 'PROCESSING',
+  PAID: 'PAID',
+  FAILED: 'FAILED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type PayoutStatus = (typeof PayoutStatus)[keyof typeof PayoutStatus]
+
+
+export const LedgerDirection = {
+  DEBIT: 'DEBIT',
+  CREDIT: 'CREDIT'
+} as const
+
+export type LedgerDirection = (typeof LedgerDirection)[keyof typeof LedgerDirection]
+
+
 export const PaymentMethod = {
   ESEWA: 'ESEWA',
   KHALTI: 'KHALTI',

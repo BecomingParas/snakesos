@@ -127,6 +127,51 @@ export type GalleryImage = Prisma.GalleryImageModel
  */
 export type Donation = Prisma.DonationModel
 /**
+ * Model CompensationPolicy
+ * 
+ */
+export type CompensationPolicy = Prisma.CompensationPolicyModel
+/**
+ * Model RescueCharge
+ * 
+ */
+export type RescueCharge = Prisma.RescueChargeModel
+/**
+ * Model FinancialTransaction
+ * 
+ */
+export type FinancialTransaction = Prisma.FinancialTransactionModel
+/**
+ * Model PaymentIntent
+ * 
+ */
+export type PaymentIntent = Prisma.PaymentIntentModel
+/**
+ * Model Refund
+ * 
+ */
+export type Refund = Prisma.RefundModel
+/**
+ * Model Settlement
+ * 
+ */
+export type Settlement = Prisma.SettlementModel
+/**
+ * Model Payout
+ * 
+ */
+export type Payout = Prisma.PayoutModel
+/**
+ * Model LedgerEntry
+ * 
+ */
+export type LedgerEntry = Prisma.LedgerEntryModel
+/**
+ * Model FinancialAuditEvent
+ * 
+ */
+export type FinancialAuditEvent = Prisma.FinancialAuditEventModel
+/**
  * Model Notification
  * 
  */

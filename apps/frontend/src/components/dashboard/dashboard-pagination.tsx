@@ -1,34 +1,35 @@
-'use client'
+'use client';
 
 import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/ui/select';
 
 export interface DashboardPageInfo {
-  hasNextPage: boolean
-  hasPreviousPage: boolean
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
 }
 
 interface DashboardPaginationProps {
-  page: number
-  pageSize: number
-  totalCount: number
-  pageInfo?: DashboardPageInfo
-  onPageChange: (page: number) => void
-  onPageSizeChange?: (pageSize: number) => void
-  pageSizeOptions?: number[]
-  itemLabel?: string
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  pageInfo?: DashboardPageInfo;
+  onPageChange: (page: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
+  pageSizeOptions?: number[];
+  itemLabel?: string;
+  alwaysShow?: boolean;
 }
 
 export function DashboardPagination({
@@ -40,42 +41,43 @@ export function DashboardPagination({
   onPageSizeChange,
   pageSizeOptions = [10, 20, 30],
   itemLabel = 'items',
+  alwaysShow = false,
 }: DashboardPaginationProps) {
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize))
-  const hasPreviousPage = pageInfo?.hasPreviousPage ?? page > 1
-  const hasNextPage = pageInfo?.hasNextPage ?? page < totalPages
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const hasPreviousPage = pageInfo?.hasPreviousPage ?? page > 1;
+  const hasNextPage = pageInfo?.hasNextPage ?? page < totalPages;
 
-  if (totalCount === 0 || (!hasPreviousPage && !hasNextPage)) {
-    return null
+  if (totalCount === 0 || (!alwaysShow && !hasPreviousPage && !hasNextPage)) {
+    return null;
   }
 
-  const firstItem = (page - 1) * pageSize + 1
-  const lastItem = Math.min(page * pageSize, totalCount)
+  const firstItem = (page - 1) * pageSize + 1;
+  const lastItem = Math.min(page * pageSize, totalCount);
   const getPageNumbers = (): Array<number | string> => {
-    const pageNumbers: Array<number | string> = []
-    const maxVisiblePages = 5
+    const pageNumbers: Array<number | string> = [];
+    const maxVisiblePages = 5;
 
     if (totalPages <= maxVisiblePages) {
       for (let pageNumber = 1; pageNumber <= totalPages; pageNumber += 1) {
-        pageNumbers.push(pageNumber)
+        pageNumbers.push(pageNumber);
       }
     } else {
-      pageNumbers.push(1)
-      let start = Math.max(2, page - 1)
-      let end = Math.min(totalPages - 1, page + 1)
+      pageNumbers.push(1);
+      let start = Math.max(2, page - 1);
+      let end = Math.min(totalPages - 1, page + 1);
 
-      if (page <= 3) end = Math.min(4, totalPages - 1)
-      if (page >= totalPages - 2) start = Math.max(totalPages - 3, 2)
-      if (start > 2) pageNumbers.push('ellipsis-start')
+      if (page <= 3) end = Math.min(4, totalPages - 1);
+      if (page >= totalPages - 2) start = Math.max(totalPages - 3, 2);
+      if (start > 2) pageNumbers.push('ellipsis-start');
       for (let pageNumber = start; pageNumber <= end; pageNumber += 1) {
-        pageNumbers.push(pageNumber)
+        pageNumbers.push(pageNumber);
       }
-      if (end < totalPages - 1) pageNumbers.push('ellipsis-end')
-      pageNumbers.push(totalPages)
+      if (end < totalPages - 1) pageNumbers.push('ellipsis-end');
+      pageNumbers.push(totalPages);
     }
 
-    return pageNumbers
-  }
+    return pageNumbers;
+  };
 
   return (
     <>
@@ -83,106 +85,106 @@ export function DashboardPagination({
         aria-label="Pagination"
         className="flex flex-col items-center justify-between gap-4 border-t pt-6 sm:flex-row"
       >
-      <div className="flex items-center gap-2">
-        {onPageSizeChange && (
-          <>
-            <span className="text-sm text-muted-foreground">Show</span>
-            <Select
-              value={pageSize.toString()}
-              onValueChange={(value) => onPageSizeChange(Number(value))}
-            >
-              <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue placeholder={pageSize} />
-              </SelectTrigger>
-              <SelectContent>
-                {pageSizeOptions.map((option) => (
-                  <SelectItem key={option} value={option.toString()}>
-                    {option}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <span className="text-sm text-muted-foreground">per page</span>
-          </>
-        )}
-      </div>
-      <div className="text-sm text-muted-foreground">
-        Showing{' '}
-        <span className="font-semibold text-foreground">
-          {firstItem}-{lastItem}
-        </span>{' '}
-        of{' '}
-        <span className="font-semibold text-foreground">
-          {totalCount.toLocaleString()}
-        </span>{' '}
-        {itemLabel}
-      </div>
-      <div className="hidden items-center gap-1 sm:flex">
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => onPageChange(1)}
-          disabled={!hasPreviousPage}
-          aria-label="Go to first page"
-        >
-          <ChevronsLeft className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => onPageChange(page - 1)}
-          disabled={!hasPreviousPage}
-          aria-label="Go to previous page"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <div className="mx-2 flex items-center gap-1">
-          {getPageNumbers().map((pageNumber, index) =>
-            typeof pageNumber === 'string' ? (
-              <span
-                key={`${pageNumber}-${index}`}
-                className="flex h-8 w-8 items-center justify-center text-muted-foreground"
+        <div className="flex items-center gap-2">
+          {onPageSizeChange && (
+            <>
+              <span className="text-sm text-muted-foreground">Show</span>
+              <Select
+                value={pageSize.toString()}
+                onValueChange={(value) => onPageSizeChange(Number(value))}
               >
-                ...
-              </span>
-            ) : (
-              <Button
-                key={pageNumber}
-                variant={page === pageNumber ? 'default' : 'outline'}
-                size="icon"
-                className="h-8 w-8 text-sm"
-                onClick={() => onPageChange(pageNumber)}
-                aria-current={page === pageNumber ? 'page' : undefined}
-                aria-label={`Go to page ${pageNumber}`}
-              >
-                {pageNumber}
-              </Button>
-            ),
+                <SelectTrigger className="h-8 w-17.5">
+                  <SelectValue placeholder={pageSize} />
+                </SelectTrigger>
+                <SelectContent>
+                  {pageSizeOptions.map((option) => (
+                    <SelectItem key={option} value={option.toString()}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <span className="text-sm text-muted-foreground">per page</span>
+            </>
           )}
         </div>
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => onPageChange(page + 1)}
-          disabled={!hasNextPage}
-          aria-label="Go to next page"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-8 w-8"
-          onClick={() => onPageChange(totalPages)}
-          disabled={!hasNextPage}
-          aria-label="Go to last page"
-        >
-          <ChevronsRight className="h-4 w-4" />
-        </Button>
-      </div>
+        <div className="text-sm text-muted-foreground">
+          Showing{' '}
+          <span className="font-semibold text-foreground">
+            {firstItem}-{lastItem}
+          </span>{' '}
+          of{' '}
+          <span className="font-semibold text-foreground">
+            {totalCount.toLocaleString()}
+          </span>{' '}
+          {itemLabel}
+        </div>
+        <div className="hidden items-center gap-1 sm:flex">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => onPageChange(1)}
+            disabled={!hasPreviousPage}
+            aria-label="Go to first page"
+          >
+            <ChevronsLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => onPageChange(page - 1)}
+            disabled={!hasPreviousPage}
+            aria-label="Go to previous page"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <div className="mx-2 flex items-center gap-1">
+            {getPageNumbers().map((pageNumber, index) =>
+              typeof pageNumber === 'string' ? (
+                <span
+                  key={`${pageNumber}-${index}`}
+                  className="flex h-8 w-8 items-center justify-center text-muted-foreground"
+                >
+                  ...
+                </span>
+              ) : (
+                <Button
+                  key={pageNumber}
+                  variant={page === pageNumber ? 'default' : 'outline'}
+                  size="icon"
+                  className="h-8 w-8 text-sm"
+                  onClick={() => onPageChange(pageNumber)}
+                  aria-current={page === pageNumber ? 'page' : undefined}
+                  aria-label={`Go to page ${pageNumber}`}
+                >
+                  {pageNumber}
+                </Button>
+              ),
+            )}
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => onPageChange(page + 1)}
+            disabled={!hasNextPage}
+            aria-label="Go to next page"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => onPageChange(totalPages)}
+            disabled={!hasNextPage}
+            aria-label="Go to last page"
+          >
+            <ChevronsRight className="h-4 w-4" />
+          </Button>
+        </div>
       </nav>
       <div className="flex items-center justify-between gap-4 border-t pt-4 sm:hidden">
         <Button
@@ -208,5 +210,5 @@ export function DashboardPagination({
         </Button>
       </div>
     </>
-  )
+  );
 }

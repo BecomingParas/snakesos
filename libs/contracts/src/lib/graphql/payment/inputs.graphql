@@ -27,6 +27,61 @@ input ProcessPaymentInput {
   gatewayResponse: JSON
 }
 
+enum PaymentProvider {
+  ESEWA
+  KHALTI
+  STRIPE
+}
+
+input CreatePaymentIntentInput {
+  rescueChargeId: ID
+  donationId: ID
+  provider: PaymentProvider!
+  amount: String!
+  currency: String
+  idempotencyKey: String!
+}
+
+input InitiatePaymentInput {
+  rescueChargeId: ID
+  donationId: ID
+  provider: PaymentProvider!
+  amount: String!
+  currency: String
+  idempotencyKey: String!
+  returnUrl: String
+}
+
+input ConfirmPaymentInput {
+  paymentIntentId: ID
+  providerReference: String!
+}
+
+input CreatePayoutInput {
+  settlementId: ID!
+  paymentMethod: String
+  idempotencyKey: String!
+}
+
+input TransitionPayoutInput {
+  payoutId: ID!
+  status: PayoutStatus!
+  externalReference: String
+  failureReason: String
+}
+
+input RefundPaymentInput {
+  paymentIntentId: ID!
+  amount: String!
+  idempotencyKey: String!
+}
+
+input StartPaymentInput {
+  paymentIntentId: ID!
+  amount: String
+  returnUrl: String
+}
+
 """
 Input for refunding donation
 """

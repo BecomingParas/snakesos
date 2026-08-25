@@ -437,6 +437,8 @@ export type DonationWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Donation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Donation"> | Date | string
   donor?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  financialTransactions?: Prisma.FinancialTransactionListRelationFilter
+  paymentIntents?: Prisma.PaymentIntentListRelationFilter
 }
 
 export type DonationOrderByWithRelationInput = {
@@ -473,6 +475,8 @@ export type DonationOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   donor?: Prisma.UserOrderByWithRelationInput
+  financialTransactions?: Prisma.FinancialTransactionOrderByRelationAggregateInput
+  paymentIntents?: Prisma.PaymentIntentOrderByRelationAggregateInput
 }
 
 export type DonationWhereUniqueInput = Prisma.AtLeast<{
@@ -512,6 +516,8 @@ export type DonationWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Donation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Donation"> | Date | string
   donor?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  financialTransactions?: Prisma.FinancialTransactionListRelationFilter
+  paymentIntents?: Prisma.PaymentIntentListRelationFilter
 }, "id" | "transactionId" | "receiptNumber">
 
 export type DonationOrderByWithAggregationInput = {
@@ -625,6 +631,8 @@ export type DonationCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
+  financialTransactions?: Prisma.FinancialTransactionCreateNestedManyWithoutDonationInput
+  paymentIntents?: Prisma.PaymentIntentCreateNestedManyWithoutDonationInput
 }
 
 export type DonationUncheckedCreateInput = {
@@ -660,6 +668,8 @@ export type DonationUncheckedCreateInput = {
   source?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  financialTransactions?: Prisma.FinancialTransactionUncheckedCreateNestedManyWithoutDonationInput
+  paymentIntents?: Prisma.PaymentIntentUncheckedCreateNestedManyWithoutDonationInput
 }
 
 export type DonationUpdateInput = {
@@ -695,6 +705,8 @@ export type DonationUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
+  financialTransactions?: Prisma.FinancialTransactionUpdateManyWithoutDonationNestedInput
+  paymentIntents?: Prisma.PaymentIntentUpdateManyWithoutDonationNestedInput
 }
 
 export type DonationUncheckedUpdateInput = {
@@ -730,6 +742,8 @@ export type DonationUncheckedUpdateInput = {
   source?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  financialTransactions?: Prisma.FinancialTransactionUncheckedUpdateManyWithoutDonationNestedInput
+  paymentIntents?: Prisma.PaymentIntentUncheckedUpdateManyWithoutDonationNestedInput
 }
 
 export type DonationCreateManyInput = {
@@ -961,6 +975,11 @@ export type DonationSumOrderByAggregateInput = {
   refundAmount?: Prisma.SortOrder
 }
 
+export type DonationNullableScalarRelationFilter = {
+  is?: Prisma.DonationWhereInput | null
+  isNot?: Prisma.DonationWhereInput | null
+}
+
 export type DonationCreateNestedManyWithoutDonorInput = {
   create?: Prisma.XOR<Prisma.DonationCreateWithoutDonorInput, Prisma.DonationUncheckedCreateWithoutDonorInput> | Prisma.DonationCreateWithoutDonorInput[] | Prisma.DonationUncheckedCreateWithoutDonorInput[]
   connectOrCreate?: Prisma.DonationCreateOrConnectWithoutDonorInput | Prisma.DonationCreateOrConnectWithoutDonorInput[]
@@ -1011,6 +1030,38 @@ export type EnumPaymentStatusFieldUpdateOperationsInput = {
   set?: $Enums.PaymentStatus
 }
 
+export type DonationCreateNestedOneWithoutFinancialTransactionsInput = {
+  create?: Prisma.XOR<Prisma.DonationCreateWithoutFinancialTransactionsInput, Prisma.DonationUncheckedCreateWithoutFinancialTransactionsInput>
+  connectOrCreate?: Prisma.DonationCreateOrConnectWithoutFinancialTransactionsInput
+  connect?: Prisma.DonationWhereUniqueInput
+}
+
+export type DonationUpdateOneWithoutFinancialTransactionsNestedInput = {
+  create?: Prisma.XOR<Prisma.DonationCreateWithoutFinancialTransactionsInput, Prisma.DonationUncheckedCreateWithoutFinancialTransactionsInput>
+  connectOrCreate?: Prisma.DonationCreateOrConnectWithoutFinancialTransactionsInput
+  upsert?: Prisma.DonationUpsertWithoutFinancialTransactionsInput
+  disconnect?: Prisma.DonationWhereInput | boolean
+  delete?: Prisma.DonationWhereInput | boolean
+  connect?: Prisma.DonationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DonationUpdateToOneWithWhereWithoutFinancialTransactionsInput, Prisma.DonationUpdateWithoutFinancialTransactionsInput>, Prisma.DonationUncheckedUpdateWithoutFinancialTransactionsInput>
+}
+
+export type DonationCreateNestedOneWithoutPaymentIntentsInput = {
+  create?: Prisma.XOR<Prisma.DonationCreateWithoutPaymentIntentsInput, Prisma.DonationUncheckedCreateWithoutPaymentIntentsInput>
+  connectOrCreate?: Prisma.DonationCreateOrConnectWithoutPaymentIntentsInput
+  connect?: Prisma.DonationWhereUniqueInput
+}
+
+export type DonationUpdateOneWithoutPaymentIntentsNestedInput = {
+  create?: Prisma.XOR<Prisma.DonationCreateWithoutPaymentIntentsInput, Prisma.DonationUncheckedCreateWithoutPaymentIntentsInput>
+  connectOrCreate?: Prisma.DonationCreateOrConnectWithoutPaymentIntentsInput
+  upsert?: Prisma.DonationUpsertWithoutPaymentIntentsInput
+  disconnect?: Prisma.DonationWhereInput | boolean
+  delete?: Prisma.DonationWhereInput | boolean
+  connect?: Prisma.DonationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DonationUpdateToOneWithWhereWithoutPaymentIntentsInput, Prisma.DonationUpdateWithoutPaymentIntentsInput>, Prisma.DonationUncheckedUpdateWithoutPaymentIntentsInput>
+}
+
 export type DonationCreateWithoutDonorInput = {
   id?: string
   donorName: string
@@ -1043,6 +1094,8 @@ export type DonationCreateWithoutDonorInput = {
   source?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  financialTransactions?: Prisma.FinancialTransactionCreateNestedManyWithoutDonationInput
+  paymentIntents?: Prisma.PaymentIntentCreateNestedManyWithoutDonationInput
 }
 
 export type DonationUncheckedCreateWithoutDonorInput = {
@@ -1077,6 +1130,8 @@ export type DonationUncheckedCreateWithoutDonorInput = {
   source?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  financialTransactions?: Prisma.FinancialTransactionUncheckedCreateNestedManyWithoutDonationInput
+  paymentIntents?: Prisma.PaymentIntentUncheckedCreateNestedManyWithoutDonationInput
 }
 
 export type DonationCreateOrConnectWithoutDonorInput = {
@@ -1141,6 +1196,326 @@ export type DonationScalarWhereInput = {
   source?: Prisma.StringFilter<"Donation"> | string
   createdAt?: Prisma.DateTimeFilter<"Donation"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Donation"> | Date | string
+}
+
+export type DonationCreateWithoutFinancialTransactionsInput = {
+  id?: string
+  donorName: string
+  donorEmail?: string | null
+  donorPhone?: string | null
+  amount: number
+  currency?: string
+  amountUSD?: number | null
+  paymentMethod: $Enums.PaymentMethod
+  paymentGateway: string
+  transactionId?: string | null
+  gatewayResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.PaymentStatus
+  paidAt?: Date | string | null
+  purpose?: string | null
+  campaign?: string | null
+  message?: string | null
+  anonymous?: boolean
+  receiptNumber?: string | null
+  receiptUrl?: string | null
+  invoiceUrl?: string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  refundedAt?: Date | string | null
+  refundReason?: string | null
+  refundAmount?: number | null
+  ipAddress?: string | null
+  userAgent?: string | null
+  source?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
+  paymentIntents?: Prisma.PaymentIntentCreateNestedManyWithoutDonationInput
+}
+
+export type DonationUncheckedCreateWithoutFinancialTransactionsInput = {
+  id?: string
+  donorId?: string | null
+  donorName: string
+  donorEmail?: string | null
+  donorPhone?: string | null
+  amount: number
+  currency?: string
+  amountUSD?: number | null
+  paymentMethod: $Enums.PaymentMethod
+  paymentGateway: string
+  transactionId?: string | null
+  gatewayResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.PaymentStatus
+  paidAt?: Date | string | null
+  purpose?: string | null
+  campaign?: string | null
+  message?: string | null
+  anonymous?: boolean
+  receiptNumber?: string | null
+  receiptUrl?: string | null
+  invoiceUrl?: string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  refundedAt?: Date | string | null
+  refundReason?: string | null
+  refundAmount?: number | null
+  ipAddress?: string | null
+  userAgent?: string | null
+  source?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  paymentIntents?: Prisma.PaymentIntentUncheckedCreateNestedManyWithoutDonationInput
+}
+
+export type DonationCreateOrConnectWithoutFinancialTransactionsInput = {
+  where: Prisma.DonationWhereUniqueInput
+  create: Prisma.XOR<Prisma.DonationCreateWithoutFinancialTransactionsInput, Prisma.DonationUncheckedCreateWithoutFinancialTransactionsInput>
+}
+
+export type DonationUpsertWithoutFinancialTransactionsInput = {
+  update: Prisma.XOR<Prisma.DonationUpdateWithoutFinancialTransactionsInput, Prisma.DonationUncheckedUpdateWithoutFinancialTransactionsInput>
+  create: Prisma.XOR<Prisma.DonationCreateWithoutFinancialTransactionsInput, Prisma.DonationUncheckedCreateWithoutFinancialTransactionsInput>
+  where?: Prisma.DonationWhereInput
+}
+
+export type DonationUpdateToOneWithWhereWithoutFinancialTransactionsInput = {
+  where?: Prisma.DonationWhereInput
+  data: Prisma.XOR<Prisma.DonationUpdateWithoutFinancialTransactionsInput, Prisma.DonationUncheckedUpdateWithoutFinancialTransactionsInput>
+}
+
+export type DonationUpdateWithoutFinancialTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  donorName?: Prisma.StringFieldUpdateOperationsInput | string
+  donorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  donorPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  amountUSD?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentGateway?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gatewayResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purpose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  campaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  receiptNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refundedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refundReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refundAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
+  paymentIntents?: Prisma.PaymentIntentUpdateManyWithoutDonationNestedInput
+}
+
+export type DonationUncheckedUpdateWithoutFinancialTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  donorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  donorName?: Prisma.StringFieldUpdateOperationsInput | string
+  donorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  donorPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  amountUSD?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentGateway?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gatewayResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purpose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  campaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  receiptNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refundedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refundReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refundAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  paymentIntents?: Prisma.PaymentIntentUncheckedUpdateManyWithoutDonationNestedInput
+}
+
+export type DonationCreateWithoutPaymentIntentsInput = {
+  id?: string
+  donorName: string
+  donorEmail?: string | null
+  donorPhone?: string | null
+  amount: number
+  currency?: string
+  amountUSD?: number | null
+  paymentMethod: $Enums.PaymentMethod
+  paymentGateway: string
+  transactionId?: string | null
+  gatewayResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.PaymentStatus
+  paidAt?: Date | string | null
+  purpose?: string | null
+  campaign?: string | null
+  message?: string | null
+  anonymous?: boolean
+  receiptNumber?: string | null
+  receiptUrl?: string | null
+  invoiceUrl?: string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  refundedAt?: Date | string | null
+  refundReason?: string | null
+  refundAmount?: number | null
+  ipAddress?: string | null
+  userAgent?: string | null
+  source?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  donor?: Prisma.UserCreateNestedOneWithoutDonationsInput
+  financialTransactions?: Prisma.FinancialTransactionCreateNestedManyWithoutDonationInput
+}
+
+export type DonationUncheckedCreateWithoutPaymentIntentsInput = {
+  id?: string
+  donorId?: string | null
+  donorName: string
+  donorEmail?: string | null
+  donorPhone?: string | null
+  amount: number
+  currency?: string
+  amountUSD?: number | null
+  paymentMethod: $Enums.PaymentMethod
+  paymentGateway: string
+  transactionId?: string | null
+  gatewayResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: $Enums.PaymentStatus
+  paidAt?: Date | string | null
+  purpose?: string | null
+  campaign?: string | null
+  message?: string | null
+  anonymous?: boolean
+  receiptNumber?: string | null
+  receiptUrl?: string | null
+  invoiceUrl?: string | null
+  verifiedAt?: Date | string | null
+  verifiedBy?: string | null
+  verificationNotes?: string | null
+  refundedAt?: Date | string | null
+  refundReason?: string | null
+  refundAmount?: number | null
+  ipAddress?: string | null
+  userAgent?: string | null
+  source?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  financialTransactions?: Prisma.FinancialTransactionUncheckedCreateNestedManyWithoutDonationInput
+}
+
+export type DonationCreateOrConnectWithoutPaymentIntentsInput = {
+  where: Prisma.DonationWhereUniqueInput
+  create: Prisma.XOR<Prisma.DonationCreateWithoutPaymentIntentsInput, Prisma.DonationUncheckedCreateWithoutPaymentIntentsInput>
+}
+
+export type DonationUpsertWithoutPaymentIntentsInput = {
+  update: Prisma.XOR<Prisma.DonationUpdateWithoutPaymentIntentsInput, Prisma.DonationUncheckedUpdateWithoutPaymentIntentsInput>
+  create: Prisma.XOR<Prisma.DonationCreateWithoutPaymentIntentsInput, Prisma.DonationUncheckedCreateWithoutPaymentIntentsInput>
+  where?: Prisma.DonationWhereInput
+}
+
+export type DonationUpdateToOneWithWhereWithoutPaymentIntentsInput = {
+  where?: Prisma.DonationWhereInput
+  data: Prisma.XOR<Prisma.DonationUpdateWithoutPaymentIntentsInput, Prisma.DonationUncheckedUpdateWithoutPaymentIntentsInput>
+}
+
+export type DonationUpdateWithoutPaymentIntentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  donorName?: Prisma.StringFieldUpdateOperationsInput | string
+  donorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  donorPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  amountUSD?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentGateway?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gatewayResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purpose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  campaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  receiptNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refundedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refundReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refundAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  donor?: Prisma.UserUpdateOneWithoutDonationsNestedInput
+  financialTransactions?: Prisma.FinancialTransactionUpdateManyWithoutDonationNestedInput
+}
+
+export type DonationUncheckedUpdateWithoutPaymentIntentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  donorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  donorName?: Prisma.StringFieldUpdateOperationsInput | string
+  donorEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  donorPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  amount?: Prisma.FloatFieldUpdateOperationsInput | number
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  amountUSD?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paymentMethod?: Prisma.EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+  paymentGateway?: Prisma.StringFieldUpdateOperationsInput | string
+  transactionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  gatewayResponse?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  status?: Prisma.EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  purpose?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  campaign?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  anonymous?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  receiptNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receiptUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  invoiceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verificationNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refundedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refundReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  refundAmount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  ipAddress?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userAgent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  financialTransactions?: Prisma.FinancialTransactionUncheckedUpdateManyWithoutDonationNestedInput
 }
 
 export type DonationCreateManyDonorInput = {
@@ -1209,6 +1584,8 @@ export type DonationUpdateWithoutDonorInput = {
   source?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  financialTransactions?: Prisma.FinancialTransactionUpdateManyWithoutDonationNestedInput
+  paymentIntents?: Prisma.PaymentIntentUpdateManyWithoutDonationNestedInput
 }
 
 export type DonationUncheckedUpdateWithoutDonorInput = {
@@ -1243,6 +1620,8 @@ export type DonationUncheckedUpdateWithoutDonorInput = {
   source?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  financialTransactions?: Prisma.FinancialTransactionUncheckedUpdateManyWithoutDonationNestedInput
+  paymentIntents?: Prisma.PaymentIntentUncheckedUpdateManyWithoutDonationNestedInput
 }
 
 export type DonationUncheckedUpdateManyWithoutDonorInput = {
@@ -1280,6 +1659,44 @@ export type DonationUncheckedUpdateManyWithoutDonorInput = {
 }
 
 
+/**
+ * Count Type DonationCountOutputType
+ */
+
+export type DonationCountOutputType = {
+  financialTransactions: number
+  paymentIntents: number
+}
+
+export type DonationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  financialTransactions?: boolean | DonationCountOutputTypeCountFinancialTransactionsArgs
+  paymentIntents?: boolean | DonationCountOutputTypeCountPaymentIntentsArgs
+}
+
+/**
+ * DonationCountOutputType without action
+ */
+export type DonationCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DonationCountOutputType
+   */
+  select?: Prisma.DonationCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * DonationCountOutputType without action
+ */
+export type DonationCountOutputTypeCountFinancialTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FinancialTransactionWhereInput
+}
+
+/**
+ * DonationCountOutputType without action
+ */
+export type DonationCountOutputTypeCountPaymentIntentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PaymentIntentWhereInput
+}
+
 
 export type DonationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1315,6 +1732,9 @@ export type DonationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   createdAt?: boolean
   updatedAt?: boolean
   donor?: boolean | Prisma.Donation$donorArgs<ExtArgs>
+  financialTransactions?: boolean | Prisma.Donation$financialTransactionsArgs<ExtArgs>
+  paymentIntents?: boolean | Prisma.Donation$paymentIntentsArgs<ExtArgs>
+  _count?: boolean | Prisma.DonationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["donation"]>
 
 export type DonationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1427,6 +1847,9 @@ export type DonationSelectScalar = {
 export type DonationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "donorId" | "donorName" | "donorEmail" | "donorPhone" | "amount" | "currency" | "amountUSD" | "paymentMethod" | "paymentGateway" | "transactionId" | "gatewayResponse" | "status" | "paidAt" | "purpose" | "campaign" | "message" | "anonymous" | "receiptNumber" | "receiptUrl" | "invoiceUrl" | "verifiedAt" | "verifiedBy" | "verificationNotes" | "refundedAt" | "refundReason" | "refundAmount" | "ipAddress" | "userAgent" | "source" | "createdAt" | "updatedAt", ExtArgs["result"]["donation"]>
 export type DonationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   donor?: boolean | Prisma.Donation$donorArgs<ExtArgs>
+  financialTransactions?: boolean | Prisma.Donation$financialTransactionsArgs<ExtArgs>
+  paymentIntents?: boolean | Prisma.Donation$paymentIntentsArgs<ExtArgs>
+  _count?: boolean | Prisma.DonationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DonationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   donor?: boolean | Prisma.Donation$donorArgs<ExtArgs>
@@ -1439,6 +1862,8 @@ export type $DonationPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   name: "Donation"
   objects: {
     donor: Prisma.$UserPayload<ExtArgs> | null
+    financialTransactions: Prisma.$FinancialTransactionPayload<ExtArgs>[]
+    paymentIntents: Prisma.$PaymentIntentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1868,6 +2293,8 @@ readonly fields: DonationFieldRefs;
 export interface Prisma__DonationClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   donor<T extends Prisma.Donation$donorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Donation$donorArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  financialTransactions<T extends Prisma.Donation$financialTransactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Donation$financialTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FinancialTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  paymentIntents<T extends Prisma.Donation$paymentIntentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Donation$paymentIntentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PaymentIntentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2346,6 +2773,54 @@ export type Donation$donorArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   include?: Prisma.UserInclude<ExtArgs> | null
   where?: Prisma.UserWhereInput
+}
+
+/**
+ * Donation.financialTransactions
+ */
+export type Donation$financialTransactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FinancialTransaction
+   */
+  select?: Prisma.FinancialTransactionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FinancialTransaction
+   */
+  omit?: Prisma.FinancialTransactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FinancialTransactionInclude<ExtArgs> | null
+  where?: Prisma.FinancialTransactionWhereInput
+  orderBy?: Prisma.FinancialTransactionOrderByWithRelationInput | Prisma.FinancialTransactionOrderByWithRelationInput[]
+  cursor?: Prisma.FinancialTransactionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FinancialTransactionScalarFieldEnum | Prisma.FinancialTransactionScalarFieldEnum[]
+}
+
+/**
+ * Donation.paymentIntents
+ */
+export type Donation$paymentIntentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PaymentIntent
+   */
+  select?: Prisma.PaymentIntentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PaymentIntent
+   */
+  omit?: Prisma.PaymentIntentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PaymentIntentInclude<ExtArgs> | null
+  where?: Prisma.PaymentIntentWhereInput
+  orderBy?: Prisma.PaymentIntentOrderByWithRelationInput | Prisma.PaymentIntentOrderByWithRelationInput[]
+  cursor?: Prisma.PaymentIntentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PaymentIntentScalarFieldEnum | Prisma.PaymentIntentScalarFieldEnum[]
 }
 
 /**

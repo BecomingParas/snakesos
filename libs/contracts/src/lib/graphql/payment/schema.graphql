@@ -79,6 +79,103 @@ type Donation {
   updatedAt: DateTime!
 }
 
+type PaymentIntent {
+  id: ID!
+  rescueChargeId: ID
+  donationId: ID
+  provider: String!
+  amount: String!
+  currency: String!
+  status: PaymentIntentStatus!
+  providerReference: String
+  idempotencyKey: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type PaymentIntentCheckout {
+  paymentIntent: PaymentIntent!
+  providerReference: String!
+  checkoutUrl: String
+}
+
+type Settlement {
+  id: ID!
+  rescueChargeId: ID
+  rescuerId: ID!
+  rescuer: Volunteer
+  rescuerName: String!
+  citizenName: String!
+  grossAmount: String!
+  commissionRate: String!
+  commissionAmount: String!
+  rescuerAmount: String!
+  amount: String!
+  currency: String!
+  status: SettlementStatus!
+  eligibleAt: DateTime
+  settledAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Payout {
+  id: ID!
+  settlementId: ID!
+  rescuerId: ID!
+  rescuerName: String!
+  citizenName: String!
+  amount: String!
+  currency: String!
+  status: PayoutStatus!
+  paymentMethod: String
+  externalReference: String
+  requestedAt: DateTime!
+  processedAt: DateTime
+  failedAt: DateTime
+  failureReason: String
+}
+
+type Refund {
+  id: ID!
+  transactionId: ID!
+  amount: String!
+  currency: String!
+  reason: String
+  providerReference: String
+  status: PaymentStatus!
+  createdAt: DateTime!
+  processedAt: DateTime
+}
+
+enum SettlementStatus {
+  PENDING
+  ELIGIBLE
+  PROCESSING
+  SETTLED
+  FAILED
+  CANCELLED
+}
+
+enum PayoutStatus {
+  PENDING
+  APPROVED
+  PROCESSING
+  PAID
+  FAILED
+  REJECTED
+  CANCELLED
+}
+
+enum PaymentIntentStatus {
+  CREATED
+  REQUIRES_ACTION
+  AUTHORIZED
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
 """
 Donation statistics
 """

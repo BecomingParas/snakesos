@@ -3,14 +3,17 @@
 // ===================================================================
 // Singleton Prisma Client instance using Prisma 7 Driver Adapter
 // for PostgreSQL with proper connection pooling and error handling.
-// 
+//
 // Prisma 7 Migration:
 // - Uses @prisma/adapter-pg for PostgreSQL connections
 // - Connection URL configured via environment variable
 // - Singleton pattern for application-wide database access
 // ===================================================================
 
-import { PrismaClient, Prisma as PrismaTypes } from './prisma/generated/client.js';
+import {
+  PrismaClient,
+  Prisma as PrismaTypes,
+} from './prisma/generated/client.js';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 declare global {
@@ -23,7 +26,7 @@ const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {
   throw new Error(
-    'DATABASE_URL environment variable is not set. Please configure it in your .env file.'
+    'DATABASE_URL environment variable is not set. Please configure it in your .env file.',
   );
 }
 
@@ -42,8 +45,7 @@ const prismaClientOptions: PrismaTypes.PrismaClientOptions = {
 };
 
 // Create singleton Prisma Client instance
-export const prisma =
-  global.prisma || new PrismaClient(prismaClientOptions);
+export const prisma = global.prisma || new PrismaClient(prismaClientOptions);
 
 if (process.env.NODE_ENV !== 'production') {
   global.prisma = prisma;
@@ -60,4 +62,4 @@ process.on('SIGTERM', cleanup);
 
 // Export Prisma types
 export * from './prisma/generated/client.js';
-export type { Prisma } from './prisma/generated/client.js';
+export { Prisma } from './prisma/generated/client.js';

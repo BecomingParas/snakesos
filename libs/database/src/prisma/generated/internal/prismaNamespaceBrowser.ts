@@ -68,6 +68,15 @@ export const ModelName = {
   BlogPost: 'BlogPost',
   GalleryImage: 'GalleryImage',
   Donation: 'Donation',
+  CompensationPolicy: 'CompensationPolicy',
+  RescueCharge: 'RescueCharge',
+  FinancialTransaction: 'FinancialTransaction',
+  PaymentIntent: 'PaymentIntent',
+  Refund: 'Refund',
+  Settlement: 'Settlement',
+  Payout: 'Payout',
+  LedgerEntry: 'LedgerEntry',
+  FinancialAuditEvent: 'FinancialAuditEvent',
   Notification: 'Notification',
   ContactMessage: 'ContactMessage',
   ActivityLog: 'ActivityLog',
@@ -544,6 +553,175 @@ export const DonationScalarFieldEnum = {
 } as const
 
 export type DonationScalarFieldEnum = (typeof DonationScalarFieldEnum)[keyof typeof DonationScalarFieldEnum]
+
+
+export const CompensationPolicyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  currency: 'currency',
+  grossAmount: 'grossAmount',
+  fixedAmount: 'fixedAmount',
+  commissionRate: 'commissionRate',
+  effectiveFrom: 'effectiveFrom',
+  effectiveTo: 'effectiveTo',
+  isActive: 'isActive',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CompensationPolicyScalarFieldEnum = (typeof CompensationPolicyScalarFieldEnum)[keyof typeof CompensationPolicyScalarFieldEnum]
+
+
+export const RescueChargeScalarFieldEnum = {
+  id: 'id',
+  rescueId: 'rescueId',
+  rescuerId: 'rescuerId',
+  policyId: 'policyId',
+  currency: 'currency',
+  grossAmount: 'grossAmount',
+  discountAmount: 'discountAmount',
+  taxAmount: 'taxAmount',
+  processingFee: 'processingFee',
+  platformCommissionRate: 'platformCommissionRate',
+  platformCommissionAmount: 'platformCommissionAmount',
+  rescuerAmount: 'rescuerAmount',
+  netAmount: 'netAmount',
+  status: 'status',
+  finalizedAt: 'finalizedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RescueChargeScalarFieldEnum = (typeof RescueChargeScalarFieldEnum)[keyof typeof RescueChargeScalarFieldEnum]
+
+
+export const FinancialTransactionScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  status: 'status',
+  currency: 'currency',
+  rescueChargeId: 'rescueChargeId',
+  donationId: 'donationId',
+  provider: 'provider',
+  externalReference: 'externalReference',
+  idempotencyKey: 'idempotencyKey',
+  grossAmount: 'grossAmount',
+  discountAmount: 'discountAmount',
+  taxAmount: 'taxAmount',
+  processingFee: 'processingFee',
+  platformCommissionRate: 'platformCommissionRate',
+  platformCommissionAmount: 'platformCommissionAmount',
+  rescuerAmount: 'rescuerAmount',
+  netAmount: 'netAmount',
+  finalizedAt: 'finalizedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FinancialTransactionScalarFieldEnum = (typeof FinancialTransactionScalarFieldEnum)[keyof typeof FinancialTransactionScalarFieldEnum]
+
+
+export const PaymentIntentScalarFieldEnum = {
+  id: 'id',
+  rescueChargeId: 'rescueChargeId',
+  donationId: 'donationId',
+  provider: 'provider',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  providerReference: 'providerReference',
+  idempotencyKey: 'idempotencyKey',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PaymentIntentScalarFieldEnum = (typeof PaymentIntentScalarFieldEnum)[keyof typeof PaymentIntentScalarFieldEnum]
+
+
+export const RefundScalarFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId',
+  amount: 'amount',
+  currency: 'currency',
+  reason: 'reason',
+  providerReference: 'providerReference',
+  idempotencyKey: 'idempotencyKey',
+  status: 'status',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  processedAt: 'processedAt'
+} as const
+
+export type RefundScalarFieldEnum = (typeof RefundScalarFieldEnum)[keyof typeof RefundScalarFieldEnum]
+
+
+export const SettlementScalarFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId',
+  rescueChargeId: 'rescueChargeId',
+  rescuerId: 'rescuerId',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  eligibleAt: 'eligibleAt',
+  settledAt: 'settledAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SettlementScalarFieldEnum = (typeof SettlementScalarFieldEnum)[keyof typeof SettlementScalarFieldEnum]
+
+
+export const PayoutScalarFieldEnum = {
+  id: 'id',
+  settlementId: 'settlementId',
+  rescuerId: 'rescuerId',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  paymentMethod: 'paymentMethod',
+  externalReference: 'externalReference',
+  idempotencyKey: 'idempotencyKey',
+  requestedAt: 'requestedAt',
+  processedAt: 'processedAt',
+  failedAt: 'failedAt',
+  failureReason: 'failureReason'
+} as const
+
+export type PayoutScalarFieldEnum = (typeof PayoutScalarFieldEnum)[keyof typeof PayoutScalarFieldEnum]
+
+
+export const LedgerEntryScalarFieldEnum = {
+  id: 'id',
+  transactionId: 'transactionId',
+  account: 'account',
+  direction: 'direction',
+  amount: 'amount',
+  currency: 'currency',
+  description: 'description',
+  createdAt: 'createdAt'
+} as const
+
+export type LedgerEntryScalarFieldEnum = (typeof LedgerEntryScalarFieldEnum)[keyof typeof LedgerEntryScalarFieldEnum]
+
+
+export const FinancialAuditEventScalarFieldEnum = {
+  id: 'id',
+  actorId: 'actorId',
+  action: 'action',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  previousState: 'previousState',
+  newState: 'newState',
+  amount: 'amount',
+  currency: 'currency',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type FinancialAuditEventScalarFieldEnum = (typeof FinancialAuditEventScalarFieldEnum)[keyof typeof FinancialAuditEventScalarFieldEnum]
 
 
 export const NotificationScalarFieldEnum = {

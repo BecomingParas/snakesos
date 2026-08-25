@@ -18,6 +18,7 @@ import {
   Bell,
   Map,
   Hospital,
+  WalletCards,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -109,6 +110,7 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/rescuers', label: 'Rescuers', icon: Users },
         { href: '/users', label: 'Citizens', icon: UserCheck },
         { href: '/analytics', label: 'Analytics', icon: BarChart3 },
+        { href: '/finance', label: 'Finance', icon: WalletCards },
         { href: '/notifications', label: 'Notifications', icon: Bell },
         { href: '/settings', label: 'Settings', icon: Settings },
       ],
@@ -126,6 +128,7 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/rescuers', label: 'Rescuers', icon: Users },
         { href: '/users', label: 'Citizens', icon: UserCheck },
         { href: '/analytics', label: 'Analytics', icon: BarChart3 },
+        { href: '/finance', label: 'Finance', icon: WalletCards },
         { href: '/notifications', label: 'Notifications', icon: Bell },
         { href: '/settings', label: 'Settings', icon: Settings },
       ],
@@ -154,6 +157,7 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/active', label: 'Active Rescue', icon: Activity },
         { href: '/map', label: 'Map', icon: Map },
         { href: '/history', label: 'History', icon: List },
+        { href: '/earnings', label: 'Earnings', icon: WalletCards },
         { href: '/notifications', label: 'Notifications', icon: Bell },
         { href: '/profile', label: 'Profile', icon: Settings },
       ],
@@ -168,6 +172,7 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/active', label: 'Active Rescue', icon: Activity },
         { href: '/map', label: 'Map', icon: Map },
         { href: '/history', label: 'History', icon: List },
+        { href: '/earnings', label: 'Earnings', icon: WalletCards },
         { href: '/notifications', label: 'Notifications', icon: Bell },
         { href: '/profile', label: 'Profile', icon: Settings },
       ],

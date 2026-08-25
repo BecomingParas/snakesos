@@ -23,3 +23,9 @@ export * from '../payments/index.js';
 
 // Admin settings module
 export * from '../settings/index.js';
+
+// Finance Module
+export * from '../finance/index.js';
+
+// Notifications Module
+export * from '../notifications.resolver.js';

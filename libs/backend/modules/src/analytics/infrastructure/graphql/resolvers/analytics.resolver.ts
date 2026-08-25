@@ -14,7 +14,7 @@ export const analyticsResolvers = {
     dashboardStats: async (
       _parent: any,
       args: { period?: string },
-      context: GraphQLContext
+      context: GraphQLContext,
     ) => {
       // Require admin role
       context.requireAuth();
@@ -23,19 +23,46 @@ export const analyticsResolvers = {
       // Calculate date range based on period
       const now = new Date();
       const startDate = new Date();
-      
+
       switch (args.period) {
         case 'TODAY':
           startDate.setHours(0, 0, 0, 0);
           break;
         case 'WEEK':
+        case 'LAST_7_DAYS':
           startDate.setDate(now.getDate() - 7);
           break;
         case 'MONTH':
+        case 'LAST_30_DAYS':
           startDate.setMonth(now.getMonth() - 1);
           break;
+        case 'THIS_MONTH':
+          startDate.setDate(1);
+          startDate.setHours(0, 0, 0, 0);
+          break;
+        case 'LAST_90_DAYS':
+          startDate.setDate(now.getDate() - 90);
+          break;
         case 'YEAR':
+        case 'THIS_YEAR':
           startDate.setFullYear(now.getFullYear() - 1);
+          break;
+        case 'YESTERDAY':
+          startDate.setDate(now.getDate() - 1);
+          startDate.setHours(0, 0, 0, 0);
+          now.setHours(0, 0, 0, 0);
+          break;
+        case 'LAST_MONTH':
+          startDate.setMonth(now.getMonth() - 1, 1);
+          startDate.setHours(0, 0, 0, 0);
+          now.setDate(1);
+          now.setHours(0, 0, 0, 0);
+          break;
+        case 'LAST_YEAR':
+          startDate.setFullYear(now.getFullYear() - 1, 0, 1);
+          startDate.setHours(0, 0, 0, 0);
+          now.setFullYear(now.getFullYear(), 0, 1);
+          now.setHours(0, 0, 0, 0);
           break;
         default:
           startDate.setMonth(now.getMonth() - 1); // Default to MONTH
@@ -64,16 +91,17 @@ export const analyticsResolvers = {
           where: {
             status: 'COMPLETED',
             completedAt: {
-              gte: new Date(startDate.getTime() - (now.getTime() - startDate.getTime())),
+              gte: new Date(
+                startDate.getTime() - (now.getTime() - startDate.getTime()),
+              ),
               lt: startDate,
             },
           },
         }),
       ]);
 
-      const completionRate = totalRescues > 0
-        ? (completedRescues / totalRescues) * 100
-        : 0;
+      const completionRate =
+        totalRescues > 0 ? (completedRescues / totalRescues) * 100 : 0;
 
       // Calculate average response time (seconds)
       const completedWithTiming = await prisma.rescueRequest.findMany({
@@ -88,15 +116,31 @@ export const analyticsResolvers = {
 
       // Filter out records with null dates and calculate average
       const validTimings = completedWithTiming.filter(
-        rescue => rescue.acceptedAt && rescue.createdAt
+        (rescue) => rescue.acceptedAt && rescue.createdAt,
       );
 
-      const avgResponseTime = validTimings.length > 0
-        ? validTimings.reduce((sum, rescue) => {
-            const diff = rescue.acceptedAt!.getTime() - rescue.createdAt.getTime();
-            return sum + (diff / 1000); // Convert to seconds
-          }, 0) / validTimings.length
-        : 0;
+      const avgResponseTime =
+        validTimings.length > 0
+          ? validTimings.reduce((sum, rescue) => {
+              const diff =
+                rescue.acceptedAt!.getTime() - rescue.createdAt.getTime();
+              return sum + diff / 1000; // Convert to seconds
+            }, 0) / validTimings.length
+          : 0;
+
+      const recentRescues = await prisma.rescueRequest.findMany({
+        where: { createdAt: { gte: startDate, lt: now } },
+        orderBy: { createdAt: 'desc' },
+        take: 50,
+        select: {
+          id: true,
+          name: true,
+          municipality: true,
+          status: true,
+          priority: true,
+          createdAt: true,
+        },
+      });
 
       // Get volunteer metrics
       const [
@@ -115,7 +159,9 @@ export const analyticsResolvers = {
         prisma.volunteer.count({
           where: {
             createdAt: {
-              gte: new Date(startDate.getTime() - (now.getTime() - startDate.getTime())),
+              gte: new Date(
+                startDate.getTime() - (now.getTime() - startDate.getTime()),
+              ),
               lt: startDate,
             },
           },
@@ -147,7 +193,9 @@ export const analyticsResolvers = {
           where: {
             status: 'COMPLETED',
             paidAt: {
-              gte: new Date(startDate.getTime() - (now.getTime() - startDate.getTime())),
+              gte: new Date(
+                startDate.getTime() - (now.getTime() - startDate.getTime()),
+              ),
               lt: startDate,
             },
           },
@@ -158,30 +206,54 @@ export const analyticsResolvers = {
       const rescueTrend = {
         current: completedRescues,
         previous: previousPeriodCompleted,
-        change: previousPeriodCompleted > 0
-          ? ((completedRescues - previousPeriodCompleted) / previousPeriodCompleted) * 100
-          : 0,
-        direction: completedRescues > previousPeriodCompleted ? 'UP' : completedRescues < previousPeriodCompleted ? 'DOWN' : 'STABLE',
+        change:
+          previousPeriodCompleted > 0
+            ? ((completedRescues - previousPeriodCompleted) /
+                previousPeriodCompleted) *
+              100
+            : 0,
+        direction:
+          completedRescues > previousPeriodCompleted
+            ? 'UP'
+            : completedRescues < previousPeriodCompleted
+              ? 'DOWN'
+              : 'STABLE',
         data: [], // TODO: Implement time series data
       };
 
       const volunteerTrend = {
         current: totalVolunteers,
         previous: previousPeriodVolunteers,
-        change: previousPeriodVolunteers > 0
-          ? ((totalVolunteers - previousPeriodVolunteers) / previousPeriodVolunteers) * 100
-          : 0,
-        direction: totalVolunteers > previousPeriodVolunteers ? 'UP' : totalVolunteers < previousPeriodVolunteers ? 'DOWN' : 'STABLE',
+        change:
+          previousPeriodVolunteers > 0
+            ? ((totalVolunteers - previousPeriodVolunteers) /
+                previousPeriodVolunteers) *
+              100
+            : 0,
+        direction:
+          totalVolunteers > previousPeriodVolunteers
+            ? 'UP'
+            : totalVolunteers < previousPeriodVolunteers
+              ? 'DOWN'
+              : 'STABLE',
         data: [],
       };
 
       const donationTrend = {
         current: donationsData._count || 0,
         previous: previousDonations._count || 0,
-        change: previousDonations._count > 0
-          ? ((donationsData._count - previousDonations._count) / previousDonations._count) * 100
-          : 0,
-        direction: donationsData._count > previousDonations._count ? 'UP' : donationsData._count < previousDonations._count ? 'DOWN' : 'STABLE',
+        change:
+          previousDonations._count > 0
+            ? ((donationsData._count - previousDonations._count) /
+                previousDonations._count) *
+              100
+            : 0,
+        direction:
+          donationsData._count > previousDonations._count
+            ? 'UP'
+            : donationsData._count < previousDonations._count
+              ? 'DOWN'
+              : 'STABLE',
         data: [],
       };
 
@@ -191,7 +263,7 @@ export const analyticsResolvers = {
         activeRescues,
         completedRescues,
         completionRate,
-        averageResponseTime: Math.round(avgResponseTime),
+        averageResponseTime: Math.round(avgResponseTime / 60),
 
         // Volunteer Metrics
         totalVolunteers,
@@ -208,7 +280,7 @@ export const analyticsResolvers = {
         totalDonationAmount: donationsData._sum.amount || 0,
 
         // Recent Activity (TODO: Implement actual recent data)
-        recentRescues: [],
+        recentRescues,
         recentDonations: [],
 
         // Trends

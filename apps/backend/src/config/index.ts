@@ -6,7 +6,10 @@
 export const config = {
   // Server
   nodeEnv: process.env['NODE_ENV'] || 'development',
-  host: process.env['HOST'] || 'localhost',
+  // Windows can reserve or fail to bind the IPv6 localhost address (::1)
+  // even when no process owns the port. Use the IPv4 loopback by default;
+  // deployments can still supply HOST explicitly.
+  host: process.env['HOST'] || '127.0.0.1',
   port: parseInt(process.env['PORT'] || '4000', 10),
   
   // Database

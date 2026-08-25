@@ -1,5 +1,13 @@
 // Now import everything AFTER environment is loaded (via dotenv-cli)
-import { UserRole, UserStatus, RescueStatus, RescuePriority, VolunteerStatus, PaymentMethod, PaymentStatus } from '../src/prisma/generated/client.js';
+import {
+  UserRole,
+  UserStatus,
+  RescueStatus,
+  RescuePriority,
+  VolunteerStatus,
+  PaymentMethod,
+  PaymentStatus,
+} from '../src/prisma/generated/client.js';
 import { DangerLevel } from '../src/prisma/generated/client.js';
 import { prisma } from '../src/client.js';
 import bcrypt from 'bcryptjs';
@@ -10,6 +18,15 @@ async function main() {
   // Clear existing data (in reverse order of dependencies)
   console.log('🗑️  Clearing existing data...');
   await prisma.activityLog.deleteMany();
+  await prisma.payout.deleteMany();
+  await prisma.settlement.deleteMany();
+  await prisma.refund.deleteMany();
+  await prisma.ledgerEntry.deleteMany();
+  await prisma.paymentIntent.deleteMany();
+  await prisma.financialTransaction.deleteMany();
+  await prisma.financialAuditEvent.deleteMany();
+  await prisma.rescueCharge.deleteMany();
+  await prisma.rescueTimeline.deleteMany();
   await prisma.donation.deleteMany();
   await prisma.rescueRequest.deleteMany();
   await prisma.snakeSpecies.deleteMany();
@@ -24,7 +41,7 @@ async function main() {
 
   // ===== CREATE USERS =====
   console.log('\n👤 Creating users...');
-  
+
   const adminUser = await prisma.user.create({
     data: {
       email: 'admin@snakerescue.com',
@@ -183,7 +200,7 @@ async function main() {
 
   // ===== CREATE SNAKE SPECIES =====
   console.log('\n🐍 Creating snake species...');
-  
+
   const species = await Promise.all([
     prisma.snakeSpecies.create({
       data: {
@@ -192,9 +209,14 @@ async function main() {
         nepaliName: 'गोमन सर्प',
         venomous: true,
         dangerLevel: DangerLevel.HIGHLY_DANGEROUS,
-        identificationGuide: 'Hood with spectacle mark, smooth scales, raises front third',
+        identificationGuide:
+          'Hood with spectacle mark, smooth scales, raises front third',
         habitat: 'Farmland, village outskirts, granaries',
-        distinctiveFeatures: ['Spectacle mark on hood', 'Smooth scales', 'Raises front third of body'],
+        distinctiveFeatures: [
+          'Spectacle mark on hood',
+          'Smooth scales',
+          'Raises front third of body',
+        ],
       },
     }),
     prisma.snakeSpecies.create({
@@ -204,9 +226,14 @@ async function main() {
         nepaliName: 'गोमन करैत',
         venomous: true,
         dangerLevel: DangerLevel.HIGHLY_DANGEROUS,
-        identificationGuide: 'Glossy black with white bands, hexagonal vertebral scales, nocturnal',
+        identificationGuide:
+          'Glossy black with white bands, hexagonal vertebral scales, nocturnal',
         habitat: 'Inside homes at night, rubble piles',
-        distinctiveFeatures: ['Glossy black with white bands', 'Hexagonal vertebral scales', 'Nocturnal'],
+        distinctiveFeatures: [
+          'Glossy black with white bands',
+          'Hexagonal vertebral scales',
+          'Nocturnal',
+        ],
       },
     }),
     prisma.snakeSpecies.create({
@@ -218,7 +245,11 @@ async function main() {
         dangerLevel: DangerLevel.HIGHLY_DANGEROUS,
         identificationGuide: 'Chain of dark ovals, loud hiss, triangular head',
         habitat: 'Grassland, paddy edges, scrub',
-        distinctiveFeatures: ['Chain of dark ovals', 'Loud hiss', 'Triangular head'],
+        distinctiveFeatures: [
+          'Chain of dark ovals',
+          'Loud hiss',
+          'Triangular head',
+        ],
       },
     }),
     prisma.snakeSpecies.create({
@@ -240,9 +271,14 @@ async function main() {
         nepaliName: 'पानी सर्प',
         venomous: false,
         dangerLevel: DangerLevel.HARMLESS,
-        identificationGuide: 'Checkerboard pattern, keeled scales, strong swimmer',
+        identificationGuide:
+          'Checkerboard pattern, keeled scales, strong swimmer',
         habitat: 'Ponds, canals, wetlands',
-        distinctiveFeatures: ['Checkerboard pattern', 'Keeled scales', 'Strong swimmer'],
+        distinctiveFeatures: [
+          'Checkerboard pattern',
+          'Keeled scales',
+          'Strong swimmer',
+        ],
       },
     }),
     prisma.snakeSpecies.create({
@@ -252,9 +288,13 @@ async function main() {
         nepaliName: 'काली नाग',
         venomous: true,
         dangerLevel: DangerLevel.HIGHLY_DANGEROUS,
-        identificationGuide: 'Single circular mark on hood, aggressive when cornered',
+        identificationGuide:
+          'Single circular mark on hood, aggressive when cornered',
         habitat: 'Temple courtyards, drains, agricultural areas',
-        distinctiveFeatures: ['Single circular mark on hood', 'Aggressive when cornered'],
+        distinctiveFeatures: [
+          'Single circular mark on hood',
+          'Aggressive when cornered',
+        ],
       },
     }),
   ]);
@@ -262,7 +302,7 @@ async function main() {
 
   // ===== CREATE VOLUNTEER PROFILES =====
   console.log('\n🦸 Creating volunteer profiles...');
-  
+
   const volunteerProfilesData = [
     {
       userId: volunteerUsers[0].id,
@@ -277,12 +317,24 @@ async function main() {
       vehicle: 'BOTH',
       bio: 'Lead handler with expertise in venomous species and night operations. Certified trainer.',
       skills: ['Venomous handling', 'Night ops', 'Trainer'],
-      certifications: ['Advanced Venomous Handler', 'Emergency Response', 'Training Instructor'],
+      certifications: [
+        'Advanced Venomous Handler',
+        'Emergency Response',
+        'Training Instructor',
+      ],
       assignedZone: 'Kathmandu',
       emergencyAvailability: true,
       isAvailableNow: true,
       availableTime: 'ANYTIME',
-      availableDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      availableDays: [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
+      ],
       status: VolunteerStatus.VERIFIED,
       completedRescues: 412,
       totalRescues: 430,
@@ -302,12 +354,24 @@ async function main() {
       vehicle: 'BIKE',
       bio: 'Lead handler specializing in community education and first aid. Patient and thorough.',
       skills: ['Venomous handling', 'First aid', 'Community talks'],
-      certifications: ['Advanced Venomous Handler', 'First Aid Certified', 'Public Speaker'],
+      certifications: [
+        'Advanced Venomous Handler',
+        'First Aid Certified',
+        'Public Speaker',
+      ],
       assignedZone: 'Lalitpur',
       emergencyAvailability: true,
       isAvailableNow: true,
       availableTime: 'ANYTIME',
-      availableDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      availableDays: [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
+      ],
       status: VolunteerStatus.VERIFIED,
       completedRescues: 288,
       totalRescues: 305,
@@ -426,7 +490,7 @@ async function main() {
 
   // ===== CREATE RESCUE REQUESTS =====
   console.log('\n🚨 Creating rescue requests...');
-  
+
   const rescues = [
     {
       userId: citizenUsers[0].id,
@@ -453,9 +517,9 @@ async function main() {
       address: 'Residential bedroom, ground floor',
       municipality: 'Lalitpur Sub-Metropolitan',
       ward: 5,
-      lat: 27.6710,
-      lng: 85.3240,
-      notes: 'Family relocated to neighbour\'s house. Hook and tube ready.',
+      lat: 27.671,
+      lng: 85.324,
+      notes: "Family relocated to neighbour's house. Hook and tube ready.",
       status: RescueStatus.IN_PROGRESS,
       priority: RescuePriority.CRITICAL,
       createdAt: new Date(Date.now() - 41 * 60 * 1000), // 41 min ago
@@ -534,7 +598,7 @@ async function main() {
 
   // ===== CREATE DONATIONS =====
   console.log('\n💰 Creating donations...');
-  
+
   const donations = [
     {
       donorId: citizenUsers[0].id,
@@ -600,7 +664,7 @@ async function main() {
 
   // ===== CREATE ACTIVITY LOGS =====
   console.log('\n📋 Creating activity logs...');
-  
+
   const activityLogs = [
     {
       userId: volunteerUsers[0].id,
@@ -671,7 +735,8 @@ async function main() {
     {
       userId: citizenUsers[3].id,
       action: 'RESCUE_ASSIGNED',
-      description: "Russell's viper reported inside a school kitchen in Bharatpur",
+      description:
+        "Russell's viper reported inside a school kitchen in Bharatpur",
       createdAt: new Date(Date.now() - 9 * 60 * 60 * 1000),
     },
     {
@@ -709,8 +774,12 @@ async function main() {
   console.log('  • sunita.maharjan@example.com (CITIZEN)');
   console.log('\n🎯 Dashboard Testing:');
   console.log('  • Admin dashboard: Login as admin@snakerescue.com');
-  console.log('  • Rescuer dashboard: Login as bikash.thapa@snakerescue.com (412 rescues completed)');
-  console.log('  • Citizen dashboard: Login as sunita.maharjan@example.com (1 active rescue request)');
+  console.log(
+    '  • Rescuer dashboard: Login as bikash.thapa@snakerescue.com (412 rescues completed)',
+  );
+  console.log(
+    '  • Citizen dashboard: Login as sunita.maharjan@example.com (1 active rescue request)',
+  );
 }
 
 main()

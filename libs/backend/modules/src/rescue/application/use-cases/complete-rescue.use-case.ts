@@ -5,7 +5,11 @@
 
 import { RescueRepository } from '@snake-rescue/database';
 import { BadRequestError } from '@snake-rescue/shared';
-import { RescueStatusMachine, RescueStatus } from '../../domain/rescue-status-machine.js';
+import {
+  RescueStatusMachine,
+  RescueStatus,
+} from '../../domain/rescue-status-machine.js';
+import { RescueFinancialService } from '../../../finance/application/rescue-financial.service.js';
 
 export interface CompleteRescueInput {
   rescueId: string;
@@ -29,7 +33,10 @@ export interface CompleteRescueInput {
 }
 
 export class CompleteRescueUseCase {
-  constructor(private readonly rescueRepository: RescueRepository) {}
+  constructor(
+    private readonly rescueRepository: RescueRepository,
+    private readonly financialService?: RescueFinancialService,
+  ) {}
 
   async execute(input: CompleteRescueInput, userId: string): Promise<any> {
     // 1. Validate rescue exists
@@ -46,18 +53,18 @@ export class CompleteRescueUseCase {
     // 3. Validate status can transition to completed
     RescueStatusMachine.validateTransition(
       rescue.status as RescueStatus,
-      RescueStatus.COMPLETED
+      RescueStatus.COMPLETED,
     );
 
     // 4. Calculate rescue duration
     let rescueDuration: number | undefined;
     if (rescue.startedAt) {
       rescueDuration = Math.floor(
-        (new Date().getTime() - new Date(rescue.startedAt).getTime()) / 60000
+        (new Date().getTime() - new Date(rescue.startedAt).getTime()) / 60000,
       );
     } else if (rescue.acceptedAt) {
       rescueDuration = Math.floor(
-        (new Date().getTime() - new Date(rescue.acceptedAt).getTime()) / 60000
+        (new Date().getTime() - new Date(rescue.acceptedAt).getTime()) / 60000,
       );
     }
 
@@ -97,13 +104,40 @@ export class CompleteRescueUseCase {
     }
 
     // 6. Update rescue
-    const updatedRescue = await this.rescueRepository.update(rescue.id, updateData);
+    const updatedRescue = await this.rescueRepository.runInTransaction(
+      async (transactionRepository, transaction) => {
+        const result = await transactionRepository.update(
+          rescue.id,
+          updateData,
+        );
+        if (this.financialService) {
+          await this.financialService.createForCompletedRescueInTransaction(
+            transaction,
+            {
+              rescueId: rescue.id,
+              rescuerId: input.volunteerId,
+              actorId: userId,
+            },
+          );
+        }
+        return result;
+      },
+    );
+
+    if (this.financialService) {
+      await this.financialService.createForCompletedRescue({
+        rescueId: rescue.id,
+        rescuerId: input.volunteerId,
+        actorId: userId,
+      });
+    }
 
     // 7. Create timeline event
     await this.rescueRepository.addTimelineEvent({
       rescueId: rescue.id,
       event: 'RESCUE_COMPLETED',
-      description: input.notes || `Rescue completed with outcome: ${input.outcome}`,
+      description:
+        input.notes || `Rescue completed with outcome: ${input.outcome}`,
       userId,
       lat: input.location?.lat,
       lng: input.location?.lng,
@@ -138,7 +172,7 @@ export class CompleteRescueUseCase {
   private async linkRescueToHospital(
     rescueId: string,
     hospitalId: string,
-    input: CompleteRescueInput
+    input: CompleteRescueInput,
   ): Promise<void> {
     try {
       // Create hospital visit record (if your schema supports this)
@@ -157,9 +191,13 @@ export class CompleteRescueUseCase {
     }
   }
 
-  private async updateVolunteerStats(volunteerId: string, success: boolean): Promise<void> {
+  private async updateVolunteerStats(
+    volunteerId: string,
+    success: boolean,
+  ): Promise<void> {
     try {
-      const volunteer = await this.rescueRepository.getVolunteerById(volunteerId);
+      const volunteer =
+        await this.rescueRepository.getVolunteerById(volunteerId);
       if (!volunteer) return;
 
       const updates: any = {
@@ -172,7 +210,8 @@ export class CompleteRescueUseCase {
 
       // Calculate success rate
       if (updates.totalRescues > 0) {
-        updates.successRate = (updates.completedRescues / updates.totalRescues) * 100;
+        updates.successRate =
+          (updates.completedRescues / updates.totalRescues) * 100;
       }
 
       await this.rescueRepository.updateVolunteer(volunteerId, updates);
@@ -191,7 +230,10 @@ export class CompleteRescueUseCase {
     }
   }
 
-  private async createNotifications(rescue: any, input: CompleteRescueInput): Promise<void> {
+  private async createNotifications(
+    rescue: any,
+    input: CompleteRescueInput,
+  ): Promise<void> {
     const notifications: Array<{
       userId: string;
       type: string;
@@ -223,13 +265,21 @@ export class CompleteRescueUseCase {
 
   private getCompletionMessage(outcome: string): string {
     const messages: Record<string, string> = {
-      RESCUED_RELOCATED: 'The snake has been safely rescued and relocated. Thank you for helping protect wildlife!',
-      ALREADY_GONE: 'The snake had already left before the rescuer arrived. Please contact us if you see it again.',
-      FALSE_ALARM: 'Our rescuer confirmed this was not a dangerous situation. Thank you for your vigilance!',
-      NO_SNAKE_FOUND: 'The rescuer could not locate the snake. It may have moved to a safer location.',
-      DECEASED: 'Unfortunately, the snake was found deceased. Thank you for reporting.',
+      RESCUED_RELOCATED:
+        'The snake has been safely rescued and relocated. Thank you for helping protect wildlife!',
+      ALREADY_GONE:
+        'The snake had already left before the rescuer arrived. Please contact us if you see it again.',
+      FALSE_ALARM:
+        'Our rescuer confirmed this was not a dangerous situation. Thank you for your vigilance!',
+      NO_SNAKE_FOUND:
+        'The rescuer could not locate the snake. It may have moved to a safer location.',
+      DECEASED:
+        'Unfortunately, the snake was found deceased. Thank you for reporting.',
       REFUSED_HELP: 'The rescue was completed as requested.',
     };
-    return messages[outcome] || 'Your rescue request has been completed. Thank you for using SnakeSOS!';
+    return (
+      messages[outcome] ||
+      'Your rescue request has been completed. Thank you for using SnakeSOS!'
+    );
   }
 }

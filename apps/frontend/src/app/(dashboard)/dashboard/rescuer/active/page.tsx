@@ -23,7 +23,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
-import { PaymentMethod, PaymentMethodSelector } from '@/components/payment';
 import {
   Select,
   SelectContent,
@@ -74,9 +73,6 @@ export default function ActiveRescuePage() {
   const router = useRouter();
   const [showCompleteForm, setShowCompleteForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>();
-  const [paymentAmount, setPaymentAmount] = useState('');
-  const [processingPayment, setProcessingPayment] = useState(false);
 
   // Fetch active rescue
   const { data, loading, refetch } = useMyAssignedRescuesQuery({
@@ -128,7 +124,11 @@ export default function ActiveRescuePage() {
   const { data: hospitalsData } = useSearchHospitals(searchQuery, 20);
   const hospitals = (hospitalsData as any)?.searchHospitals || [];
 
-  const activeRescue = data?.myAssignedRescues?.edges?.[0]?.node;
+  const assignedRescues =
+    data?.myAssignedRescues?.edges?.map((edge) => edge.node) || [];
+  const activeRescue =
+    assignedRescues.find((rescue) => rescue.status === 'ACCEPTED') ||
+    assignedRescues.find((rescue) => rescue.status === 'IN_PROGRESS');
 
   const handleUpdateStatus = async (newStatus: string) => {
     if (!activeRescue) return;
@@ -141,39 +141,6 @@ export default function ActiveRescuePage() {
         },
       },
     });
-  };
-
-  const handlePaymentProceed = async () => {
-    if (!paymentMethod || !paymentAmount || Number(paymentAmount) < 1) {
-      toast.error('Please select a payment method and enter a valid amount');
-      return;
-    }
-
-    if (paymentMethod !== 'stripe') {
-      toast.error('Please select Credit/Debit Card via Stripe');
-      return;
-    }
-
-    setProcessingPayment(true);
-    try {
-      const response = await fetch('/api/stripe/create-checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: Math.round((Number(paymentAmount) / 130) * 100),
-        }),
-      });
-      const result = await response.json();
-
-      if (!response.ok || !result.url) {
-        throw new Error(result.error || 'Unable to start Stripe checkout');
-      }
-
-      window.location.assign(result.url);
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Payment failed');
-      setProcessingPayment(false);
-    }
   };
 
   const handleComplete = async () => {
@@ -338,56 +305,17 @@ export default function ActiveRescuePage() {
           </div>
         </Card>
 
-        {/* Payment */}
+        {/* Payment handoff */}
         <Card className="p-6">
           <h2 className="text-xl font-semibold mb-2">Payment</h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-            Support this rescue operation with a secure contribution.
+            The citizen can pay the rescue charge from their request page after
+            you start the rescue. Cash payments should be collected directly and
+            reported to an administrator for reconciliation.
           </p>
-
-          <div className="mb-6">
-            <label
-              htmlFor="rescue-payment-amount"
-              className="block text-sm font-medium mb-2"
-            >
-              Payment Amount (NPR)
-            </label>
-            <Input
-              id="rescue-payment-amount"
-              type="number"
-              min="1"
-              value={paymentAmount}
-              onChange={(event) => setPaymentAmount(event.target.value)}
-              placeholder="Enter amount"
-            />
-            <div className="flex flex-wrap gap-2 mt-3">
-              {[100, 500, 1000, 2000, 5000].map((quickAmount) => (
-                <Button
-                  key={quickAmount}
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPaymentAmount(String(quickAmount))}
-                >
-                  NPR {quickAmount}
-                </Button>
-              ))}
-            </div>
+          <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm">
+            Payment status is visible to the citizen and updates automatically.
           </div>
-
-          <PaymentMethodSelector
-            selectedMethod={paymentMethod}
-            onSelect={setPaymentMethod}
-          />
-
-          <Button
-            type="button"
-            onClick={handlePaymentProceed}
-              disabled={!paymentMethod || !paymentAmount || processingPayment}
-            className="w-full mt-6 bg-emerald-600 hover:bg-emerald-700"
-          >
-              {processingPayment ? 'Opening Stripe...' : 'Proceed to Payment'}
-          </Button>
         </Card>
 
         {/* Status Updates */}

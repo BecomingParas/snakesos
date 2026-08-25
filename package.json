@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev:frontend": "nx serve frontend",
-    "dev:backend": "node --watch --conditions=@snake-rescue/source --import @swc-node/register/esm-register apps/backend/src/main.ts",
+    "dev:backend": "cross-env HOST=127.0.0.1 node --watch --conditions=@snake-rescue/source --import @swc-node/register/esm-register apps/backend/src/main.ts",
     "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "build:frontend": "npx nx build frontend",
     "build:backend": "npx nx build backend",
@@ -17,6 +17,7 @@
     "db:studio": "prisma studio --config libs/database/prisma.config.ts",
     "db:seed": "cross-env DATABASE_URL=\"postgresql://devuser:devpassword@localhost:5433/snake_rescue?schema=public\" tsx libs/database/prisma/seed.ts",
     "db:seed:full": "cross-env DATABASE_URL=\"postgresql://devuser:devpassword@localhost:5433/snake_rescue?schema=public\" tsx libs/database/prisma/seed-full.ts",
+    "seed:payment-demo": "dotenv -e .env -- tsx scripts/seed-payment-demo-10.ts",
     "seed:demo-workflow": "tsx scripts/seed-demo-workflow.ts",
     "graphql:codegen": "yarn workspace @snake-rescue/contracts codegen",
     "graphql:codegen:watch": "yarn workspace @snake-rescue/contracts codegen:watch",

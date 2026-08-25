@@ -9,6 +9,7 @@ import {
   RescueStatusMachine,
   RescueStatus,
 } from '../../domain/rescue-status-machine.js';
+import { RescueFinancialService } from '../../../finance/application/rescue-financial.service.js';
 
 export interface UpdateRescueStatusInput {
   rescueId: string;
@@ -22,7 +23,10 @@ export interface UpdateRescueStatusInput {
 }
 
 export class UpdateRescueStatusUseCase {
-  constructor(private readonly rescueRepository: RescueRepository) {}
+  constructor(
+    private readonly rescueRepository: RescueRepository,
+    private readonly financialService?: RescueFinancialService,
+  ) {}
 
   async execute(input: UpdateRescueStatusInput, userId: string): Promise<any> {
     // 1. Validate rescue exists
@@ -72,6 +76,19 @@ export class UpdateRescueStatusUseCase {
       rescue.id,
       updateData,
     );
+
+    if (input.status === RescueStatus.IN_PROGRESS && this.financialService) {
+      const volunteer = await this.rescueRepository.getVolunteerById(
+        rescue.assignedTo || '',
+      );
+      if (volunteer) {
+        await this.financialService.createForCompletedRescue({
+          rescueId: rescue.id,
+          rescuerId: volunteer.id,
+          actorId: userId,
+        });
+      }
+    }
 
     // 5. Create timeline event
     const timelineEvent = RescueStatusMachine.getTimelineEvent(input.status);
