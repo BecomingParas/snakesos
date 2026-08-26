@@ -9,6 +9,7 @@ import { AuthorizationError } from '@snake-rescue/shared';
 import { GetRescueQuery } from '../../../application/queries/get-rescue.query.js';
 import { ListRescuesQuery } from '../../../application/queries/list-rescues.query.js';
 import { AvailableRescuesQuery } from '../../../application/queries/available-rescues.query.js';
+import { calculateRescuerRankingScore } from '../../../../lib/rescuer-ranking.js';
 
 const RESCUE_MANAGEMENT_ROLES = [
   'ADMIN',
@@ -18,6 +19,8 @@ const RESCUE_MANAGEMENT_ROLES = [
 
 export const rescueQueryResolvers = {
   RescueRequest: {
+    rating: async (parent: { id: string }) =>
+      prisma.rescueRating.findUnique({ where: { rescueId: parent.id } }),
     assignedBy: async (parent: {
       assignedBy?: string | { id: string } | null;
     }) => {
@@ -457,6 +460,9 @@ export const rescueQueryResolvers = {
           isAvailableNow: boolean;
           status: string;
           lastLocationUpdate: Date | null;
+          rating: number | null;
+          totalRatings: number;
+          completedRescues: number;
         }>
       >`
         SELECT 
@@ -467,6 +473,9 @@ export const rescueQueryResolvers = {
           v."isAvailableNow",
           v."status",
           v."lastLocationUpdate",
+          v."rating",
+          v."totalRatings",
+          v."completedRescues",
           (
             6371 * acos(
               cos(radians(${lat})) * 
@@ -491,7 +500,6 @@ export const rescueQueryResolvers = {
           )
         )
         ORDER BY distance ASC
-        LIMIT ${limit}
       `;
 
       // Enrich with user data
@@ -520,7 +528,27 @@ export const rescueQueryResolvers = {
         }),
       );
 
-      return volunteersWithUsers.filter((v) => v.volunteer !== null);
+      const rankedVolunteers = volunteersWithUsers
+        .filter((v) => v.volunteer !== null)
+        .map((entry) => {
+          const source = volunteers.find(
+            (volunteer) => volunteer.id === entry.volunteer?.id,
+          );
+          const rankingScore = calculateRescuerRankingScore({
+            rating: source?.rating,
+            totalRatings: source?.totalRatings ?? 0,
+          });
+          return { ...entry, rankingScore, source };
+        })
+        .sort(
+          (left, right) =>
+            right.rankingScore - left.rankingScore ||
+            (left.distance ?? Number.POSITIVE_INFINITY) -
+              (right.distance ?? Number.POSITIVE_INFINITY),
+        )
+        .slice(0, limit);
+
+      return rankedVolunteers.map(({ source: _source, ...entry }) => entry);
     },
   },
 };

@@ -29,3 +29,6 @@ export * from '../finance/index.js';
 
 // Notifications Module
 export * from '../notifications.resolver.js';
+
+// Media Module
+export * from '../media/index.js';

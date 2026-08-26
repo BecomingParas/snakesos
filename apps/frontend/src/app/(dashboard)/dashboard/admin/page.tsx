@@ -112,7 +112,7 @@ export default function AdminDashboard() {
 
   if (error || !stats) {
     return (
-      <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 lg:px-8">
+      <div className="w-full max-w-none px-4 py-6 sm:px-6 lg:px-8">
         <div className="rounded-lg border-2 border-destructive bg-destructive/10 p-6 text-center shadow-elevated">
           <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-destructive" />
           <h2 className="mb-2 text-xl font-semibold text-destructive-foreground dark:text-foreground">
@@ -239,7 +239,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="mx-auto max-w-[1400px] space-y-8 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="w-full max-w-none space-y-8 px-4 py-6 sm:px-6 lg:px-8">
       {/* Header — dispatch strip */}
       <div className="flex flex-col gap-3 border-b border-border/60 pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div className="space-y-1.5">

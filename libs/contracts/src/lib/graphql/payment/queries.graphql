@@ -8,8 +8,8 @@ extend type Query {
   payout(id: ID!): Payout @auth(requires: [ADMIN, SUPER_ADMIN])
   settlements(status: SettlementStatus): [Settlement!]! @auth(requires: [ADMIN, SUPER_ADMIN])
   payouts(status: PayoutStatus): [Payout!]! @auth(requires: [ADMIN, SUPER_ADMIN])
-  mySettlements: [Settlement!]! @auth
-  myPayouts: [Payout!]! @auth
+  mySettlements(pagination: PaginationInput): SettlementConnection! @auth
+  myPayouts(pagination: PaginationInput): PayoutConnection! @auth
   myRescuePaymentIntent(rescueId: ID!): PaymentIntent @auth
 
   """
@@ -53,6 +53,28 @@ extend type Query {
   Get payment gateway configuration
   """
   paymentGatewayConfig(method: PaymentMethod!): PaymentGatewayConfig @auth(requires: [ADMIN, SUPER_ADMIN])
+}
+
+type SettlementConnection {
+  edges: [SettlementEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type SettlementEdge {
+  node: Settlement!
+  cursor: String!
+}
+
+type PayoutConnection {
+  edges: [PayoutEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type PayoutEdge {
+  node: Payout!
+  cursor: String!
 }
 
 """

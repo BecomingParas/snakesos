@@ -37,6 +37,7 @@ type Volunteer {
   # Availability
   availableTime: AvailabilityTime!
   availableDays: [String!]!
+  availabilitySchedule: [DailyAvailability!]!
   emergencyAvailability: Boolean!
   isAvailableNow: Boolean!
   assignedZone: String
@@ -81,6 +82,7 @@ type Volunteer {
   # Metadata
   createdAt: DateTime!
   updatedAt: DateTime!
+  ratings: [RescueRating!]!
   
   # Relations
   rescueAssignments(
@@ -143,4 +145,5 @@ type AvailableVolunteer {
   distance: Float
   estimatedArrival: Int
   currentlyAssigned: Int!
+  rankingScore: Float!
 }

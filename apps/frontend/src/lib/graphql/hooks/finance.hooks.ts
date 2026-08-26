@@ -8,6 +8,7 @@ import {
   MY_RESCUE_PAYMENT_INTENT,
   START_PAYMENT,
   CONFIRM_PAYMENT,
+  CREATE_PAYOUT,
 } from '../queries/finance.queries';
 
 export type FinanceStatus =
@@ -68,8 +69,14 @@ export interface PayoutRecord {
 interface FinanceData {
   settlements?: SettlementRecord[];
   payouts?: PayoutRecord[];
-  mySettlements?: SettlementRecord[];
-  myPayouts?: PayoutRecord[];
+  mySettlements?: FinanceConnection<SettlementRecord>;
+  myPayouts?: FinanceConnection<PayoutRecord>;
+}
+
+export interface FinanceConnection<T> {
+  edges: Array<{ node: T; cursor: string }>;
+  pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean };
+  totalCount: number;
 }
 
 export function useAdminFinance() {
@@ -78,14 +85,21 @@ export function useAdminFinance() {
   });
 }
 
-export function useMyFinance() {
+export function useMyFinance(variables?: {
+  pagination?: { limit: number; page: number };
+}) {
   return useQuery<FinanceData>(MY_FINANCE, {
+    variables,
     fetchPolicy: 'cache-and-network',
   });
 }
 
 export function useTransitionPayout() {
   return useMutation(TRANSITION_PAYOUT);
+}
+
+export function useCreatePayout() {
+  return useMutation(CREATE_PAYOUT);
 }
 
 export function useMyRescuePaymentIntent(rescueId: string) {

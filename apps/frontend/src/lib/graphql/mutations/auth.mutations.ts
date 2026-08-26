@@ -25,7 +25,7 @@ export const USER_FIELDS_FRAGMENT = gql`
  */
 export const REGISTRATION_PAYLOAD_FRAGMENT = gql`
   ${USER_FIELDS_FRAGMENT}
-  
+
   fragment RegistrationPayloadFields on RegistrationPayload {
     user {
       ...UserFields
@@ -38,7 +38,7 @@ export const REGISTRATION_PAYLOAD_FRAGMENT = gql`
  */
 export const AUTH_PAYLOAD_FRAGMENT = gql`
   ${USER_FIELDS_FRAGMENT}
-  
+
   fragment AuthPayloadFields on AuthPayload {
     accessToken
     refreshToken
@@ -55,7 +55,7 @@ export const AUTH_PAYLOAD_FRAGMENT = gql`
  */
 export const REGISTER_MUTATION = gql`
   ${REGISTRATION_PAYLOAD_FRAGMENT}
-  
+
   mutation Register($input: RegisterInput!) {
     register(input: $input) {
       ...RegistrationPayloadFields
@@ -68,7 +68,7 @@ export const REGISTER_MUTATION = gql`
  */
 export const LOGIN_MUTATION = gql`
   ${AUTH_PAYLOAD_FRAGMENT}
-  
+
   mutation Login($input: LoginInput!) {
     login(input: $input) {
       ...AuthPayloadFields
@@ -90,7 +90,7 @@ export const LOGOUT_MUTATION = gql`
  */
 export const REFRESH_TOKEN_MUTATION = gql`
   ${AUTH_PAYLOAD_FRAGMENT}
-  
+
   mutation RefreshToken {
     refreshToken {
       ...AuthPayloadFields
@@ -124,7 +124,7 @@ export const RESET_PASSWORD_MUTATION = gql`
  */
 export const VERIFY_EMAIL_MUTATION = gql`
   ${USER_FIELDS_FRAGMENT}
-  
+
   mutation VerifyEmail($input: VerifyEmailInput!) {
     verifyEmail(input: $input) {
       success
@@ -150,7 +150,10 @@ export const RESEND_VERIFICATION_MUTATION = gql`
  */
 export const CHANGE_PASSWORD_MUTATION = gql`
   mutation ChangePassword($input: ChangePasswordInput!) {
-    changePassword(input: $input)
+    changePassword(input: $input) {
+      success
+      message
+    }
   }
 `;
 
@@ -159,7 +162,7 @@ export const CHANGE_PASSWORD_MUTATION = gql`
  */
 export const UPDATE_PROFILE_MUTATION = gql`
   ${USER_FIELDS_FRAGMENT}
-  
+
   mutation UpdateProfile($input: UpdateProfileInput!) {
     updateProfile(input: $input) {
       ...UserFields

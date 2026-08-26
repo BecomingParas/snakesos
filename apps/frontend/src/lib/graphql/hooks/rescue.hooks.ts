@@ -37,6 +37,12 @@ export interface RescueRequest {
   rescueReport?: string;
   rescueImages: string[];
   rescueDuration?: number;
+  rating?: {
+    id: string;
+    rating: number;
+    feedback?: string;
+    createdAt: string;
+  };
   createdAt: string;
   updatedAt: string;
   distance?: number;
@@ -322,6 +328,12 @@ const RESCUE_REQUEST = gql`
       rescueReport
       rescueImages
       rescueDuration
+      rating {
+        id
+        rating
+        feedback
+        createdAt
+      }
       createdAt
       updatedAt
       user {
@@ -425,6 +437,13 @@ const MY_ASSIGNED_RESCUES = gql`
           createdAt
           assignedAt
           acceptedAt
+          startedAt
+          arrivedAt
+          completedAt
+          outcome
+          rescueReport
+          rescueDuration
+          updatedAt
           user {
             id
             name
@@ -562,6 +581,7 @@ const AVAILABLE_VOLUNTEERS = gql`
       distance
       estimatedArrival
       currentlyAssigned
+      rankingScore
     }
   }
 `;
@@ -790,6 +810,7 @@ export interface AvailableVolunteer {
   distance?: number;
   estimatedArrival?: number;
   currentlyAssigned: number;
+  rankingScore: number;
 }
 
 export interface FindAvailableVolunteersInput {

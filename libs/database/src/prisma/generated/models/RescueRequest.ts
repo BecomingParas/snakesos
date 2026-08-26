@@ -654,6 +654,7 @@ export type RescueRequestWhereInput = {
   timeline?: Prisma.RescueTimelineListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
   rescueCharge?: Prisma.XOR<Prisma.RescueChargeNullableScalarRelationFilter, Prisma.RescueChargeWhereInput> | null
+  rating?: Prisma.XOR<Prisma.RescueRatingNullableScalarRelationFilter, Prisma.RescueRatingWhereInput> | null
 }
 
 export type RescueRequestOrderByWithRelationInput = {
@@ -724,6 +725,7 @@ export type RescueRequestOrderByWithRelationInput = {
   timeline?: Prisma.RescueTimelineOrderByRelationAggregateInput
   notifications?: Prisma.NotificationOrderByRelationAggregateInput
   rescueCharge?: Prisma.RescueChargeOrderByWithRelationInput
+  rating?: Prisma.RescueRatingOrderByWithRelationInput
 }
 
 export type RescueRequestWhereUniqueInput = Prisma.AtLeast<{
@@ -797,6 +799,7 @@ export type RescueRequestWhereUniqueInput = Prisma.AtLeast<{
   timeline?: Prisma.RescueTimelineListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
   rescueCharge?: Prisma.XOR<Prisma.RescueChargeNullableScalarRelationFilter, Prisma.RescueChargeWhereInput> | null
+  rating?: Prisma.XOR<Prisma.RescueRatingNullableScalarRelationFilter, Prisma.RescueRatingWhereInput> | null
 }, "id" | "aiIdentificationId" | "referenceNumber">
 
 export type RescueRequestOrderByWithAggregationInput = {
@@ -988,6 +991,7 @@ export type RescueRequestCreateInput = {
   timeline?: Prisma.RescueTimelineCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestUncheckedCreateInput = {
@@ -1051,6 +1055,7 @@ export type RescueRequestUncheckedCreateInput = {
   timeline?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeUncheckedCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingUncheckedCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestUpdateInput = {
@@ -1114,6 +1119,7 @@ export type RescueRequestUpdateInput = {
   timeline?: Prisma.RescueTimelineUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestUncheckedUpdateInput = {
@@ -1177,6 +1183,7 @@ export type RescueRequestUncheckedUpdateInput = {
   timeline?: Prisma.RescueTimelineUncheckedUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUncheckedUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUncheckedUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestCreateManyInput = {
@@ -1624,14 +1631,6 @@ export type RescueRequestCreaterescueImagesInput = {
   set: string[]
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type NullableFloatFieldUpdateOperationsInput = {
   set?: number | null
   increment?: number
@@ -1720,6 +1719,20 @@ export type RescueRequestUncheckedUpdateManyWithoutAssignedVolunteerNestedInput 
   update?: Prisma.RescueRequestUpdateWithWhereUniqueWithoutAssignedVolunteerInput | Prisma.RescueRequestUpdateWithWhereUniqueWithoutAssignedVolunteerInput[]
   updateMany?: Prisma.RescueRequestUpdateManyWithWhereWithoutAssignedVolunteerInput | Prisma.RescueRequestUpdateManyWithWhereWithoutAssignedVolunteerInput[]
   deleteMany?: Prisma.RescueRequestScalarWhereInput | Prisma.RescueRequestScalarWhereInput[]
+}
+
+export type RescueRequestCreateNestedOneWithoutRatingInput = {
+  create?: Prisma.XOR<Prisma.RescueRequestCreateWithoutRatingInput, Prisma.RescueRequestUncheckedCreateWithoutRatingInput>
+  connectOrCreate?: Prisma.RescueRequestCreateOrConnectWithoutRatingInput
+  connect?: Prisma.RescueRequestWhereUniqueInput
+}
+
+export type RescueRequestUpdateOneRequiredWithoutRatingNestedInput = {
+  create?: Prisma.XOR<Prisma.RescueRequestCreateWithoutRatingInput, Prisma.RescueRequestUncheckedCreateWithoutRatingInput>
+  connectOrCreate?: Prisma.RescueRequestCreateOrConnectWithoutRatingInput
+  upsert?: Prisma.RescueRequestUpsertWithoutRatingInput
+  connect?: Prisma.RescueRequestWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RescueRequestUpdateToOneWithWhereWithoutRatingInput, Prisma.RescueRequestUpdateWithoutRatingInput>, Prisma.RescueRequestUncheckedUpdateWithoutRatingInput>
 }
 
 export type RescueRequestCreateNestedManyWithoutSpeciesInput = {
@@ -2012,6 +2025,7 @@ export type RescueRequestCreateWithoutUserInput = {
   timeline?: Prisma.RescueTimelineCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestUncheckedCreateWithoutUserInput = {
@@ -2074,6 +2088,7 @@ export type RescueRequestUncheckedCreateWithoutUserInput = {
   timeline?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeUncheckedCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingUncheckedCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestCreateOrConnectWithoutUserInput = {
@@ -2225,6 +2240,7 @@ export type RescueRequestCreateWithoutTimelineInput = {
   hospitalVisit?: Prisma.HospitalCreateNestedOneWithoutRescueVisitsInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestUncheckedCreateWithoutTimelineInput = {
@@ -2287,6 +2303,7 @@ export type RescueRequestUncheckedCreateWithoutTimelineInput = {
   hospitalNotes?: string | null
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeUncheckedCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingUncheckedCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestCreateOrConnectWithoutTimelineInput = {
@@ -2365,6 +2382,7 @@ export type RescueRequestUpdateWithoutTimelineInput = {
   hospitalVisit?: Prisma.HospitalUpdateOneWithoutRescueVisitsNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestUncheckedUpdateWithoutTimelineInput = {
@@ -2427,6 +2445,7 @@ export type RescueRequestUncheckedUpdateWithoutTimelineInput = {
   hospitalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUncheckedUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUncheckedUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestCreateWithoutAssignedVolunteerInput = {
@@ -2489,6 +2508,7 @@ export type RescueRequestCreateWithoutAssignedVolunteerInput = {
   timeline?: Prisma.RescueTimelineCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestUncheckedCreateWithoutAssignedVolunteerInput = {
@@ -2551,6 +2571,7 @@ export type RescueRequestUncheckedCreateWithoutAssignedVolunteerInput = {
   timeline?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeUncheckedCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingUncheckedCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestCreateOrConnectWithoutAssignedVolunteerInput = {
@@ -2577,6 +2598,274 @@ export type RescueRequestUpdateWithWhereUniqueWithoutAssignedVolunteerInput = {
 export type RescueRequestUpdateManyWithWhereWithoutAssignedVolunteerInput = {
   where: Prisma.RescueRequestScalarWhereInput
   data: Prisma.XOR<Prisma.RescueRequestUpdateManyMutationInput, Prisma.RescueRequestUncheckedUpdateManyWithoutAssignedVolunteerInput>
+}
+
+export type RescueRequestCreateWithoutRatingInput = {
+  id?: string
+  name: string
+  phone: string
+  email?: string | null
+  municipality: string
+  ward?: number | null
+  address: string
+  landmark?: string | null
+  lat?: number | null
+  lng?: number | null
+  locationAccuracy?: number | null
+  snakeDescription?: string | null
+  snakeSize?: string | null
+  snakeColor?: string | null
+  snakeImageUrl?: string | null
+  snakeImages?: Prisma.RescueRequestCreatesnakeImagesInput | string[]
+  status?: $Enums.RescueStatus
+  priority?: $Enums.RescuePriority
+  stillPresent?: boolean
+  notes?: string | null
+  internalNotes?: string | null
+  assignedAt?: Date | string | null
+  assignedBy?: string | null
+  acceptedAt?: Date | string | null
+  arrivedAt?: Date | string | null
+  startedAt?: Date | string | null
+  completedAt?: Date | string | null
+  outcome?: $Enums.RescueOutcome | null
+  rescueReport?: string | null
+  rescueImages?: Prisma.RescueRequestCreaterescueImagesInput | string[]
+  rescueDuration?: number | null
+  verifiedBy?: string | null
+  verifiedAt?: Date | string | null
+  isEmergency?: boolean
+  emergencyDetails?: string | null
+  hasBite?: boolean
+  biteDetails?: string | null
+  source?: string
+  referenceNumber?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  estimatedTravelTimeMinutes?: number | null
+  routeDistance?: number | null
+  routeGeometry?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  victimWentToHospital?: boolean | null
+  antivenomAdministered?: boolean | null
+  antivenomType?: string | null
+  hospitalAdmission?: boolean | null
+  hospitalNotes?: string | null
+  user?: Prisma.UserCreateNestedOneWithoutRescueRequestsInput
+  species?: Prisma.SnakeSpeciesCreateNestedOneWithoutRescueRequestsInput
+  aiIdentification?: Prisma.AIIdentificationCreateNestedOneWithoutRescueRequestInput
+  assignedVolunteer?: Prisma.VolunteerCreateNestedOneWithoutRescueAssignmentsInput
+  nearestHospital?: Prisma.HospitalCreateNestedOneWithoutNearestToInput
+  vehicle?: Prisma.RescueVehicleCreateNestedOneWithoutRescueRequestsInput
+  hospitalVisit?: Prisma.HospitalCreateNestedOneWithoutRescueVisitsInput
+  timeline?: Prisma.RescueTimelineCreateNestedManyWithoutRescueInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutRescueInput
+  rescueCharge?: Prisma.RescueChargeCreateNestedOneWithoutRescueInput
+}
+
+export type RescueRequestUncheckedCreateWithoutRatingInput = {
+  id?: string
+  userId?: string | null
+  name: string
+  phone: string
+  email?: string | null
+  municipality: string
+  ward?: number | null
+  address: string
+  landmark?: string | null
+  lat?: number | null
+  lng?: number | null
+  locationAccuracy?: number | null
+  snakeDescription?: string | null
+  snakeSize?: string | null
+  snakeColor?: string | null
+  snakeImageUrl?: string | null
+  snakeImages?: Prisma.RescueRequestCreatesnakeImagesInput | string[]
+  speciesId?: string | null
+  aiIdentificationId?: string | null
+  status?: $Enums.RescueStatus
+  priority?: $Enums.RescuePriority
+  stillPresent?: boolean
+  notes?: string | null
+  internalNotes?: string | null
+  assignedTo?: string | null
+  assignedAt?: Date | string | null
+  assignedBy?: string | null
+  acceptedAt?: Date | string | null
+  arrivedAt?: Date | string | null
+  startedAt?: Date | string | null
+  completedAt?: Date | string | null
+  outcome?: $Enums.RescueOutcome | null
+  rescueReport?: string | null
+  rescueImages?: Prisma.RescueRequestCreaterescueImagesInput | string[]
+  rescueDuration?: number | null
+  verifiedBy?: string | null
+  verifiedAt?: Date | string | null
+  isEmergency?: boolean
+  emergencyDetails?: string | null
+  hasBite?: boolean
+  biteDetails?: string | null
+  source?: string
+  referenceNumber?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  estimatedTravelTimeMinutes?: number | null
+  routeDistance?: number | null
+  routeGeometry?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nearestHospitalId?: string | null
+  vehicleId?: string | null
+  victimWentToHospital?: boolean | null
+  hospitalId?: string | null
+  antivenomAdministered?: boolean | null
+  antivenomType?: string | null
+  hospitalAdmission?: boolean | null
+  hospitalNotes?: string | null
+  timeline?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutRescueInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRescueInput
+  rescueCharge?: Prisma.RescueChargeUncheckedCreateNestedOneWithoutRescueInput
+}
+
+export type RescueRequestCreateOrConnectWithoutRatingInput = {
+  where: Prisma.RescueRequestWhereUniqueInput
+  create: Prisma.XOR<Prisma.RescueRequestCreateWithoutRatingInput, Prisma.RescueRequestUncheckedCreateWithoutRatingInput>
+}
+
+export type RescueRequestUpsertWithoutRatingInput = {
+  update: Prisma.XOR<Prisma.RescueRequestUpdateWithoutRatingInput, Prisma.RescueRequestUncheckedUpdateWithoutRatingInput>
+  create: Prisma.XOR<Prisma.RescueRequestCreateWithoutRatingInput, Prisma.RescueRequestUncheckedCreateWithoutRatingInput>
+  where?: Prisma.RescueRequestWhereInput
+}
+
+export type RescueRequestUpdateToOneWithWhereWithoutRatingInput = {
+  where?: Prisma.RescueRequestWhereInput
+  data: Prisma.XOR<Prisma.RescueRequestUpdateWithoutRatingInput, Prisma.RescueRequestUncheckedUpdateWithoutRatingInput>
+}
+
+export type RescueRequestUpdateWithoutRatingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  municipality?: Prisma.StringFieldUpdateOperationsInput | string
+  ward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  landmark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lng?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  locationAccuracy?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  snakeDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  snakeSize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  snakeColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  snakeImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  snakeImages?: Prisma.RescueRequestUpdatesnakeImagesInput | string[]
+  status?: Prisma.EnumRescueStatusFieldUpdateOperationsInput | $Enums.RescueStatus
+  priority?: Prisma.EnumRescuePriorityFieldUpdateOperationsInput | $Enums.RescuePriority
+  stillPresent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  arrivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  outcome?: Prisma.NullableEnumRescueOutcomeFieldUpdateOperationsInput | $Enums.RescueOutcome | null
+  rescueReport?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rescueImages?: Prisma.RescueRequestUpdaterescueImagesInput | string[]
+  rescueDuration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isEmergency?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emergencyDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasBite?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedTravelTimeMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  routeDistance?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  routeGeometry?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  victimWentToHospital?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  antivenomAdministered?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  antivenomType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hospitalAdmission?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  hospitalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  user?: Prisma.UserUpdateOneWithoutRescueRequestsNestedInput
+  species?: Prisma.SnakeSpeciesUpdateOneWithoutRescueRequestsNestedInput
+  aiIdentification?: Prisma.AIIdentificationUpdateOneWithoutRescueRequestNestedInput
+  assignedVolunteer?: Prisma.VolunteerUpdateOneWithoutRescueAssignmentsNestedInput
+  nearestHospital?: Prisma.HospitalUpdateOneWithoutNearestToNestedInput
+  vehicle?: Prisma.RescueVehicleUpdateOneWithoutRescueRequestsNestedInput
+  hospitalVisit?: Prisma.HospitalUpdateOneWithoutRescueVisitsNestedInput
+  timeline?: Prisma.RescueTimelineUpdateManyWithoutRescueNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutRescueNestedInput
+  rescueCharge?: Prisma.RescueChargeUpdateOneWithoutRescueNestedInput
+}
+
+export type RescueRequestUncheckedUpdateWithoutRatingInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  municipality?: Prisma.StringFieldUpdateOperationsInput | string
+  ward?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  address?: Prisma.StringFieldUpdateOperationsInput | string
+  landmark?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lat?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  lng?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  locationAccuracy?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  snakeDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  snakeSize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  snakeColor?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  snakeImageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  snakeImages?: Prisma.RescueRequestUpdatesnakeImagesInput | string[]
+  speciesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiIdentificationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumRescueStatusFieldUpdateOperationsInput | $Enums.RescueStatus
+  priority?: Prisma.EnumRescuePriorityFieldUpdateOperationsInput | $Enums.RescuePriority
+  stillPresent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  internalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assignedTo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  assignedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  assignedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  arrivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  outcome?: Prisma.NullableEnumRescueOutcomeFieldUpdateOperationsInput | $Enums.RescueOutcome | null
+  rescueReport?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rescueImages?: Prisma.RescueRequestUpdaterescueImagesInput | string[]
+  rescueDuration?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  verifiedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  isEmergency?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emergencyDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasBite?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  estimatedTravelTimeMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  routeDistance?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  routeGeometry?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  nearestHospitalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  vehicleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  victimWentToHospital?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  hospitalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  antivenomAdministered?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  antivenomType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hospitalAdmission?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
+  hospitalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timeline?: Prisma.RescueTimelineUncheckedUpdateManyWithoutRescueNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRescueNestedInput
+  rescueCharge?: Prisma.RescueChargeUncheckedUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestCreateWithoutSpeciesInput = {
@@ -2639,6 +2928,7 @@ export type RescueRequestCreateWithoutSpeciesInput = {
   timeline?: Prisma.RescueTimelineCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestUncheckedCreateWithoutSpeciesInput = {
@@ -2701,6 +2991,7 @@ export type RescueRequestUncheckedCreateWithoutSpeciesInput = {
   timeline?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeUncheckedCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingUncheckedCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestCreateOrConnectWithoutSpeciesInput = {
@@ -2789,6 +3080,7 @@ export type RescueRequestCreateWithoutAiIdentificationInput = {
   timeline?: Prisma.RescueTimelineCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestUncheckedCreateWithoutAiIdentificationInput = {
@@ -2851,6 +3143,7 @@ export type RescueRequestUncheckedCreateWithoutAiIdentificationInput = {
   timeline?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeUncheckedCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingUncheckedCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestCreateOrConnectWithoutAiIdentificationInput = {
@@ -2929,6 +3222,7 @@ export type RescueRequestUpdateWithoutAiIdentificationInput = {
   timeline?: Prisma.RescueTimelineUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestUncheckedUpdateWithoutAiIdentificationInput = {
@@ -2991,6 +3285,7 @@ export type RescueRequestUncheckedUpdateWithoutAiIdentificationInput = {
   timeline?: Prisma.RescueTimelineUncheckedUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUncheckedUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUncheckedUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestCreateWithoutRescueChargeInput = {
@@ -3053,6 +3348,7 @@ export type RescueRequestCreateWithoutRescueChargeInput = {
   hospitalVisit?: Prisma.HospitalCreateNestedOneWithoutRescueVisitsInput
   timeline?: Prisma.RescueTimelineCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRescueInput
+  rating?: Prisma.RescueRatingCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestUncheckedCreateWithoutRescueChargeInput = {
@@ -3115,6 +3411,7 @@ export type RescueRequestUncheckedCreateWithoutRescueChargeInput = {
   hospitalNotes?: string | null
   timeline?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRescueInput
+  rating?: Prisma.RescueRatingUncheckedCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestCreateOrConnectWithoutRescueChargeInput = {
@@ -3193,6 +3490,7 @@ export type RescueRequestUpdateWithoutRescueChargeInput = {
   hospitalVisit?: Prisma.HospitalUpdateOneWithoutRescueVisitsNestedInput
   timeline?: Prisma.RescueTimelineUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestUncheckedUpdateWithoutRescueChargeInput = {
@@ -3255,6 +3553,7 @@ export type RescueRequestUncheckedUpdateWithoutRescueChargeInput = {
   hospitalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   timeline?: Prisma.RescueTimelineUncheckedUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUncheckedUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestCreateWithoutNotificationsInput = {
@@ -3317,6 +3616,7 @@ export type RescueRequestCreateWithoutNotificationsInput = {
   hospitalVisit?: Prisma.HospitalCreateNestedOneWithoutRescueVisitsInput
   timeline?: Prisma.RescueTimelineCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestUncheckedCreateWithoutNotificationsInput = {
@@ -3379,6 +3679,7 @@ export type RescueRequestUncheckedCreateWithoutNotificationsInput = {
   hospitalNotes?: string | null
   timeline?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeUncheckedCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingUncheckedCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestCreateOrConnectWithoutNotificationsInput = {
@@ -3457,6 +3758,7 @@ export type RescueRequestUpdateWithoutNotificationsInput = {
   hospitalVisit?: Prisma.HospitalUpdateOneWithoutRescueVisitsNestedInput
   timeline?: Prisma.RescueTimelineUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestUncheckedUpdateWithoutNotificationsInput = {
@@ -3519,6 +3821,7 @@ export type RescueRequestUncheckedUpdateWithoutNotificationsInput = {
   hospitalNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   timeline?: Prisma.RescueTimelineUncheckedUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUncheckedUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUncheckedUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestCreateWithoutNearestHospitalInput = {
@@ -3581,6 +3884,7 @@ export type RescueRequestCreateWithoutNearestHospitalInput = {
   timeline?: Prisma.RescueTimelineCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestUncheckedCreateWithoutNearestHospitalInput = {
@@ -3643,6 +3947,7 @@ export type RescueRequestUncheckedCreateWithoutNearestHospitalInput = {
   timeline?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeUncheckedCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingUncheckedCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestCreateOrConnectWithoutNearestHospitalInput = {
@@ -3715,6 +4020,7 @@ export type RescueRequestCreateWithoutHospitalVisitInput = {
   timeline?: Prisma.RescueTimelineCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestUncheckedCreateWithoutHospitalVisitInput = {
@@ -3777,6 +4083,7 @@ export type RescueRequestUncheckedCreateWithoutHospitalVisitInput = {
   timeline?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeUncheckedCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingUncheckedCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestCreateOrConnectWithoutHospitalVisitInput = {
@@ -3881,6 +4188,7 @@ export type RescueRequestCreateWithoutVehicleInput = {
   timeline?: Prisma.RescueTimelineCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestUncheckedCreateWithoutVehicleInput = {
@@ -3943,6 +4251,7 @@ export type RescueRequestUncheckedCreateWithoutVehicleInput = {
   timeline?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutRescueInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutRescueInput
   rescueCharge?: Prisma.RescueChargeUncheckedCreateNestedOneWithoutRescueInput
+  rating?: Prisma.RescueRatingUncheckedCreateNestedOneWithoutRescueInput
 }
 
 export type RescueRequestCreateOrConnectWithoutVehicleInput = {
@@ -4090,6 +4399,7 @@ export type RescueRequestUpdateWithoutUserInput = {
   timeline?: Prisma.RescueTimelineUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestUncheckedUpdateWithoutUserInput = {
@@ -4152,6 +4462,7 @@ export type RescueRequestUncheckedUpdateWithoutUserInput = {
   timeline?: Prisma.RescueTimelineUncheckedUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUncheckedUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUncheckedUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestUncheckedUpdateManyWithoutUserInput = {
@@ -4332,6 +4643,7 @@ export type RescueRequestUpdateWithoutAssignedVolunteerInput = {
   timeline?: Prisma.RescueTimelineUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestUncheckedUpdateWithoutAssignedVolunteerInput = {
@@ -4394,6 +4706,7 @@ export type RescueRequestUncheckedUpdateWithoutAssignedVolunteerInput = {
   timeline?: Prisma.RescueTimelineUncheckedUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUncheckedUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUncheckedUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestUncheckedUpdateManyWithoutAssignedVolunteerInput = {
@@ -4574,6 +4887,7 @@ export type RescueRequestUpdateWithoutSpeciesInput = {
   timeline?: Prisma.RescueTimelineUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestUncheckedUpdateWithoutSpeciesInput = {
@@ -4636,6 +4950,7 @@ export type RescueRequestUncheckedUpdateWithoutSpeciesInput = {
   timeline?: Prisma.RescueTimelineUncheckedUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUncheckedUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUncheckedUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestUncheckedUpdateManyWithoutSpeciesInput = {
@@ -4875,6 +5190,7 @@ export type RescueRequestUpdateWithoutNearestHospitalInput = {
   timeline?: Prisma.RescueTimelineUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestUncheckedUpdateWithoutNearestHospitalInput = {
@@ -4937,6 +5253,7 @@ export type RescueRequestUncheckedUpdateWithoutNearestHospitalInput = {
   timeline?: Prisma.RescueTimelineUncheckedUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUncheckedUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUncheckedUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestUncheckedUpdateManyWithoutNearestHospitalInput = {
@@ -5058,6 +5375,7 @@ export type RescueRequestUpdateWithoutHospitalVisitInput = {
   timeline?: Prisma.RescueTimelineUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestUncheckedUpdateWithoutHospitalVisitInput = {
@@ -5120,6 +5438,7 @@ export type RescueRequestUncheckedUpdateWithoutHospitalVisitInput = {
   timeline?: Prisma.RescueTimelineUncheckedUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUncheckedUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUncheckedUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestUncheckedUpdateManyWithoutHospitalVisitInput = {
@@ -5300,6 +5619,7 @@ export type RescueRequestUpdateWithoutVehicleInput = {
   timeline?: Prisma.RescueTimelineUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestUncheckedUpdateWithoutVehicleInput = {
@@ -5362,6 +5682,7 @@ export type RescueRequestUncheckedUpdateWithoutVehicleInput = {
   timeline?: Prisma.RescueTimelineUncheckedUpdateManyWithoutRescueNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutRescueNestedInput
   rescueCharge?: Prisma.RescueChargeUncheckedUpdateOneWithoutRescueNestedInput
+  rating?: Prisma.RescueRatingUncheckedUpdateOneWithoutRescueNestedInput
 }
 
 export type RescueRequestUncheckedUpdateManyWithoutVehicleInput = {
@@ -5531,6 +5852,7 @@ export type RescueRequestSelect<ExtArgs extends runtime.Types.Extensions.Interna
   timeline?: boolean | Prisma.RescueRequest$timelineArgs<ExtArgs>
   notifications?: boolean | Prisma.RescueRequest$notificationsArgs<ExtArgs>
   rescueCharge?: boolean | Prisma.RescueRequest$rescueChargeArgs<ExtArgs>
+  rating?: boolean | Prisma.RescueRequest$ratingArgs<ExtArgs>
   _count?: boolean | Prisma.RescueRequestCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["rescueRequest"]>
 
@@ -5740,6 +6062,7 @@ export type RescueRequestInclude<ExtArgs extends runtime.Types.Extensions.Intern
   timeline?: boolean | Prisma.RescueRequest$timelineArgs<ExtArgs>
   notifications?: boolean | Prisma.RescueRequest$notificationsArgs<ExtArgs>
   rescueCharge?: boolean | Prisma.RescueRequest$rescueChargeArgs<ExtArgs>
+  rating?: boolean | Prisma.RescueRequest$ratingArgs<ExtArgs>
   _count?: boolean | Prisma.RescueRequestCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RescueRequestIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -5774,6 +6097,7 @@ export type $RescueRequestPayload<ExtArgs extends runtime.Types.Extensions.Inter
     timeline: Prisma.$RescueTimelinePayload<ExtArgs>[]
     notifications: Prisma.$NotificationPayload<ExtArgs>[]
     rescueCharge: Prisma.$RescueChargePayload<ExtArgs> | null
+    rating: Prisma.$RescueRatingPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -6237,6 +6561,7 @@ export interface Prisma__RescueRequestClient<T, Null = never, ExtArgs extends ru
   timeline<T extends Prisma.RescueRequest$timelineArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RescueRequest$timelineArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RescueTimelinePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notifications<T extends Prisma.RescueRequest$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RescueRequest$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   rescueCharge<T extends Prisma.RescueRequest$rescueChargeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RescueRequest$rescueChargeArgs<ExtArgs>>): Prisma.Prisma__RescueChargeClient<runtime.Types.Result.GetResult<Prisma.$RescueChargePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  rating<T extends Prisma.RescueRequest$ratingArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RescueRequest$ratingArgs<ExtArgs>>): Prisma.Prisma__RescueRatingClient<runtime.Types.Result.GetResult<Prisma.$RescueRatingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6921,6 +7246,25 @@ export type RescueRequest$rescueChargeArgs<ExtArgs extends runtime.Types.Extensi
    */
   include?: Prisma.RescueChargeInclude<ExtArgs> | null
   where?: Prisma.RescueChargeWhereInput
+}
+
+/**
+ * RescueRequest.rating
+ */
+export type RescueRequest$ratingArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RescueRating
+   */
+  select?: Prisma.RescueRatingSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RescueRating
+   */
+  omit?: Prisma.RescueRatingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RescueRatingInclude<ExtArgs> | null
+  where?: Prisma.RescueRatingWhereInput
 }
 
 /**

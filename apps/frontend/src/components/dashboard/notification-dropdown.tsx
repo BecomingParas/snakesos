@@ -3,7 +3,7 @@
 import { gql } from '@apollo/client';
 import { useRouter } from 'next/navigation';
 import { Bell, CheckCheck, ChevronRight, Loader2 } from 'lucide-react';
-import { useQuery } from '@/lib/apollo/hooks';
+import { useMutation, useQuery } from '@/lib/apollo/hooks';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -30,6 +30,7 @@ interface NotificationsQueryData {
   myNotifications: {
     edges: Array<{ node: RecentNotification }>;
   };
+  unreadNotificationsCount: number;
 }
 
 const RECENT_NOTIFICATIONS_QUERY = gql`
@@ -47,15 +48,30 @@ const RECENT_NOTIFICATIONS_QUERY = gql`
         }
       }
     }
+    unreadNotificationsCount
+  }
+`;
+
+const MARK_NOTIFICATION_AS_READ = gql`
+  mutation MarkHeaderNotificationAsRead($id: ID!) {
+    markNotificationAsRead(id: $id) {
+      id
+      read
+    }
   }
 `;
 
 function notificationPath(role: string) {
-  return `/dashboard/${role.toLowerCase().replace('_', '-')}/notifications`;
+  if (role === 'VERIFIED_RESCUER' || role === 'VOLUNTEER') {
+    return '/dashboard/rescuer/notifications';
+  }
+  if (role === 'CITIZEN') return '/dashboard/citizen/notifications';
+  return '/dashboard/admin/notifications';
 }
 
 export function NotificationDropdown({ role }: { role: string }) {
   const router = useRouter();
+  const [markNotificationAsRead] = useMutation(MARK_NOTIFICATION_AS_READ);
   const { data, loading } = useQuery<NotificationsQueryData>(
     RECENT_NOTIFICATIONS_QUERY,
     {
@@ -66,10 +82,20 @@ export function NotificationDropdown({ role }: { role: string }) {
   );
   const notifications =
     data?.myNotifications.edges.map(({ node }) => node) || [];
-  const unreadCount = notifications.filter(
-    (notification) => !notification.read,
-  ).length;
+  const unreadCount = data?.unreadNotificationsCount || 0;
   const goToNotifications = () => router.push(notificationPath(role));
+  const openNotification = async (notification: RecentNotification) => {
+    try {
+      if (!notification.read) {
+        await markNotificationAsRead({ variables: { id: notification.id } });
+      }
+    } catch {
+      // Navigation should still work if marking the notification fails.
+    }
+    router.push(
+      notification.actionUrl || notification.link || notificationPath(role),
+    );
+  };
 
   return (
     <DropdownMenu>
@@ -116,13 +142,7 @@ export function NotificationDropdown({ role }: { role: string }) {
             <DropdownMenuItem
               key={notification.id}
               className="items-start gap-2 px-3 py-2"
-              onClick={() =>
-                router.push(
-                  notification.actionUrl ||
-                    notification.link ||
-                    notificationPath(role),
-                )
-              }
+              onClick={() => void openNotification(notification)}
             >
               <span
                 className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${notification.read ? 'bg-muted' : 'bg-primary'}`}

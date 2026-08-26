@@ -395,6 +395,67 @@ export default function RescuerDetailPage({ params }: PageProps) {
         </Card>
       </div>
 
+      <Card className="border-white/10 bg-white/[0.03] p-6">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+              Rescue reviews
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {rescuer.totalRatings ?? 0} verified review
+              {(rescuer.totalRatings ?? 0) === 1 ? '' : 's'}
+            </p>
+          </div>
+          <div className="flex items-center gap-1 text-sm font-semibold">
+            <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+            {rescuer.rating ? rescuer.rating.toFixed(1) : 'N/A'}
+          </div>
+        </div>
+        {rescuer.ratings?.length ? (
+          <div className="mt-4 divide-y divide-white/5">
+            {rescuer.ratings.slice(0, 5).map((review) => (
+              <div key={review.id} className="py-4 first:pt-0 last:pb-0">
+                <div className="flex items-center justify-between gap-3">
+                  <div
+                    className="flex items-center gap-1"
+                    aria-label={`${review.rating} out of 5 stars`}
+                  >
+                    {Array.from({ length: 5 }, (_, index) => (
+                      <Star
+                        key={index}
+                        className={`h-4 w-4 ${
+                          index < review.rating
+                            ? 'fill-amber-400 text-amber-400'
+                            : 'text-muted-foreground'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <time className="text-xs text-muted-foreground">
+                    {new Date(review.createdAt).toLocaleDateString()}
+                  </time>
+                </div>
+                {review.feedback && (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {review.feedback}
+                  </p>
+                )}
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Speed {review.responseSpeed ?? 'N/A'} · Professionalism{' '}
+                  {review.professionalism ?? 'N/A'} · Communication{' '}
+                  {review.communication ?? 'N/A'} · Safety{' '}
+                  {review.safetyHandling ?? 'N/A'}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-4 text-sm text-muted-foreground">
+            No rescue reviews have been submitted yet.
+          </p>
+        )}
+      </Card>
+
       {/* Suspend dialog */}
       <Dialog open={suspendDialogOpen} onOpenChange={setSuspendDialogOpen}>
         <DialogContent>

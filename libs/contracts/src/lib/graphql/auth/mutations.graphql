@@ -12,7 +12,13 @@ mutation Login($input: LoginInput!) {
 
 mutation Register($input: RegisterInput!) {
   register(input: $input) {
-    ...AuthPayloadFields
+    user {
+      id
+      email
+      name
+      avatar
+      role
+    }
   }
 }
 
@@ -52,7 +58,10 @@ mutation ResendVerification($input: ResendVerificationInput!) {
 }
 
 mutation ChangePassword($input: ChangePasswordInput!) {
-  changePassword(input: $input)
+  changePassword(input: $input) {
+    success
+    message
+  }
 }
 
 mutation UpdateProfile($input: UpdateProfileInput!) {

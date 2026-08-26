@@ -597,6 +597,7 @@ export function CommandCenterDetail({
                           {rescuer.rating && (
                             <span>⭐ {rescuer.rating.toFixed(1)}</span>
                           )}
+                          <span>Rank {item.rankingScore.toFixed(2)}</span>
                           {item.distance && (
                             <span>📍 {item.distance.toFixed(1)} km</span>
                           )}

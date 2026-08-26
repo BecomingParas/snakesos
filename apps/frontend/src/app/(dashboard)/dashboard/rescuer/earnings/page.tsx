@@ -1,9 +1,22 @@
 'use client';
 
-import { CircleDollarSign, Clock3, Loader2, WalletCards } from 'lucide-react';
+import { useState } from 'react';
+import {
+  ArrowUpRight,
+  CircleDollarSign,
+  Clock3,
+  Loader2,
+  WalletCards,
+} from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useMyFinance } from '@/lib/graphql/hooks/finance.hooks';
+import {
+  useCreatePayout,
+  useMyFinance,
+} from '@/lib/graphql/hooks/finance.hooks';
+import { DashboardPagination } from '@/components/dashboard/dashboard-pagination';
+import { toast } from 'sonner';
 
 type FinanceStatus =
   | 'PENDING'
@@ -28,9 +41,14 @@ function statusClass(status: FinanceStatus) {
 }
 
 export default function RescuerEarningsPage() {
-  const { data, loading, error } = useMyFinance();
-  const settlements = data?.mySettlements || [];
-  const payouts = data?.myPayouts || [];
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const { data, loading, error, refetch } = useMyFinance({
+    pagination: { page: currentPage, limit: pageSize },
+  });
+  const [createPayout, { loading: requestingPayout }] = useCreatePayout();
+  const settlements = data?.mySettlements?.edges.map((edge) => edge.node) || [];
+  const payouts = data?.myPayouts?.edges.map((edge) => edge.node) || [];
   const earned = payouts
     .filter((payout) => payout.status === 'PAID')
     .reduce((total, payout) => total + Number(payout.amount), 0);
@@ -55,7 +73,7 @@ export default function RescuerEarningsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6 p-6">
+    <div className="mx-auto max-w-6xl space-y-6 p-6">
       <header>
         <p className="text-sm font-semibold uppercase tracking-widest text-success">
           Rescuer account
@@ -81,37 +99,104 @@ export default function RescuerEarningsPage() {
           </div>
         </Card>
       </section>
+      <Card className="p-5 text-sm text-muted-foreground">
+        <p>
+          <span className="font-semibold text-foreground">Pending</span> means
+          the rescue payment is still being processed.{' '}
+          <span className="font-semibold text-foreground">Eligible</span> means
+          the amount is approved and can be requested for payout.
+        </p>
+      </Card>
       <Card className="overflow-hidden">
         <div className="flex items-center gap-2 border-b p-5">
           <WalletCards className="h-5 w-5 text-primary" />
-          <h2 className="font-semibold">Payout history</h2>
+          <h2 className="font-semibold">Earnings history</h2>
         </div>
         <div className="divide-y">
-          {payouts.length === 0 && (
+          {settlements.length === 0 && (
             <p className="p-6 text-sm text-muted-foreground">
-              Your payout history will appear here.
+              Your earnings history will appear here.
             </p>
           )}
-          {payouts.map((payout) => (
+          {settlements.map((settlement) => (
             <div
-              className="flex flex-wrap items-center justify-between gap-4 p-5"
-              key={payout.id}
+              className="flex cursor-pointer flex-wrap items-center justify-between gap-4 p-5 transition-colors hover:bg-muted/30"
+              key={settlement.id}
+              role="link"
+              tabIndex={0}
+              onClick={() =>
+                window.location.assign(
+                  `/dashboard/rescuer/earnings/${settlement.id}`,
+                )
+              }
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  window.location.assign(
+                    `/dashboard/rescuer/earnings/${settlement.id}`,
+                  );
+                }
+              }}
             >
               <div>
                 <p className="font-medium">
-                  {money(payout.amount, payout.currency)}
+                  {money(settlement.amount, settlement.currency)}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Requested {new Date(payout.requestedAt).toLocaleDateString()}
+                  Earned {new Date(settlement.createdAt).toLocaleDateString()}
                 </p>
               </div>
-              <Badge className={statusClass(payout.status)}>
-                {payout.status}
-              </Badge>
+              <div className="flex items-center gap-3">
+                <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
+                <Badge className={statusClass(settlement.status)}>
+                  {settlement.status}
+                </Badge>
+                {settlement.status === 'ELIGIBLE' && (
+                  <Button
+                    size="sm"
+                    disabled={requestingPayout}
+                    onClick={async (event) => {
+                      event.stopPropagation();
+                      try {
+                        await createPayout({
+                          variables: {
+                            input: {
+                              settlementId: settlement.id,
+                              idempotencyKey: crypto.randomUUID(),
+                            },
+                          },
+                        });
+                        toast.success('Payout requested');
+                        await refetch();
+                      } catch (requestError) {
+                        toast.error(
+                          requestError instanceof Error
+                            ? requestError.message
+                            : 'Unable to request payout',
+                        );
+                      }
+                    }}
+                  >
+                    Request payout
+                  </Button>
+                )}
+              </div>
             </div>
           ))}
         </div>
       </Card>
+      <DashboardPagination
+        page={currentPage}
+        pageSize={pageSize}
+        totalCount={data?.mySettlements?.totalCount || 0}
+        pageInfo={data?.mySettlements?.pageInfo}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={(nextPageSize) => {
+          setPageSize(nextPageSize);
+          setCurrentPage(1);
+        }}
+        alwaysShow
+      />
     </div>
   );
 }

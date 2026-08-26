@@ -1,6 +1,7 @@
 import { auth } from '../config/better-auth.config.js';
 import { prisma } from '@snake-rescue/database';
 import { EmailService } from './email.service.js';
+import bcrypt from 'bcryptjs';
 
 export class AuthService {
   private emailService = new EmailService();
@@ -148,7 +149,14 @@ export class AuthService {
   /**
    * Verify email with token
    */
-  async verifyEmail(token: string): Promise<{ success: boolean; user?: any; error?: string; message?: string }> {
+  async verifyEmail(
+    token: string,
+  ): Promise<{
+    success: boolean;
+    user?: any;
+    error?: string;
+    message?: string;
+  }> {
     try {
       const verification = await prisma.verification.findUnique({
         where: { token },
@@ -206,7 +214,10 @@ export class AuthService {
       }
 
       // Generate reset token
-      const token = await this.generateVerificationToken(email, 'password-reset');
+      const token = await this.generateVerificationToken(
+        email,
+        'password-reset',
+      );
 
       // Send password reset email
       await this.emailService.sendPasswordResetEmail(email, user.name, token);
@@ -260,7 +271,8 @@ export class AuthService {
 
       return {
         success: true,
-        message: 'Password reset successful. Please log in with your new password.',
+        message:
+          'Password reset successful. Please log in with your new password.',
       };
     } catch (error: any) {
       return {
@@ -273,7 +285,11 @@ export class AuthService {
   /**
    * Change password for authenticated user
    */
-  async changePassword(userId: string, currentPassword: string, newPassword: string) {
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ) {
     try {
       const user = await prisma.user.findUnique({
         where: { id: userId },
@@ -285,6 +301,37 @@ export class AuthService {
           error: 'User not found',
         };
       }
+
+      const account = await prisma.account.findFirst({
+        where: {
+          userId,
+          providerId: 'credential',
+        },
+      });
+
+      if (!account?.password) {
+        return {
+          success: false,
+          error: 'Password change is not available for this account',
+        };
+      }
+
+      const currentPasswordMatches = await bcrypt.compare(
+        currentPassword,
+        account.password,
+      );
+      if (!currentPasswordMatches) {
+        return {
+          success: false,
+          error: 'Current password is incorrect',
+        };
+      }
+
+      const password = await bcrypt.hash(newPassword, 12);
+      await prisma.account.update({
+        where: { id: account.id },
+        data: { password },
+      });
 
       // Send confirmation email
       await this.emailService.sendPasswordChangedEmail(user.email, user.name);
@@ -304,7 +351,10 @@ export class AuthService {
   /**
    * Generate verification token
    */
-  private async generateVerificationToken(identifier: string, type: string): Promise<string> {
+  private async generateVerificationToken(
+    identifier: string,
+    type: string,
+  ): Promise<string> {
     const token = this.generateRandomToken();
     const expiresAt = new Date();
     expiresAt.setHours(expiresAt.getHours() + 24); // 24 hours expiry

@@ -71,10 +71,12 @@ model User {
   rescueTimelines             RescueTimeline[]
   trainings                   Training[]
   speciesObservations         SpeciesObservation[]  @relation
+  citizenRescueRatings        RescueRating[]        @relation("CitizenRatings")
 
   // Better Auth Relations
   sessions Session[]
   accounts Account[]
+  mediaAssets MediaAsset[]
 
   // RBAC Relations
   userRoles UserRoleAssignment[]
@@ -101,6 +103,47 @@ enum UserStatus {
   SUSPENDED
   PENDING_VERIFICATION
   BANNED
+}
+
+enum MediaProvider {
+  CLOUDINARY
+}
+
+enum MediaStatus {
+  PENDING
+  UPLOADED
+  VERIFIED
+  REJECTED
+  DELETED
+}
+
+enum MediaType {
+  RESCUER_PROFILE_IMAGE
+  RESCUER_VERIFICATION_DOCUMENT
+}
+
+model MediaAsset {
+  id               String       @id @default(cuid())
+  ownerId          String
+  mediaType        MediaType
+  provider         MediaProvider @default(CLOUDINARY)
+  publicId         String       @unique
+  resourceType     String       @default("image")
+  originalFileName String?
+  mimeType         String
+  sizeBytes        BigInt?
+  width            Int?
+  height           Int?
+  format           String?
+  status           MediaStatus  @default(PENDING)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  owner            User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId])
+  @@index([mediaType])
+  @@index([status])
+  @@map("media_assets")
 }
 
 // ===================================================================
@@ -315,6 +358,7 @@ model RescueRequest {
   timeline      RescueTimeline[]
   notifications Notification[]
   rescueCharge  RescueCharge?
+  rating        RescueRating?
 
   @@index([status])
   @@index([priority])
@@ -412,6 +456,7 @@ model Volunteer {
   // Availability
   availableTime         String // "Anytime", "Weekends", "Evenings"
   availableDays         String[] // ["Monday", "Tuesday", ...]
+  availabilitySchedule  Json     @default("[]")
   emergencyAvailability Boolean  @default(true)
   isAvailableNow        Boolean  @default(false)
   assignedZone          String?
@@ -476,6 +521,7 @@ model Volunteer {
   trainings         Training[]
   rescueCharges     RescueCharge[]
   settlements       Settlement[]
+  ratings           RescueRating[]
 
   @@index([status])
   @@index([municipality])
@@ -491,6 +537,30 @@ enum VolunteerStatus {
   SUSPENDED // Temporarily suspended
   REJECTED // Application rejected
   INACTIVE // Inactive/retired
+}
+
+model RescueRating {
+  id              String   @id @default(uuid())
+  rescueId        String   @unique
+  citizenId       String
+  rescuerId       String
+  rating          Int
+  feedback        String?  @db.Text
+  responseSpeed   Int?
+  professionalism Int?
+  communication   Int?
+  safetyHandling  Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  rescue  RescueRequest @relation(fields: [rescueId], references: [id], onDelete: Cascade)
+  citizen User          @relation("CitizenRatings", fields: [citizenId], references: [id], onDelete: Cascade)
+  rescuer Volunteer     @relation(fields: [rescuerId], references: [id], onDelete: Cascade)
+
+  @@index([rescuerId])
+  @@index([citizenId])
+  @@index([createdAt])
+  @@map("rescue_ratings")
 }
 
 model Training {

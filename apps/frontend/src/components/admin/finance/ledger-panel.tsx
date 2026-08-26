@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ListChecks, Receipt } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DashboardPagination } from '@/components/dashboard/dashboard-pagination';
@@ -134,6 +136,8 @@ function TransactionTable({
   | 'onPageChange'
   | 'onPageSizeChange'
 >) {
+  const router = useRouter();
+
   return (
     <>
       <div className="overflow-x-auto">
@@ -151,8 +155,23 @@ function TransactionTable({
           <tbody className="divide-y divide-border">
             {visibleSettlements.map((settlement) => (
               <tr
-                className="transition-colors hover:bg-white/5"
+                className="cursor-pointer transition-colors hover:bg-white/5 focus-visible:bg-white/5 focus-visible:outline-none"
                 key={settlement.id}
+                role="link"
+                tabIndex={0}
+                onClick={() =>
+                  router.push(
+                    `/dashboard/admin/finance/transactions/${settlement.id}`,
+                  )
+                }
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    router.push(
+                      `/dashboard/admin/finance/transactions/${settlement.id}`,
+                    );
+                  }
+                }}
               >
                 <td className="px-5 py-4 text-foreground">
                   {settlement.citizenName || 'Unknown citizen'}
@@ -163,7 +182,12 @@ function TransactionTable({
                     'Unknown rescuer'}
                 </td>
                 <td className="px-5 py-4 text-muted-foreground">
-                  {settlement.rescueChargeId?.slice(0, 8) || 'Rescue payment'}
+                  <Link
+                    href={`/dashboard/admin/finance/transactions/${settlement.id}`}
+                    className="font-medium text-primary hover:underline"
+                  >
+                    {settlement.rescueChargeId?.slice(0, 8) || 'Rescue payment'}
+                  </Link>
                 </td>
                 <td className="px-5 py-4 font-medium text-foreground">
                   {money(settlement.amount, settlement.currency)}

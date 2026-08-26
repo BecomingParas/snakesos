@@ -1,41 +1,53 @@
-'use client'
+'use client';
 
-import { usePathname, useRouter } from 'next/navigation'
-import { 
-  Home, 
-  Activity, 
-  Siren, 
-  Map, 
+import { usePathname, useRouter } from 'next/navigation';
+import {
+  Home,
+  Activity,
+  Siren,
+  Map,
   User,
+  Settings,
   List,
   BarChart3,
   Users,
   FileText,
-} from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 interface NavItem {
-  href: string
-  label: string
-  icon: React.ComponentType<{ className?: string }>
-  isEmergency?: boolean
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  isEmergency?: boolean;
 }
 
 interface MobileBottomNavProps {
-  role: 'CITIZEN' | 'ADMIN' | 'SUPER_ADMIN' | 'DISTRICT_COORDINATOR' | 'VERIFIED_RESCUER' | 'VOLUNTEER'
+  role:
+    | 'CITIZEN'
+    | 'ADMIN'
+    | 'SUPER_ADMIN'
+    | 'DISTRICT_COORDINATOR'
+    | 'VERIFIED_RESCUER'
+    | 'VOLUNTEER';
 }
 
 export function MobileBottomNav({ role }: MobileBottomNavProps) {
-  const pathname = usePathname()
-  const router = useRouter()
+  const pathname = usePathname();
+  const router = useRouter();
 
   // Role-specific navigation items
   const navItems: Record<string, NavItem[]> = {
     CITIZEN: [
       { href: '/dashboard/citizen', label: 'Home', icon: Home },
       { href: '/dashboard/citizen/requests', label: 'Requests', icon: List },
-      { href: '/dashboard/citizen/emergency', label: 'SOS', icon: Siren, isEmergency: true },
+      {
+        href: '/dashboard/citizen/emergency',
+        label: 'SOS',
+        icon: Siren,
+        isEmergency: true,
+      },
       { href: '/dashboard/citizen/map', label: 'Track', icon: Map },
       { href: '/dashboard/citizen/profile', label: 'Profile', icon: User },
     ],
@@ -62,31 +74,61 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
     ],
     VERIFIED_RESCUER: [
       { href: '/dashboard/rescuer', label: 'Home', icon: Home },
-      { href: '/dashboard/rescuer/assignments', label: 'Tasks', icon: FileText },
-      { href: '/dashboard/rescuer/active', label: 'Active', icon: Activity, isEmergency: true },
+      {
+        href: '/dashboard/rescuer/assignments',
+        label: 'Tasks',
+        icon: FileText,
+      },
+      {
+        href: '/dashboard/rescuer/active',
+        label: 'Active',
+        icon: Activity,
+        isEmergency: true,
+      },
       { href: '/dashboard/rescuer/map', label: 'Map', icon: Map },
-      { href: '/dashboard/rescuer/profile', label: 'Profile', icon: User },
+      {
+        href: '/dashboard/rescuer/settings',
+        label: 'Settings',
+        icon: Settings,
+      },
     ],
     VOLUNTEER: [
       { href: '/dashboard/rescuer', label: 'Home', icon: Home },
-      { href: '/dashboard/rescuer/assignments', label: 'Tasks', icon: FileText },
-      { href: '/dashboard/rescuer/active', label: 'Active', icon: Activity, isEmergency: true },
+      {
+        href: '/dashboard/rescuer/assignments',
+        label: 'Tasks',
+        icon: FileText,
+      },
+      {
+        href: '/dashboard/rescuer/active',
+        label: 'Active',
+        icon: Activity,
+        isEmergency: true,
+      },
       { href: '/dashboard/rescuer/map', label: 'Map', icon: Map },
-      { href: '/dashboard/rescuer/profile', label: 'Profile', icon: User },
+      {
+        href: '/dashboard/rescuer/settings',
+        label: 'Settings',
+        icon: Settings,
+      },
     ],
-  }
+  };
 
-  const items = navItems[role] || navItems.CITIZEN
+  const items = navItems[role] || navItems.CITIZEN;
 
   const isActive = (href: string) => {
-    if (href === '/dashboard/citizen' || href === '/dashboard/admin' || href === '/dashboard/rescuer') {
-      return pathname === href
+    if (
+      href === '/dashboard/citizen' ||
+      href === '/dashboard/admin' ||
+      href === '/dashboard/rescuer'
+    ) {
+      return pathname === href;
     }
-    return pathname.startsWith(href)
-  }
+    return pathname.startsWith(href);
+  };
 
   return (
-    <nav 
+    <nav
       className="fixed bottom-0 left-0 right-0 z-50 md:mobile-glass-nav bg-background/95 backdrop-blur-md border-t border-border/40 md:hidden"
       style={{
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
@@ -94,9 +136,9 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
     >
       <div className="flex items-center justify-around h-16 px-2">
         {items.map((item) => {
-          const Icon = item.icon
-          const active = isActive(item.href)
-          
+          const Icon = item.icon;
+          const active = isActive(item.href);
+
           return (
             <Button
               key={item.href}
@@ -106,7 +148,7 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
                 'flex flex-col items-center justify-center h-full flex-1 gap-1 rounded-none relative',
                 item.isEmergency && 'text-destructive hover:text-destructive',
                 active && !item.isEmergency && 'text-primary',
-                !active && !item.isEmergency && 'text-muted-foreground'
+                !active && !item.isEmergency && 'text-muted-foreground',
               )}
             >
               {item.isEmergency ? (
@@ -119,19 +161,22 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
               ) : (
                 <Icon className={cn('h-5 w-5', active && 'fill-current')} />
               )}
-              <span className={cn(
-                'text-[10px] font-medium',
-                item.isEmergency && 'text-red-600 dark:text-destructive font-extrabold drop-shadow-sm'
-              )}>
+              <span
+                className={cn(
+                  'text-[10px] font-medium',
+                  item.isEmergency &&
+                    'text-red-600 dark:text-destructive font-extrabold drop-shadow-sm',
+                )}
+              >
                 {item.label}
               </span>
               {active && !item.isEmergency && (
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-0.5 bg-primary rounded-t-full" />
               )}
             </Button>
-          )
+          );
         })}
       </div>
     </nav>
-  )
+  );
 }

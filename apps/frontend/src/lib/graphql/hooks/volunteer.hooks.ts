@@ -29,14 +29,24 @@ export interface Volunteer {
   experienceYears?: number;
   municipality: string;
   ward?: number;
+  vehicle?: string;
+  vehicleDetails?: string;
   skills: string[];
   certifications?: string[];
   languages?: string[];
-  vehicle?: string;
-  vehicleDetails?: string;
   availableTime?: string;
   availableDays?: string[];
+  availabilitySchedule?: Array<{
+    day: string;
+    enabled: boolean;
+    startTime: string;
+    endTime: string;
+  }>;
   emergencyAvailability?: boolean;
+  assignedZone?: string;
+  coverageRadius?: number;
+  hasEquipment?: boolean;
+  equipment?: string[];
   totalRescues: number;
   completedRescues: number;
   cancelledRescues?: number;
@@ -45,8 +55,6 @@ export interface Volunteer {
   isAvailableNow: boolean;
   status: string;
   successRate?: number;
-  assignedZone?: string;
-  coverageRadius?: number;
   bio?: string;
   verifiedAt?: string;
   rejectionReason?: string;
@@ -54,10 +62,18 @@ export interface Volunteer {
   averageRescueTime?: number;
   trainingCompleted?: boolean;
   certificationExpiry?: string;
-  hasEquipment?: boolean;
-  equipment?: string[];
   createdAt: string;
   updatedAt: string;
+  ratings?: Array<{
+    id: string;
+    rating: number;
+    feedback?: string;
+    responseSpeed?: number;
+    professionalism?: number;
+    communication?: number;
+    safetyHandling?: number;
+    createdAt: string;
+  }>;
 }
 
 export interface VolunteerProfile {
@@ -66,9 +82,27 @@ export interface VolunteerProfile {
   experienceYears?: number;
   municipality: string;
   ward?: number;
+  vehicle?: string;
+  vehicleDetails?: string;
   skills: string[];
+  certifications?: string[];
+  languages?: string[];
+  availableTime?: string;
+  availableDays?: string[];
+  availabilitySchedule?: Array<{
+    day: string;
+    enabled: boolean;
+    startTime: string;
+    endTime: string;
+  }>;
+  emergencyAvailability?: boolean;
+  assignedZone?: string;
+  coverageRadius?: number;
+  hasEquipment?: boolean;
+  equipment?: string[];
   totalRescues: number;
   completedRescues: number;
+  totalRatings?: number;
   rating?: number;
   successRate?: number;
   isAvailableNow: boolean;
@@ -82,6 +116,20 @@ export interface UpdateVolunteerProfileInput {
   experienceYears?: number;
   municipality?: string;
   ward?: number;
+  vehicle?: string;
+  vehicleDetails?: string;
+  availableTime?: string;
+  availableDays?: string[];
+  availabilitySchedule?: Array<{
+    day: string;
+    enabled: boolean;
+    startTime: string;
+    endTime: string;
+  }>;
+  emergencyAvailability?: boolean;
+  coverageRadius?: number;
+  hasEquipment?: boolean;
+  equipment?: string[];
   skills?: string[];
   isAvailableNow?: boolean;
 }
@@ -110,6 +158,11 @@ export interface PaginationInput {
   page?: number;
 }
 
+export interface VolunteerSortInput {
+  field: string;
+  order: 'ASC' | 'DESC';
+}
+
 export interface VolunteerFilterInput {
   status?: string;
   isAvailableNow?: boolean;
@@ -130,16 +183,71 @@ export interface ReviewVolunteerInput {
 // ===================================================================
 
 const UPDATE_VOLUNTEER_PROFILE = gql`
-  mutation UpdateVolunteerProfile($input: UpdateVolunteerProfileInput!) {
+  mutation UpdateVolunteerProfile($input: UpdateVolunteerInput!) {
     updateVolunteerProfile(input: $input) {
       id
       experience
       experienceYears
       municipality
       ward
+      vehicle
+      vehicleDetails
       skills
+      certifications
+      languages
+      availableTime
+      availableDays
+      availabilitySchedule {
+        day
+        enabled
+        startTime
+        endTime
+      }
+      emergencyAvailability
+      assignedZone
+      coverageRadius
+      hasEquipment
+      equipment
       isAvailableNow
       updatedAt
+    }
+  }
+`;
+
+const RATE_VOLUNTEER = gql`
+  mutation RateVolunteer(
+    $volunteerId: ID!
+    $rescueId: ID!
+    $rating: Int!
+    $feedback: String
+    $responseSpeed: Int
+    $professionalism: Int
+    $communication: Int
+    $safetyHandling: Int
+  ) {
+    rateVolunteer(
+      volunteerId: $volunteerId
+      rescueId: $rescueId
+      rating: $rating
+      feedback: $feedback
+      responseSpeed: $responseSpeed
+      professionalism: $professionalism
+      communication: $communication
+      safetyHandling: $safetyHandling
+    ) {
+      id
+      rating
+      totalRatings
+      ratings {
+        id
+        rating
+        feedback
+        responseSpeed
+        professionalism
+        communication
+        safetyHandling
+        createdAt
+      }
     }
   }
 `;
@@ -285,9 +393,21 @@ const GET_MY_VOLUNTEER_PROFILE = gql`
       experienceYears
       municipality
       ward
+      vehicle
+      vehicleDetails
       skills
+      certifications
+      languages
+      availableTime
+      availableDays
+      emergencyAvailability
+      assignedZone
+      coverageRadius
+      hasEquipment
+      equipment
       totalRescues
       completedRescues
+      totalRatings
       rating
       successRate
       isAvailableNow
@@ -302,8 +422,9 @@ const GET_VOLUNTEERS = gql`
   query GetVolunteers(
     $pagination: PaginationInput
     $filter: VolunteerFilterInput
+    $sort: VolunteerSortInput
   ) {
-    volunteers(pagination: $pagination, filter: $filter) {
+    volunteers(pagination: $pagination, filter: $filter, sort: $sort) {
       edges {
         node {
           id
@@ -354,6 +475,36 @@ export function useUpdateVolunteerProfileMutation(
     { updateVolunteerProfile: VolunteerProfile },
     { input: UpdateVolunteerProfileInput }
   >(UPDATE_VOLUNTEER_PROFILE, options);
+}
+
+export function useRateVolunteerMutation(
+  options?: MutationHookOptions<
+    { rateVolunteer: Volunteer },
+    {
+      volunteerId: string;
+      rescueId: string;
+      rating: number;
+      feedback?: string;
+      responseSpeed?: number;
+      professionalism?: number;
+      communication?: number;
+      safetyHandling?: number;
+    }
+  >,
+) {
+  return useMutation<
+    { rateVolunteer: Volunteer },
+    {
+      volunteerId: string;
+      rescueId: string;
+      rating: number;
+      feedback?: string;
+      responseSpeed?: number;
+      professionalism?: number;
+      communication?: number;
+      safetyHandling?: number;
+    }
+  >(RATE_VOLUNTEER, options);
 }
 
 export function useUpdateVolunteerStatusMutation(
@@ -452,11 +603,19 @@ export function useMyVolunteerProfileQuery(
 export function useVolunteersQuery(
   options?: QueryHookOptions<
     { volunteers: VolunteerConnection },
-    { pagination?: PaginationInput; filter?: VolunteerFilterInput }
+    {
+      pagination?: PaginationInput;
+      filter?: VolunteerFilterInput;
+      sort?: VolunteerSortInput;
+    }
   >,
 ) {
   return useQuery<
     { volunteers: VolunteerConnection },
-    { pagination?: PaginationInput; filter?: VolunteerFilterInput }
+    {
+      pagination?: PaginationInput;
+      filter?: VolunteerFilterInput;
+      sort?: VolunteerSortInput;
+    }
   >(GET_VOLUNTEERS, options);
 }

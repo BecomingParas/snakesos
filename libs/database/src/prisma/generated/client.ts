@@ -47,6 +47,11 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
+ * Model MediaAsset
+ * 
+ */
+export type MediaAsset = Prisma.MediaAssetModel
+/**
  * Model Session
  * 
  */
@@ -96,6 +101,11 @@ export type RescueTimeline = Prisma.RescueTimelineModel
  * 
  */
 export type Volunteer = Prisma.VolunteerModel
+/**
+ * Model RescueRating
+ * 
+ */
+export type RescueRating = Prisma.RescueRatingModel
 /**
  * Model Training
  * 

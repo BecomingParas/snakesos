@@ -1,0 +1,28 @@
+type MediaAsset {
+  id: ID!
+  mediaType: MediaType!
+  provider: String!
+  publicId: String!
+  resourceType: String!
+  originalFileName: String
+  mimeType: String!
+  sizeBytes: Int
+  width: Int
+  height: Int
+  format: String
+  status: MediaStatus!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type MediaUploadSignature {
+  mediaId: ID!
+  cloudName: String!
+  apiKey: String!
+  timestamp: Int!
+  signature: String!
+  folder: String!
+  publicId: String!
+  uploadUrl: String!
+  resourceType: String!
+}

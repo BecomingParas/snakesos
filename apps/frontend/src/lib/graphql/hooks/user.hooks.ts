@@ -15,9 +15,8 @@ export interface User {
   name: string;
   email: string;
   phone?: string;
+  avatar?: string;
   role: string;
-  isActive: boolean;
-  isEmailVerified: boolean;
   status?: string;
   emailVerified?: boolean;
   volunteerProfile?: {
@@ -37,6 +36,7 @@ export interface User {
 export interface UpdateUserProfileInput {
   name?: string;
   phone?: string;
+  avatar?: string;
 }
 
 export interface EmergencyContact {
@@ -92,8 +92,8 @@ export interface UpdateUserRoleInput {
 // ===================================================================
 
 const UPDATE_USER_PROFILE = gql`
-  mutation UpdateUserProfile($input: UpdateUserProfileInput!) {
-    updateUserProfile(input: $input) {
+  mutation UpdateProfile($input: UpdateProfileInput!) {
+    updateProfile(input: $input) {
       id
       name
       email
@@ -117,10 +117,10 @@ const SAVE_EMERGENCY_CONTACT = gql`
 `;
 
 const UPDATE_USER_STATUS = gql`
-  mutation UpdateUserStatus($input: UpdateUserStatusInput!) {
-    updateUserStatus(input: $input) {
+  mutation UpdateUserStatus($userId: ID!, $status: UserStatus!) {
+    updateUserStatus(userId: $userId, status: $status) {
       id
-      isActive
+      status
       updatedAt
     }
   }
@@ -147,9 +147,10 @@ const GET_MY_PROFILE = gql`
       name
       email
       phone
+      avatar
       role
-      isActive
-      isEmailVerified
+      status
+      emailVerified
       createdAt
       updatedAt
     }
@@ -244,18 +245,6 @@ const ADMIN_DELETE_USER = gql`
 // HOOKS
 // ===================================================================
 
-export function useUpdateUserProfileMutation(
-  options?: MutationHookOptions<
-    { updateUserProfile: User },
-    { input: UpdateUserProfileInput }
-  >,
-) {
-  return useMutation<
-    { updateUserProfile: User },
-    { input: UpdateUserProfileInput }
-  >(UPDATE_USER_PROFILE, options);
-}
-
 export function useSaveEmergencyContactMutation(
   options?: MutationHookOptions<
     { saveEmergencyContact: EmergencyContact },
@@ -299,6 +288,18 @@ export function useMyProfileQuery(
     GET_MY_PROFILE,
     options,
   );
+}
+
+export function useUpdateUserProfileMutation(
+  options?: MutationHookOptions<
+    { updateProfile: User },
+    { input: UpdateUserProfileInput }
+  >,
+) {
+  return useMutation<
+    { updateProfile: User },
+    { input: UpdateUserProfileInput }
+  >(UPDATE_USER_PROFILE, options);
 }
 
 export function useEmergencyContactQuery(

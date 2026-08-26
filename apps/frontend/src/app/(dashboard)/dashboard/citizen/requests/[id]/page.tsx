@@ -16,6 +16,7 @@ import {
   MessageCircle,
   Navigation,
   CreditCard,
+  Star,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -31,6 +32,7 @@ import {
   useMyRescuePaymentIntent,
   useStartPayment,
 } from '@/lib/graphql/hooks/finance.hooks';
+import { useRateVolunteerMutation } from '@/lib/graphql/hooks/volunteer.hooks';
 
 /**
  * Rescue Request Tracking Page
@@ -114,11 +116,35 @@ export default function RequestTrackingPage({ params }: PageProps) {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>();
   const [paymentAmount, setPaymentAmount] = useState('');
   const [processingPayment, setProcessingPayment] = useState(false);
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [ratingDimensions, setRatingDimensions] = useState({
+    responseSpeed: 0,
+    professionalism: 0,
+    communication: 0,
+    safetyHandling: 0,
+  });
+  const [ratingFeedback, setRatingFeedback] = useState('');
+  const [rateVolunteer, { loading: submittingRating }] =
+    useRateVolunteerMutation({
+      onCompleted: () => {
+        toast.success('Your rating was saved');
+        void refetch();
+      },
+      onError: (ratingError) => toast.error(ratingError.message),
+    });
   const paymentIntent = paymentIntentData?.myRescuePaymentIntent;
   const handledReturnStatus = useRef<string | undefined>(undefined);
   const returnedFromStripe =
     searchParams.get('payment') === 'complete' &&
     Boolean(searchParams.get('session_id'));
+
+  useEffect(() => {
+    const savedRating = data?.rescueRequest?.rating;
+    if (savedRating && selectedRating === 0) {
+      setSelectedRating(savedRating.rating);
+      setRatingFeedback(savedRating.feedback || '');
+    }
+  }, [data, selectedRating]);
 
   useEffect(() => {
     if (!returnedFromStripe) return;
@@ -159,7 +185,9 @@ export default function RequestTrackingPage({ params }: PageProps) {
   }, [paymentIntent, returnedFromStripe]);
 
   useEffect(() => {
-    if (['SUCCEEDED', 'FAILED', 'CANCELLED'].includes(paymentIntent?.status || '')) {
+    if (
+      ['SUCCEEDED', 'FAILED', 'CANCELLED'].includes(paymentIntent?.status || '')
+    ) {
       setProcessingPayment(false);
     }
   }, [paymentIntent?.status]);
@@ -230,6 +258,11 @@ export default function RequestTrackingPage({ params }: PageProps) {
   const canCancel = ['PENDING', 'ASSIGNED'].includes(rescue.status);
 
   const paymentConfirmed = paymentIntent?.status === 'SUCCEEDED';
+  const ratingEditWindowMs = 14 * 24 * 60 * 60 * 1000;
+  const ratingEditable =
+    !rescue.rating ||
+    Date.now() - new Date(rescue.rating.createdAt).getTime() <=
+      ratingEditWindowMs;
 
   const timelineSteps = [
     {
@@ -570,6 +603,166 @@ export default function RequestTrackingPage({ params }: PageProps) {
               </Card>
             )}
 
+            {rescue.status === 'COMPLETED' &&
+              rescue.assignedVolunteer &&
+              ratingEditable && (
+                <Card className="border-primary/30 bg-primary/5 p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="grid h-10 w-10 place-items-center rounded-lg bg-primary/15">
+                      <Star className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold">
+                        {rescue.rating
+                          ? 'Update your rating'
+                          : 'Rate your rescuer'}
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        {rescue.rating
+                          ? 'You can edit your rating within 14 days.'
+                          : 'How was your rescue experience?'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-5 flex gap-1" aria-label="Choose a rating">
+                    {Array.from({ length: 5 }, (_, index) => {
+                      const value = index + 1;
+                      return (
+                        <button
+                          key={value}
+                          type="button"
+                          aria-label={`${value} star${value === 1 ? '' : 's'}`}
+                          aria-pressed={selectedRating === value}
+                          onClick={() => setSelectedRating(value)}
+                          className="rounded-md p-1 transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        >
+                          <Star
+                            className={cn(
+                              'h-7 w-7',
+                              value <= selectedRating
+                                ? 'fill-amber-400 text-amber-400'
+                                : 'text-muted-foreground',
+                            )}
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="mt-4 space-y-2">
+                    {[
+                      ['responseSpeed', 'Response speed'],
+                      ['professionalism', 'Professionalism'],
+                      ['communication', 'Communication'],
+                      ['safetyHandling', 'Safety handling'],
+                    ].map(([key, label]) => (
+                      <div
+                        key={key}
+                        className="flex items-center justify-between gap-3"
+                      >
+                        <span className="text-sm text-muted-foreground">
+                          {label}
+                        </span>
+                        <div className="flex gap-0.5">
+                          {Array.from({ length: 5 }, (_, index) => {
+                            const value = index + 1;
+                            const selected =
+                              ratingDimensions[
+                                key as keyof typeof ratingDimensions
+                              ];
+                            return (
+                              <button
+                                key={value}
+                                type="button"
+                                aria-label={`${label}: ${value} star${value === 1 ? '' : 's'}`}
+                                aria-pressed={selected === value}
+                                onClick={() =>
+                                  setRatingDimensions((current) => ({
+                                    ...current,
+                                    [key]: value,
+                                  }))
+                                }
+                                className="rounded p-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                              >
+                                <Star
+                                  className={cn(
+                                    'h-4 w-4',
+                                    value <= selected
+                                      ? 'fill-amber-400 text-amber-400'
+                                      : 'text-muted-foreground',
+                                  )}
+                                />
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <textarea
+                    value={ratingFeedback}
+                    onChange={(event) => setRatingFeedback(event.target.value)}
+                    placeholder="Optional feedback"
+                    rows={3}
+                    className="mt-4 w-full resize-none rounded-lg border border-border/70 bg-background px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
+                  />
+                  <Button
+                    type="button"
+                    className="mt-3 w-full"
+                    disabled={selectedRating === 0 || submittingRating}
+                    onClick={() => {
+                      void rateVolunteer({
+                        variables: {
+                          volunteerId: rescue.assignedVolunteer!.id,
+                          rescueId: id,
+                          rating: selectedRating,
+                          feedback: ratingFeedback.trim() || undefined,
+                          responseSpeed:
+                            ratingDimensions.responseSpeed || undefined,
+                          professionalism:
+                            ratingDimensions.professionalism || undefined,
+                          communication:
+                            ratingDimensions.communication || undefined,
+                          safetyHandling:
+                            ratingDimensions.safetyHandling || undefined,
+                        },
+                      });
+                    }}
+                  >
+                    <Star className="mr-2 h-4 w-4" />
+                    {submittingRating
+                      ? 'Saving...'
+                      : rescue.rating
+                        ? 'Update Rating'
+                        : 'Submit Rating'}
+                  </Button>
+                </Card>
+              )}
+
+            {rescue.status === 'COMPLETED' &&
+              rescue.rating &&
+              !ratingEditable && (
+                <Card className="p-6">
+                  <div className="flex items-center gap-3">
+                    <Star className="h-5 w-5 fill-amber-400 text-amber-400" />
+                    <div>
+                      <h3 className="font-semibold">Your rating</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {rescue.rating.rating}/5 submitted on{' '}
+                        {new Date(rescue.rating.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  {rescue.rating.feedback && (
+                    <p className="mt-3 text-sm text-muted-foreground">
+                      “{rescue.rating.feedback}”
+                    </p>
+                  )}
+                </Card>
+              )}
+
             {/* Payment */}
             <Card className="p-6">
               <div className="mb-5 flex items-center gap-3">
@@ -634,7 +827,8 @@ export default function RequestTrackingPage({ params }: PageProps) {
                     Payment completed
                   </div>
                   <p className="mt-1">
-                    Stripe verification is complete. Thank you for supporting this rescue.
+                    Stripe verification is complete. Thank you for supporting
+                    this rescue.
                   </p>
                 </div>
               ) : paymentIntent ? (

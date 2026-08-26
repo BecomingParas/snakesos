@@ -57,6 +57,16 @@ type RescueRequest {
   rescueReport: String
   rescueImages: [String!]!
   rescueDuration: Int
+  rating: RescueRating
+  
+  # Hospital Information
+  victimWentToHospital: Boolean
+  hospitalId: String
+  hospital: Hospital
+  antivenomAdministered: Boolean
+  antivenomType: String
+  hospitalAdmission: Boolean
+  hospitalNotes: String
   
   # Verification
   verifiedBy: User
@@ -77,6 +87,19 @@ type RescueRequest {
   # Relations
   timeline: [RescueTimeline!]!
   notifications: [Notification!]!
+}
+
+type RescueRating {
+  id: ID!
+  rescueId: ID!
+  rescuerId: ID!
+  rating: Int!
+  feedback: String
+  responseSpeed: Int
+  professionalism: Int
+  communication: Int
+  safetyHandling: Int
+  createdAt: DateTime!
 }
 
 """

@@ -297,7 +297,7 @@ export default function RescueRequestsPage() {
 
   if (error) {
     return (
-      <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8">
+      <div className="w-full max-w-none px-4 py-6 sm:px-6 lg:px-8">
         <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-6 text-center">
           <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-destructive" />
           <h2 className="mb-2 text-xl font-semibold">
@@ -312,7 +312,7 @@ export default function RescueRequestsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-[1600px] space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+    <div className="w-full max-w-none space-y-6 px-4 py-6 sm:px-6 lg:px-8">
       {/* Breadcrumb + Title */}
       <div className="space-y-2">
         <div className="space-y-1">
@@ -542,6 +542,7 @@ export default function RescueRequestsPage() {
                   setPageSize(nextPageSize);
                   setCurrentPage(1);
                 }}
+                alwaysShow
               />
             </div>
           </>

@@ -9,6 +9,7 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User.js'
+export type * from './models/MediaAsset.js'
 export type * from './models/Session.js'
 export type * from './models/Account.js'
 export type * from './models/Verification.js'
@@ -19,6 +20,7 @@ export type * from './models/UserRoleAssignment.js'
 export type * from './models/RescueRequest.js'
 export type * from './models/RescueTimeline.js'
 export type * from './models/Volunteer.js'
+export type * from './models/RescueRating.js'
 export type * from './models/Training.js'
 export type * from './models/SnakeSpecies.js'
 export type * from './models/AIIdentification.js'

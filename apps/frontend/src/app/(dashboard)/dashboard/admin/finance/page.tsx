@@ -115,7 +115,7 @@ export default function AdminFinancePage() {
   ];
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 p-6 text-foreground md:p-8">
+    <div className="w-full max-w-none space-y-6 p-6 text-foreground md:p-8">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <AdminEyebrow>Command Center · Finance</AdminEyebrow>

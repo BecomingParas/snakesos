@@ -398,6 +398,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
+  MediaAsset: 'MediaAsset',
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
@@ -408,6 +409,7 @@ export const ModelName = {
   RescueRequest: 'RescueRequest',
   RescueTimeline: 'RescueTimeline',
   Volunteer: 'Volunteer',
+  RescueRating: 'RescueRating',
   Training: 'Training',
   SnakeSpecies: 'SnakeSpecies',
   AIIdentification: 'AIIdentification',
@@ -451,7 +453,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "role" | "permission" | "rolePermission" | "userRoleAssignment" | "rescueRequest" | "rescueTimeline" | "volunteer" | "training" | "snakeSpecies" | "aIIdentification" | "blogPost" | "galleryImage" | "donation" | "compensationPolicy" | "rescueCharge" | "financialTransaction" | "paymentIntent" | "refund" | "settlement" | "payout" | "ledgerEntry" | "financialAuditEvent" | "notification" | "contactMessage" | "activityLog" | "hospital" | "hospitalVerification" | "hospitalReport" | "systemSetting" | "snakebiteHotspot" | "snakebiteCase" | "treatmentCenterSource" | "rescueVehicle" | "speciesObservation" | "districtStatistics"
+    modelProps: "user" | "mediaAsset" | "session" | "account" | "verification" | "role" | "permission" | "rolePermission" | "userRoleAssignment" | "rescueRequest" | "rescueTimeline" | "volunteer" | "rescueRating" | "training" | "snakeSpecies" | "aIIdentification" | "blogPost" | "galleryImage" | "donation" | "compensationPolicy" | "rescueCharge" | "financialTransaction" | "paymentIntent" | "refund" | "settlement" | "payout" | "ledgerEntry" | "financialAuditEvent" | "notification" | "contactMessage" | "activityLog" | "hospital" | "hospitalVerification" | "hospitalReport" | "systemSetting" | "snakebiteHotspot" | "snakebiteCase" | "treatmentCenterSource" | "rescueVehicle" | "speciesObservation" | "districtStatistics"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -526,6 +528,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    MediaAsset: {
+      payload: Prisma.$MediaAssetPayload<ExtArgs>
+      fields: Prisma.MediaAssetFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MediaAssetFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaAssetPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MediaAssetFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaAssetPayload>
+        }
+        findFirst: {
+          args: Prisma.MediaAssetFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaAssetPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MediaAssetFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaAssetPayload>
+        }
+        findMany: {
+          args: Prisma.MediaAssetFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaAssetPayload>[]
+        }
+        create: {
+          args: Prisma.MediaAssetCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaAssetPayload>
+        }
+        createMany: {
+          args: Prisma.MediaAssetCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MediaAssetCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaAssetPayload>[]
+        }
+        delete: {
+          args: Prisma.MediaAssetDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaAssetPayload>
+        }
+        update: {
+          args: Prisma.MediaAssetUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaAssetPayload>
+        }
+        deleteMany: {
+          args: Prisma.MediaAssetDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MediaAssetUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MediaAssetUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaAssetPayload>[]
+        }
+        upsert: {
+          args: Prisma.MediaAssetUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MediaAssetPayload>
+        }
+        aggregate: {
+          args: Prisma.MediaAssetAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMediaAsset>
+        }
+        groupBy: {
+          args: Prisma.MediaAssetGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MediaAssetGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MediaAssetCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MediaAssetCountAggregateOutputType> | number
         }
       }
     }
@@ -1266,6 +1342,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.VolunteerCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.VolunteerCountAggregateOutputType> | number
+        }
+      }
+    }
+    RescueRating: {
+      payload: Prisma.$RescueRatingPayload<ExtArgs>
+      fields: Prisma.RescueRatingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RescueRatingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueRatingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RescueRatingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueRatingPayload>
+        }
+        findFirst: {
+          args: Prisma.RescueRatingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueRatingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RescueRatingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueRatingPayload>
+        }
+        findMany: {
+          args: Prisma.RescueRatingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueRatingPayload>[]
+        }
+        create: {
+          args: Prisma.RescueRatingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueRatingPayload>
+        }
+        createMany: {
+          args: Prisma.RescueRatingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RescueRatingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueRatingPayload>[]
+        }
+        delete: {
+          args: Prisma.RescueRatingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueRatingPayload>
+        }
+        update: {
+          args: Prisma.RescueRatingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueRatingPayload>
+        }
+        deleteMany: {
+          args: Prisma.RescueRatingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RescueRatingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RescueRatingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueRatingPayload>[]
+        }
+        upsert: {
+          args: Prisma.RescueRatingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RescueRatingPayload>
+        }
+        aggregate: {
+          args: Prisma.RescueRatingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRescueRating>
+        }
+        groupBy: {
+          args: Prisma.RescueRatingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RescueRatingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RescueRatingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RescueRatingCountAggregateOutputType> | number
         }
       }
     }
@@ -3408,6 +3558,27 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+export const MediaAssetScalarFieldEnum = {
+  id: 'id',
+  ownerId: 'ownerId',
+  mediaType: 'mediaType',
+  provider: 'provider',
+  publicId: 'publicId',
+  resourceType: 'resourceType',
+  originalFileName: 'originalFileName',
+  mimeType: 'mimeType',
+  sizeBytes: 'sizeBytes',
+  width: 'width',
+  height: 'height',
+  format: 'format',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MediaAssetScalarFieldEnum = (typeof MediaAssetScalarFieldEnum)[keyof typeof MediaAssetScalarFieldEnum]
+
+
 export const SessionScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -3596,6 +3767,7 @@ export const VolunteerScalarFieldEnum = {
   languages: 'languages',
   availableTime: 'availableTime',
   availableDays: 'availableDays',
+  availabilitySchedule: 'availabilitySchedule',
   emergencyAvailability: 'emergencyAvailability',
   isAvailableNow: 'isAvailableNow',
   assignedZone: 'assignedZone',
@@ -3638,6 +3810,24 @@ export const VolunteerScalarFieldEnum = {
 } as const
 
 export type VolunteerScalarFieldEnum = (typeof VolunteerScalarFieldEnum)[keyof typeof VolunteerScalarFieldEnum]
+
+
+export const RescueRatingScalarFieldEnum = {
+  id: 'id',
+  rescueId: 'rescueId',
+  citizenId: 'citizenId',
+  rescuerId: 'rescuerId',
+  rating: 'rating',
+  feedback: 'feedback',
+  responseSpeed: 'responseSpeed',
+  professionalism: 'professionalism',
+  communication: 'communication',
+  safetyHandling: 'safetyHandling',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RescueRatingScalarFieldEnum = (typeof RescueRatingScalarFieldEnum)[keyof typeof RescueRatingScalarFieldEnum]
 
 
 export const TrainingScalarFieldEnum = {
@@ -4365,6 +4555,13 @@ export const NullableJsonNullValueInput = {
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -4474,6 +4671,48 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
+ * Reference to a field of type 'MediaType'
+ */
+export type EnumMediaTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MediaType'>
+    
+
+
+/**
+ * Reference to a field of type 'MediaType[]'
+ */
+export type ListEnumMediaTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MediaType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'MediaProvider'
+ */
+export type EnumMediaProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MediaProvider'>
+    
+
+
+/**
+ * Reference to a field of type 'MediaProvider[]'
+ */
+export type ListEnumMediaProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MediaProvider[]'>
+    
+
+
+/**
+ * Reference to a field of type 'BigInt'
+ */
+export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
+    
+
+
+/**
+ * Reference to a field of type 'BigInt[]'
+ */
+export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
+    
+
+
+/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -4484,6 +4723,20 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'MediaStatus'
+ */
+export type EnumMediaStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MediaStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'MediaStatus[]'
+ */
+export type ListEnumMediaStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MediaStatus[]'>
     
 
 
@@ -5016,6 +5269,7 @@ export interface PrismaClientOptionsWithAdapter extends PrismaClientBaseOptions 
 export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaClientOptionsWithAdapter
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
+  mediaAsset?: Prisma.MediaAssetOmit
   session?: Prisma.SessionOmit
   account?: Prisma.AccountOmit
   verification?: Prisma.VerificationOmit
@@ -5026,6 +5280,7 @@ export type GlobalOmitConfig = {
   rescueRequest?: Prisma.RescueRequestOmit
   rescueTimeline?: Prisma.RescueTimelineOmit
   volunteer?: Prisma.VolunteerOmit
+  rescueRating?: Prisma.RescueRatingOmit
   training?: Prisma.TrainingOmit
   snakeSpecies?: Prisma.SnakeSpeciesOmit
   aIIdentification?: Prisma.AIIdentificationOmit

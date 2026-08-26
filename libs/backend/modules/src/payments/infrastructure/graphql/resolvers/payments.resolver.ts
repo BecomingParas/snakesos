@@ -219,43 +219,98 @@ export const paymentsResolvers = {
     },
     mySettlements: async (
       _parent: unknown,
-      _args: unknown,
+      args: { pagination?: { limit?: number; page?: number } },
       context: GraphQLContext,
     ) => {
       context.requireAuth();
-      return prisma.settlement.findMany({
-        where: { rescuer: { userId: context.user.id } },
-        include: {
-          rescuer: true,
-          rescueCharge: { include: { rescue: { include: { user: true } } } },
+      const limit = args.pagination?.limit || 10;
+      const page = args.pagination?.page || 1;
+      const skip = (page - 1) * limit;
+      const where = { rescuer: { userId: context.user.id } };
+      const [settlements, totalCount] = await Promise.all([
+        prisma.settlement.findMany({
+          where,
+          take: limit,
+          skip,
+          include: {
+            rescuer: true,
+            rescueCharge: { include: { rescue: { include: { user: true } } } },
+          },
+          orderBy: { createdAt: 'desc' },
+        }),
+        prisma.settlement.count({ where }),
+      ]);
+      return {
+        edges: settlements.map((settlement) => ({
+          node: settlement,
+          cursor: settlement.id,
+        })),
+        pageInfo: {
+          hasNextPage: skip + limit < totalCount,
+          hasPreviousPage: page > 1,
+          startCursor: settlements[0]?.id || null,
+          endCursor: settlements.at(-1)?.id || null,
         },
-        orderBy: { createdAt: 'desc' },
-      });
+        totalCount,
+      };
     },
     myPayouts: async (
       _parent: unknown,
-      _args: unknown,
+      args: { pagination?: { limit?: number; page?: number } },
       context: GraphQLContext,
     ) => {
       context.requireAuth();
+      const limit = args.pagination?.limit || 10;
+      const page = args.pagination?.page || 1;
+      const skip = (page - 1) * limit;
       const rescuer = await prisma.volunteer.findUnique({
         where: { userId: context.user.id },
       });
-      if (!rescuer) return [];
-      const payouts = await prisma.payout.findMany({
-        where: { rescuerId: rescuer.id },
-        include: {
-          settlement: {
-            include: {
-              rescueCharge: {
-                include: { rescue: { include: { user: true } } },
+      if (!rescuer) {
+        return {
+          edges: [],
+          pageInfo: {
+            hasNextPage: false,
+            hasPreviousPage: false,
+            startCursor: null,
+            endCursor: null,
+          },
+          totalCount: 0,
+        };
+      }
+      const where = { rescuerId: rescuer.id };
+      const [payouts, totalCount] = await Promise.all([
+        prisma.payout.findMany({
+          where,
+          take: limit,
+          skip,
+          include: {
+            settlement: {
+              include: {
+                rescueCharge: {
+                  include: { rescue: { include: { user: true } } },
+                },
               },
             },
           },
+          orderBy: { requestedAt: 'desc' },
+        }),
+        prisma.payout.count({ where }),
+      ]);
+      const enrichedPayouts = await enrichPayouts(payouts);
+      return {
+        edges: enrichedPayouts.map((payout) => ({
+          node: payout,
+          cursor: payout.id,
+        })),
+        pageInfo: {
+          hasNextPage: skip + limit < totalCount,
+          hasPreviousPage: page > 1,
+          startCursor: payouts[0]?.id || null,
+          endCursor: payouts.at(-1)?.id || null,
         },
-        orderBy: { requestedAt: 'desc' },
-      });
-      return enrichPayouts(payouts);
+        totalCount,
+      };
     },
     myRescuePaymentIntent: async (
       _parent: unknown,
@@ -469,7 +524,23 @@ export const paymentsResolvers = {
       context: GraphQLContext,
     ) => {
       context.requireAuth();
-      context.requireRole(['ADMIN', 'SUPER_ADMIN']);
+      if (!context.hasRole('ADMIN') && !context.hasRole('SUPER_ADMIN')) {
+        const rescuer = await prisma.volunteer.findUnique({
+          where: { userId: context.user.id },
+          select: { id: true },
+        });
+        const settlement = rescuer
+          ? await prisma.settlement.findFirst({
+              where: { id: args.input.settlementId, rescuerId: rescuer.id },
+              select: { id: true },
+            })
+          : null;
+        if (!settlement) {
+          throw new Error(
+            'You can only request payout for your own settlement',
+          );
+        }
+      }
       return new PayoutService(prisma).create({
         ...args.input,
         actorId: context.user.id,

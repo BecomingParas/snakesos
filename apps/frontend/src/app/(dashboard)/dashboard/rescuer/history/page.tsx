@@ -10,6 +10,7 @@ import {
   TrendingUp,
   Loader2,
   AlertCircle,
+  ArrowUpRight,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -127,12 +128,12 @@ export default function RescuerHistoryPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
       <div className="mx-auto max-w-6xl">
         {/* Header */}
         <div className="mb-6">
           <Button
-            variant="ghost"
+            variant="outline"
             onClick={() => router.back()}
             className="mb-4"
           >
@@ -297,7 +298,20 @@ export default function RescuerHistoryPage() {
                   filteredHistory.map((rescue) => (
                     <Card
                       key={rescue.id}
-                      className="p-6 hover:border-primary cursor-pointer transition-colors"
+                      className="cursor-pointer p-6 transition-colors hover:border-primary"
+                      role="link"
+                      tabIndex={0}
+                      onClick={() =>
+                        router.push(`/dashboard/rescuer/history/${rescue.id}`)
+                      }
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          router.push(
+                            `/dashboard/rescuer/history/${rescue.id}`,
+                          );
+                        }
+                      }}
                     >
                       <div className="flex items-start justify-between mb-4">
                         <div>
@@ -308,17 +322,20 @@ export default function RescuerHistoryPage() {
                             {rescue.address}, {rescue.municipality}
                           </p>
                         </div>
-                        <Badge
-                          className={
-                            rescue.status === 'COMPLETED'
-                              ? 'bg-green-500 text-white'
-                              : 'bg-red-500 text-white'
-                          }
-                        >
-                          {rescue.status === 'COMPLETED'
-                            ? 'Completed'
-                            : 'Cancelled'}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            className={
+                              rescue.status === 'COMPLETED'
+                                ? 'bg-green-500 text-white'
+                                : 'bg-red-500 text-white'
+                            }
+                          >
+                            {rescue.status === 'COMPLETED'
+                              ? 'Completed'
+                              : 'Cancelled'}
+                          </Badge>
+                          <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
+                        </div>
                       </div>
 
                       <div className="grid gap-4 sm:grid-cols-4 text-sm">
@@ -387,6 +404,7 @@ export default function RescuerHistoryPage() {
                 setPageSize(nextPageSize);
                 setCurrentPage(1);
               }}
+              alwaysShow
             />
           </>
         )}

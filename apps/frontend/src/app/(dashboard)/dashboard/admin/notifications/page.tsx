@@ -98,7 +98,7 @@ export default function AdminNotificationsPage() {
 
   return (
     <main className="min-h-screen bg-background p-4 text-foreground sm:p-6">
-      <div className="mx-auto max-w-6xl space-y-6">
+      <div className="w-full max-w-none space-y-6">
         <NotificationsHeader
           unreadCount={unreadCount}
           loading={markAllReadState.loading}

@@ -59,6 +59,7 @@ export default function AdminRescuersPage() {
               : undefined,
         search: searchTerm || undefined,
       },
+      sort: { field: 'BAYESIAN_RATING', order: 'DESC' },
     },
     fetchPolicy: 'cache-and-network',
     pollInterval: 30000, // Poll every 30 seconds
@@ -375,6 +376,7 @@ export default function AdminRescuersPage() {
           setPageSize(nextPageSize);
           setCurrentPage(1);
         }}
+        alwaysShow
       />
     </div>
   );

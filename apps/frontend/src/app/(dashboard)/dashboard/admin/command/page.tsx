@@ -1006,6 +1006,7 @@ export default function AdminCommandCenter() {
                           {rescuer.rating && (
                             <div>⭐ {rescuer.rating.toFixed(1)}</div>
                           )}
+                          <div>Rank {item.rankingScore.toFixed(2)}</div>
                           <div>Load: {item.currentlyAssigned}</div>
                         </div>
                       </div>

@@ -194,6 +194,57 @@ input AddTimelineEventInput {
   rescueId: ID!
 }
 
+type AdminSettings {
+  autoAssignEnabled: Boolean!
+  contactEmail: String!
+  contactPhone: String!
+  defaultRadius: Int!
+  emailApiKey: String!
+  emailEnabled: Boolean!
+  emailProvider: String!
+  mapboxToken: String!
+  maxAssignmentDistance: Int!
+  maxLoginAttempts: Int!
+  maxResponseTime: Int!
+  passwordMinLength: Int!
+  priorityThreshold: Int!
+  pushEnabled: Boolean!
+  requireTwoFactor: Boolean!
+  sessionTimeout: Int!
+  smsApiKey: String!
+  smsEnabled: Boolean!
+  smsProvider: String!
+  supportEmail: String!
+  systemName: String!
+  targetResponseTime: Int!
+  updatedAt: DateTime!
+}
+
+input AdminSettingsInput {
+  autoAssignEnabled: Boolean!
+  contactEmail: String!
+  contactPhone: String!
+  defaultRadius: Int!
+  emailApiKey: String!
+  emailEnabled: Boolean!
+  emailProvider: String!
+  mapboxToken: String!
+  maxAssignmentDistance: Int!
+  maxLoginAttempts: Int!
+  maxResponseTime: Int!
+  passwordMinLength: Int!
+  priorityThreshold: Int!
+  pushEnabled: Boolean!
+  requireTwoFactor: Boolean!
+  sessionTimeout: Int!
+  smsApiKey: String!
+  smsEnabled: Boolean!
+  smsProvider: String!
+  supportEmail: String!
+  systemName: String!
+  targetResponseTime: Int!
+}
+
 """
 Alternative species match from AI
 """
@@ -225,6 +276,22 @@ enum AnalyticsTimePeriod {
   THIS_YEAR
   TODAY
   YESTERDAY
+}
+
+enum AntivenomStatus {
+  AVAILABLE
+  LOW_STOCK
+  NOT_SUPPORTED
+  OUT_OF_STOCK
+  UNKNOWN
+}
+
+type AntivenomStatusUpdate {
+  hospital: Hospital!
+  newStatus: AntivenomStatus!
+  previousStatus: AntivenomStatus!
+  verifiedAt: DateTime!
+  verifiedBy: String!
 }
 
 """
@@ -295,6 +362,7 @@ type AvailableVolunteer {
   currentlyAssigned: Int!
   distance: Float
   estimatedArrival: Int
+  rankingScore: Float!
   volunteer: Volunteer!
 }
 
@@ -380,6 +448,19 @@ input BlogPostSortInput {
   order: SortOrder!
 }
 
+type BulkImportError {
+  error: String!
+  hospitalName: String!
+  index: Int!
+}
+
+type BulkImportResult {
+  errors: [BulkImportError!]!
+  failed: Int!
+  imported: Int!
+  success: Boolean!
+}
+
 """
 Input for sending bulk notifications
 """
@@ -434,6 +515,14 @@ type CMSStats {
   totalViews: Int!
 }
 
+enum CaseOutcome {
+  DECEASED
+  LOST_TO_FOLLOWUP
+  RECOVERED
+  RECOVERED_WITH_COMPLICATIONS
+  UNKNOWN
+}
+
 """
 Input for changing password
 """
@@ -442,10 +531,20 @@ input ChangePasswordInput {
   newPassword: String!
 }
 
+type ChangePasswordPayload {
+  message: String!
+  success: Boolean!
+}
+
 """
 Input for completing a rescue
 """
 input CompleteRescueInput {
+  antivenomAdministered: Boolean
+  antivenomType: String
+  hospitalAdmission: Boolean
+  hospitalId: String
+  hospitalNotes: String
   outcome: RescueOutcome!
   releaseLat: Latitude
   releaseLng: Longitude
@@ -454,6 +553,12 @@ input CompleteRescueInput {
   rescueImages: [String!]
   rescueReport: String!
   speciesId: ID
+  victimWentToHospital: Boolean
+}
+
+input ConfirmPaymentInput {
+  paymentIntentId: ID
+  providerReference: String!
 }
 
 """
@@ -560,6 +665,38 @@ type ContactMessageStats {
   total: Int!
 }
 
+type Coordinate {
+  latitude: Float!
+  longitude: Float!
+}
+
+input CoordinateInput {
+  latitude: Float!
+  longitude: Float!
+}
+
+type CoverageAnalysis {
+  """
+  Population coverage percentage
+  """
+  coveragePercentage: Float
+
+  """
+  Population covered by 30min travel
+  """
+  population30Min: Int
+
+  """
+  Population covered by 60min travel
+  """
+  population60Min: Int
+
+  """
+  Underserved areas
+  """
+  underservedAreas: [String!]
+}
+
 """
 Input for creating a blog post
 """
@@ -597,6 +734,53 @@ input CreateDonationInput {
   purpose: DonationPurpose
 }
 
+input CreateHospitalInput {
+  address: String!
+  ambulanceAvailable: Boolean
+  antivenomStatus: AntivenomStatus
+  bedCapacity: Int
+  bloodBankAvailable: Boolean
+  district: String!
+  email: String
+  emergency24x7: Boolean
+  emergencyAvailable: Boolean
+  emergencyPhone: String
+  hospitalType: HospitalType
+  icuAvailable: Boolean
+  latitude: Float!
+  longitude: Float!
+  municipality: String!
+  name: String!
+  notes: String
+  officialTreatmentCenter: Boolean
+  phone: String
+  province: String!
+  snakebiteTreatmentAvailable: Boolean
+  source: String
+  sourceUrl: String
+  sourceYear: String
+  specializations: [String!]
+  treatmentCenterType: TreatmentCenterType
+  ventilatorAvailable: Boolean
+  ward: Int
+}
+
+input CreateHospitalReportInput {
+  description: String!
+  hospitalId: ID!
+  reportType: HospitalReportType!
+  reporterEmail: String
+  reporterName: String
+  reporterPhone: String
+}
+
+input CreateMediaUploadSignatureInput {
+  fileName: String!
+  mediaType: MediaType!
+  mimeType: String!
+  sizeBytes: Int!
+}
+
 """
 Input for creating a notification
 """
@@ -612,6 +796,21 @@ input CreateNotificationInput {
   title: String!
   type: NotificationType!
   userId: ID!
+}
+
+input CreatePaymentIntentInput {
+  amount: String!
+  currency: String
+  donationId: ID
+  idempotencyKey: String!
+  provider: PaymentProvider!
+  rescueChargeId: ID
+}
+
+input CreatePayoutInput {
+  idempotencyKey: String!
+  paymentMethod: String
+  settlementId: ID!
 }
 
 """
@@ -720,6 +919,20 @@ input CursorPaginationInput {
   last: Int
 }
 
+type DailyAvailability {
+  day: String!
+  enabled: Boolean!
+  endTime: String!
+  startTime: String!
+}
+
+input DailyAvailabilityInput {
+  day: String!
+  enabled: Boolean!
+  endTime: String!
+  startTime: String!
+}
+
 """
 Danger level of snake species
 """
@@ -755,9 +968,95 @@ type DashboardStats {
 }
 
 """
+Date without time
+"""
+scalar Date
+
+input DateRangeInput {
+  from: DateTime!
+  to: DateTime!
+}
+
+"""
 ISO 8601 datetime string (e.g., "2024-08-05T12:30:00Z")
 """
 scalar DateTime
+
+type DistrictAnalytics {
+  """
+  Active rescues right now
+  """
+  activeRescues: Int!
+
+  """
+  Available rescuers
+  """
+  availableRescuers: Int!
+
+  """
+  Average response time
+  """
+  avgResponseTimeMinutes: Float
+
+  """
+  Completed rescues
+  """
+  completedRescues: Int!
+
+  """
+  Deaths
+  """
+  deaths: Int!
+  district: String!
+
+  """
+  Monthly trend
+  """
+  monthlyTrend: [MonthlyDataPoint!]!
+  province: String!
+
+  """
+  Risk level
+  """
+  riskLevel: RiskLevel
+
+  """
+  Snakebite cases (envenomation)
+  """
+  snakebiteCases: Int!
+
+  """
+  Success rate
+  """
+  successRate: Float
+
+  """
+  Top snake species
+  """
+  topSpecies: [SpeciesCount!]!
+
+  """
+  Total incidents (all time)
+  """
+  totalIncidents: Int!
+
+  """
+  Treatment center coverage
+  """
+  treatmentCenterCoverage: CoverageAnalysis
+
+  """
+  Treatment centers
+  """
+  treatmentCenters: Int!
+}
+
+type DistrictResponseTime {
+  avgResponseTime: Float!
+  district: String!
+  incidentCount: Int!
+  medianResponseTime: Float!
+}
 
 """
 Donation transaction
@@ -1124,6 +1423,12 @@ input GalleryImageSortInput {
 }
 
 """
+GeoJSON geometry object
+Can be Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon
+"""
+scalar GeoJSON
+
+"""
 Geographic heatmap data
 """
 type GeographicHeatmap {
@@ -1140,6 +1445,193 @@ Input for geographic heatmap
 input GeographicHeatmapInput {
   dateRange: AnalyticsDateRangeInput
   municipality: String
+}
+
+type Hospital {
+  address: String!
+  ambulanceAvailable: Boolean!
+  antivenomLastVerifiedAt: DateTime
+  antivenomStatus: AntivenomStatus!
+  antivenomStockPublic: Boolean!
+  antivenomStockQuantity: Int
+  antivenomVerificationFreshness: VerificationFreshness!
+  antivenomVerifiedBy: String
+  bedCapacity: Int
+  bloodBankAvailable: Boolean!
+  createdAt: DateTime!
+  distanceFromUser: Float
+  district: String!
+  email: String
+  emergency24x7: Boolean!
+  emergencyAvailable: Boolean!
+  emergencyPhone: String
+  hospitalType: HospitalType
+  icuAvailable: Boolean!
+  id: ID!
+  latitude: Float!
+  longitude: Float!
+  markerColor: String!
+  municipality: String!
+  name: String!
+  notes: String
+  officialTreatmentCenter: Boolean!
+  phone: String
+  province: String!
+  recentVerification: HospitalVerification
+  recommendationScore: Float
+  snakebiteTreatmentAvailable: Boolean!
+  source: String
+  sourceUrl: String
+  sourceYear: String
+  specializations: [String!]!
+  status: HospitalStatus!
+  treatmentCenterType: TreatmentCenterType
+  updatedAt: DateTime!
+  ventilatorAvailable: Boolean!
+  verificationRecords: [HospitalVerification!]!
+  verificationStatus: VerificationStatus!
+  ward: Int
+}
+
+type HospitalConnection {
+  edges: [HospitalEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type HospitalEdge {
+  cursor: String!
+  node: Hospital!
+}
+
+input HospitalFilterInput {
+  antivenomAvailable: Boolean
+  antivenomStatus: AntivenomStatus
+  districts: [String!]
+  emergency24x7: Boolean
+  hospitalTypes: [HospitalType!]
+  municipalities: [String!]
+  officialOnly: Boolean
+  provinces: [String!]
+  snakebiteTreatmentOnly: Boolean
+  status: HospitalStatus
+  verificationStatus: VerificationStatus
+}
+
+input HospitalLocationInput {
+  latitude: Float!
+  longitude: Float!
+  radiusKm: Float
+}
+
+type HospitalReport {
+  createdAt: DateTime!
+  description: String!
+  hospital: Hospital!
+  hospitalId: String!
+  id: ID!
+  reportType: HospitalReportType!
+  reportedBy: String
+  reporterEmail: String
+  reporterName: String
+  reporterPhone: String
+  resolution: String
+  resolvedAt: DateTime
+  resolvedBy: String
+  status: HospitalReportStatus!
+  updatedAt: DateTime!
+}
+
+enum HospitalReportStatus {
+  DISMISSED
+  NEW
+  RESOLVED
+  UNDER_REVIEW
+}
+
+enum HospitalReportType {
+  ANTIVENOM_STATUS_CHANGE
+  CLOSED
+  INCORRECT_INFO
+  OTHER
+  OUTDATED_STATUS
+  WRONG_LOCATION
+}
+
+enum HospitalSortField {
+  CREATED_AT
+  DISTANCE
+  NAME
+  UPDATED_AT
+  VERIFICATION_DATE
+}
+
+input HospitalSortInput {
+  direction: SortDirection!
+  field: HospitalSortField!
+}
+
+type HospitalStatistics {
+  byProvince: [ProvinceHospitalCount!]!
+  outOfStock: Int!
+  total: Int!
+  verificationCoverage: Float!
+  withSnakebiteTreatment: Int!
+  withUnknownAntivenom: Int!
+  withVerifiedAntivenom: Int!
+}
+
+enum HospitalStatus {
+  ACTIVE
+  INACTIVE
+  PERMANENTLY_CLOSED
+  TEMPORARILY_CLOSED
+}
+
+enum HospitalType {
+  ARMY
+  COMMUNITY
+  GOVERNMENT
+  NGO
+  POLICE
+  PRIVATE
+}
+
+type HospitalVerification {
+  antivenomQuantity: Int
+  antivenomStatus: AntivenomStatus
+  contactDesignation: String
+  contactPerson: String
+  contactPhone: String
+  createdAt: DateTime!
+  emergencyStatus: Boolean
+  evidenceUrls: [String!]!
+  hospital: Hospital!
+  hospitalId: String!
+  id: ID!
+  nextVerificationDue: DateTime
+  notes: String
+  officialDocumentUrl: String
+  snakebiteTreatment: Boolean
+  ventilatorStatus: Boolean
+  verificationDate: DateTime!
+  verificationType: VerificationType!
+  verifiedBy: String!
+}
+
+type HotspotMapPoint {
+  caseCount: Int
+  district: String
+  geometry: GeoJSON!
+  id: ID!
+  name: String!
+  populationAtRisk: Int
+  province: String
+  riskLevel: RiskLevel!
+  riskScore: Float!
+  source: String!
+  sourceUrl: String
+  studyYear: Int
 }
 
 """
@@ -1194,6 +1686,68 @@ input IdentifySnakeInput {
   userId: ID
 }
 
+type IncidentConnection {
+  edges: [IncidentEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type IncidentEdge {
+  cursor: String!
+  node: IncidentMapPoint!
+}
+
+input IncidentFiltersInput {
+  dateRange: DateRangeInput
+  district: String
+  municipality: String
+  priorities: [Priority!]
+  province: String
+  speciesId: ID
+  statuses: [IncidentStatus!]
+  types: [IncidentType!]
+}
+
+type IncidentMapPoint {
+  distanceKm: Float
+  id: ID!
+  latitude: Float!
+  longitude: Float!
+  municipality: String
+  priority: Priority!
+  reportedAt: DateTime!
+  status: IncidentStatus!
+  type: IncidentType
+}
+
+enum IncidentStatus {
+  ACCEPTED
+  ASSIGNED
+  CANCELLED
+  CLOSED
+  COMPLETED
+  EXPIRED
+  IN_PROGRESS
+  PENDING
+}
+
+enum IncidentType {
+  OTHER
+  SNAKE_BITE
+  SNAKE_RESCUE
+  SNAKE_SIGHTING
+}
+
+input InitiatePaymentInput {
+  amount: String!
+  currency: String
+  donationId: ID
+  idempotencyKey: String!
+  provider: PaymentProvider!
+  rescueChargeId: ID
+  returnUrl: String
+}
+
 """
 JSON object for flexible data structures
 """
@@ -1216,6 +1770,228 @@ input LoginInput {
 Longitude coordinate (-180 to 180)
 """
 scalar Longitude
+
+input MapBoundsInput {
+  """
+  Eastern boundary (max longitude)
+  """
+  east: Float!
+
+  """
+  Northern boundary (max latitude)
+  """
+  north: Float!
+
+  """
+  Southern boundary (min latitude)
+  """
+  south: Float!
+
+  """
+  Western boundary (min longitude)
+  """
+  west: Float!
+}
+
+input MapFiltersInput {
+  """
+  Date range filter
+  """
+  dateRange: DateRangeInput
+
+  """
+  Filter by district
+  """
+  district: String
+
+  """
+  Filter by incident statuses
+  """
+  incidentStatuses: [IncidentStatus!]
+
+  """
+  Filter by incident types
+  """
+  incidentTypes: [IncidentType!]
+
+  """
+  Filter by priorities
+  """
+  priorities: [Priority!]
+
+  """
+  Filter by province
+  """
+  province: String
+
+  """
+  Filter by rescuer statuses
+  """
+  rescuerStatuses: [RescuerStatus!]
+
+  """
+  Filter by season
+  """
+  season: Season
+
+  """
+  Show research-based historical hotspots
+  """
+  showHistoricalHotspots: Boolean
+
+  """
+  Show risk zones
+  """
+  showRiskZones: Boolean
+}
+
+type MapMetadata {
+  """
+  Viewport area (sq km)
+  """
+  areaKm2: Float
+
+  """
+  Cache status
+  """
+  cached: Boolean!
+
+  """
+  Data freshness (seconds)
+  """
+  freshnessSeconds: Int!
+
+  """
+  When this data was generated
+  """
+  generatedAt: DateTime!
+}
+
+type MapOverview {
+  """
+  Research-based hotspots in viewport
+  """
+  hotspots: [HotspotMapPoint!]!
+
+  """
+  Incidents in viewport
+  """
+  incidents: [IncidentMapPoint!]!
+
+  """
+  Metadata about the data
+  """
+  metadata: MapMetadata!
+
+  """
+  Rescuers in viewport
+  """
+  rescuers: [RescuerMapPoint!]!
+
+  """
+  Risk zones in viewport
+  """
+  riskZones: [RiskZoneMapPoint!]!
+
+  """
+  Aggregated statistics for viewport
+  """
+  statistics: MapStatistics!
+
+  """
+  Treatment centers in viewport
+  """
+  treatmentCenters: [TreatmentCenterMapPoint!]!
+
+  """
+  Rescue vehicles in viewport
+  """
+  vehicles: [VehicleMapPoint!]!
+}
+
+type MapStatistics {
+  """
+  Active rescues in progress
+  """
+  activeRescues: Int!
+
+  """
+  Available rescuers
+  """
+  availableRescuers: Int!
+
+  """
+  Average response time in minutes
+  """
+  avgResponseTimeMinutes: Float
+
+  """
+  Critical/high priority incidents
+  """
+  criticalIncidents: Int!
+
+  """
+  Median response time in minutes
+  """
+  medianResponseTimeMinutes: Float
+
+  """
+  Success rate (percentage)
+  """
+  successRate: Float
+
+  """
+  Total incidents in viewport
+  """
+  totalIncidents: Int!
+
+  """
+  Treatment centers
+  """
+  treatmentCenters: Int!
+}
+
+type MediaAsset {
+  createdAt: DateTime!
+  format: String
+  height: Int
+  id: ID!
+  mediaType: MediaType!
+  mimeType: String!
+  originalFileName: String
+  provider: String!
+  publicId: String!
+  resourceType: String!
+  sizeBytes: Int
+  status: MediaStatus!
+  updatedAt: DateTime!
+  width: Int
+}
+
+enum MediaStatus {
+  DELETED
+  PENDING
+  REJECTED
+  UPLOADED
+  VERIFIED
+}
+
+enum MediaType {
+  RESCUER_PROFILE_IMAGE
+  RESCUER_VERIFICATION_DOCUMENT
+}
+
+type MediaUploadSignature {
+  apiKey: String!
+  cloudName: String!
+  folder: String!
+  mediaId: ID!
+  publicId: String!
+  resourceType: String!
+  signature: String!
+  timestamp: Int!
+  uploadUrl: String!
+}
 
 """
 Message count by category
@@ -1270,6 +2046,34 @@ enum MessageStatus {
   RESPONDED
 }
 
+type MonsoonData {
+  comparisonToAutumn: Float!
+  comparisonToSpring: Float!
+
+  """
+  Comparison to other seasons
+  """
+  comparisonToWinter: Float!
+
+  """
+  Incidents during monsoon
+  """
+  incidents: Int!
+
+  """
+  Percentage of annual total
+  """
+  percentage: Float!
+}
+
+type MonthlyDataPoint {
+  count: Int!
+  deaths: Int
+  month: Int!
+  snakebiteCases: Int
+  year: Int!
+}
+
 """
 Monthly donation trend data
 """
@@ -1284,7 +2088,13 @@ type Mutation {
   _empty: String
 
   """
-  Volunteer accepts rescue assignment
+  Volunteer accepts rescue from queue (self-service)
+  ATOMIC - prevents race condition when multiple rescuers try to accept same rescue
+  """
+  acceptFromQueue(input: AcceptRescueInput!): RescueRequest!
+
+  """
+  Volunteer accepts rescue assignment (pre-assigned by admin)
   """
   acceptRescue(input: AcceptRescueInput!): RescueRequest!
 
@@ -1327,6 +2137,10 @@ type Mutation {
   Bulk delete gallery images
   """
   bulkDeleteGalleryImages(ids: [ID!]!): BulkOperationResult!
+  bulkImportHospitals(
+    hospitals: [CreateHospitalInput!]!
+    source: String!
+  ): BulkImportResult!
 
   """
   Bulk import snake species
@@ -1374,7 +2188,7 @@ type Mutation {
   """
   Change password (requires current password)
   """
-  changePassword(input: ChangePasswordInput!): Boolean!
+  changePassword(input: ChangePasswordInput!): ChangePasswordPayload!
 
   """
   Mark rescue as completed
@@ -1385,6 +2199,8 @@ type Mutation {
   Mark training as completed (admin)
   """
   completeTraining(trainingId: ID!): Training!
+  confirmMediaUpload(mediaId: ID!): MediaAsset!
+  confirmPayment(input: ConfirmPaymentInput!): PaymentIntent!
 
   """
   Create a blog post
@@ -1395,11 +2211,17 @@ type Mutation {
   Create a donation
   """
   createDonation(input: CreateDonationInput!): Donation!
+  createHospital(input: CreateHospitalInput!): Hospital!
+  createMediaUploadSignature(
+    input: CreateMediaUploadSignatureInput!
+  ): MediaUploadSignature!
 
   """
   Create a notification (admin only)
   """
   createNotification(input: CreateNotificationInput!): Notification!
+  createPaymentIntent(input: CreatePaymentIntentInput!): PaymentIntent!
+  createPayout(input: CreatePayoutInput!): Payout!
 
   """
   Create a new rescue request
@@ -1440,6 +2262,7 @@ type Mutation {
   Delete gallery image (soft delete)
   """
   deleteGalleryImage(id: ID!): SuccessResponse!
+  deleteHospital(id: ID!): Boolean!
 
   """
   Delete notification
@@ -1465,6 +2288,11 @@ type Mutation {
   Delete training session (soft delete)
   """
   deleteTraining(id: ID!): SuccessResponse!
+
+  """
+  Soft-delete a user account (super admin only)
+  """
+  deleteUser(userId: ID!): SuccessResponse!
 
   """
   Delete volunteer profile (soft delete)
@@ -1500,6 +2328,7 @@ type Mutation {
   Increment gallery image views
   """
   incrementGalleryImageViews(id: ID!): GalleryImage!
+  initiatePayment(input: InitiatePaymentInput!): PaymentIntentCheckout!
 
   """
   Like a blog post
@@ -1562,9 +2391,13 @@ type Mutation {
   Rate volunteer after rescue completion
   """
   rateVolunteer(
+    communication: Int
     feedback: String
+    professionalism: Int
     rating: Int!
     rescueId: ID!
+    responseSpeed: Int
+    safetyHandling: Int
     volunteerId: ID!
   ): Volunteer!
 
@@ -1587,16 +2420,18 @@ type Mutation {
   Refund donation (admin)
   """
   refundDonation(input: RefundDonationInput!): Donation!
+  refundPayment(input: RefundPaymentInput!): Refund!
 
   """
-  Register a new user account
+  Register a new user account (returns user data only, no auth tokens until email verification + login)
   """
-  register(input: RegisterInput!): AuthPayload!
+  register(input: RegisterInput!): RegistrationPayload!
 
   """
   Reopen cancelled/closed rescue
   """
   reopenRescue(rescueId: ID!): RescueRequest!
+  reportHospitalInformation(input: CreateHospitalReportInput!): HospitalReport!
 
   """
   Reprocess identification with different model
@@ -1615,6 +2450,7 @@ type Mutation {
   Reset password with token
   """
   resetPassword(input: ResetPasswordInput!): Boolean!
+  resolveHospitalReport(input: ResolveHospitalReportInput!): HospitalReport!
 
   """
   Respond to a contact message
@@ -1630,6 +2466,7 @@ type Mutation {
   Send bulk notifications (admin only)
   """
   sendBulkNotifications(input: BulkNotificationInput!): BulkOperationResult!
+  startPayment(input: StartPaymentInput!): PaymentIntentCheckout!
 
   """
   Submit a contact message
@@ -1650,11 +2487,18 @@ type Mutation {
   Track page view
   """
   trackPageView(duration: Int, page: String!): SuccessResponse!
+  transitionPayout(input: TransitionPayoutInput!): Payout!
 
   """
   Update AI model configuration (admin only)
   """
   updateAIModelConfig(input: UpdateAIModelConfigInput!): AIModelConfig!
+  updateAdminSettings(input: AdminSettingsInput!): AdminSettings!
+  updateAntivenomStock(
+    hospitalId: ID!
+    notes: String
+    quantity: Int!
+  ): Hospital!
 
   """
   Update a blog post
@@ -1665,6 +2509,7 @@ type Mutation {
   Update gallery image
   """
   updateGalleryImage(id: ID!, input: UpdateGalleryImageInput!): GalleryImage!
+  updateHospital(id: ID!, input: UpdateHospitalInput!): Hospital!
 
   """
   Update message status
@@ -1709,6 +2554,11 @@ type Mutation {
   updateTraining(id: ID!, input: UpdateTrainingInput!): Training!
 
   """
+  Update a user's account status (admin only)
+  """
+  updateUserStatus(status: UserStatus!, userId: ID!): User!
+
+  """
   Update volunteer availability status
   """
   updateVolunteerAvailability(
@@ -1729,6 +2579,7 @@ type Mutation {
   Upload gallery image
   """
   uploadGalleryImage(input: UploadGalleryImageInput!): GalleryImage!
+  verifyAntivenomStatus(input: VerifyAntivenomInput!): Hospital!
 
   """
   Verify donation (admin)
@@ -1739,6 +2590,7 @@ type Mutation {
   Verify email address with token
   """
   verifyEmail(input: VerifyEmailInput!): EmailVerificationPayload!
+  verifyHospitalCapability(input: VerifyHospitalCapabilityInput!): Hospital!
 
   """
   Verify completed rescue (admin)
@@ -1793,6 +2645,13 @@ input NearbyRescuesInput {
   radiusKm: Float!
   status: RescueStatus
   withinHours: Int
+}
+
+type NearestFacility {
+  distance: Float!
+  hospital: Hospital!
+  recommendationReason: String
+  travelTimeEstimate: String!
 }
 
 """
@@ -1894,14 +2753,19 @@ input NotificationFilterInput {
 Notification preferences
 """
 type NotificationPreferences {
+  dailySummaryReports: Boolean!
   donationReceipts: Boolean!
   enableApp: Boolean!
   enableEmail: Boolean!
   enableSMS: Boolean!
   enableTelegram: Boolean!
+  highPriorityRescueAlerts: Boolean!
+  newUserRegistrations: Boolean!
   quietHoursEnd: String
   quietHoursStart: String
+  rescueCompletionNotifications: Boolean!
   rescueUpdates: Boolean!
+  systemAlerts: Boolean!
   systemAnnouncements: Boolean!
   timezone: String!
   trainingReminders: Boolean!
@@ -2041,12 +2905,12 @@ input PaginationInput {
   """
   Number of items to return (max 100)
   """
-  limit: Int = 20
+  limit: Int
 
   """
   Page number (1-indexed)
   """
-  page: Int = 1
+  page: Int
 }
 
 """
@@ -2078,6 +2942,35 @@ type PaymentGatewayConfig {
   testMode: Boolean!
 }
 
+type PaymentIntent {
+  amount: String!
+  createdAt: DateTime!
+  currency: String!
+  donationId: ID
+  id: ID!
+  idempotencyKey: String!
+  provider: String!
+  providerReference: String
+  rescueChargeId: ID
+  status: PaymentIntentStatus!
+  updatedAt: DateTime!
+}
+
+type PaymentIntentCheckout {
+  checkoutUrl: String
+  paymentIntent: PaymentIntent!
+  providerReference: String!
+}
+
+enum PaymentIntentStatus {
+  AUTHORIZED
+  CANCELLED
+  CREATED
+  FAILED
+  REQUIRES_ACTION
+  SUCCEEDED
+}
+
 """
 Payment method
 """
@@ -2092,6 +2985,12 @@ enum PaymentMethod {
   STRIPE
 }
 
+enum PaymentProvider {
+  ESEWA
+  KHALTI
+  STRIPE
+}
+
 """
 Payment status
 """
@@ -2102,6 +3001,44 @@ enum PaymentStatus {
   PENDING
   PROCESSING
   REFUNDED
+}
+
+type Payout {
+  amount: String!
+  citizenName: String!
+  currency: String!
+  externalReference: String
+  failedAt: DateTime
+  failureReason: String
+  id: ID!
+  paymentMethod: String
+  processedAt: DateTime
+  requestedAt: DateTime!
+  rescuerId: ID!
+  rescuerName: String!
+  settlementId: ID!
+  status: PayoutStatus!
+}
+
+type PayoutConnection {
+  edges: [PayoutEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type PayoutEdge {
+  cursor: String!
+  node: Payout!
+}
+
+enum PayoutStatus {
+  APPROVED
+  CANCELLED
+  FAILED
+  PAID
+  PENDING
+  PROCESSING
+  REJECTED
 }
 
 """
@@ -2137,6 +3074,13 @@ enum PostStatus {
   SCHEDULED
 }
 
+enum Priority {
+  CRITICAL
+  HIGH
+  LOW
+  MEDIUM
+}
+
 """
 Input for processing payment
 """
@@ -2146,6 +3090,12 @@ input ProcessPaymentInput {
   transactionId: String!
 }
 
+type ProvinceHospitalCount {
+  count: Int!
+  province: String!
+  withAntivenom: Int!
+}
+
 type Query {
   _empty: String
 
@@ -2153,6 +3103,7 @@ type Query {
   Get active rescues (in progress)
   """
   activeRescues(pagination: PaginationInput): RescueRequestConnection!
+  adminSettings: AdminSettings!
 
   """
   Get AI identification by ID
@@ -2196,6 +3147,15 @@ type Query {
   Get available payment gateways
   """
   availablePaymentGateways: [PaymentGatewayConfig!]!
+
+  """
+  Get available rescues for queue (rescuer can self-accept)
+  Shows PENDING unassigned rescues sorted by priority and age
+  """
+  availableRescues(
+    filter: RescueRequestFilterInput
+    pagination: PaginationInput
+  ): RescueRequestConnection!
 
   """
   Find available volunteers near location
@@ -2251,6 +3211,12 @@ type Query {
   Get dashboard statistics
   """
   dashboardStats(period: AnalyticsTimePeriod): DashboardStats!
+
+  """
+  Get district-level analytics
+  Comprehensive statistics for a single district
+  """
+  districtAnalytics(district: String!, year: Int): DistrictAnalytics!
 
   """
   Get donation by ID
@@ -2310,6 +3276,85 @@ type Query {
   geographicHeatmap(input: GeographicHeatmapInput): [GeographicHeatmap!]!
 
   """
+  Get route between two points
+  Uses multi-provider routing (OSRM/ORS)
+  """
+  getRoute(
+    from: CoordinateInput!
+    profile: RoutingProfile
+    to: CoordinateInput!
+  ): Route!
+  getSecureMediaUrl(mediaId: ID!): String!
+
+  """
+  Get historical snakebite cases for analysis
+  Research data clearly separated from live SnakeSOS data
+  """
+  historicalCases(
+    district: String
+    municipality: String
+    outcome: CaseOutcome
+    pagination: PaginationInput
+    province: String
+    season: Season
+    year: Int
+  ): SnakebiteCaseConnection!
+  hospital(id: ID!): Hospital
+  hospitalReports(
+    after: String
+    first: Int
+    hospitalId: ID
+    status: HospitalReportStatus
+  ): [HospitalReport!]!
+  hospitalStatistics: HospitalStatistics!
+  hospitalStats: HospitalStatistics!
+  hospitalVerifications(
+    after: String
+    first: Int
+    hospitalId: ID!
+  ): [HospitalVerification!]!
+  hospitals(
+    after: String
+    filter: HospitalFilterInput
+    first: Int
+    location: HospitalLocationInput
+    pagination: PaginationInput
+    sort: HospitalSortInput
+  ): HospitalConnection!
+  hospitalsByDistrict(
+    district: String!
+    pagination: PaginationInput
+  ): HospitalConnection!
+  hospitalsByProvince(
+    pagination: PaginationInput
+    province: String!
+  ): HospitalConnection!
+  hospitalsNeedingVerification(
+    after: String
+    first: Int
+    maxDaysSinceVerification: Int
+    province: String
+  ): HospitalConnection!
+
+  """
+  Get incidents within viewport or radius
+  Supports clustering and aggregation
+  """
+  incidents(
+    bounds: MapBoundsInput
+    filters: IncidentFiltersInput
+    pagination: PaginationInput
+    radius: RadiusInput
+  ): IncidentConnection!
+
+  """
+  Get comprehensive map overview for current viewport
+  Optimized single query for admin intelligence map
+  Returns incidents, rescuers, treatment centers, hotspots within bounds
+  """
+  mapOverview(bounds: MapBoundsInput!, filters: MapFiltersInput): MapOverview!
+
+  """
   Get current authenticated user
   """
   me: User
@@ -2352,6 +3397,8 @@ type Query {
     pagination: PaginationInput
     sort: NotificationSortInput
   ): NotificationConnection!
+  myPayouts(pagination: PaginationInput): PayoutConnection!
+  myRescuePaymentIntent(rescueId: ID!): PaymentIntent
 
   """
   Get my rescue requests (citizen view)
@@ -2360,6 +3407,7 @@ type Query {
     filter: RescueRequestFilterInput
     pagination: PaginationInput
   ): RescueRequestConnection!
+  mySettlements(pagination: PaginationInput): SettlementConnection!
 
   """
   Get my enrolled trainings
@@ -2370,11 +3418,52 @@ type Query {
   Get my volunteer profile
   """
   myVolunteerProfile: Volunteer
+  nearbyHospitals(
+    antivenomRequired: Boolean
+    latitude: Float!
+    limit: Int
+    longitude: Float!
+    radiusKm: Float
+  ): [NearestFacility!]!
+
+  """
+  Find nearby rescuers within radius
+  Returns available or all rescuers based on filter
+  """
+  nearbyRescuers(
+    latitude: Float!
+    longitude: Float!
+    radiusKm: Float!
+    status: [RescuerStatus!]
+  ): [RescuerMapPoint!]!
 
   """
   Find nearby rescue requests (for duplicate detection)
   """
   nearbyRescues(input: NearbyRescuesInput!): [NearbyRescue!]!
+
+  """
+  Find nearby treatment centers ranked by accessibility
+  Considers: distance, travel time, antivenom status, capabilities
+  """
+  nearbyTreatmentCenters(
+    latitude: Float!
+    longitude: Float!
+    radiusKm: Float
+    requireAntivenom: Boolean
+    requireEmergency: Boolean
+  ): [TreatmentCenterMapPoint!]!
+  nearestSnakebiteFacilities(
+    latitude: Float!
+    limit: Int
+    longitude: Float!
+    radiusKm: Float
+  ): [NearestFacility!]!
+  nearestVerifiedAntivenomFacility(
+    latitude: Float!
+    longitude: Float!
+    maxRadiusKm: Float
+  ): NearestFacility
 
   """
   Get new contact messages count
@@ -2395,6 +3484,9 @@ type Query {
   Get payment gateway configuration
   """
   paymentGatewayConfig(method: PaymentMethod!): PaymentGatewayConfig
+  paymentIntent(id: ID!): PaymentIntent
+  payout(id: ID!): Payout
+  payouts(status: PayoutStatus): [Payout!]!
 
   """
   Get pending rescues count
@@ -2415,6 +3507,22 @@ type Query {
     category: PostCategory
     pagination: PaginationInput
   ): BlogPostConnection!
+
+  """
+  Rank treatment centers by accessibility for emergency
+  Uses routing to calculate real travel time, not just distance
+  """
+  rankTreatmentCenters(
+    latitude: Float!
+    limit: Int
+    longitude: Float!
+    requireAntivenom: Boolean
+  ): [RankedTreatmentCenter!]!
+  recommendedHospitals(
+    hasBite: Boolean
+    latitude: Float!
+    longitude: Float!
+  ): [NearestFacility!]!
 
   """
   Get rescue analytics
@@ -2446,12 +3554,38 @@ type Query {
   rescueTimeline(rescueId: ID!): [RescueTimeline!]!
 
   """
+  Get response time analytics
+  Performance metrics for rescue operations
+  """
+  responseAnalytics(
+    dateRange: DateRangeInput
+    district: String
+    province: String
+  ): ResponseAnalytics!
+
+  """
+  Get risk zones within bounds
+  Aggregated risk analysis by district/municipality
+  """
+  riskZones(
+    bounds: MapBoundsInput
+    district: String
+    minRiskLevel: RiskLevel
+    province: String
+  ): [RiskZone!]!
+
+  """
   Search blog posts
   """
   searchBlogPosts(
     pagination: PaginationInput
     query: String!
   ): BlogPostConnection!
+  searchHospitals(
+    filter: HospitalFilterInput
+    limit: Int
+    query: String!
+  ): [Hospital!]!
 
   """
   Search rescue requests
@@ -2486,6 +3620,18 @@ type Query {
   ): VolunteerConnection!
 
   """
+  Get seasonal analytics
+  Shows monthly/seasonal patterns
+  """
+  seasonalAnalytics(
+    district: String
+    province: String
+    year: Int
+  ): SeasonalAnalytics!
+  settlement(id: ID!): Settlement
+  settlements(status: SettlementStatus): [Settlement!]!
+
+  """
   Get snake species by ID
   """
   snakeSpecies(id: ID!): SnakeSpecies
@@ -2499,9 +3645,31 @@ type Query {
   ): SnakeSpeciesConnection!
 
   """
+  Get snake species distribution map
+  Shows where species have been observed
+  """
+  snakeSpeciesDistribution(
+    bounds: MapBoundsInput
+    includeHistorical: Boolean
+    speciesId: ID
+  ): [SpeciesMapPoint!]!
+
+  """
   Get snake species statistics
   """
   snakeSpeciesStats: SnakeSpeciesStats!
+
+  """
+  Get research-based snakebite hotspots within bounds
+  Clearly labeled as research data with source citations
+  """
+  snakebiteHotspots(
+    bounds: MapBoundsInput
+    district: String
+    province: String
+    riskLevel: [RiskLevel!]
+    season: Season
+  ): [SnakebiteHotspot!]!
 
   """
   Get snake species by danger level
@@ -2595,6 +3763,88 @@ type Query {
   ): VolunteerConnection!
 }
 
+input RadiusInput {
+  latitude: Float!
+  longitude: Float!
+  radiusKm: Float!
+}
+
+type RankedTreatmentCenter {
+  """
+  Distance in kilometers
+  """
+  distanceKm: Float!
+
+  """
+  Estimated travel time in minutes
+  """
+  estimatedTravelTimeMinutes: Int!
+
+  """
+  Rank (1 = best)
+  """
+  rank: Int!
+
+  """
+  Route geometry
+  """
+  route: Route
+
+  """
+  Composite score (higher = better)
+  """
+  score: Float!
+
+  """
+  Scoring breakdown
+  """
+  scoreDetails: RankingScoreDetails!
+
+  """
+  Treatment center details
+  """
+  treatmentCenter: TreatmentCenter!
+}
+
+type RankingScoreDetails {
+  """
+  Accessibility score (travel time)
+  """
+  accessibilityScore: Float!
+
+  """
+  Antivenom score (available = higher)
+  """
+  antivenomScore: Float!
+
+  """
+  Capability score (more capable = higher)
+  """
+  capabilityScore: Float!
+
+  """
+  Distance score (closer = higher)
+  """
+  distanceScore: Float!
+
+  """
+  Verification score (verified = higher)
+  """
+  verificationScore: Float!
+}
+
+type Refund {
+  amount: String!
+  createdAt: DateTime!
+  currency: String!
+  id: ID!
+  processedAt: DateTime
+  providerReference: String
+  reason: String
+  status: PaymentStatus!
+  transactionId: ID!
+}
+
 """
 Input for refunding donation
 """
@@ -2602,6 +3852,12 @@ input RefundDonationInput {
   amount: Float
   donationId: ID!
   reason: String!
+}
+
+input RefundPaymentInput {
+  amount: String!
+  idempotencyKey: String!
+  paymentIntentId: ID!
 }
 
 """
@@ -2614,6 +3870,13 @@ input RegisterInput {
   password: String!
   phone: Phone
   timezone: String
+}
+
+"""
+Registration payload returned after successful registration (no auth tokens until email verification + login)
+"""
+type RegistrationPayload {
+  user: User!
 }
 
 """
@@ -2749,6 +4012,19 @@ type RescuePriorityStats {
   priority: RescuePriority!
 }
 
+type RescueRating {
+  communication: Int
+  createdAt: DateTime!
+  feedback: String
+  id: ID!
+  professionalism: Int
+  rating: Int!
+  rescueId: ID!
+  rescuerId: ID!
+  responseSpeed: Int
+  safetyHandling: Int
+}
+
 """
 Snake rescue request
 """
@@ -2756,6 +4032,8 @@ type RescueRequest {
   acceptedAt: DateTime
   address: String!
   aiIdentification: AIIdentification
+  antivenomAdministered: Boolean
+  antivenomType: String
   arrivedAt: DateTime
   assignedAt: DateTime
   assignedBy: User
@@ -2766,6 +4044,10 @@ type RescueRequest {
   email: Email
   emergencyDetails: String
   hasBite: Boolean!
+  hospital: Hospital
+  hospitalAdmission: Boolean
+  hospitalId: String
+  hospitalNotes: String
   id: ID!
   internalNotes: String
   isEmergency: Boolean!
@@ -2780,6 +4062,7 @@ type RescueRequest {
   outcome: RescueOutcome
   phone: Phone!
   priority: RescuePriority!
+  rating: RescueRating
   referenceNumber: String
   rescueDuration: Int
   rescueImages: [String!]!
@@ -2799,6 +4082,7 @@ type RescueRequest {
   user: User
   verifiedAt: DateTime
   verifiedBy: User
+  victimWentToHospital: Boolean
   ward: Int
 }
 
@@ -2938,6 +4222,27 @@ type RescueTimeline {
   user: User
 }
 
+type RescuerMapPoint {
+  distanceKm: Float
+  id: ID!
+  isAvailable: Boolean!
+  lastLocationUpdate: DateTime
+  latitude: Float!
+  longitude: Float!
+  name: String!
+  status: RescuerStatus!
+  vehicleType: VehicleType
+}
+
+enum RescuerStatus {
+  AVAILABLE
+  BUSY
+  EN_ROUTE
+  OFFLINE
+  ON_SITE
+  SUSPENDED
+}
+
 """
 Input for resending verification email
 """
@@ -2946,13 +4251,17 @@ input ResendVerificationInput {
 }
 
 """
-Input for password reset
+Input for password reset with OTP code
 """
 input ResetPasswordInput {
   code: String!
   email: Email!
   newPassword: String!
-  token: String!
+}
+
+input ResolveHospitalReportInput {
+  reportId: ID!
+  resolution: String!
 }
 
 """
@@ -2962,6 +4271,48 @@ input RespondToMessageInput {
   messageId: ID!
   response: String!
   sendEmail: Boolean
+}
+
+type ResponseAnalytics {
+  """
+  Average response time (minutes)
+  """
+  avgResponseTime: Float!
+
+  """
+  Average travel distance (km)
+  """
+  avgTravelDistance: Float!
+
+  """
+  Response time by district
+  """
+  byDistrict: [DistrictResponseTime!]!
+
+  """
+  Rescue completion rate
+  """
+  completionRate: Float!
+
+  """
+  Median response time (minutes)
+  """
+  medianResponseTime: Float!
+
+  """
+  90th percentile response time
+  """
+  p90ResponseTime: Float!
+
+  """
+  Success rate (percentage)
+  """
+  successRate: Float!
+
+  """
+  Response time trend
+  """
+  trend: [ResponseTimeTrend!]!
 }
 
 """
@@ -2984,6 +4335,12 @@ type ResponseTimeByPriority {
   priority: RescuePriority!
 }
 
+type ResponseTimeTrend {
+  avgResponseTime: Float!
+  date: Date!
+  incidentCount: Int!
+}
+
 """
 Input for approving/rejecting volunteer
 """
@@ -2992,6 +4349,182 @@ input ReviewVolunteerInput {
   assignedZone: String
   notes: String
   volunteerId: ID!
+}
+
+enum RiskLevel {
+  EXTREME
+  HIGH
+  LOW
+  MODERATE
+  VERY_HIGH
+}
+
+type RiskZone {
+  avgResponseTime: Float
+  district: String!
+  geometry: GeoJSON
+  incidenceRate: Float
+  populationAtRisk: Int
+  province: String!
+  riskLevel: RiskLevel!
+  snakebiteCases: Int!
+  totalIncidents: Int!
+  treatmentCenters: Int!
+}
+
+type RiskZoneMapPoint {
+  district: String!
+  geometry: GeoJSON
+  id: ID!
+  incidenceRate: Float
+  populationAtRisk: Int
+  province: String!
+  riskLevel: RiskLevel!
+  treatmentCenterCount: Int
+}
+
+type Route {
+  """
+  Total distance in kilometers
+  """
+  distance: Float!
+
+  """
+  Total duration in minutes
+  """
+  duration: Int!
+
+  """
+  Route geometry (LineString)
+  """
+  geometry: GeoJSON!
+
+  """
+  Turn-by-turn instructions
+  """
+  instructions: [RouteInstruction!]!
+
+  """
+  Waypoints along route
+  """
+  waypoints: [Coordinate!]!
+}
+
+type RouteInstruction {
+  """
+  Distance for this step (meters)
+  """
+  distance: Float!
+
+  """
+  Duration for this step (seconds)
+  """
+  duration: Int!
+
+  """
+  Road name
+  """
+  roadName: String
+
+  """
+  Instruction text
+  """
+  text: String!
+
+  """
+  Direction type
+  """
+  type: String!
+}
+
+enum RoutingProfile {
+  CYCLING
+  DRIVING
+  DRIVING_FAST
+  EMERGENCY
+  WALKING
+}
+
+enum Season {
+  AUTUMN
+  MONSOON
+  SPRING
+  WINTER
+}
+
+type SeasonalAnalytics {
+  """
+  Data by month
+  """
+  byMonth: [MonthlyDataPoint!]!
+
+  """
+  Data by season
+  """
+  bySeason: [SeasonalDataPoint!]!
+
+  """
+  Monsoon emphasis (June-Sept)
+  """
+  monsoonData: MonsoonData!
+
+  """
+  Peak month
+  """
+  peakMonth: Int!
+
+  """
+  Peak season
+  """
+  peakSeason: Season!
+}
+
+type SeasonalDataPoint {
+  count: Int!
+  deaths: Int
+  percentage: Float!
+  season: Season!
+  snakebiteCases: Int
+}
+
+type Settlement {
+  amount: String!
+  citizenName: String!
+  commissionAmount: String!
+  commissionRate: String!
+  createdAt: DateTime!
+  currency: String!
+  eligibleAt: DateTime
+  grossAmount: String!
+  id: ID!
+  rescueChargeId: ID
+  rescuer: Volunteer
+  rescuerAmount: String!
+  rescuerId: ID!
+  rescuerName: String!
+  settledAt: DateTime
+  status: SettlementStatus!
+  updatedAt: DateTime!
+}
+
+type SettlementConnection {
+  edges: [SettlementEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type SettlementEdge {
+  cursor: String!
+  node: Settlement!
+}
+
+enum SettlementStatus {
+  CANCELLED
+  ELIGIBLE
+  FAILED
+  PENDING
+  PROCESSING
+  SETTLED
 }
 
 """
@@ -3114,6 +4647,81 @@ type SnakeSpeciesStats {
   venomousCount: Int!
 }
 
+type SnakebiteCase {
+  ageGroup: String
+  antivenomGiven: Boolean
+  createdAt: DateTime!
+  dataQuality: String
+  date: DateTime
+  district: String
+  envenomation: Boolean
+  hospitalStayDays: Int
+  id: ID!
+  latitude: Float
+  longitude: Float
+  month: Int
+  municipality: String
+  notes: String
+  outcome: CaseOutcome!
+  province: String
+  season: Season
+  sex: String
+  source: String!
+  sourceUrl: String
+  species: SnakeSpecies
+  speciesCommon: String
+  studyId: String
+  symptoms: [String!]
+  treatmentCenter: TreatmentCenter
+  treatmentDelayMinutes: Int
+  ward: Int
+  year: Int!
+}
+
+type SnakebiteCaseConnection {
+  edges: [SnakebiteCaseEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type SnakebiteCaseEdge {
+  cursor: String!
+  node: SnakebiteCase!
+}
+
+type SnakebiteHotspot {
+  active: Boolean!
+  caseCount: Int
+  confidence: Float
+  createdAt: DateTime!
+  description: String
+  district: String
+  geometry: GeoJSON
+  id: ID!
+  incidenceRate: Float
+  methodology: String
+  monthlyPattern: [Float!]
+  mortalityRate: Float
+  municipality: String
+  name: String!
+  populationAtRisk: Int
+  province: String
+  riskLevel: RiskLevel!
+  riskScore: Float!
+  season: Season
+  seasonalityScore: Float
+  source: String!
+  sourceUrl: String
+  studyYear: Int
+  updatedAt: DateTime!
+  ward: Int
+}
+
+enum SortDirection {
+  ASC
+  DESC
+}
+
 """
 Sort order
 """
@@ -3139,6 +4747,14 @@ type SpeciesByFamily {
   venomousCount: Int!
 }
 
+type SpeciesCount {
+  count: Int!
+  percentage: Float!
+  speciesId: ID!
+  speciesName: String!
+  venomous: Boolean!
+}
+
 """
 Species identification count
 """
@@ -3146,6 +4762,23 @@ type SpeciesIdentificationCount {
   averageConfidence: Float!
   count: Int!
   species: SnakeSpecies!
+}
+
+type SpeciesMapPoint {
+  id: ID!
+  latitude: Float!
+  longitude: Float!
+  observedAt: DateTime!
+  source: String
+  speciesId: ID!
+  speciesName: String!
+  venomous: Boolean!
+}
+
+input StartPaymentInput {
+  amount: String
+  paymentIntentId: ID!
+  returnUrl: String
 }
 
 """
@@ -3202,6 +4835,10 @@ type Subscription {
   Subscribe to analytics data changes
   """
   analyticsUpdated(type: String!): JSON!
+  antivenomStatusChanged(
+    hospitalId: ID
+    province: String
+  ): AntivenomStatusUpdate!
 
   """
   Subscribe to new blog post publications
@@ -3247,6 +4884,8 @@ type Subscription {
   Subscribe to new gallery image uploads
   """
   galleryImageUploaded: GalleryImage!
+  hospitalReportCreated: HospitalReport!
+  hospitalUpdated(hospitalId: ID): Hospital!
 
   """
   Subscribe to identification feedback events
@@ -3520,6 +5159,55 @@ enum TrainingType {
   SPECIES_IDENTIFICATION
 }
 
+input TransitionPayoutInput {
+  externalReference: String
+  failureReason: String
+  payoutId: ID!
+  status: PayoutStatus!
+}
+
+type TreatmentCenter {
+  address: String!
+  antivenomStatus: AntivenomStatus!
+  district: String!
+  emergency24x7: Boolean!
+  emergencyPhone: String
+  id: ID!
+  latitude: Float!
+  longitude: Float!
+  municipality: String!
+  name: String!
+  phone: String
+  province: String!
+  snakebiteTreatmentAvailable: Boolean!
+  verified: Boolean!
+}
+
+type TreatmentCenterMapPoint {
+  address: String
+  antivenomStatus: AntivenomStatus!
+  distanceKm: Float
+  district: String
+  emergency24x7: Boolean!
+  estimatedTravelTimeMinutes: Int
+  id: ID!
+  latitude: Float!
+  longitude: Float!
+  name: String!
+  phone: String
+  snakebiteTreatmentAvailable: Boolean!
+  verified: Boolean!
+}
+
+enum TreatmentCenterType {
+  DISTRICT
+  PRIMARY
+  PRIVATE
+  PROVINCIAL
+  REFERRAL
+  SPECIALIZED
+}
+
 """
 Trend data for time series
 """
@@ -3593,6 +5281,34 @@ input UpdateGalleryImageInput {
   title: String
 }
 
+input UpdateHospitalInput {
+  address: String
+  ambulanceAvailable: Boolean
+  bedCapacity: Int
+  bloodBankAvailable: Boolean
+  district: String
+  email: String
+  emergency24x7: Boolean
+  emergencyAvailable: Boolean
+  emergencyPhone: String
+  hospitalType: HospitalType
+  icuAvailable: Boolean
+  internalNotes: String
+  latitude: Float
+  longitude: Float
+  municipality: String
+  name: String
+  notes: String
+  phone: String
+  province: String
+  snakebiteTreatmentAvailable: Boolean
+  specializations: [String!]
+  status: HospitalStatus
+  treatmentCenterType: TreatmentCenterType
+  ventilatorAvailable: Boolean
+  ward: Int
+}
+
 """
 Input for updating message status
 """
@@ -3606,14 +5322,19 @@ input UpdateMessageStatusInput {
 Input for updating notification preferences
 """
 input UpdateNotificationPreferencesInput {
+  dailySummaryReports: Boolean
   donationReceipts: Boolean
   enableApp: Boolean
   enableEmail: Boolean
   enableSMS: Boolean
   enableTelegram: Boolean
+  highPriorityRescueAlerts: Boolean
+  newUserRegistrations: Boolean
   quietHoursEnd: String
   quietHoursStart: String
+  rescueCompletionNotifications: Boolean
   rescueUpdates: Boolean
+  systemAlerts: Boolean
   systemAnnouncements: Boolean
   timezone: String
   trainingReminders: Boolean
@@ -3765,6 +5486,7 @@ Input for updating volunteer profile
 input UpdateVolunteerInput {
   address: String
   assignedZone: String
+  availabilitySchedule: [DailyAvailabilityInput!]
   availableDays: [String!]
   availableTime: AvailabilityTime
   bio: String
@@ -3776,8 +5498,11 @@ input UpdateVolunteerInput {
   emergencyContact: String
   emergencyPhone: Phone
   equipment: [String!]
+  experience: String
+  experienceYears: Int
   hasEquipment: Boolean
   imageUrl: String
+  isAvailableNow: Boolean
   languages: [String!]
   municipality: String
   skills: [String!]
@@ -4008,14 +5733,39 @@ type ValidationError {
   message: String!
 }
 
+type VehicleMapPoint {
+  id: ID!
+  lastLocationUpdate: DateTime
+  latitude: Float!
+  longitude: Float!
+  status: VehicleStatus!
+  vehicleNumber: String!
+  vehicleType: VehicleType!
+}
+
+enum VehicleStatus {
+  ASSIGNED
+  AVAILABLE
+  EN_ROUTE
+  MAINTENANCE
+  OFFLINE
+  ON_SITE
+}
+
 """
 Vehicle availability
 """
 enum VehicleType {
+  AMBULANCE
+  BICYCLE
   BIKE
   BOTH
   CAR
+  MOTORBIKE
   NONE
+  OTHER
+  RESCUE_VAN
+  TRUCK
 }
 
 """
@@ -4028,6 +5778,41 @@ enum VenomType {
   NEUROTOXIC
 }
 
+enum VerificationFreshness {
+  FRESH
+  NEVER
+  STALE
+  VERY_OLD
+}
+
+enum VerificationStatus {
+  HISTORICAL
+  STALE
+  UNVERIFIED
+  VERIFIED
+}
+
+enum VerificationType {
+  EDCD_RECORD
+  HOSPITAL_REPORT
+  OFFICIAL_DOCUMENT
+  PHONE_CALL
+  PROVINCIAL_HEALTH
+  SITE_VISIT
+}
+
+input VerifyAntivenomInput {
+  antivenomQuantity: Int
+  antivenomStatus: AntivenomStatus!
+  contactDesignation: String
+  contactPerson: String
+  contactPhone: String
+  evidenceUrls: [String!]
+  hospitalId: ID!
+  notes: String
+  verificationType: VerificationType!
+}
+
 """
 Input for email verification using OTP code only
 """
@@ -4036,12 +5821,30 @@ input VerifyEmailInput {
   email: Email!
 }
 
+input VerifyHospitalCapabilityInput {
+  antivenomQuantity: Int
+  antivenomStatus: AntivenomStatus
+  contactDesignation: String
+  contactPerson: String
+  contactPhone: String
+  emergencyStatus: Boolean
+  evidenceUrls: [String!]
+  hospitalId: ID!
+  nextVerificationDue: DateTime
+  notes: String
+  officialDocumentUrl: String
+  snakebiteTreatment: Boolean
+  ventilatorStatus: Boolean
+  verificationType: VerificationType!
+}
+
 """
 Volunteer profile and information
 """
 type Volunteer {
   address: String!
   assignedZone: String
+  availabilitySchedule: [DailyAvailability!]!
   availableDays: [String!]!
   availableTime: AvailabilityTime!
   averageRescueTime: Int
@@ -4074,6 +5877,7 @@ type Volunteer {
   municipality: String!
   name: String!
   rating: Float
+  ratings: [RescueRating!]!
   rejectedAt: DateTime
   rejectedBy: User
   rejectionReason: String
@@ -4227,6 +6031,7 @@ type VolunteerPerformance {
 Fields available for sorting volunteers
 """
 enum VolunteerSortField {
+  BAYESIAN_RATING
   CREATED_AT
   MUNICIPALITY
   NAME

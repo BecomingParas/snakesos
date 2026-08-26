@@ -1,0 +1,6 @@
+input CreateMediaUploadSignatureInput {
+  mediaType: MediaType!
+  fileName: String!
+  mimeType: String!
+  sizeBytes: Int!
+}

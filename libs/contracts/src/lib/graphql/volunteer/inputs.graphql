@@ -54,6 +54,8 @@ input UpdateVolunteerInput {
   address: String
   municipality: String
   ward: Int
+  experience: String
+  experienceYears: Int
   emergencyContact: String
   emergencyPhone: Phone
   vehicle: VehicleType
@@ -63,6 +65,7 @@ input UpdateVolunteerInput {
   languages: [String!]
   availableTime: AvailabilityTime
   availableDays: [String!]
+  availabilitySchedule: [DailyAvailabilityInput!]
   emergencyAvailability: Boolean
   assignedZone: String
   coverageRadius: Int
@@ -70,6 +73,7 @@ input UpdateVolunteerInput {
   bio: String
   hasEquipment: Boolean
   equipment: [String!]
+  isAvailableNow: Boolean
 }
 
 """
@@ -126,6 +130,7 @@ enum VolunteerSortField {
   TOTAL_RESCUES
   SUCCESS_RATE
   RATING
+  BAYESIAN_RATING
   MUNICIPALITY
 }
 

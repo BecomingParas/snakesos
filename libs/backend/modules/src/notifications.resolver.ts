@@ -34,6 +34,14 @@ function notificationOrder(sort?: any) {
   };
 }
 
+function graphqlNotificationPriority(priority: string) {
+  if (priority === 'MEDIUM') return 'NORMAL';
+  if (['LOW', 'NORMAL', 'HIGH', 'URGENT'].includes(priority)) {
+    return priority;
+  }
+  return 'NORMAL';
+}
+
 function channelsData(channels?: string[]) {
   const selected = channels?.length ? channels : ['APP'];
   return {
@@ -192,7 +200,13 @@ export const notificationResolvers = {
         prisma.notification.count({ where }),
       ]);
       return {
-        edges: items.map((node) => ({ node, cursor: node.id })),
+        edges: items.map((node) => ({
+          node: {
+            ...node,
+            priority: graphqlNotificationPriority(node.priority),
+          },
+          cursor: node.id,
+        })),
         pageInfo: {
           hasNextPage: page * limit < totalCount,
           hasPreviousPage: page > 1,

@@ -1,13 +1,16 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { User, Mail, Phone, Shield, Bell, Loader2 } from 'lucide-react'
-import { useMyProfileQuery, useUpdateUserProfileMutation } from '@/lib/graphql/hooks/user.hooks'
-import { toast } from 'sonner'
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { User, Mail, Phone, Shield, Bell, Loader2 } from 'lucide-react';
+import {
+  useMyProfileQuery,
+  useUpdateUserProfileMutation,
+} from '@/lib/graphql/hooks/user.hooks';
+import { toast } from 'sonner';
 
 /**
  * Citizen Profile Page
@@ -15,30 +18,35 @@ import { toast } from 'sonner'
  */
 
 export default function CitizenProfilePage() {
-  const [editing, setEditing] = useState(false)
+  const [editing, setEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-  })
+  });
 
   // Fetch user profile
-  const { data, loading: loadingProfile, error, refetch } = useMyProfileQuery({
+  const {
+    data,
+    loading: loadingProfile,
+    error,
+    refetch,
+  } = useMyProfileQuery({
     fetchPolicy: 'cache-and-network',
-  })
+  });
 
-  const user = data?.me
+  const user = data?.me;
 
   // Update profile mutation
   const [updateProfile, { loading: updating }] = useUpdateUserProfileMutation({
     onCompleted: () => {
-      toast.success('Profile updated successfully!')
-      setEditing(false)
-      refetch()
+      toast.success('Profile updated successfully!');
+      setEditing(false);
+      refetch();
     },
     onError: (error) => {
-      toast.error(`Failed to update: ${error.message}`)
+      toast.error(`Failed to update: ${error.message}`);
     },
-  })
+  });
 
   // Populate form when user data loads
   useEffect(() => {
@@ -46,14 +54,14 @@ export default function CitizenProfilePage() {
       setFormData({
         name: user.name || '',
         phone: user.phone || '',
-      })
+      });
     }
-  }, [user])
+  }, [user]);
 
   const handleSave = async () => {
     if (!formData.name.trim()) {
-      toast.error('Name is required')
-      return
+      toast.error('Name is required');
+      return;
     }
 
     await updateProfile({
@@ -63,14 +71,14 @@ export default function CitizenProfilePage() {
           phone: formData.phone || undefined,
         },
       },
-    })
-  }
+    });
+  };
 
   if (error) {
-    toast.error(`Failed to load profile: ${error.message}`)
+    toast.error(`Failed to load profile: ${error.message}`);
   }
 
-  const isLoading = loadingProfile || updating
+  const isLoading = loadingProfile || updating;
 
   return (
     <div className="p-6 space-y-6 max-w-4xl">
@@ -103,13 +111,13 @@ export default function CitizenProfilePage() {
                   Update your personal details
                 </p>
               </div>
-              <Button 
+              <Button
                 variant={editing ? 'default' : 'outline'}
                 onClick={() => {
                   if (editing) {
-                    handleSave()
+                    handleSave();
                   } else {
-                    setEditing(true)
+                    setEditing(true);
                   }
                 }}
                 disabled={isLoading}
@@ -126,7 +134,9 @@ export default function CitizenProfilePage() {
                   id="name"
                   value={formData.name}
                   disabled={!editing}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                 />
               </div>
 
@@ -139,7 +149,9 @@ export default function CitizenProfilePage() {
                     value={formData.phone}
                     disabled={!editing}
                     className="pl-10"
-                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -167,11 +179,11 @@ export default function CitizenProfilePage() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setEditing(false)
+                    setEditing(false);
                     setFormData({
                       name: user.name || '',
                       phone: user.phone || '',
-                    })
+                    });
                   }}
                   disabled={isLoading}
                 >
@@ -190,23 +202,35 @@ export default function CitizenProfilePage() {
 
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">User Role:</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  User Role:
+                </span>
                 <span className="font-medium">{user.role}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Account Status:</span>
-                <span className={`font-medium ${user.isActive ? 'text-green-600' : 'text-red-600'}`}>
-                  {user.isActive ? 'Active' : 'Inactive'}
+                <span className="text-gray-600 dark:text-gray-400">
+                  Account Status:
+                </span>
+                <span
+                  className={`font-medium ${user.status === 'ACTIVE' ? 'text-green-600' : 'text-red-600'}`}
+                >
+                  {user.status === 'ACTIVE' ? 'Active' : 'Inactive'}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Email Verified:</span>
-                <span className={`font-medium ${user.isEmailVerified ? 'text-green-600' : 'text-yellow-600'}`}>
-                  {user.isEmailVerified ? 'Yes' : 'Pending'}
+                <span className="text-gray-600 dark:text-gray-400">
+                  Email Verified:
+                </span>
+                <span
+                  className={`font-medium ${user.emailVerified ? 'text-green-600' : 'text-yellow-600'}`}
+                >
+                  {user.emailVerified ? 'Yes' : 'Pending'}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">Member Since:</span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  Member Since:
+                </span>
                 <span className="font-medium">
                   {new Date(user.createdAt).toLocaleDateString()}
                 </span>
@@ -270,11 +294,14 @@ export default function CitizenProfilePage() {
           <Button variant="outline" className="w-full justify-start">
             Two-Factor Authentication
           </Button>
-          <Button variant="outline" className="w-full justify-start text-red-600 hover:text-red-700">
+          <Button
+            variant="outline"
+            className="w-full justify-start text-red-600 hover:text-red-700"
+          >
             Delete Account
           </Button>
         </div>
       </Card>
     </div>
-  )
+  );
 }

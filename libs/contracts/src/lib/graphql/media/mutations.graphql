@@ -1,0 +1,4 @@
+extend type Mutation {
+  createMediaUploadSignature(input: CreateMediaUploadSignatureInput!): MediaUploadSignature! @auth
+  confirmMediaUpload(mediaId: ID!): MediaAsset! @auth
+}

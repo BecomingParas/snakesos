@@ -1,5 +1,26 @@
 # How to Apply Database Migrations
 
+## Current Migration Handoff
+
+The Cloudinary media schema is ready in migration
+`libs/database/prisma/migrations/20260826130000_add_media_assets/migration.sql`.
+It creates the media enums, `media_assets` table, indexes, and owner foreign key.
+
+Before applying anything, resolve the existing database drift and the pending
+`20260825170000_add_refund_idempotency` migration. Do not run `migrate reset`
+or silently mark that migration as applied. After the database has been
+reconciled, apply pending migrations with:
+
+```bash
+npx prisma migrate deploy --config libs/database/prisma.config.ts
+```
+
+Then regenerate the client if needed:
+
+```bash
+npx prisma generate --config libs/database/prisma.config.ts
+```
+
 ## ✅ What's Ready
 
 1. ✅ Schema updated in `libs/database/prisma/schema.prisma`

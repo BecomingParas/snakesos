@@ -158,6 +158,7 @@
     "better-auth": "^1.6.26",
     "bullmq": "^6.0.8",
     "class-variance-authority": "^0.7.1",
+    "cloudinary": "^2.10.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.4",
     "compression": "^1.8.1",

@@ -423,7 +423,7 @@ export default function AdminSettingsPage() {
   ];
 
   return (
-    <div className="p-6 md:p-8 space-y-6 max-w-7xl text-foreground">
+    <div className="w-full max-w-none p-6 md:p-8 space-y-6 text-foreground">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>

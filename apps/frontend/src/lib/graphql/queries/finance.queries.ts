@@ -43,39 +43,57 @@ export const ADMIN_FINANCE = gql`
 `;
 
 export const MY_FINANCE = gql`
-  query MyFinance {
-    mySettlements {
-      id
-      rescueChargeId
-      rescuer {
-        name
+  query MyFinance($pagination: PaginationInput) {
+    mySettlements(pagination: $pagination) {
+      edges {
+        node {
+          id
+          rescueChargeId
+          rescuer {
+            name
+          }
+          rescuerName
+          citizenName
+          amount
+          grossAmount
+          commissionRate
+          commissionAmount
+          rescuerAmount
+          currency
+          status
+          eligibleAt
+          settledAt
+          createdAt
+        }
       }
-      rescuerName
-      citizenName
-      amount
-      grossAmount
-      commissionRate
-      commissionAmount
-      rescuerAmount
-      currency
-      status
-      eligibleAt
-      settledAt
-      createdAt
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+      }
+      totalCount
     }
-    myPayouts {
-      id
-      settlementId
-      rescuerName
-      amount
-      currency
-      status
-      paymentMethod
-      externalReference
-      requestedAt
-      processedAt
-      failedAt
-      failureReason
+    myPayouts(pagination: $pagination) {
+      edges {
+        node {
+          id
+          settlementId
+          rescuerName
+          amount
+          currency
+          status
+          paymentMethod
+          externalReference
+          requestedAt
+          processedAt
+          failedAt
+          failureReason
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+      }
+      totalCount
     }
   }
 `;
@@ -89,6 +107,19 @@ export const TRANSITION_PAYOUT = gql`
       processedAt
       failedAt
       failureReason
+    }
+  }
+`;
+
+export const CREATE_PAYOUT = gql`
+  mutation CreatePayout($input: CreatePayoutInput!) {
+    createPayout(input: $input) {
+      id
+      settlementId
+      amount
+      currency
+      status
+      requestedAt
     }
   }
 `;

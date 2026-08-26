@@ -116,6 +116,12 @@ input CompleteRescueInput {
   releaseLat: Latitude
   releaseLng: Longitude
   releaseLocation: String
+  victimWentToHospital: Boolean
+  hospitalId: String
+  antivenomAdministered: Boolean
+  antivenomType: String
+  hospitalAdmission: Boolean
+  hospitalNotes: String
 }
 
 """

@@ -27,6 +27,7 @@ import { contactTypeDefs } from './contact/index.js';
 import { hospitalTypeDefs } from './hospital/index.js';
 import { mapTypeDefs } from './map/index.js';
 import { settingsTypeDefs } from './settings/index.js';
+import { mediaTypeDefs } from './media/index.js';
 
 // Base GraphQL schema with Query, Mutation, Subscription types
 const baseSchema = `
@@ -61,6 +62,7 @@ export const graphqlSchema = [
   hospitalTypeDefs,
   mapTypeDefs,
   settingsTypeDefs,
+  mediaTypeDefs,
 ].join('\n\n');
 
 // Export individual modules for selective imports
@@ -79,6 +81,7 @@ export * from './contact/index.js';
 export * from './hospital/index.js';
 export * from './map/index.js';
 export * from './settings/index.js';
+export * from './media/index.js';
 
 // Export combined schema as default
 export default graphqlSchema;

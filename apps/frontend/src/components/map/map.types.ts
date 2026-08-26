@@ -74,4 +74,5 @@ export interface RescueMapProps {
   onHospitalClick?: (hospitalId: string) => void;
   showAccuracyCircle?: boolean;
   showRoutes?: boolean;
+  tileTheme?: 'default' | 'dark';
 }

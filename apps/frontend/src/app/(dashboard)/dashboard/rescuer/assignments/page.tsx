@@ -136,7 +136,7 @@ export default function RescuerAssignmentsPage() {
         {/* Header */}
         <div className="mb-6">
           <Button
-            variant="ghost"
+            variant="outline"
             onClick={() => router.back()}
             className="mb-4"
           >
@@ -158,7 +158,6 @@ export default function RescuerAssignmentsPage() {
             <TabsTrigger value="pending">
               Pending ({assignments.length})
             </TabsTrigger>
-            <TabsTrigger value="history">History</TabsTrigger>
           </TabsList>
 
           <TabsContent value="pending" className="space-y-6">

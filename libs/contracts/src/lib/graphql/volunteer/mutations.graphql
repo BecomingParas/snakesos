@@ -46,7 +46,16 @@ extend type Mutation {
   """
   Rate volunteer after rescue completion
   """
-  rateVolunteer(volunteerId: ID!, rescueId: ID!, rating: Int!, feedback: String): Volunteer! @auth
+  rateVolunteer(
+    volunteerId: ID!
+    rescueId: ID!
+    rating: Int!
+    feedback: String
+    responseSpeed: Int
+    professionalism: Int
+    communication: Int
+    safetyHandling: Int
+  ): Volunteer! @auth
   
   """
   Bulk approve volunteers

@@ -5,7 +5,7 @@
 extend type Mutation {
   startPayment(input: StartPaymentInput!): PaymentIntentCheckout! @auth
   refundPayment(input: RefundPaymentInput!): Refund! @auth(requires: [ADMIN, SUPER_ADMIN])
-  createPayout(input: CreatePayoutInput!): Payout! @auth(requires: [ADMIN, SUPER_ADMIN])
+  createPayout(input: CreatePayoutInput!): Payout! @auth
   transitionPayout(input: TransitionPayoutInput!): Payout! @auth(requires: [ADMIN, SUPER_ADMIN])
 
   createPaymentIntent(input: CreatePaymentIntentInput!): PaymentIntent! @auth

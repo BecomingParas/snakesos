@@ -109,7 +109,11 @@ export function DashboardLayoutClient({
             }
             onProfileClick={() =>
               router.push(
-                `/dashboard/${user.role.toLowerCase().replace('_', '-')}/profile`,
+                user.role === 'VERIFIED_RESCUER' || user.role === 'VOLUNTEER'
+                  ? '/dashboard/rescuer/settings'
+                  : user.role === 'CITIZEN'
+                    ? '/dashboard/citizen/profile'
+                    : '/dashboard/admin/settings',
               )
             }
             onLogoutClick={handleLogout}

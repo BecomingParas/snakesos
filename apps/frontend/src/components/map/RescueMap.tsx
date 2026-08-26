@@ -6,6 +6,7 @@
 'use client';
 
 import { useEffect, useId, useMemo, useState } from 'react';
+import { useTheme } from 'next-themes';
 import {
   MapContainer,
   TileLayer,
@@ -127,7 +128,11 @@ export function RescueMap({
   onHospitalClick,
   showAccuracyCircle = true,
   showRoutes = true,
+  tileTheme,
 }: RescueMapProps) {
+  const { resolvedTheme } = useTheme();
+  const activeTileTheme =
+    tileTheme ?? (resolvedTheme === 'dark' ? 'dark' : 'default');
   const mapInstanceKey = useId();
   const [mapCenter, setMapCenter] = useState<[number, number]>(center);
   const [mapZoom, setMapZoom] = useState(zoom);
@@ -355,8 +360,13 @@ export function RescueMap({
       >
         {/* OpenStreetMap Tiles */}
         <TileLayer
+          key={activeTileTheme}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url={
+            activeTileTheme === 'dark'
+              ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+              : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+          }
           maxZoom={19}
         />
 

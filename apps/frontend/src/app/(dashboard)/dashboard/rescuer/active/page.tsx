@@ -36,7 +36,7 @@ import {
   useCompleteRescueMutation,
   useUpdateRescueProgressMutation,
 } from '@/lib/graphql/hooks/rescue.hooks';
-import { useSearchHospitals } from '@/lib/graphql/hooks/hospital.hooks';
+import { useHospitals } from '@/lib/graphql/hooks/hospital.hooks';
 import { toast } from 'sonner';
 
 /**
@@ -120,9 +120,11 @@ export default function ActiveRescuePage() {
   const [hospitalAdmission, setHospitalAdmission] = useState(false);
   const [hospitalNotes, setHospitalNotes] = useState('');
 
-  // Hospital search
-  const { data: hospitalsData } = useSearchHospitals(searchQuery, 20);
-  const hospitals = (hospitalsData as any)?.searchHospitals || [];
+  // Load all hospitals
+  const { data: hospitalsData } = useHospitals(undefined, { first: 100 });
+  const hospitals =
+    (hospitalsData as any)?.hospitals?.edges?.map((edge: any) => edge.node) ||
+    [];
 
   const assignedRescues =
     data?.myAssignedRescues?.edges?.map((edge) => edge.node) || [];

@@ -32,6 +32,32 @@ export const UserStatus = {
 export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
 
 
+export const MediaProvider = {
+  CLOUDINARY: 'CLOUDINARY'
+} as const
+
+export type MediaProvider = (typeof MediaProvider)[keyof typeof MediaProvider]
+
+
+export const MediaStatus = {
+  PENDING: 'PENDING',
+  UPLOADED: 'UPLOADED',
+  VERIFIED: 'VERIFIED',
+  REJECTED: 'REJECTED',
+  DELETED: 'DELETED'
+} as const
+
+export type MediaStatus = (typeof MediaStatus)[keyof typeof MediaStatus]
+
+
+export const MediaType = {
+  RESCUER_PROFILE_IMAGE: 'RESCUER_PROFILE_IMAGE',
+  RESCUER_VERIFICATION_DOCUMENT: 'RESCUER_VERIFICATION_DOCUMENT'
+} as const
+
+export type MediaType = (typeof MediaType)[keyof typeof MediaType]
+
+
 export const RescueStatus = {
   PENDING: 'PENDING',
   ASSIGNED: 'ASSIGNED',

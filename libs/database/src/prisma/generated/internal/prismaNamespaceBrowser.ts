@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  MediaAsset: 'MediaAsset',
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
@@ -62,6 +63,7 @@ export const ModelName = {
   RescueRequest: 'RescueRequest',
   RescueTimeline: 'RescueTimeline',
   Volunteer: 'Volunteer',
+  RescueRating: 'RescueRating',
   Training: 'Training',
   SnakeSpecies: 'SnakeSpecies',
   AIIdentification: 'AIIdentification',
@@ -134,6 +136,27 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const MediaAssetScalarFieldEnum = {
+  id: 'id',
+  ownerId: 'ownerId',
+  mediaType: 'mediaType',
+  provider: 'provider',
+  publicId: 'publicId',
+  resourceType: 'resourceType',
+  originalFileName: 'originalFileName',
+  mimeType: 'mimeType',
+  sizeBytes: 'sizeBytes',
+  width: 'width',
+  height: 'height',
+  format: 'format',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MediaAssetScalarFieldEnum = (typeof MediaAssetScalarFieldEnum)[keyof typeof MediaAssetScalarFieldEnum]
 
 
 export const SessionScalarFieldEnum = {
@@ -324,6 +347,7 @@ export const VolunteerScalarFieldEnum = {
   languages: 'languages',
   availableTime: 'availableTime',
   availableDays: 'availableDays',
+  availabilitySchedule: 'availabilitySchedule',
   emergencyAvailability: 'emergencyAvailability',
   isAvailableNow: 'isAvailableNow',
   assignedZone: 'assignedZone',
@@ -366,6 +390,24 @@ export const VolunteerScalarFieldEnum = {
 } as const
 
 export type VolunteerScalarFieldEnum = (typeof VolunteerScalarFieldEnum)[keyof typeof VolunteerScalarFieldEnum]
+
+
+export const RescueRatingScalarFieldEnum = {
+  id: 'id',
+  rescueId: 'rescueId',
+  citizenId: 'citizenId',
+  rescuerId: 'rescuerId',
+  rating: 'rating',
+  feedback: 'feedback',
+  responseSpeed: 'responseSpeed',
+  professionalism: 'professionalism',
+  communication: 'communication',
+  safetyHandling: 'safetyHandling',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RescueRatingScalarFieldEnum = (typeof RescueRatingScalarFieldEnum)[keyof typeof RescueRatingScalarFieldEnum]
 
 
 export const TrainingScalarFieldEnum = {
@@ -1091,6 +1133,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

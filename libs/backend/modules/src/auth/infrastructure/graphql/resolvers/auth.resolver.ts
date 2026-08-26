@@ -24,8 +24,16 @@ import {
   ChangePasswordUseCase,
 } from '../../../application/use-cases/index.js';
 import { AuthValidator } from '../../validators/auth.validator.js';
+import { calculateRescuerRankingScore } from '../../../../lib/rescuer-ranking.js';
 
 export const authResolvers = {
+  Volunteer: {
+    ratings: (parent: { id: string }) =>
+      prisma.rescueRating.findMany({
+        where: { rescuerId: parent.id },
+        orderBy: { createdAt: 'desc' },
+      }),
+  },
   Query: {
     /**
      * Get current user with volunteer profile
@@ -84,6 +92,7 @@ export const authResolvers = {
           emailVerified?: boolean;
           search?: string;
         };
+        sort?: { field: string; order: 'ASC' | 'DESC' };
       },
       context: GraphQLContext,
     ) => {
@@ -157,6 +166,7 @@ export const authResolvers = {
           isAvailableNow?: boolean;
           search?: string;
         };
+        sort?: { field: string; order: 'ASC' | 'DESC' };
       },
       context: GraphQLContext,
     ) => {
@@ -165,7 +175,7 @@ export const authResolvers = {
         context.requireAuth();
         context.requireRole(['ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR']);
 
-        const { pagination, filter } = args;
+        const { pagination, filter, sort } = args;
         const limit = pagination?.limit || 50;
         const page = pagination?.page || 1;
         const skip = (page - 1) * limit;
@@ -203,13 +213,68 @@ export const authResolvers = {
 
         where.deletedAt = null;
 
+        const sortField = sort?.field;
+        const sortDirection = sort?.order === 'ASC' ? 1 : -1;
+
+        // Bayesian ranking avoids promoting a rescuer with one lucky review.
+        if (sortField === 'BAYESIAN_RATING') {
+          const [candidates, totalCount] = await Promise.all([
+            prisma.volunteer.findMany({ where, include: { user: true } }),
+            prisma.volunteer.count({ where }),
+          ]);
+          const ranked = candidates.sort((left, right) => {
+            const leftScore = calculateRescuerRankingScore(left);
+            const rightScore = calculateRescuerRankingScore(right);
+
+            return (
+              (rightScore - leftScore) * sortDirection ||
+              Number(right.isAvailableNow) - Number(left.isAvailableNow) ||
+              right.completedRescues - left.completedRescues ||
+              right.createdAt.getTime() - left.createdAt.getTime()
+            );
+          });
+          const volunteers = ranked.slice(skip, skip + limit);
+          return {
+            edges: volunteers.map((volunteer) => ({
+              node: volunteer,
+              cursor: volunteer.id,
+            })),
+            pageInfo: {
+              hasNextPage: skip + volunteers.length < totalCount,
+              hasPreviousPage: page > 1,
+              startCursor: volunteers.length > 0 ? volunteers[0].id : null,
+              endCursor:
+                volunteers.length > 0
+                  ? volunteers[volunteers.length - 1].id
+                  : null,
+            },
+            totalCount,
+          };
+        }
+
+        const orderBy: Record<string, 'asc' | 'desc'> = {
+          createdAt: 'desc',
+        };
+        const sortFieldMap: Record<string, string> = {
+          NAME: 'name',
+          CREATED_AT: 'createdAt',
+          TOTAL_RESCUES: 'totalRescues',
+          SUCCESS_RATE: 'successRate',
+          RATING: 'rating',
+          MUNICIPALITY: 'municipality',
+        };
+        if (sortField && sortFieldMap[sortField]) {
+          orderBy[sortFieldMap[sortField]] =
+            sortDirection === 1 ? 'asc' : 'desc';
+        }
+
         // Fetch volunteers and total count
         const [volunteers, totalCount] = await Promise.all([
           prisma.volunteer.findMany({
             where,
             skip,
             take: limit,
-            orderBy: { createdAt: 'desc' },
+            orderBy,
             include: {
               user: true,
             },
@@ -386,6 +451,21 @@ export const authResolvers = {
       return result;
     },
 
+    updateProfile: async (
+      _parent: unknown,
+      args: { input: { name?: string; phone?: string; avatar?: string } },
+      context: GraphQLContext,
+    ) => {
+      context.requireAuth();
+      const data = Object.fromEntries(
+        Object.entries(args.input).filter(([, value]) => value !== undefined),
+      );
+      return prisma.user.update({
+        where: { id: context.user.id },
+        data,
+      });
+    },
+
     reviewVolunteerApplication: async (
       _parent: any,
       args: {
@@ -427,6 +507,118 @@ export const authResolvers = {
         }
 
         return updatedVolunteer;
+      });
+    },
+
+    rateVolunteer: async (
+      _parent: any,
+      args: {
+        volunteerId: string;
+        rescueId: string;
+        rating: number;
+        feedback?: string;
+        responseSpeed?: number;
+        professionalism?: number;
+        communication?: number;
+        safetyHandling?: number;
+      },
+      context: GraphQLContext,
+    ) => {
+      context.requireAuth();
+
+      if (
+        !Number.isInteger(args.rating) ||
+        args.rating < 1 ||
+        args.rating > 5
+      ) {
+        throw new Error('Rating must be an integer from 1 to 5');
+      }
+      for (const [label, value] of [
+        ['Response speed', args.responseSpeed],
+        ['Professionalism', args.professionalism],
+        ['Communication', args.communication],
+        ['Safety handling', args.safetyHandling],
+      ] as const) {
+        if (
+          value != null &&
+          (!Number.isInteger(value) || value < 1 || value > 5)
+        ) {
+          throw new Error(`${label} must be an integer from 1 to 5`);
+        }
+      }
+
+      const rescue = await prisma.rescueRequest.findFirst({
+        where: {
+          id: args.rescueId,
+          userId: context.user.id,
+          status: 'COMPLETED',
+          assignedTo: args.volunteerId,
+        },
+        select: { id: true, assignedTo: true },
+      });
+
+      const rescuerId = rescue?.assignedTo;
+      if (!rescuerId) {
+        throw new Error(
+          'Only the citizen who completed this rescue can rate it',
+        );
+      }
+
+      const existingRating = await prisma.rescueRating.findUnique({
+        where: { rescueId: args.rescueId },
+        select: { id: true, citizenId: true, createdAt: true },
+      });
+      if (existingRating) {
+        const editWindowMs = 14 * 24 * 60 * 60 * 1000;
+        const canEdit =
+          existingRating.citizenId === context.user.id &&
+          Date.now() - existingRating.createdAt.getTime() <= editWindowMs;
+        if (!canEdit) {
+          throw new Error('The rating edit window has closed');
+        }
+      }
+
+      return prisma.$transaction(async (transaction) => {
+        const ratingData = {
+          rating: args.rating,
+          feedback: args.feedback?.trim() || null,
+          responseSpeed: args.responseSpeed,
+          professionalism: args.professionalism,
+          communication: args.communication,
+          safetyHandling: args.safetyHandling,
+        };
+        if (existingRating) {
+          await transaction.rescueRating.update({
+            where: { id: existingRating.id },
+            data: ratingData,
+          });
+        } else {
+          await transaction.rescueRating.create({
+            data: {
+              rescueId: args.rescueId,
+              citizenId: context.user.id,
+              rescuerId,
+              ...ratingData,
+            },
+          });
+        }
+
+        const aggregate = await transaction.rescueRating.aggregate({
+          where: { rescuerId },
+          _avg: { rating: true },
+        });
+        const totalRatings = await transaction.rescueRating.count({
+          where: { rescuerId },
+        });
+
+        return transaction.volunteer.update({
+          where: { id: rescuerId },
+          data: {
+            rating: aggregate._avg?.rating ?? args.rating,
+            totalRatings,
+          },
+          include: { user: true },
+        });
       });
     },
 

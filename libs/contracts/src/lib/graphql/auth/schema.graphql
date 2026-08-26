@@ -2,6 +2,11 @@
 # AUTH - USER TYPE DEFINITIONS
 # ===================================================================
 
+type ChangePasswordPayload {
+  success: Boolean!
+  message: String!
+}
+
 """
 User account with authentication and profile information
 """

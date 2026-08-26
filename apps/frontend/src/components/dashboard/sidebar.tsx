@@ -94,7 +94,7 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/map', label: 'Track Rescue', icon: Map },
         { href: '/notifications', label: 'Notifications', icon: Bell },
         { href: '/emergency', label: 'Emergency', icon: AlertCircle },
-        { href: '/profile', label: 'Profile', icon: Settings },
+        { href: '/profile', label: 'Settings', icon: Settings },
       ],
     },
     ADMIN: {
@@ -144,7 +144,7 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/map', label: 'Live Map', icon: Map },
         { href: '/rescuers', label: 'Rescuers', icon: Users },
         { href: '/analytics', label: 'Analytics', icon: BarChart3 },
-        { href: '/profile', label: 'Profile', icon: Settings },
+        { href: '/profile', label: 'Settings', icon: Settings },
       ],
     },
     VERIFIED_RESCUER: {
@@ -156,10 +156,12 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/assignments', label: 'Assignments', icon: FileText },
         { href: '/active', label: 'Active Rescue', icon: Activity },
         { href: '/map', label: 'Map', icon: Map },
+        { href: '/hospitals', label: 'Hospitals', icon: Hospital },
         { href: '/history', label: 'History', icon: List },
         { href: '/earnings', label: 'Earnings', icon: WalletCards },
+        { href: '/analytics', label: 'Analytics', icon: BarChart3 },
         { href: '/notifications', label: 'Notifications', icon: Bell },
-        { href: '/profile', label: 'Profile', icon: Settings },
+        { href: '/settings', label: 'Settings', icon: Settings },
       ],
     },
     VOLUNTEER: {
@@ -171,10 +173,12 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/assignments', label: 'Assignments', icon: FileText },
         { href: '/active', label: 'Active Rescue', icon: Activity },
         { href: '/map', label: 'Map', icon: Map },
+        { href: '/hospitals', label: 'Hospitals', icon: Hospital },
         { href: '/history', label: 'History', icon: List },
         { href: '/earnings', label: 'Earnings', icon: WalletCards },
+        { href: '/analytics', label: 'Analytics', icon: BarChart3 },
         { href: '/notifications', label: 'Notifications', icon: Bell },
-        { href: '/profile', label: 'Profile', icon: Settings },
+        { href: '/settings', label: 'Settings', icon: Settings },
       ],
     },
   };
@@ -193,7 +197,7 @@ export function Sidebar({ role }: SidebarProps) {
       <aside
         className={cn(
           'fixed left-0 top-0 z-40 h-screen border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-sm transition-[width] duration-300 ease-in-out',
-          collapsed ? 'w-[76px]' : 'w-[272px]',
+          collapsed ? 'w-19' : 'w-68',
         )}
       >
         <div className="flex h-full flex-col">
@@ -257,7 +261,7 @@ export function Sidebar({ role }: SidebarProps) {
                     {active && (
                       <span
                         className={cn(
-                          'absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full',
+                          'absolute left-0 top-1/2 h-5 w-0.75 -translate-y-1/2 rounded-r-full',
                           isEmergency ? 'bg-destructive' : accent,
                         )}
                       />

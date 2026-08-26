@@ -53,7 +53,7 @@ extend type Mutation {
   """
   Change password (requires current password)
   """
-  changePassword(input: ChangePasswordInput!): Boolean!
+  changePassword(input: ChangePasswordInput!): ChangePasswordPayload!
   
   """
   Update user profile
