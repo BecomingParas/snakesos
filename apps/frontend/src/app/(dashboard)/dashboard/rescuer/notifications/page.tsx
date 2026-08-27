@@ -33,6 +33,7 @@ const MY_NOTIFICATIONS = gql`
       }
       totalCount
     }
+    unreadNotificationsCount
   }
 `;
 
@@ -41,6 +42,14 @@ const MARK_NOTIFICATION_AS_READ = gql`
     markNotificationAsRead(id: $id) {
       id
       read
+    }
+  }
+`;
+
+const MARK_ALL_NOTIFICATIONS_AS_READ = gql`
+  mutation MarkAllRescuerNotificationsAsRead {
+    markAllNotificationsAsRead {
+      success
     }
   }
 `;
@@ -86,12 +95,13 @@ export default function RescuerNotificationsPage() {
     },
   );
   const [markNotificationAsRead] = useMutation(MARK_NOTIFICATION_AS_READ);
+  const [markAllNotificationsAsRead] = useMutation(
+    MARK_ALL_NOTIFICATIONS_AS_READ,
+  );
   const notifications =
     data?.myNotifications?.edges?.map((edge) => edge.node) || [];
   const serverNotificationCount = data?.myNotifications?.totalCount || 0;
-  const unreadCount = notifications.filter(
-    (notification) => !notification.read,
-  ).length;
+  const unreadCount = data?.unreadNotificationsCount || 0;
   const filteredNotifications =
     activeTab === 'unread'
       ? notifications.filter((notification) => !notification.read)
@@ -99,7 +109,10 @@ export default function RescuerNotificationsPage() {
 
   const markAsRead = async (id: string, actionUrl?: string | null) => {
     try {
-      await markNotificationAsRead({ variables: { id } });
+      await markNotificationAsRead({
+        variables: { id },
+        refetchQueries: ['RecentNotifications'],
+      });
       await refetch();
       if (actionUrl) window.location.assign(actionUrl);
     } catch (markError) {
@@ -113,11 +126,16 @@ export default function RescuerNotificationsPage() {
 
   const markAllAsRead = async () => {
     try {
-      for (const notification of notifications) {
-        if (!notification.read) {
-          await markNotificationAsRead({ variables: { id: notification.id } });
-        }
-      }
+      await markAllNotificationsAsRead({
+        refetchQueries: ['RecentNotifications'],
+        update(cache) {
+          cache.modify({
+            fields: {
+              unreadNotificationsCount: () => 0,
+            },
+          });
+        },
+      });
       await refetch();
       toast.success('All notifications marked as read');
     } catch (markError) {

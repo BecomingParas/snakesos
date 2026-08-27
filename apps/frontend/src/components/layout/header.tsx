@@ -49,7 +49,7 @@ export function Header() {
     user?.role === 'VERIFIED_RESCUER' || user?.role === 'VOLUNTEER'
       ? '/dashboard/rescuer/settings'
       : user?.role === 'CITIZEN'
-        ? '/dashboard/citizen/profile'
+        ? '/dashboard/citizen/settings'
         : '/dashboard/admin/settings';
 
   const handleLogout = async () => {
@@ -127,12 +127,12 @@ export function Header() {
             {isLoggedIn && user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="h-9 w-9 grid place-items-center rounded-lg border border-border/30 bg-secondary/40 text-sm font-semibold text-foreground transition-all hover:bg-secondary/60 hover:border-border/50">
+                  <button className="h-9 w-9 grid place-items-center overflow-hidden rounded-full border border-border/30 bg-secondary/40 p-0 text-sm font-semibold text-foreground transition-all hover:bg-secondary/60 hover:border-border/50">
                     {user.avatar ? (
                       <img
                         src={user.avatar}
                         alt={user.name}
-                        className="h-full w-full rounded-lg object-cover"
+                        className="h-full w-full rounded-full object-cover"
                       />
                     ) : (
                       getUserInitials(user.name)
@@ -229,7 +229,14 @@ export function Header() {
             variant="destructive"
             className="h-9 rounded-lg px-4 font-semibold"
           >
-            <Link href="/emergency" className="flex items-center gap-2">
+            <Link
+              href={
+                user?.role === 'CITIZEN'
+                  ? '/dashboard/citizen/request?emergency=true'
+                  : '/emergency'
+              }
+              className="flex items-center gap-2"
+            >
               <Phone className="h-4 w-4" />
               <span className="hidden sm:inline">Emergency</span>
             </Link>

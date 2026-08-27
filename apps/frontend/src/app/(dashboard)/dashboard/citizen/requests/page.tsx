@@ -9,6 +9,7 @@ import {
   AlertCircle,
   CheckCircle,
   Eye,
+  Star,
   Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -146,17 +147,17 @@ export default function CitizenRequestsListPage() {
     return (
       <Card
         key={request.id}
-        className="p-6 hover:border-primary cursor-pointer transition-colors"
+        className="min-w-0 overflow-hidden p-4 hover:border-primary cursor-pointer transition-colors sm:p-6"
         onClick={() => router.push(`/dashboard/citizen/requests/${request.id}`)}
       >
-        <div className="flex items-start justify-between mb-4">
-          <div>
+        <div className="mb-4 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
             <h3 className="text-lg font-semibold">{request.referenceNumber}</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="break-words text-sm text-gray-600 dark:text-gray-400">
               {request.address}, {request.municipality}
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex shrink-0 gap-2">
             <Badge className={cn('text-white', statusConfig.color)}>
               <StatusIcon className="mr-1 h-3 w-3" />
               {statusConfig.label}
@@ -164,10 +165,12 @@ export default function CitizenRequestsListPage() {
           </div>
         </div>
 
-        <p className="text-sm mb-4">{request.snakeDescription}</p>
+        <p className="mb-4 min-w-0 break-words text-sm [overflow-wrap:anywhere]">
+          {request.snakeDescription}
+        </p>
 
-        <div className="flex items-center justify-between text-sm">
-          <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400">
+        <div className="flex min-w-0 flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 text-gray-600 dark:text-gray-400">
             <div className="flex items-center gap-1">
               <Clock className="h-4 w-4" />
               <span>{new Date(request.createdAt).toLocaleDateString()}</span>
@@ -175,26 +178,43 @@ export default function CitizenRequestsListPage() {
             {request.assignedVolunteer && (
               <div className="flex items-center gap-1">
                 <MapPin className="h-4 w-4" />
-                <span>{request.assignedVolunteer.name}</span>
+                <span className="break-words">
+                  {request.assignedVolunteer.name}
+                </span>
               </div>
             )}
           </div>
-          <Button size="sm" variant="outline">
-            <Eye className="mr-1 h-4 w-4" />
-            View Details
-          </Button>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            <Button size="sm" variant="outline" className="w-full sm:w-auto">
+              <Eye className="mr-1 h-4 w-4" />
+              View Details
+            </Button>
+            {request.status === 'COMPLETED' && request.assignedVolunteer && (
+              <Button
+                size="sm"
+                className="w-full sm:w-auto"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  router.push(`/dashboard/citizen/requests/${request.id}`);
+                }}
+              >
+                <Star className="mr-1 h-4 w-4" />
+                Rate Rescuer
+              </Button>
+            )}
+          </div>
         </div>
       </Card>
     );
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-gray-50 to-gray-100 p-3 dark:from-gray-900 dark:to-gray-800 sm:p-6">
       <div className="mx-auto max-w-6xl">
         {/* Header */}
         <div className="mb-6">
           <Button
-            variant="ghost"
+            variant="outline"
             onClick={() => router.back()}
             className="mb-4"
           >
@@ -202,8 +222,8 @@ export default function CitizenRequestsListPage() {
             Back
           </Button>
 
-          <div className="flex items-start justify-between">
-            <div>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                 My Rescue Requests
               </h1>
@@ -211,7 +231,10 @@ export default function CitizenRequestsListPage() {
                 View and manage your rescue requests
               </p>
             </div>
-            <Button onClick={() => router.push('/dashboard/citizen/request')}>
+            <Button
+              className="w-full shrink-0 sm:w-auto"
+              onClick={() => router.push('/dashboard/citizen/request')}
+            >
               New Request
             </Button>
           </div>
@@ -243,7 +266,7 @@ export default function CitizenRequestsListPage() {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList>
+          <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1">
             <TabsTrigger value="active">
               Active ({activeRequests.length})
             </TabsTrigger>

@@ -329,6 +329,7 @@ export type UserWhereInput = {
   trainings?: Prisma.TrainingListRelationFilter
   speciesObservations?: Prisma.SpeciesObservationListRelationFilter
   citizenRescueRatings?: Prisma.RescueRatingListRelationFilter
+  emergencyContact?: Prisma.XOR<Prisma.EmergencyContactNullableScalarRelationFilter, Prisma.EmergencyContactWhereInput> | null
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   mediaAssets?: Prisma.MediaAssetListRelationFilter
@@ -373,6 +374,7 @@ export type UserOrderByWithRelationInput = {
   trainings?: Prisma.TrainingOrderByRelationAggregateInput
   speciesObservations?: Prisma.SpeciesObservationOrderByRelationAggregateInput
   citizenRescueRatings?: Prisma.RescueRatingOrderByRelationAggregateInput
+  emergencyContact?: Prisma.EmergencyContactOrderByWithRelationInput
   sessions?: Prisma.SessionOrderByRelationAggregateInput
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   mediaAssets?: Prisma.MediaAssetOrderByRelationAggregateInput
@@ -420,6 +422,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   trainings?: Prisma.TrainingListRelationFilter
   speciesObservations?: Prisma.SpeciesObservationListRelationFilter
   citizenRescueRatings?: Prisma.RescueRatingListRelationFilter
+  emergencyContact?: Prisma.XOR<Prisma.EmergencyContactNullableScalarRelationFilter, Prisma.EmergencyContactWhereInput> | null
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   mediaAssets?: Prisma.MediaAssetListRelationFilter
@@ -520,6 +523,7 @@ export type UserCreateInput = {
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
@@ -564,6 +568,7 @@ export type UserUncheckedCreateInput = {
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
@@ -608,6 +613,7 @@ export type UserUpdateInput = {
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
@@ -652,6 +658,7 @@ export type UserUncheckedUpdateInput = {
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
@@ -852,6 +859,20 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type UserCreateNestedOneWithoutEmergencyContactInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutEmergencyContactInput, Prisma.UserUncheckedCreateWithoutEmergencyContactInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutEmergencyContactInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutEmergencyContactNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutEmergencyContactInput, Prisma.UserUncheckedCreateWithoutEmergencyContactInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutEmergencyContactInput
+  upsert?: Prisma.UserUpsertWithoutEmergencyContactInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutEmergencyContactInput, Prisma.UserUpdateWithoutEmergencyContactInput>, Prisma.UserUncheckedUpdateWithoutEmergencyContactInput>
 }
 
 export type UserCreateNestedOneWithoutMediaAssetsInput = {
@@ -1166,6 +1187,198 @@ export type UserUpdateOneWithoutSpeciesObservationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSpeciesObservationsInput, Prisma.UserUpdateWithoutSpeciesObservationsInput>, Prisma.UserUncheckedUpdateWithoutSpeciesObservationsInput>
 }
 
+export type UserCreateWithoutEmergencyContactInput = {
+  id?: string
+  email: string
+  password?: string | null
+  name: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  avatar?: string | null
+  googleId?: string | null
+  googleEmail?: string | null
+  emailVerified?: boolean
+  verifiedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  lastLoginIp?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  language?: string
+  timezone?: string
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  rescueRequests?: Prisma.RescueRequestCreateNestedManyWithoutUserInput
+  volunteerProfile?: Prisma.VolunteerCreateNestedOneWithoutUserInput
+  blogPosts?: Prisma.BlogPostCreateNestedManyWithoutAuthorInput
+  galleryImages?: Prisma.GalleryImageCreateNestedManyWithoutUploaderInput
+  donations?: Prisma.DonationCreateNestedManyWithoutDonorInput
+  aiIdentifications?: Prisma.AIIdentificationCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  activityLogs?: Prisma.ActivityLogCreateNestedManyWithoutUserInput
+  financialAuditEvents?: Prisma.FinancialAuditEventCreateNestedManyWithoutActorInput
+  createdCompensationPolicies?: Prisma.CompensationPolicyCreateNestedManyWithoutCreatedByInput
+  createdRefunds?: Prisma.RefundCreateNestedManyWithoutCreatedByInput
+  rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
+  trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
+  citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
+  userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutEmergencyContactInput = {
+  id?: string
+  email: string
+  password?: string | null
+  name: string
+  phone?: string | null
+  role?: $Enums.UserRole
+  status?: $Enums.UserStatus
+  avatar?: string | null
+  googleId?: string | null
+  googleEmail?: string | null
+  emailVerified?: boolean
+  verifiedAt?: Date | string | null
+  lastLoginAt?: Date | string | null
+  lastLoginIp?: string | null
+  passwordResetToken?: string | null
+  passwordResetExpiry?: Date | string | null
+  language?: string
+  timezone?: string
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  deletedAt?: Date | string | null
+  rescueRequests?: Prisma.RescueRequestUncheckedCreateNestedManyWithoutUserInput
+  volunteerProfile?: Prisma.VolunteerUncheckedCreateNestedOneWithoutUserInput
+  blogPosts?: Prisma.BlogPostUncheckedCreateNestedManyWithoutAuthorInput
+  galleryImages?: Prisma.GalleryImageUncheckedCreateNestedManyWithoutUploaderInput
+  donations?: Prisma.DonationUncheckedCreateNestedManyWithoutDonorInput
+  aiIdentifications?: Prisma.AIIdentificationUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  activityLogs?: Prisma.ActivityLogUncheckedCreateNestedManyWithoutUserInput
+  financialAuditEvents?: Prisma.FinancialAuditEventUncheckedCreateNestedManyWithoutActorInput
+  createdCompensationPolicies?: Prisma.CompensationPolicyUncheckedCreateNestedManyWithoutCreatedByInput
+  createdRefunds?: Prisma.RefundUncheckedCreateNestedManyWithoutCreatedByInput
+  rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
+  trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
+  citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
+  userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutEmergencyContactInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutEmergencyContactInput, Prisma.UserUncheckedCreateWithoutEmergencyContactInput>
+}
+
+export type UserUpsertWithoutEmergencyContactInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutEmergencyContactInput, Prisma.UserUncheckedUpdateWithoutEmergencyContactInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutEmergencyContactInput, Prisma.UserUncheckedCreateWithoutEmergencyContactInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutEmergencyContactInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutEmergencyContactInput, Prisma.UserUncheckedUpdateWithoutEmergencyContactInput>
+}
+
+export type UserUpdateWithoutEmergencyContactInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginIp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  language?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rescueRequests?: Prisma.RescueRequestUpdateManyWithoutUserNestedInput
+  volunteerProfile?: Prisma.VolunteerUpdateOneWithoutUserNestedInput
+  blogPosts?: Prisma.BlogPostUpdateManyWithoutAuthorNestedInput
+  galleryImages?: Prisma.GalleryImageUpdateManyWithoutUploaderNestedInput
+  donations?: Prisma.DonationUpdateManyWithoutDonorNestedInput
+  aiIdentifications?: Prisma.AIIdentificationUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  activityLogs?: Prisma.ActivityLogUpdateManyWithoutUserNestedInput
+  financialAuditEvents?: Prisma.FinancialAuditEventUpdateManyWithoutActorNestedInput
+  createdCompensationPolicies?: Prisma.CompensationPolicyUpdateManyWithoutCreatedByNestedInput
+  createdRefunds?: Prisma.RefundUpdateManyWithoutCreatedByNestedInput
+  rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
+  trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
+  citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
+  userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutEmergencyContactInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  googleEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  verifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastLoginIp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  passwordResetExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  language?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  notificationPreferences?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  rescueRequests?: Prisma.RescueRequestUncheckedUpdateManyWithoutUserNestedInput
+  volunteerProfile?: Prisma.VolunteerUncheckedUpdateOneWithoutUserNestedInput
+  blogPosts?: Prisma.BlogPostUncheckedUpdateManyWithoutAuthorNestedInput
+  galleryImages?: Prisma.GalleryImageUncheckedUpdateManyWithoutUploaderNestedInput
+  donations?: Prisma.DonationUncheckedUpdateManyWithoutDonorNestedInput
+  aiIdentifications?: Prisma.AIIdentificationUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  activityLogs?: Prisma.ActivityLogUncheckedUpdateManyWithoutUserNestedInput
+  financialAuditEvents?: Prisma.FinancialAuditEventUncheckedUpdateManyWithoutActorNestedInput
+  createdCompensationPolicies?: Prisma.CompensationPolicyUncheckedUpdateManyWithoutCreatedByNestedInput
+  createdRefunds?: Prisma.RefundUncheckedUpdateManyWithoutCreatedByNestedInput
+  rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
+  trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
+  speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
+  citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
+  userRoles?: Prisma.UserRoleAssignmentUncheckedUpdateManyWithoutUserNestedInput
+}
+
 export type UserCreateWithoutMediaAssetsInput = {
   id?: string
   email: string
@@ -1204,6 +1417,7 @@ export type UserCreateWithoutMediaAssetsInput = {
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
@@ -1247,6 +1461,7 @@ export type UserUncheckedCreateWithoutMediaAssetsInput = {
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -1306,6 +1521,7 @@ export type UserUpdateWithoutMediaAssetsInput = {
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
@@ -1349,6 +1565,7 @@ export type UserUncheckedUpdateWithoutMediaAssetsInput = {
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -1392,6 +1609,7 @@ export type UserCreateWithoutSessionsInput = {
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
   userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
@@ -1435,6 +1653,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -1494,6 +1713,7 @@ export type UserUpdateWithoutSessionsInput = {
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
   userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
@@ -1537,6 +1757,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -1580,6 +1801,7 @@ export type UserCreateWithoutAccountsInput = {
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
   userRoles?: Prisma.UserRoleAssignmentCreateNestedManyWithoutUserInput
@@ -1623,6 +1845,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedCreateNestedManyWithoutUserInput
@@ -1682,6 +1905,7 @@ export type UserUpdateWithoutAccountsInput = {
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
   userRoles?: Prisma.UserRoleAssignmentUpdateManyWithoutUserNestedInput
@@ -1725,6 +1949,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
   userRoles?: Prisma.UserRoleAssignmentUncheckedUpdateManyWithoutUserNestedInput
@@ -1768,6 +1993,7 @@ export type UserCreateWithoutUserRolesInput = {
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
@@ -1811,6 +2037,7 @@ export type UserUncheckedCreateWithoutUserRolesInput = {
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
@@ -1870,6 +2097,7 @@ export type UserUpdateWithoutUserRolesInput = {
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
@@ -1913,6 +2141,7 @@ export type UserUncheckedUpdateWithoutUserRolesInput = {
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
@@ -1955,6 +2184,7 @@ export type UserCreateWithoutRescueRequestsInput = {
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
@@ -1998,6 +2228,7 @@ export type UserUncheckedCreateWithoutRescueRequestsInput = {
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
@@ -2057,6 +2288,7 @@ export type UserUpdateWithoutRescueRequestsInput = {
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
@@ -2100,6 +2332,7 @@ export type UserUncheckedUpdateWithoutRescueRequestsInput = {
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
@@ -2143,6 +2376,7 @@ export type UserCreateWithoutRescueTimelinesInput = {
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
@@ -2186,6 +2420,7 @@ export type UserUncheckedCreateWithoutRescueTimelinesInput = {
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
@@ -2245,6 +2480,7 @@ export type UserUpdateWithoutRescueTimelinesInput = {
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
@@ -2288,6 +2524,7 @@ export type UserUncheckedUpdateWithoutRescueTimelinesInput = {
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
@@ -2331,6 +2568,7 @@ export type UserCreateWithoutVolunteerProfileInput = {
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
@@ -2374,6 +2612,7 @@ export type UserUncheckedCreateWithoutVolunteerProfileInput = {
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
@@ -2433,6 +2672,7 @@ export type UserUpdateWithoutVolunteerProfileInput = {
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
@@ -2476,6 +2716,7 @@ export type UserUncheckedUpdateWithoutVolunteerProfileInput = {
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
@@ -2519,6 +2760,7 @@ export type UserCreateWithoutCitizenRescueRatingsInput = {
   rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
@@ -2562,6 +2804,7 @@ export type UserUncheckedCreateWithoutCitizenRescueRatingsInput = {
   rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
@@ -2621,6 +2864,7 @@ export type UserUpdateWithoutCitizenRescueRatingsInput = {
   rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
@@ -2664,6 +2908,7 @@ export type UserUncheckedUpdateWithoutCitizenRescueRatingsInput = {
   rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
@@ -2707,6 +2952,7 @@ export type UserCreateWithoutTrainingsInput = {
   rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
@@ -2750,6 +2996,7 @@ export type UserUncheckedCreateWithoutTrainingsInput = {
   rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
@@ -2842,6 +3089,7 @@ export type UserCreateWithoutAiIdentificationsInput = {
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
@@ -2885,6 +3133,7 @@ export type UserUncheckedCreateWithoutAiIdentificationsInput = {
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
@@ -2944,6 +3193,7 @@ export type UserUpdateWithoutAiIdentificationsInput = {
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
@@ -2987,6 +3237,7 @@ export type UserUncheckedUpdateWithoutAiIdentificationsInput = {
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
@@ -3030,6 +3281,7 @@ export type UserCreateWithoutBlogPostsInput = {
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
@@ -3073,6 +3325,7 @@ export type UserUncheckedCreateWithoutBlogPostsInput = {
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
@@ -3132,6 +3385,7 @@ export type UserUpdateWithoutBlogPostsInput = {
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
@@ -3175,6 +3429,7 @@ export type UserUncheckedUpdateWithoutBlogPostsInput = {
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
@@ -3218,6 +3473,7 @@ export type UserCreateWithoutGalleryImagesInput = {
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
@@ -3261,6 +3517,7 @@ export type UserUncheckedCreateWithoutGalleryImagesInput = {
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
@@ -3320,6 +3577,7 @@ export type UserUpdateWithoutGalleryImagesInput = {
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
@@ -3363,6 +3621,7 @@ export type UserUncheckedUpdateWithoutGalleryImagesInput = {
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
@@ -3406,6 +3665,7 @@ export type UserCreateWithoutDonationsInput = {
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
@@ -3449,6 +3709,7 @@ export type UserUncheckedCreateWithoutDonationsInput = {
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
@@ -3508,6 +3769,7 @@ export type UserUpdateWithoutDonationsInput = {
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
@@ -3551,6 +3813,7 @@ export type UserUncheckedUpdateWithoutDonationsInput = {
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
@@ -3594,6 +3857,7 @@ export type UserCreateWithoutCreatedCompensationPoliciesInput = {
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
@@ -3637,6 +3901,7 @@ export type UserUncheckedCreateWithoutCreatedCompensationPoliciesInput = {
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
@@ -3696,6 +3961,7 @@ export type UserUpdateWithoutCreatedCompensationPoliciesInput = {
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
@@ -3739,6 +4005,7 @@ export type UserUncheckedUpdateWithoutCreatedCompensationPoliciesInput = {
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
@@ -3782,6 +4049,7 @@ export type UserCreateWithoutCreatedRefundsInput = {
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
@@ -3825,6 +4093,7 @@ export type UserUncheckedCreateWithoutCreatedRefundsInput = {
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
@@ -3884,6 +4153,7 @@ export type UserUpdateWithoutCreatedRefundsInput = {
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
@@ -3927,6 +4197,7 @@ export type UserUncheckedUpdateWithoutCreatedRefundsInput = {
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
@@ -3970,6 +4241,7 @@ export type UserCreateWithoutFinancialAuditEventsInput = {
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
@@ -4013,6 +4285,7 @@ export type UserUncheckedCreateWithoutFinancialAuditEventsInput = {
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
@@ -4072,6 +4345,7 @@ export type UserUpdateWithoutFinancialAuditEventsInput = {
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
@@ -4115,6 +4389,7 @@ export type UserUncheckedUpdateWithoutFinancialAuditEventsInput = {
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
@@ -4158,6 +4433,7 @@ export type UserCreateWithoutNotificationsInput = {
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
@@ -4201,6 +4477,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
@@ -4260,6 +4537,7 @@ export type UserUpdateWithoutNotificationsInput = {
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
@@ -4303,6 +4581,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
@@ -4346,6 +4625,7 @@ export type UserCreateWithoutActivityLogsInput = {
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
@@ -4389,6 +4669,7 @@ export type UserUncheckedCreateWithoutActivityLogsInput = {
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedCreateNestedManyWithoutObserverInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
@@ -4448,6 +4729,7 @@ export type UserUpdateWithoutActivityLogsInput = {
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
@@ -4491,6 +4773,7 @@ export type UserUncheckedUpdateWithoutActivityLogsInput = {
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
@@ -4534,6 +4817,7 @@ export type UserCreateWithoutSpeciesObservationsInput = {
   rescueTimelines?: Prisma.RescueTimelineCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingCreateNestedManyWithoutParticipantsInput
   citizenRescueRatings?: Prisma.RescueRatingCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetCreateNestedManyWithoutOwnerInput
@@ -4577,6 +4861,7 @@ export type UserUncheckedCreateWithoutSpeciesObservationsInput = {
   rescueTimelines?: Prisma.RescueTimelineUncheckedCreateNestedManyWithoutUserInput
   trainings?: Prisma.TrainingUncheckedCreateNestedManyWithoutParticipantsInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedCreateNestedManyWithoutCitizenInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedCreateNestedOneWithoutUserInput
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   mediaAssets?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutOwnerInput
@@ -4636,6 +4921,7 @@ export type UserUpdateWithoutSpeciesObservationsInput = {
   rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUpdateManyWithoutParticipantsNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
@@ -4679,6 +4965,7 @@ export type UserUncheckedUpdateWithoutSpeciesObservationsInput = {
   rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
   trainings?: Prisma.TrainingUncheckedUpdateManyWithoutParticipantsNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
@@ -4722,6 +5009,7 @@ export type UserUpdateWithoutTrainingsInput = {
   rescueTimelines?: Prisma.RescueTimelineUpdateManyWithoutUserNestedInput
   speciesObservations?: Prisma.SpeciesObservationUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUpdateManyWithoutOwnerNestedInput
@@ -4765,6 +5053,7 @@ export type UserUncheckedUpdateWithoutTrainingsInput = {
   rescueTimelines?: Prisma.RescueTimelineUncheckedUpdateManyWithoutUserNestedInput
   speciesObservations?: Prisma.SpeciesObservationUncheckedUpdateManyWithoutObserverNestedInput
   citizenRescueRatings?: Prisma.RescueRatingUncheckedUpdateManyWithoutCitizenNestedInput
+  emergencyContact?: Prisma.EmergencyContactUncheckedUpdateOneWithoutUserNestedInput
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   mediaAssets?: Prisma.MediaAssetUncheckedUpdateManyWithoutOwnerNestedInput
@@ -5018,6 +5307,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   trainings?: boolean | Prisma.User$trainingsArgs<ExtArgs>
   speciesObservations?: boolean | Prisma.User$speciesObservationsArgs<ExtArgs>
   citizenRescueRatings?: boolean | Prisma.User$citizenRescueRatingsArgs<ExtArgs>
+  emergencyContact?: boolean | Prisma.User$emergencyContactArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   mediaAssets?: boolean | Prisma.User$mediaAssetsArgs<ExtArgs>
@@ -5117,6 +5407,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   trainings?: boolean | Prisma.User$trainingsArgs<ExtArgs>
   speciesObservations?: boolean | Prisma.User$speciesObservationsArgs<ExtArgs>
   citizenRescueRatings?: boolean | Prisma.User$citizenRescueRatingsArgs<ExtArgs>
+  emergencyContact?: boolean | Prisma.User$emergencyContactArgs<ExtArgs>
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   mediaAssets?: boolean | Prisma.User$mediaAssetsArgs<ExtArgs>
@@ -5144,6 +5435,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     trainings: Prisma.$TrainingPayload<ExtArgs>[]
     speciesObservations: Prisma.$SpeciesObservationPayload<ExtArgs>[]
     citizenRescueRatings: Prisma.$RescueRatingPayload<ExtArgs>[]
+    emergencyContact: Prisma.$EmergencyContactPayload<ExtArgs> | null
     sessions: Prisma.$SessionPayload<ExtArgs>[]
     accounts: Prisma.$AccountPayload<ExtArgs>[]
     mediaAssets: Prisma.$MediaAssetPayload<ExtArgs>[]
@@ -5581,6 +5873,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   trainings<T extends Prisma.User$trainingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$trainingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TrainingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   speciesObservations<T extends Prisma.User$speciesObservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$speciesObservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SpeciesObservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   citizenRescueRatings<T extends Prisma.User$citizenRescueRatingsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$citizenRescueRatingsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RescueRatingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  emergencyContact<T extends Prisma.User$emergencyContactArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$emergencyContactArgs<ExtArgs>>): Prisma.Prisma__EmergencyContactClient<runtime.Types.Result.GetResult<Prisma.$EmergencyContactPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mediaAssets<T extends Prisma.User$mediaAssetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$mediaAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -6381,6 +6674,25 @@ export type User$citizenRescueRatingsArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.RescueRatingScalarFieldEnum | Prisma.RescueRatingScalarFieldEnum[]
+}
+
+/**
+ * User.emergencyContact
+ */
+export type User$emergencyContactArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EmergencyContact
+   */
+  select?: Prisma.EmergencyContactSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EmergencyContact
+   */
+  omit?: Prisma.EmergencyContactOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmergencyContactInclude<ExtArgs> | null
+  where?: Prisma.EmergencyContactWhereInput
 }
 
 /**

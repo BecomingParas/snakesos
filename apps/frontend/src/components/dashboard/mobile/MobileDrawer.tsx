@@ -168,7 +168,7 @@ export function MobileDrawer({
     if (href === '') {
       return pathname === config.basePath;
     }
-    return pathname.startsWith(fullPath);
+    return pathname === fullPath || pathname.startsWith(`${fullPath}/`);
   };
 
   const handleNavigation = (href: string) => {

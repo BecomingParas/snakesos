@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import {
   MapPin,
   Camera,
@@ -27,6 +28,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { useCreateRescueRequestMutation } from '@/lib/graphql/hooks/rescue.hooks';
 import { useCurrentUser } from '@/hooks/dashboard/useCurrentUser';
@@ -118,6 +126,8 @@ interface FormData {
   snakeImages: SnakeImage[];
   isEmergency: boolean;
   hasBite: boolean;
+  emergencyDetails: string;
+  biteDetails: string;
 
   name: string;
   phone: string;
@@ -173,6 +183,7 @@ const MAX_IMAGES = 4;
 
 export default function RequestRescuePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useCurrentUser();
   const [step, setStep] = useState(1);
   const [error, setError] = useState<string | null>(null);
@@ -211,10 +222,21 @@ export default function RequestRescuePage() {
     snakeImages: [],
     isEmergency: false,
     hasBite: false,
+    emergencyDetails: '',
+    biteDetails: '',
     name: '',
     phone: '',
     email: '',
   });
+
+  useEffect(() => {
+    if (searchParams.get('emergency') !== 'true') return;
+    setFormData((prev) => ({
+      ...prev,
+      requestType: prev.requestType || 'OTHER',
+      isEmergency: true,
+    }));
+  }, [searchParams]);
 
   useEffect(() => {
     if (!user) return;
@@ -371,6 +393,14 @@ export default function RequestRescuePage() {
       setError('Snake description must be at least 10 characters if provided');
       return;
     }
+    if (formData.isEmergency && !formData.emergencyDetails.trim()) {
+      setError('Please describe why this request is an emergency');
+      return;
+    }
+    if (formData.hasBite && !formData.biteDetails.trim()) {
+      setError('Please describe the snake bite details');
+      return;
+    }
 
     try {
       const wardValue =
@@ -402,7 +432,9 @@ export default function RequestRescuePage() {
                 : undefined,
             snakeImageUrl: formData.snakeImages[0]?.dataUrl ?? undefined,
             isEmergency: formData.isEmergency,
+            emergencyDetails: formData.emergencyDetails.trim() || undefined,
             hasBite: formData.hasBite,
+            biteDetails: formData.biteDetails.trim() || undefined,
           },
         },
       });
@@ -421,7 +453,7 @@ export default function RequestRescuePage() {
         {/* Header */}
         <div className="mb-6">
           <Button
-            variant="ghost"
+            variant="outline"
             onClick={() => (step > 1 ? setStep(step - 1) : router.back())}
             className="mb-4 -ml-2 text-muted-foreground hover:text-foreground"
           >
@@ -683,31 +715,70 @@ export default function RequestRescuePage() {
                   </p>
                 </div>
 
+                {formData.isEmergency && (
+                  <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+                    <div className="mb-3 flex items-center gap-2 text-destructive">
+                      <Siren className="h-4 w-4" />
+                      <p className="text-sm font-semibold">Emergency details</p>
+                    </div>
+                    <Textarea
+                      id="emergencyDetails"
+                      value={formData.emergencyDetails}
+                      onChange={(e) =>
+                        updateFormData({ emergencyDetails: e.target.value })
+                      }
+                      placeholder="Tell rescuers what makes this urgent..."
+                      rows={3}
+                      required
+                    />
+                  </div>
+                )}
+
+                {formData.hasBite && (
+                  <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+                    <Label htmlFor="biteDetails">Snake bite details</Label>
+                    <Textarea
+                      id="biteDetails"
+                      value={formData.biteDetails}
+                      onChange={(e) =>
+                        updateFormData({ biteDetails: e.target.value })
+                      }
+                      placeholder="When and where was the person bitten?"
+                      rows={3}
+                      required
+                    />
+                  </div>
+                )}
+
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="size">Approximate Size</Label>
-                    <select
-                      id="size"
+                    <Select
                       value={formData.snakeSize}
-                      onChange={(e) =>
+                      onValueChange={(value) =>
                         updateFormData({
-                          snakeSize: e.target.value as SnakeSizeValue,
+                          snakeSize: value as SnakeSizeValue,
                         })
                       }
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
                     >
-                      {SNAKE_SIZE_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger id="size" className="mt-1 h-11">
+                        <SelectValue placeholder="Select snake size" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {SNAKE_SIZE_OPTIONS.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div>
                     <Label htmlFor="color">Color/Pattern</Label>
                     <Input
                       id="color"
+                      className="mt-1 h-11"
                       value={formData.snakeColor}
                       onChange={(e) =>
                         updateFormData({ snakeColor: e.target.value })

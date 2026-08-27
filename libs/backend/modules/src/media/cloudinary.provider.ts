@@ -3,10 +3,19 @@ import { randomUUID } from 'node:crypto';
 
 export type MediaType =
   | 'RESCUER_PROFILE_IMAGE'
+  | 'CITIZEN_PROFILE_IMAGE'
+  | 'ADMIN_PROFILE_IMAGE'
   | 'RESCUER_VERIFICATION_DOCUMENT';
+
+const isProfileImage = (mediaType: MediaType) =>
+  mediaType === 'RESCUER_PROFILE_IMAGE' ||
+  mediaType === 'CITIZEN_PROFILE_IMAGE' ||
+  mediaType === 'ADMIN_PROFILE_IMAGE';
 
 const mimeTypes: Record<MediaType, string[]> = {
   RESCUER_PROFILE_IMAGE: ['image/jpeg', 'image/png', 'image/webp'],
+  CITIZEN_PROFILE_IMAGE: ['image/jpeg', 'image/png', 'image/webp'],
+  ADMIN_PROFILE_IMAGE: ['image/jpeg', 'image/png', 'image/webp'],
   RESCUER_VERIFICATION_DOCUMENT: [
     'image/jpeg',
     'image/png',
@@ -17,6 +26,8 @@ const mimeTypes: Record<MediaType, string[]> = {
 
 const maxSizes: Record<MediaType, number> = {
   RESCUER_PROFILE_IMAGE: 5 * 1024 * 1024,
+  CITIZEN_PROFILE_IMAGE: 5 * 1024 * 1024,
+  ADMIN_PROFILE_IMAGE: 5 * 1024 * 1024,
   RESCUER_VERIFICATION_DOCUMENT: 10 * 1024 * 1024,
 };
 
@@ -62,11 +73,10 @@ export function createMediaUploadSignature(input: {
   validateMediaInput(input.mediaType, input.mimeType, input.sizeBytes);
   const { cloudName, apiKey, apiSecret } = configureCloudinary();
   const timestamp = Math.floor(Date.now() / 1000);
-  const folder =
-    input.mediaType === 'RESCUER_PROFILE_IMAGE'
-      ? `snakesos/users/${input.userId}/rescuer/profile`
-      : `snakesos/users/${input.userId}/rescuer/verification`;
-  const publicId = `${input.mediaType === 'RESCUER_PROFILE_IMAGE' ? 'profile' : 'verification'}/${randomUUID()}`;
+  const folder = isProfileImage(input.mediaType)
+    ? `snakesos/users/${input.userId}/rescuer/profile`
+    : `snakesos/users/${input.userId}/rescuer/verification`;
+  const publicId = `${isProfileImage(input.mediaType) ? 'profile' : 'verification'}/${randomUUID()}`;
   const resourceType =
     input.mediaType === 'RESCUER_VERIFICATION_DOCUMENT' &&
     input.mimeType === 'application/pdf'
@@ -111,19 +121,18 @@ export function createSecureMediaUrl(
     type: 'authenticated',
     sign_url: true,
     expires_at: Math.floor(Date.now() / 1000) + 300,
-    transformation:
-      mediaType === 'RESCUER_PROFILE_IMAGE'
-        ? [
-            {
-              width: 512,
-              height: 512,
-              crop: 'fill',
-              gravity: 'face',
-              quality: 'auto',
-              fetch_format: 'auto',
-            },
-          ]
-        : undefined,
+    transformation: isProfileImage(mediaType)
+      ? [
+          {
+            width: 512,
+            height: 512,
+            crop: 'fill',
+            gravity: 'face',
+            quality: 'auto',
+            fetch_format: 'auto',
+          },
+        ]
+      : undefined,
   });
 }
 

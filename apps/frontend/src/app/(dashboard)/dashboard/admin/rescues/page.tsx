@@ -45,6 +45,8 @@ const GET_RESCUE_REQUESTS = gql`
           referenceNumber
           status
           priority
+          isEmergency
+          hasBite
           species {
             name
             scientificName
@@ -92,6 +94,8 @@ interface RescueRequestNode {
   referenceNumber: string;
   status: string;
   priority: string;
+  isEmergency: boolean;
+  hasBite: boolean;
   species: {
     name: string;
     scientificName: string;
@@ -419,7 +423,12 @@ export default function RescueRequestsPage() {
                     rescueRequests.map((request) => (
                       <tr
                         key={request.id}
-                        className="group cursor-pointer transition-colors hover:bg-muted/20"
+                        className={cn(
+                          'group cursor-pointer border-l-2 transition-colors',
+                          request.isEmergency || request.hasBite
+                            ? 'border-l-red-500 bg-red-500/5 hover:bg-red-500/10'
+                            : 'border-l-transparent hover:bg-muted/20',
+                        )}
                         tabIndex={0}
                         onClick={() =>
                           router.push(`/dashboard/admin/rescues/${request.id}`)

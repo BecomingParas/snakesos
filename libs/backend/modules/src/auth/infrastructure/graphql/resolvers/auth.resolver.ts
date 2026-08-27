@@ -466,6 +466,23 @@ export const authResolvers = {
       });
     },
 
+    updateUserRole: async (
+      _parent: unknown,
+      args: { input: { userId: string; role: string } },
+      context: GraphQLContext,
+    ) => {
+      context.requireAuth();
+      context.requireRole(['ADMIN', 'SUPER_ADMIN']);
+      if (args.input.userId === context.user.id) {
+        throw new Error('ADMIN_CANNOT_CHANGE_OWN_ROLE');
+      }
+
+      return prisma.user.update({
+        where: { id: args.input.userId },
+        data: { role: args.input.role as any },
+      });
+    },
+
     reviewVolunteerApplication: async (
       _parent: any,
       args: {

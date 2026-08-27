@@ -7,7 +7,11 @@ import {
   CREATE_MEDIA_UPLOAD_SIGNATURE,
 } from '@/lib/graphql/media';
 
-type MediaType = 'RESCUER_PROFILE_IMAGE' | 'RESCUER_VERIFICATION_DOCUMENT';
+type MediaType =
+  | 'RESCUER_PROFILE_IMAGE'
+  | 'CITIZEN_PROFILE_IMAGE'
+  | 'ADMIN_PROFILE_IMAGE'
+  | 'RESCUER_VERIFICATION_DOCUMENT';
 
 type UploadSignature = {
   mediaId: string;

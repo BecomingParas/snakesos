@@ -509,6 +509,12 @@ const ACTIVE_RESCUES = gql`
   }
 `;
 
+const EMERGENCY_RESCUES_COUNT = gql`
+  query EmergencyRescuesCount {
+    emergencyRescuesCount
+  }
+`;
+
 const RESCUE_WITH_TRACKING = gql`
   query RescueWithTracking($id: ID!) {
     rescueRequest(id: $id) {
@@ -781,6 +787,22 @@ export function useActiveRescuesQuery(
     { activeRescues: RescueRequestConnection },
     { pagination?: PaginationInput }
   >(ACTIVE_RESCUES, options);
+}
+
+export function useEmergencyRescuesCountQuery(
+  options?: QueryHookOptions<
+    { emergencyRescuesCount: number },
+    Record<string, never>
+  >,
+) {
+  return useQuery<{ emergencyRescuesCount: number }, Record<string, never>>(
+    EMERGENCY_RESCUES_COUNT,
+    {
+      ...options,
+      pollInterval: 10000,
+      fetchPolicy: 'cache-and-network',
+    },
+  );
 }
 
 export function useRescueWithTrackingQuery(

@@ -358,6 +358,28 @@ export const paymentsResolvers = {
       }
       return paymentIntent;
     },
+    assignedRescuePaymentIntent: async (
+      _parent: unknown,
+      args: { rescueId: string },
+      context: GraphQLContext,
+    ) => {
+      context.requireAuth();
+      context.requireRole([
+        'VOLUNTEER',
+        'VERIFIED_RESCUER',
+        'DISTRICT_COORDINATOR',
+      ]);
+      return prisma.paymentIntent.findFirst({
+        where: {
+          rescueCharge: {
+            rescueId: args.rescueId,
+            rescue: {
+              assignedVolunteer: { userId: context.user.id },
+            },
+          },
+        },
+      });
+    },
     stripeConnectionStatus: async (
       ...[, ,]: [unknown, unknown, GraphQLContext]
     ) => {

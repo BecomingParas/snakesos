@@ -376,7 +376,7 @@ export default function RequestTrackingPage({ params }: PageProps) {
         {/* Header */}
         <div className="mb-6">
           <Button
-            variant="ghost"
+            variant="outline"
             onClick={() => router.push('/dashboard/citizen')}
             className="mb-4"
           >

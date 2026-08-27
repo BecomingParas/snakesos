@@ -138,6 +138,20 @@ export const MY_RESCUE_PAYMENT_INTENT = gql`
   }
 `;
 
+export const ASSIGNED_RESCUE_PAYMENT_INTENT = gql`
+  query AssignedRescuePaymentIntent($rescueId: ID!) {
+    assignedRescuePaymentIntent(rescueId: $rescueId) {
+      id
+      provider
+      amount
+      currency
+      status
+      providerReference
+      updatedAt
+    }
+  }
+`;
+
 export const START_PAYMENT = gql`
   mutation StartPayment($input: StartPaymentInput!) {
     startPayment(input: $input) {

@@ -38,6 +38,7 @@ import {
 } from '@/lib/graphql/hooks/rescue.hooks';
 import { useHospitals } from '@/lib/graphql/hooks/hospital.hooks';
 import { toast } from 'sonner';
+import { useAssignedRescuePaymentIntent } from '@/lib/graphql/hooks/finance.hooks';
 
 /**
  * Active Rescue Page
@@ -131,6 +132,10 @@ export default function ActiveRescuePage() {
   const activeRescue =
     assignedRescues.find((rescue) => rescue.status === 'ACCEPTED') ||
     assignedRescues.find((rescue) => rescue.status === 'IN_PROGRESS');
+  const { data: paymentData, loading: paymentLoading } =
+    useAssignedRescuePaymentIntent(activeRescue?.id || '');
+  const paymentStatus = paymentData?.assignedRescuePaymentIntent?.status;
+  const paymentComplete = paymentStatus === 'SUCCEEDED';
 
   const handleUpdateStatus = async (newStatus: string) => {
     if (!activeRescue) return;
@@ -316,7 +321,11 @@ export default function ActiveRescuePage() {
             reported to an administrator for reconciliation.
           </p>
           <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm">
-            Payment status is visible to the citizen and updates automatically.
+            {paymentLoading
+              ? 'Checking citizen payment status...'
+              : paymentComplete
+                ? 'Payment received. You can complete this rescue.'
+                : 'Waiting for citizen payment before completion.'}
           </div>
         </Card>
 
@@ -337,7 +346,8 @@ export default function ActiveRescuePage() {
               )}
               <Button
                 onClick={() => setShowCompleteForm(true)}
-                className="col-span-2 bg-green-600 hover:bg-green-700"
+                disabled={!paymentComplete}
+                className="col-span-2 bg-green-600 hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <CheckCircle className="mr-2 h-4 w-4" />
                 Complete Rescue
@@ -517,7 +527,9 @@ export default function ActiveRescuePage() {
                 </Button>
                 <Button
                   onClick={handleComplete}
-                  disabled={completing || !outcome || !rescueReport}
+                  disabled={
+                    completing || !paymentComplete || !outcome || !rescueReport
+                  }
                   className="flex-1 bg-green-600 hover:bg-green-700"
                 >
                   {completing ? (

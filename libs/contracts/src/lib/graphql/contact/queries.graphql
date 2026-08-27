@@ -3,6 +3,8 @@
 # ===================================================================
 
 extend type Query {
+  myEmergencyContact: EmergencyContact @auth
+
   """
   Get contact message by ID
   """

@@ -180,7 +180,7 @@ export default function RescuerDetailPage({ params }: PageProps) {
   if (error || !rescuer) {
     return (
       <div className="p-6">
-        <Button variant="ghost" onClick={() => router.back()}>
+        <Button variant="outline" onClick={() => router.back()}>
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>

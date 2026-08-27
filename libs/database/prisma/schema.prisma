@@ -72,10 +72,11 @@ model User {
   trainings                   Training[]
   speciesObservations         SpeciesObservation[]  @relation
   citizenRescueRatings        RescueRating[]        @relation("CitizenRatings")
+  emergencyContact            EmergencyContact?
 
   // Better Auth Relations
-  sessions Session[]
-  accounts Account[]
+  sessions    Session[]
+  accounts    Account[]
   mediaAssets MediaAsset[]
 
   // RBAC Relations
@@ -95,6 +96,17 @@ enum UserRole {
   DISTRICT_COORDINATOR
   ADMIN
   SUPER_ADMIN
+}
+
+model EmergencyContact {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  phone        String
+  relationship String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 enum UserStatus {
@@ -119,26 +131,28 @@ enum MediaStatus {
 
 enum MediaType {
   RESCUER_PROFILE_IMAGE
+  CITIZEN_PROFILE_IMAGE
+  ADMIN_PROFILE_IMAGE
   RESCUER_VERIFICATION_DOCUMENT
 }
 
 model MediaAsset {
-  id               String       @id @default(cuid())
+  id               String        @id @default(cuid())
   ownerId          String
   mediaType        MediaType
   provider         MediaProvider @default(CLOUDINARY)
-  publicId         String       @unique
-  resourceType     String       @default("image")
+  publicId         String        @unique
+  resourceType     String        @default("image")
   originalFileName String?
   mimeType         String
   sizeBytes        BigInt?
   width            Int?
   height           Int?
   format           String?
-  status           MediaStatus  @default(PENDING)
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-  owner            User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  status           MediaStatus   @default(PENDING)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  owner            User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
   @@index([ownerId])
   @@index([mediaType])

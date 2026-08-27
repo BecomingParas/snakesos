@@ -189,7 +189,7 @@ export function NotificationToolbar({
             <Button
               type="button"
               size="sm"
-              variant={status === 'all' ? 'default' : 'ghost'}
+              variant={status === 'all' ? 'default' : 'outline'}
               onClick={() => onStatusChange('all')}
             >
               All
@@ -197,7 +197,7 @@ export function NotificationToolbar({
             <Button
               type="button"
               size="sm"
-              variant={status === 'unread' ? 'default' : 'ghost'}
+              variant={status === 'unread' ? 'default' : 'outline'}
               onClick={() => onStatusChange('unread')}
             >
               Unread
@@ -205,7 +205,7 @@ export function NotificationToolbar({
             <Button
               type="button"
               size="sm"
-              variant={status === 'read' ? 'default' : 'ghost'}
+              variant={status === 'read' ? 'default' : 'outline'}
               onClick={() => onStatusChange('read')}
             >
               Read
@@ -229,7 +229,7 @@ export function NotificationToolbar({
             </SelectContent>
           </Select>
           {(search || category !== 'all') && (
-            <Button type="button" variant="ghost" size="sm" onClick={onClear}>
+            <Button type="button" variant="outline" size="sm" onClick={onClear}>
               Clear filters
             </Button>
           )}
@@ -325,7 +325,7 @@ export function NotificationCard({
               <Button
                 type="button"
                 size="sm"
-                variant="ghost"
+                variant="outline"
                 onClick={() => onRead(notification.id)}
               >
                 <CheckCheck className="mr-1.5 h-4 w-4" />
@@ -335,7 +335,7 @@ export function NotificationCard({
             <Button
               type="button"
               size="icon"
-              variant="ghost"
+              variant="outline"
               className="text-destructive hover:text-destructive"
               onClick={() => onDelete(notification)}
               aria-label="Delete notification"

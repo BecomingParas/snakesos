@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState } from 'react';
 import {
   ArrowDown,
   ArrowUp,
@@ -10,52 +10,52 @@ import {
   Search,
   Trash2,
   UserCheck,
-} from "lucide-react";
-import { toast } from "sonner";
+} from 'lucide-react';
+import { toast } from 'sonner';
 
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
-import type { TableDef, Row } from "@/lib/dashboard-data";
-import { EmptyState } from "./widgets";
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
+import type { TableDef, Row } from '@/lib/dashboard-data';
+import { EmptyState } from './widgets';
 
 const toneFor = (value: string) => {
   const v = value.toUpperCase();
-  if (["EMERGENCY", "FAILED", "CANCELLED", "REJECTED", "ERROR"].includes(v))
-    return "border-destructive/40 bg-destructive/15 text-destructive";
-  if (["HIGH", "PENDING", "BUSY", "REFUNDED", "WARNING"].includes(v))
-    return "border-warning/40 bg-warning/15 text-warning";
-  if (["COMPLETED", "APPROVED", "AVAILABLE", "SUCCESS"].includes(v))
-    return "border-success/40 bg-success/15 text-success";
-  if (["IN_PROGRESS", "ASSIGNED", "MEDIUM", "SUBSCRIPTION"].includes(v))
-    return "border-accent/40 bg-accent/15 text-accent";
-  return "border-border bg-muted text-muted-foreground";
+  if (['EMERGENCY', 'FAILED', 'CANCELLED', 'REJECTED', 'ERROR'].includes(v))
+    return 'border-destructive/40 bg-destructive/15 text-destructive';
+  if (['HIGH', 'PENDING', 'BUSY', 'REFUNDED', 'WARNING'].includes(v))
+    return 'border-warning/40 bg-warning/15 text-warning';
+  if (['COMPLETED', 'APPROVED', 'AVAILABLE', 'SUCCESS'].includes(v))
+    return 'border-success/40 bg-success/15 text-success';
+  if (['IN_PROGRESS', 'ASSIGNED', 'MEDIUM', 'SUBSCRIPTION'].includes(v))
+    return 'border-accent/40 bg-accent/15 text-accent';
+  return 'border-border bg-muted text-muted-foreground';
 };
 
 export function BadgeCell({ value }: { value: string }) {
   return (
     <span
       className={cn(
-        "inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider",
+        'inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider',
         toneFor(value),
       )}
     >
-      {value.replace(/_/g, " ").toLowerCase()}
+      {value.replace(/_/g, ' ').toLowerCase()}
     </span>
   );
 }
 
 function csvEscape(value: string | number) {
-  const s = String(value ?? "");
+  const s = String(value ?? '');
   return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
@@ -72,8 +72,10 @@ export function DataTable({
   selectable?: boolean;
   exportable?: boolean;
 }) {
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<{ key: string; dir: "asc" | "desc" } | null>(null);
+  const [query, setQuery] = useState('');
+  const [sort, setSort] = useState<{ key: string; dir: 'asc' | 'desc' } | null>(
+    null,
+  );
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [hidden, setHidden] = useState<Set<string>>(new Set());
@@ -92,42 +94,54 @@ export function DataTable({
     const sorted = [...base].sort((a, b) => {
       const av = a[sort.key];
       const bv = b[sort.key];
-      if (typeof av === "number" && typeof bv === "number") return av - bv;
-      return String(av ?? "").localeCompare(String(bv ?? ""));
+      if (typeof av === 'number' && typeof bv === 'number') return av - bv;
+      return String(av ?? '').localeCompare(String(bv ?? ''));
     });
-    return sort.dir === "asc" ? sorted : sorted.reverse();
+    return sort.dir === 'asc' ? sorted : sorted.reverse();
   }, [table.rows, query, sort]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
   const current = Math.min(page, pageCount - 1);
-  const rows = filtered.slice(current * pageSize, current * pageSize + pageSize);
+  const rows = filtered.slice(
+    current * pageSize,
+    current * pageSize + pageSize,
+  );
 
   const toggleSort = (key: string) =>
     setSort((s) =>
-      s?.key === key ? (s.dir === "asc" ? { key, dir: "desc" } : null) : { key, dir: "asc" },
+      s?.key === key
+        ? s.dir === 'asc'
+          ? { key, dir: 'desc' }
+          : null
+        : { key, dir: 'asc' },
     );
 
   const rowIndex = (r: Row) => table.rows.indexOf(r);
-  const allOnPageSelected = rows.length > 0 && rows.every((r) => selected.has(rowIndex(r)));
+  const allOnPageSelected =
+    rows.length > 0 && rows.every((r) => selected.has(rowIndex(r)));
 
   const exportCsv = () => {
     setExporting(true);
     const source = selected.size
       ? table.rows.filter((_, i) => selected.has(i))
       : filtered;
-    const header = columns.map((c) => csvEscape(c.label)).join(",");
+    const header = columns.map((c) => csvEscape(c.label)).join(',');
     const body = source
-      .map((r) => columns.map((c) => csvEscape(r[c.key] ?? "")).join(","))
-      .join("\n");
-    const blob = new Blob([`${header}\n${body}`], { type: "text/csv;charset=utf-8;" });
+      .map((r) => columns.map((c) => csvEscape(r[c.key] ?? '')).join(','))
+      .join('\n');
+    const blob = new Blob([`${header}\n${body}`], {
+      type: 'text/csv;charset=utf-8;',
+    });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     a.href = url;
     a.download = `${table.name}-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
     setExporting(false);
-    toast.success(`Exported ${source.length} rows`, { description: `${table.name}.csv` });
+    toast.success(`Exported ${source.length} rows`, {
+      description: `${table.name}.csv`,
+    });
   };
 
   if (loading) {
@@ -185,7 +199,12 @@ export function DataTable({
         </DropdownMenu>
 
         {exportable && (
-          <Button variant="outline" size="sm" onClick={exportCsv} disabled={exporting}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={exportCsv}
+            disabled={exporting}
+          >
             {exporting ? (
               <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
             ) : (
@@ -209,9 +228,11 @@ export function DataTable({
             </Button>
             <Button
               size="sm"
-              variant="ghost"
+              variant="outline"
               onClick={() => {
-                toast("Archived", { description: `${selected.size} records archived` });
+                toast('Archived', {
+                  description: `${selected.size} records archived`,
+                });
                 setSelected(new Set());
               }}
             >
@@ -226,7 +247,7 @@ export function DataTable({
           icon={Inbox}
           title="No matching records"
           description="Try a different search term or clear the filters to see everything again."
-          action={{ label: "Clear search", onClick: () => setQuery("") }}
+          action={{ label: 'Clear search', onClick: () => setQuery('') }}
         />
       ) : (
         <>
@@ -244,7 +265,9 @@ export function DataTable({
                           setSelected((s) => {
                             const next = new Set(s);
                             rows.forEach((r) =>
-                              v ? next.add(rowIndex(r)) : next.delete(rowIndex(r)),
+                              v
+                                ? next.add(rowIndex(r))
+                                : next.delete(rowIndex(r)),
                             );
                             return next;
                           })
@@ -254,14 +277,24 @@ export function DataTable({
                   )}
                   {columns.map((c) => {
                     const active = sort?.key === c.key;
-                    const Arrow = !active ? ArrowUpDown : sort.dir === "asc" ? ArrowUp : ArrowDown;
+                    const Arrow = !active
+                      ? ArrowUpDown
+                      : sort.dir === 'asc'
+                        ? ArrowUp
+                        : ArrowDown;
                     return (
-                      <th key={c.key} className={cn("px-3 py-2.5", c.align === "right" && "text-right")}>
+                      <th
+                        key={c.key}
+                        className={cn(
+                          'px-3 py-2.5',
+                          c.align === 'right' && 'text-right',
+                        )}
+                      >
                         <button
                           onClick={() => toggleSort(c.key)}
                           className={cn(
-                            "inline-flex items-center gap-1.5 rounded transition-colors hover:text-foreground",
-                            active && "text-foreground",
+                            'inline-flex items-center gap-1.5 rounded transition-colors hover:text-foreground',
+                            active && 'text-foreground',
                           )}
                           aria-label={`Sort by ${c.label}`}
                         >
@@ -302,11 +335,15 @@ export function DataTable({
                         <td
                           key={c.key}
                           className={cn(
-                            "px-3 py-2.5",
-                            c.align === "right" && "text-right tabular-nums",
+                            'px-3 py-2.5',
+                            c.align === 'right' && 'text-right tabular-nums',
                           )}
                         >
-                          {c.badge ? <BadgeCell value={String(r[c.key])} /> : String(r[c.key] ?? "—")}
+                          {c.badge ? (
+                            <BadgeCell value={String(r[c.key])} />
+                          ) : (
+                            String(r[c.key] ?? '—')
+                          )}
                         </td>
                       ))}
                     </tr>
@@ -323,14 +360,19 @@ export function DataTable({
               return (
                 <div key={idx} className="space-y-1.5 p-3 text-sm">
                   {columns.map((c) => (
-                    <div key={c.key} className="flex items-center justify-between gap-3">
+                    <div
+                      key={c.key}
+                      className="flex items-center justify-between gap-3"
+                    >
                       <span className="text-xs uppercase tracking-wider text-muted-foreground">
                         {c.label}
                       </span>
                       {c.badge ? (
                         <BadgeCell value={String(r[c.key])} />
                       ) : (
-                        <span className="text-right">{String(r[c.key] ?? "—")}</span>
+                        <span className="text-right">
+                          {String(r[c.key] ?? '—')}
+                        </span>
                       )}
                     </div>
                   ))}
@@ -341,7 +383,8 @@ export function DataTable({
 
           <div className="flex flex-wrap items-center gap-2 border-t border-border/70 px-3 py-2.5 text-xs text-muted-foreground">
             <span>
-              Showing {current * pageSize + 1}–{Math.min((current + 1) * pageSize, filtered.length)} of{" "}
+              Showing {current * pageSize + 1}–
+              {Math.min((current + 1) * pageSize, filtered.length)} of{' '}
               {filtered.length}
             </span>
             <div className="ml-auto flex items-center gap-2">

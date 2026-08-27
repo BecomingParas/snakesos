@@ -14,6 +14,8 @@ import {
   AlertTriangle,
   TrendingUp,
   Award,
+  BarChart3,
+  Hospital,
   Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -264,7 +266,7 @@ export default function RescuerDashboard() {
         </Card>
 
         {/* Stats Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
           <Card className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -534,39 +536,61 @@ export default function RescuerDashboard() {
             {/* Quick Actions */}
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
-              <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-2">
                 <Button
                   variant="outline"
-                  className="w-full justify-start bg-green-50 hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-900 border-green-200 dark:border-green-800"
+                  className="w-full min-w-0 justify-start bg-green-50 hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-900 border-green-200 dark:border-green-800"
                   onClick={() => router.push('/dashboard/rescuer/queue')}
                 >
-                  <Activity className="mr-2 h-4 w-4 text-green-600 dark:text-green-400" />
-                  View Rescue Queue
+                  <Activity className="mr-2 h-4 w-4 shrink-0 text-green-600 dark:text-green-400" />
+                  <span className="truncate">
+                    <span className="hidden sm:inline">Rescue </span>
+                    Queue
+                  </span>
                   {/* TODO: Add badge with queue count */}
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full justify-start"
+                  className="w-full min-w-0 justify-start"
                   onClick={() => router.push('/dashboard/rescuer/assignments')}
                 >
-                  <Activity className="mr-2 h-4 w-4" />
-                  View All Assignments
+                  <Activity className="mr-2 h-4 w-4 shrink-0" />
+                  <span className="truncate">Assignments</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full justify-start"
+                  className="w-full min-w-0 justify-start"
                   onClick={() => router.push('/dashboard/rescuer/history')}
                 >
-                  <Clock className="mr-2 h-4 w-4" />
-                  Rescue History
+                  <Clock className="mr-2 h-4 w-4 shrink-0" />
+                  <span className="truncate">
+                    <span className="hidden sm:inline">Rescue </span>
+                    History
+                  </span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full justify-start"
+                  className="w-full min-w-0 justify-start"
+                  onClick={() => router.push('/dashboard/rescuer/analytics')}
+                >
+                  <BarChart3 className="mr-2 h-4 w-4 shrink-0" />
+                  <span className="truncate">Earnings</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full min-w-0 justify-start"
+                  onClick={() => router.push('/dashboard/rescuer/hospitals')}
+                >
+                  <Hospital className="mr-2 h-4 w-4 shrink-0" />
+                  <span className="truncate">Hospitals</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full min-w-0 justify-start"
                   onClick={() => router.push('/dashboard/rescuer/map')}
                 >
-                  <MapPin className="mr-2 h-4 w-4" />
-                  Map View
+                  <MapPin className="mr-2 h-4 w-4 shrink-0" />
+                  <span className="truncate">Map</span>
                 </Button>
               </div>
             </Card>

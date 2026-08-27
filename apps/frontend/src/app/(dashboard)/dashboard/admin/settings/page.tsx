@@ -27,11 +27,17 @@ import {
   Database,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { MediaUploader } from '@/components/media/MediaUploader';
 import {
   useAdminSettingsQuery,
   useUpdateAdminSettingsMutation,
 } from '@/lib/graphql/hooks/settings.hooks';
 import { useMutation, useQuery } from '@/lib/apollo/hooks';
+import {
+  useMyProfileQuery,
+  useUpdateUserProfileMutation,
+} from '@/lib/graphql/hooks/user.hooks';
 
 /**
  * Admin Settings — System Configuration
@@ -326,6 +332,10 @@ function NotificationPreferencesPanel() {
 
 export default function AdminSettingsPage() {
   const { data, loading, error } = useAdminSettingsQuery();
+  const { data: profileData } = useMyProfileQuery({
+    fetchPolicy: 'cache-and-network',
+  });
+  const [updateProfile] = useUpdateUserProfileMutation();
   const [updateAdminSettings, { loading: saving }] =
     useUpdateAdminSettingsMutation();
   const [settings, setSettings] = useState<SettingsState>(defaultSettings);
@@ -502,6 +512,62 @@ export default function AdminSettingsPage() {
         <div className="space-y-6 min-w-0">
           {activeTab === 'general' && (
             <div className="space-y-6">
+              {profileData?.me && (
+                <Panel>
+                  <Eyebrow>Administrator Profile</Eyebrow>
+                  <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-primary" />
+                    Personal Information
+                  </h2>
+                  <div className="flex flex-wrap items-center gap-5">
+                    <Avatar className="h-20 w-20 border-2 border-border">
+                      {profileData.me.avatar && (
+                        <AvatarImage
+                          src={profileData.me.avatar}
+                          alt={profileData.me.name}
+                        />
+                      )}
+                      <AvatarFallback className="bg-primary/10 text-primary">
+                        {profileData.me.name.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold">{profileData.me.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {profileData.me.email}
+                      </p>
+                      <div className="mt-3 flex flex-wrap items-center gap-3">
+                        <MediaUploader
+                          mediaType="ADMIN_PROFILE_IMAGE"
+                          accept="image/jpeg,image/png,image/webp"
+                          label={
+                            profileData.me.avatar
+                              ? 'Change image'
+                              : 'Upload image'
+                          }
+                          onUploaded={async (media) => {
+                            if (!media.secureUrl) return;
+                            try {
+                              await updateProfile({
+                                variables: {
+                                  input: { avatar: media.secureUrl },
+                                },
+                              });
+                              toast.success('Profile image updated');
+                            } catch {
+                              toast.error('Unable to save profile image');
+                            }
+                          }}
+                        />
+                        <span className="text-xs text-muted-foreground">
+                          JPG, PNG, or WebP up to 5 MB.
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </Panel>
+              )}
+
               <Panel>
                 <Eyebrow>Identity</Eyebrow>
                 <h2 className="text-lg font-semibold mb-4">
@@ -737,7 +803,7 @@ export default function AdminSettingsPage() {
                           Active
                         </span>
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
                           className="text-muted-foreground hover:text-foreground hover:bg-accent"
                         >

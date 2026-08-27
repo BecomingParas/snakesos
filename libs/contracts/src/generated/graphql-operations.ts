@@ -1074,6 +1074,16 @@ export type EmailVerificationPayload = {
   user?: Maybe<User>;
 };
 
+export type EmergencyContact = {
+  __typename?: 'EmergencyContact';
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  phone: Scalars['Phone']['output'];
+  relationship: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 /** Engagement metrics */
 export type EngagementMetrics = {
   __typename?: 'EngagementMetrics';
@@ -1912,6 +1922,7 @@ export type Mutation = {
   respondToMessage: ContactMessage;
   /** Approve or reject volunteer application */
   reviewVolunteerApplication: Volunteer;
+  saveEmergencyContact: EmergencyContact;
   /** Send bulk notifications (admin only) */
   sendBulkNotifications: BulkOperationResult;
   startPayment: PaymentIntentCheckout;
@@ -2281,6 +2292,10 @@ export type MutationRespondToMessageArgs = {
 
 export type MutationReviewVolunteerApplicationArgs = {
   input: ReviewVolunteerInput;
+};
+
+export type MutationSaveEmergencyContactArgs = {
+  input: SaveEmergencyContactInput;
 };
 
 export type MutationSendBulkNotificationsArgs = {
@@ -2859,6 +2874,7 @@ export type Query = {
   aiModelConfig?: Maybe<AiModelConfig>;
   /** List all snake species */
   allSnakeSpecies: SnakeSpeciesConnection;
+  assignedRescuePaymentIntent?: Maybe<PaymentIntent>;
   /** Get available AI models */
   availableAIModels: Array<AiModelConfig>;
   /** Get available payment gateways */
@@ -2897,6 +2913,8 @@ export type Query = {
   donationStats: DonationStats;
   /** List donations */
   donations: DonationConnection;
+  /** Count of active emergency requests for the current dashboard role */
+  emergencyRescuesCount: Scalars['Int']['output'];
   /** Get engagement metrics */
   engagementMetrics: EngagementMetrics;
   /** Export analytics data (CSV/JSON) */
@@ -2948,6 +2966,7 @@ export type Query = {
   myAssignedRescues: RescueRequestConnection;
   /** Get my donations */
   myDonations: DonationConnection;
+  myEmergencyContact?: Maybe<EmergencyContact>;
   /** Get my identification history */
   myIdentificationHistory: AiIdentificationConnection;
   /** Get notification preferences */
@@ -3112,6 +3131,10 @@ export type QueryAllSnakeSpeciesArgs = {
   filter?: InputMaybe<SnakeSpeciesFilterInput>;
   pagination?: InputMaybe<PaginationInput>;
   sort?: InputMaybe<SnakeSpeciesSortInput>;
+};
+
+export type QueryAssignedRescuePaymentIntentArgs = {
+  rescueId: Scalars['ID']['input'];
 };
 
 export type QueryAvailableRescuesArgs = {
@@ -4119,6 +4142,12 @@ export type RoutingProfile =
   | 'EMERGENCY'
   | 'WALKING'
   | '%future added value';
+
+export type SaveEmergencyContactInput = {
+  name: Scalars['String']['input'];
+  phone: Scalars['Phone']['input'];
+  relationship: Scalars['String']['input'];
+};
 
 export type Season =
   | 'AUTUMN'

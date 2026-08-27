@@ -71,6 +71,11 @@ extend type Mutation {
   updateUserStatus(userId: ID!, status: UserStatus!): User! @auth(requires: [ADMIN, SUPER_ADMIN])
 
   """
+  Change another user's role (admin only; administrators cannot change their own role)
+  """
+  updateUserRole(input: UpdateUserRoleInput!): User! @auth(requires: [ADMIN, SUPER_ADMIN])
+
+  """
   Soft-delete a user account (super admin only)
   """
   deleteUser(userId: ID!): SuccessResponse! @auth(requires: [SUPER_ADMIN])
@@ -94,5 +99,10 @@ input UpdateProfileInput {
   avatar: String
   language: String
   timezone: String
+}
+
+input UpdateUserRoleInput {
+  userId: ID!
+  role: UserRole!
 }
 

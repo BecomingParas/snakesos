@@ -114,6 +114,26 @@ export const rescueQueryResolvers = {
       return stats;
     },
 
+    emergencyRescuesCount: async (
+      _parent: unknown,
+      _args: unknown,
+      context: GraphQLContext,
+    ) => {
+      context.requireAuth();
+      const isAdmin = RESCUE_MANAGEMENT_ROLES.includes(context.user.role);
+      return prisma.rescueRequest.count({
+        where: {
+          isEmergency: true,
+          status: {
+            in: isAdmin
+              ? ['PENDING', 'ASSIGNED', 'ACCEPTED', 'IN_PROGRESS']
+              : ['PENDING'],
+          },
+          ...(isAdmin ? {} : { assignedTo: null }),
+        },
+      });
+    },
+
     /**
      * Get my rescue requests (citizen dashboard)
      */
@@ -355,26 +375,13 @@ export const rescueQueryResolvers = {
         where: { userId: context.user.id },
       });
 
-      if (!volunteer) {
-        return {
-          edges: [],
-          pageInfo: {
-            hasNextPage: false,
-            hasPreviousPage: false,
-            startCursor: null,
-            endCursor: null,
-          },
-          totalCount: 0,
-        };
-      }
-
       const rescueRepository = new RescueRepository(prisma);
       const query = new AvailableRescuesQuery(rescueRepository);
 
       const rescues = await query.execute({
         municipality: args.filter?.municipality,
-        rescuerLat: volunteer.lastKnownLatitude || undefined,
-        rescuerLng: volunteer.lastKnownLongitude || undefined,
+        rescuerLat: volunteer?.lastKnownLatitude || undefined,
+        rescuerLng: volunteer?.lastKnownLongitude || undefined,
         maxDistance: args.filter?.maxDistance || 50,
         limit: args.pagination?.limit || 50,
       });

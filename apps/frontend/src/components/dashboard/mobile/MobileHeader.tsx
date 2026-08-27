@@ -2,8 +2,9 @@
 
 import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { NotificationDropdown } from '@/components/dashboard/notification-dropdown';
+import { EmergencyHeaderButton } from '@/components/dashboard/emergency-header-button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,12 +20,13 @@ interface MobileHeaderProps {
     name: string;
     email: string;
     role: string;
+    avatar?: string;
   };
   onMenuClick?: () => void;
   onNotificationClick?: () => void;
   onProfileClick?: () => void;
   onLogoutClick?: () => void;
-  notificationCount?: number;
+  onEmergencyClick?: () => void;
   showMenu?: boolean;
 }
 
@@ -35,7 +37,7 @@ export function MobileHeader({
   onNotificationClick,
   onProfileClick,
   onLogoutClick,
-  notificationCount = 0,
+  onEmergencyClick,
   showMenu = true,
 }: MobileHeaderProps) {
   const initials = user.name
@@ -62,8 +64,9 @@ export function MobileHeader({
           </span>
         </a>
 
-        {/* Right: Notifications + Profile */}
+        {/* Right: Emergency, notifications, and profile */}
         <div className="flex items-center gap-2 shrink-0">
+          <EmergencyHeaderButton role={user.role} onClick={onEmergencyClick} />
           {/* Notifications */}
           <NotificationDropdown role={user.role} />
 
@@ -72,6 +75,9 @@ export function MobileHeader({
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-9 w-9 rounded-full p-0">
                 <Avatar className="h-8 w-8">
+                  {user.avatar && (
+                    <AvatarImage src={user.avatar} alt={user.name} />
+                  )}
                   <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
                     {initials}
                   </AvatarFallback>

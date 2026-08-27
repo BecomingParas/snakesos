@@ -61,6 +61,11 @@ extend type Query {
   Get pending rescues count
   """
   pendingRescuesCount: Int!
+
+  """
+  Count of active emergency requests for the current dashboard role
+  """
+  emergencyRescuesCount: Int! @auth
   
   """
   Get active rescues (in progress)

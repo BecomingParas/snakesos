@@ -8,9 +8,7 @@ import type { CreateRescueInput } from '../dto/index.js';
 import { Prisma } from '@snake-rescue/database';
 
 export class CreateRescueCommand {
-  constructor(
-    private readonly rescueRepository: RescueRepository
-  ) {}
+  constructor(private readonly rescueRepository: RescueRepository) {}
 
   async execute(input: CreateRescueInput, reporterId: string) {
     // Prepare data for Prisma - matches RescueRequest schema
@@ -19,7 +17,7 @@ export class CreateRescueCommand {
       name: input.name,
       phone: input.phone,
       email: input.email,
-      
+
       // Location Details
       municipality: input.municipality,
       ward: input.ward ?? null,
@@ -27,30 +25,33 @@ export class CreateRescueCommand {
       landmark: input.landmark,
       lat: input.lat ?? null,
       lng: input.lng ?? null,
-      
+
       // Snake Information
       snakeDescription: input.snakeDescription,
       snakeSize: input.snakeSize,
       snakeColor: input.snakeColor,
       snakeImageUrl: input.snakeImageUrl ?? input.snakeImages?.[0],
       snakeImages: input.snakeImages ?? [],
-      
+
       // Rescue Details
-      priority: input.priority as any,
+      priority:
+        input.isEmergency || input.hasBite ? 'HIGH' : (input.priority as any),
       notes: input.notes,
       isEmergency: input.isEmergency,
       emergencyDetails: input.emergencyDetails,
       hasBite: input.hasBite,
       biteDetails: input.biteDetails,
-      
+
       // Status
       status: 'PENDING',
       stillPresent: true,
-      
+
       // Connect to user if provided
-      user: reporterId ? {
-        connect: { id: reporterId },
-      } : undefined,
+      user: reporterId
+        ? {
+            connect: { id: reporterId },
+          }
+        : undefined,
     };
 
     // Create rescue request

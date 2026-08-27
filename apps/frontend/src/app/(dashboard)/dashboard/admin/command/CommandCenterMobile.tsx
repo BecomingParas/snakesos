@@ -162,7 +162,7 @@ export function CommandCenterMobile({
           ).map(([tab, label, count]) => (
             <Button
               key={tab}
-              variant={activeTab === tab ? 'default' : 'ghost'}
+              variant={activeTab === tab ? 'default' : 'outline'}
               size="sm"
               onClick={() => setActiveTab(tab)}
               className="h-8 flex-1 px-2 text-xs"

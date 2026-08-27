@@ -16,21 +16,24 @@ import {
   Loader2,
 } from 'lucide-react';
 import { useUsersQuery } from '@/lib/graphql/hooks/user.hooks';
+import {
+  useMyProfileQuery,
+  useUpdateUserRoleMutation,
+} from '@/lib/graphql/hooks/user.hooks';
 import { toast } from 'sonner';
 import { DashboardPagination } from '@/components/dashboard/dashboard-pagination';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 /**
  * Admin Citizens Management Page - NOW WITH GRAPHQL INTEGRATION ✅
  */
-
-const roleColors = {
-  CITIZEN: 'bg-blue-500',
-  VOLUNTEER: 'bg-green-500',
-  VERIFIED_RESCUER: 'bg-purple-500',
-  DISTRICT_COORDINATOR: 'bg-orange-500',
-  ADMIN: 'bg-red-500',
-  SUPER_ADMIN: 'bg-red-700',
-};
 
 export default function AdminUsersPage() {
   const router = useRouter();
@@ -59,6 +62,9 @@ export default function AdminUsersPage() {
     },
     fetchPolicy: 'cache-and-network',
   });
+  const { data: profileData } = useMyProfileQuery();
+  const [updateUserRole, { loading: updatingRole }] =
+    useUpdateUserRoleMutation();
 
   // Debug logging
   console.log('Users Query Debug:', {
@@ -71,6 +77,24 @@ export default function AdminUsersPage() {
   const users = data?.users?.edges || [];
   const totalCount = data?.users?.totalCount || 0;
   const userNodes = users;
+  const currentUserId = profileData?.me?.id;
+
+  const handleRoleChange = async (userId: string, role: string) => {
+    if (userId === currentUserId) {
+      toast.error('You cannot change your own role');
+      return;
+    }
+    try {
+      await updateUserRole({ variables: { input: { userId, role } } });
+      toast.success('User role updated');
+    } catch (roleError) {
+      toast.error(
+        roleError instanceof Error
+          ? roleError.message
+          : 'Unable to update role',
+      );
+    }
+  };
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -174,30 +198,37 @@ export default function AdminUsersPage() {
             />
           </div>
 
-          <select
-            value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
-            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-          >
-            <option value="all">All Roles</option>
-            <option value="CITIZEN">Citizens</option>
-            <option value="VOLUNTEER">Volunteers</option>
-            <option value="VERIFIED_RESCUER">Verified Rescuers</option>
-            <option value="DISTRICT_COORDINATOR">Coordinators</option>
-            <option value="ADMIN">Admins</option>
-          </select>
+          <Select value={roleFilter} onValueChange={setRoleFilter}>
+            <SelectTrigger className="h-10 w-full md:w-[168px] border-primary/20 bg-primary/[0.04] font-medium shadow-sm transition-colors hover:border-primary/50 hover:bg-primary/[0.08]">
+              <SelectValue placeholder="All Roles" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Roles</SelectItem>
+              <SelectItem value="CITIZEN">Citizens</SelectItem>
+              <SelectItem value="VOLUNTEER">Volunteers</SelectItem>
+              <SelectItem value="VERIFIED_RESCUER">
+                Verified Rescuers
+              </SelectItem>
+              <SelectItem value="DISTRICT_COORDINATOR">Coordinators</SelectItem>
+              <SelectItem value="ADMIN">Admins</SelectItem>
+            </SelectContent>
+          </Select>
 
-          <select
+          <Select
             value={statusFilter}
-            onChange={(e) =>
-              setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')
+            onValueChange={(value) =>
+              setStatusFilter(value as 'all' | 'active' | 'inactive')
             }
-            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
           >
-            <option value="all">All Status</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
+            <SelectTrigger className="h-10 w-full md:w-[140px] border-primary/20 bg-primary/[0.04] font-medium shadow-sm transition-colors hover:border-primary/50 hover:bg-primary/[0.08]">
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="inactive">Inactive</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </Card>
 
@@ -239,9 +270,14 @@ export default function AdminUsersPage() {
                   >
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Users className="h-5 w-5 text-primary" />
-                        </div>
+                        <Avatar className="h-10 w-10">
+                          {user.avatar && (
+                            <AvatarImage src={user.avatar} alt={user.name} />
+                          )}
+                          <AvatarFallback className="bg-primary/10 text-primary">
+                            {user.name.slice(0, 2).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
                         <div>
                           <p className="font-semibold">{user.name}</p>
                           <p className="text-xs text-gray-600 dark:text-gray-400">
@@ -267,11 +303,41 @@ export default function AdminUsersPage() {
                       </div>
                     </td>
                     <td className="p-4">
-                      <Badge
-                        className={`${roleColors[user.role as keyof typeof roleColors] || 'bg-gray-500'} text-white`}
-                      >
-                        {user.role.replace('_', ' ')}
-                      </Badge>
+                      <div onClick={(event) => event.stopPropagation()}>
+                        <Select
+                          value={user.role}
+                          onValueChange={(role) =>
+                            void handleRoleChange(user.id, role)
+                          }
+                          disabled={user.id === currentUserId || updatingRole}
+                        >
+                          <SelectTrigger
+                            aria-label={`Change role for ${user.name}`}
+                            className="h-10 w-[168px] border-primary/20 bg-primary/[0.04] font-medium shadow-sm transition-colors hover:border-primary/50 hover:bg-primary/[0.08]"
+                          >
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="CITIZEN">Citizen</SelectItem>
+                            <SelectItem value="VOLUNTEER">Volunteer</SelectItem>
+                            <SelectItem value="VERIFIED_RESCUER">
+                              Verified Rescuer
+                            </SelectItem>
+                            <SelectItem value="DISTRICT_COORDINATOR">
+                              Coordinator
+                            </SelectItem>
+                            <SelectItem value="ADMIN">Admin</SelectItem>
+                            <SelectItem value="SUPER_ADMIN">
+                              Super Admin
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {user.id === currentUserId && (
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            Current account
+                          </p>
+                        )}
+                      </div>
                     </td>
                     <td className="p-4">
                       <div className="space-y-1">

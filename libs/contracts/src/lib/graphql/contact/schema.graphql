@@ -37,6 +37,15 @@ type ContactMessage {
   updatedAt: DateTime!
 }
 
+type EmergencyContact {
+  id: ID!
+  name: String!
+  phone: Phone!
+  relationship: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
 """
 Contact message statistics
 """

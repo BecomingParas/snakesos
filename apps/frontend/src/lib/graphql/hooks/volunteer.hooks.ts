@@ -17,6 +17,7 @@ export interface Volunteer {
     name: string;
     email: string;
     phone?: string;
+    avatar?: string;
     role?: string;
     status?: string;
     emailVerified?: boolean;
@@ -433,6 +434,7 @@ const GET_VOLUNTEERS = gql`
             name
             email
             phone
+            avatar
           }
           experience
           experienceYears

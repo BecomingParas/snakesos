@@ -87,7 +87,10 @@ export function NotificationDropdown({ role }: { role: string }) {
   const openNotification = async (notification: RecentNotification) => {
     try {
       if (!notification.read) {
-        await markNotificationAsRead({ variables: { id: notification.id } });
+        await markNotificationAsRead({
+          variables: { id: notification.id },
+          refetchQueries: ['RecentNotifications'],
+        });
       }
     } catch {
       // Navigation should still work if marking the notification fails.
@@ -101,7 +104,7 @@ export function NotificationDropdown({ role }: { role: string }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
           className="relative h-10 w-10 hover:bg-secondary/50"
           aria-label="Open notifications"

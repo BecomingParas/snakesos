@@ -138,7 +138,7 @@ export default function RescuerHospitalsPage() {
           <div className="flex shrink-0 items-center rounded-md border border-border p-1">
             <Button
               type="button"
-              variant={view === 'grid' ? 'secondary' : 'ghost'}
+              variant={view === 'grid' ? 'secondary' : 'outline'}
               size="icon"
               className="h-8 w-8"
               aria-label="Grid view"
@@ -149,7 +149,7 @@ export default function RescuerHospitalsPage() {
             </Button>
             <Button
               type="button"
-              variant={view === 'list' ? 'secondary' : 'ghost'}
+              variant={view === 'list' ? 'secondary' : 'outline'}
               size="icon"
               className="h-8 w-8"
               aria-label="List view"

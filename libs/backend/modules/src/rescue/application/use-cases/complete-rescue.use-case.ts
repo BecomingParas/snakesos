@@ -3,7 +3,7 @@
  * Mark rescue as completed with outcome and details
  */
 
-import { RescueRepository } from '@snake-rescue/database';
+import { prisma, RescueRepository } from '@snake-rescue/database';
 import { BadRequestError } from '@snake-rescue/shared';
 import {
   RescueStatusMachine,
@@ -48,6 +48,16 @@ export class CompleteRescueUseCase {
     // 2. Validate volunteer is assigned to this rescue
     if (rescue.assignedTo !== input.volunteerId) {
       throw new BadRequestError('You are not assigned to this rescue');
+    }
+
+    const paymentIntent = await prisma.paymentIntent.findFirst({
+      where: { rescueCharge: { rescueId: input.rescueId } },
+      select: { status: true },
+    });
+    if (paymentIntent?.status !== 'SUCCEEDED') {
+      throw new BadRequestError(
+        'Payment must be completed before this rescue can be closed',
+      );
     }
 
     // 3. Validate status can transition to completed

@@ -90,6 +90,20 @@ export function DashboardLayoutClient({
       : 'Dashboard';
   };
 
+  const getEmergencyDestination = () => {
+    if (
+      user.role === 'ADMIN' ||
+      user.role === 'SUPER_ADMIN' ||
+      user.role === 'DISTRICT_COORDINATOR'
+    ) {
+      return '/dashboard/admin/rescues';
+    }
+    if (user.role === 'VOLUNTEER' || user.role === 'VERIFIED_RESCUER') {
+      return '/dashboard/rescuer/assignments';
+    }
+    return '/dashboard/citizen/request?emergency=true';
+  };
+
   return (
     <SidebarContext.Provider
       value={{ collapsed: sidebarCollapsed, setCollapsed: setSidebarCollapsed }}
@@ -117,7 +131,7 @@ export function DashboardLayoutClient({
               )
             }
             onLogoutClick={handleLogout}
-            notificationCount={0} // TODO: Connect to real notification count
+            onEmergencyClick={() => router.push(getEmergencyDestination())}
           />
 
           {/* Mobile Drawer */}
@@ -130,7 +144,9 @@ export function DashboardLayoutClient({
           />
 
           {/* Page Content - with bottom padding for nav */}
-          <main className="flex-1 pb-16 overflow-x-hidden">{children}</main>
+          <main className="min-w-0 flex-1 overflow-x-hidden pb-16">
+            {children}
+          </main>
 
           {/* Mobile Bottom Navigation */}
           <MobileBottomNav role={user.role} />
@@ -147,7 +163,11 @@ export function DashboardLayoutClient({
             style={{ marginLeft: 'var(--sidebar-width)' }}
           >
             {/* Desktop Top Navigation Bar */}
-            <DesktopTopNav user={user} onLogout={handleLogout} />
+            <DesktopTopNav
+              user={user}
+              onLogout={handleLogout}
+              onEmergencyClick={() => router.push(getEmergencyDestination())}
+            />
 
             {/* Page Content */}
             <div className="h-[calc(100vh-4rem)] overflow-auto">{children}</div>

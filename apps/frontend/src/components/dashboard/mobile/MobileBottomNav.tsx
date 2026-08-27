@@ -49,7 +49,7 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
         isEmergency: true,
       },
       { href: '/dashboard/citizen/map', label: 'Track', icon: Map },
-      { href: '/dashboard/citizen/profile', label: 'Profile', icon: User },
+      { href: '/dashboard/citizen/settings', label: 'Profile', icon: User },
     ],
     ADMIN: [
       { href: '/dashboard/admin', label: 'Home', icon: Home },
@@ -142,7 +142,7 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
           return (
             <Button
               key={item.href}
-              variant="ghost"
+              variant="outline"
               onClick={() => router.push(item.href)}
               className={cn(
                 'flex flex-col items-center justify-center h-full flex-1 gap-1 rounded-none relative',
@@ -152,12 +152,7 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
               )}
             >
               {item.isEmergency ? (
-                <div className="relative">
-                  <div className="absolute inset-0 bg-red-500/30 dark:bg-destructive/20 rounded-full animate-pulse" />
-                  <div className="relative bg-red-600 dark:bg-destructive rounded-full p-2 shadow-lg">
-                    <Icon className="h-5 w-5 text-white drop-shadow-sm" />
-                  </div>
-                </div>
+                <Icon className="h-5 w-5 text-red-600 dark:text-destructive" />
               ) : (
                 <Icon className={cn('h-5 w-5', active && 'fill-current')} />
               )}

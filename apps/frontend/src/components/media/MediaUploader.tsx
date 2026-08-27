@@ -5,7 +5,11 @@ import { Loader2, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useMediaUpload } from '@/hooks/useMediaUpload';
 
-type MediaType = 'RESCUER_PROFILE_IMAGE' | 'RESCUER_VERIFICATION_DOCUMENT';
+type MediaType =
+  | 'RESCUER_PROFILE_IMAGE'
+  | 'CITIZEN_PROFILE_IMAGE'
+  | 'ADMIN_PROFILE_IMAGE'
+  | 'RESCUER_VERIFICATION_DOCUMENT';
 
 export function MediaUploader({
   mediaType,
@@ -28,7 +32,7 @@ export function MediaUploader({
   const uploadState = useMediaUpload();
 
   const chooseFile = async (file: File) => {
-    const maxSize = mediaType === 'RESCUER_PROFILE_IMAGE' ? 5 : 10;
+    const maxSize = mediaType !== 'RESCUER_VERIFICATION_DOCUMENT' ? 5 : 10;
     if (file.size > maxSize * 1024 * 1024) {
       return;
     }

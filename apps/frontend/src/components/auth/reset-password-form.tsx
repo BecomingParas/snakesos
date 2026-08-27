@@ -1,27 +1,37 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, CheckCircle2, KeyRound, AlertCircle, ShieldCheck } from 'lucide-react'
-import { toast } from 'sonner'
-import { useResetPassword } from '@/hooks/auth'
-import { resetPasswordSchema, type ResetPasswordFormData } from '@/schemas/auth'
-import { PasswordInput } from '@/components/auth/password-input'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { getUserFriendlyErrorMessage } from '@/lib/graphql'
-import { TwoColumnAuthLayout } from '@/components/auth/two-column-layout'
+import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  Loader2,
+  CheckCircle2,
+  KeyRound,
+  AlertCircle,
+  ShieldCheck,
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { useResetPassword } from '@/hooks/auth';
+import {
+  resetPasswordSchema,
+  type ResetPasswordFormData,
+} from '@/schemas/auth';
+import { PasswordInput } from '@/components/auth/password-input';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { getUserFriendlyErrorMessage } from '@/lib/graphql';
+import { TwoColumnAuthLayout } from '@/components/auth/two-column-layout';
 
 export function ResetPasswordForm() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [isSuccess, setIsSuccess] = useState(false)
-  const { resetPassword: resetPasswordMutation, loading: isSubmitting } = useResetPassword()
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [isSuccess, setIsSuccess] = useState(false);
+  const { resetPassword: resetPasswordMutation, loading: isSubmitting } =
+    useResetPassword();
 
-  const email = searchParams.get('email')
+  const email = searchParams.get('email');
 
   const {
     register,
@@ -35,14 +45,14 @@ export function ResetPasswordForm() {
       password: '',
       confirmPassword: '',
     },
-  })
+  });
 
   const onSubmit = async (data: ResetPasswordFormData) => {
     if (!email) {
       toast.error('Invalid request', {
         description: 'Email is missing from the reset link',
-      })
-      return
+      });
+      return;
     }
 
     try {
@@ -50,17 +60,17 @@ export function ResetPasswordForm() {
         email,
         code: data.code,
         newPassword: data.password,
-      })
-      setIsSuccess(true)
+      });
+      setIsSuccess(true);
       toast.success('Password reset successful!', {
         description: 'You can now sign in with your new password',
-      })
+      });
     } catch (error: any) {
       toast.error('Password reset failed', {
         description: getUserFriendlyErrorMessage(error),
-      })
+      });
     }
-  }
+  };
 
   if (!email) {
     return (
@@ -71,11 +81,11 @@ export function ResetPasswordForm() {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
               <AlertCircle className="h-8 w-8 text-red-600" />
             </div>
-            
+
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
               Invalid Reset Link
             </h1>
-            
+
             <p className="mt-2 text-sm text-muted-foreground">
               The password reset link is missing email information
             </p>
@@ -88,7 +98,8 @@ export function ResetPasswordForm() {
               <div className="text-sm text-yellow-800">
                 <p className="font-semibold mb-1">Link invalid</p>
                 <p className="text-yellow-700">
-                  Please start the password reset process again from the forgot password page.
+                  Please start the password reset process again from the forgot
+                  password page.
                 </p>
               </div>
             </div>
@@ -114,7 +125,7 @@ export function ResetPasswordForm() {
           </div>
         </div>
       </TwoColumnAuthLayout>
-    )
+    );
   }
 
   if (isSuccess) {
@@ -126,11 +137,11 @@ export function ResetPasswordForm() {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
               <CheckCircle2 className="h-8 w-8 text-green-600" />
             </div>
-            
+
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
               Password Reset Complete!
             </h1>
-            
+
             <p className="mt-2 text-sm text-muted-foreground">
               Your password has been successfully reset
             </p>
@@ -143,8 +154,8 @@ export function ResetPasswordForm() {
               <div className="text-sm text-green-800">
                 <p className="font-semibold mb-1">All set!</p>
                 <p className="text-green-700">
-                  You can now sign in with your new password. 
-                  Make sure to keep it secure and don't share it with anyone.
+                  You can now sign in with your new password. Make sure to keep
+                  it secure and don't share it with anyone.
                 </p>
               </div>
             </div>
@@ -160,7 +171,7 @@ export function ResetPasswordForm() {
           </Button>
         </div>
       </TwoColumnAuthLayout>
-    )
+    );
   }
 
   return (
@@ -171,13 +182,14 @@ export function ResetPasswordForm() {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
             <KeyRound className="h-8 w-8 text-blue-600" />
           </div>
-          
+
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Create New Password
           </h1>
-          
+
           <p className="mt-2 text-sm text-muted-foreground">
-            We sent a 6-digit code to <span className="font-semibold">{email}</span>
+            We sent a 6-digit code to{' '}
+            <span className="font-semibold">{email}</span>
           </p>
         </div>
 
@@ -219,14 +231,21 @@ export function ResetPasswordForm() {
               {...register('password')}
             />
             {errors.password?.message && (
-              <p id="password-error" role="alert" className="text-sm text-red-600">
+              <p
+                id="password-error"
+                role="alert"
+                className="text-sm text-red-600"
+              >
                 {errors.password.message}
               </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-foreground font-medium">
+            <Label
+              htmlFor="confirmPassword"
+              className="text-foreground font-medium"
+            >
               Confirm New Password
             </Label>
             <PasswordInput
@@ -234,20 +253,26 @@ export function ResetPasswordForm() {
               placeholder="Re-enter your password"
               autoComplete="new-password"
               aria-invalid={Boolean(errors.confirmPassword)}
-              aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
+              aria-describedby={
+                errors.confirmPassword ? 'confirmPassword-error' : undefined
+              }
               className={`h-11 text-foreground placeholder:text-muted-foreground ${errors.confirmPassword ? 'border-red-500' : ''}`}
               {...register('confirmPassword')}
             />
             {errors.confirmPassword?.message && (
-              <p id="confirmPassword-error" role="alert" className="text-sm text-red-600">
+              <p
+                id="confirmPassword-error"
+                role="alert"
+                className="text-sm text-red-600"
+              >
                 {errors.confirmPassword.message}
               </p>
             )}
           </div>
 
-          <Button 
-            type="submit" 
-            className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium" 
+          <Button
+            type="submit"
+            className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium"
             disabled={isSubmitting}
           >
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -274,7 +299,7 @@ export function ResetPasswordForm() {
         {/* Back to Login */}
         <div className="text-center pt-4 border-t">
           <Button
-            variant="ghost"
+            variant="outline"
             onClick={() => router.push('/forgot-password')}
             className="text-sm text-muted-foreground hover:text-foreground"
           >
@@ -283,5 +308,5 @@ export function ResetPasswordForm() {
         </div>
       </div>
     </TwoColumnAuthLayout>
-  )
+  );
 }

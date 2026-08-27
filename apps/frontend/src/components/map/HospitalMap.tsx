@@ -26,9 +26,20 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Phone, Navigation, AlertTriangle, Clock } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Phone, Navigation, AlertTriangle, Clock, Send } from 'lucide-react';
+import { toast } from 'sonner';
 
 // Fix for default marker icons in Next.js/Webpack
 if (typeof window !== 'undefined') {
@@ -198,6 +209,9 @@ export function HospitalMap({
   const [selectedHospital, setSelectedHospital] =
     useState<HospitalLocation | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+  const [reportDetails, setReportDetails] = useState('');
 
   // Filter hospitals based on criteria
   const filteredHospitals = hospitals.filter((hospital) => {
@@ -277,6 +291,17 @@ export function HospitalMap({
       `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`,
       '_blank',
     );
+  };
+
+  const handleReportSubmit = () => {
+    if (!selectedHospital || !reportReason) return;
+
+    setIsReportDialogOpen(false);
+    setReportReason('');
+    setReportDetails('');
+    toast.success('Report submitted', {
+      description: `${selectedHospital.name} information will be reviewed.`,
+    });
   };
 
   return (
@@ -633,13 +658,10 @@ export function HospitalMap({
 
               {/* Report Incorrect Info */}
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 className="w-full text-xs text-slate-500 hover:text-slate-700"
-                onClick={() => {
-                  // TODO: Implement report dialog
-                  alert('Report feature coming soon');
-                }}
+                onClick={() => setIsReportDialogOpen(true)}
               >
                 <AlertTriangle className="h-3 w-3 mr-1" />
                 Report Incorrect Information
@@ -648,6 +670,85 @@ export function HospitalMap({
           </SheetContent>
         </Sheet>
       )}
+
+      <Dialog
+        open={isReportDialogOpen}
+        onOpenChange={(open) => {
+          setIsReportDialogOpen(open);
+          if (!open) {
+            setReportReason('');
+            setReportDetails('');
+          }
+        }}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Report incorrect information</DialogTitle>
+            <DialogDescription>
+              Help us keep {selectedHospital?.name || 'this hospital'}{' '}
+              information accurate.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="hospital-report-reason">What is incorrect?</Label>
+              <select
+                id="hospital-report-reason"
+                value={reportReason}
+                onChange={(event) => setReportReason(event.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm outline-none transition-colors focus:border-ring focus:ring-2 focus:ring-ring/30"
+              >
+                <option value="">Select a reason</option>
+                <option value="wrong-contact">Phone number is incorrect</option>
+                <option value="wrong-location">
+                  Location or address is incorrect
+                </option>
+                <option value="wrong-capability">
+                  Hospital capabilities are incorrect
+                </option>
+                <option value="outdated">Information is outdated</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="hospital-report-details">
+                Additional details (optional)
+              </Label>
+              <Textarea
+                id="hospital-report-details"
+                value={reportDetails}
+                onChange={(event) => setReportDetails(event.target.value)}
+                placeholder="Tell us what needs to be corrected..."
+                maxLength={500}
+                rows={4}
+              />
+              <p className="text-right text-xs text-muted-foreground">
+                {reportDetails.length}/500
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsReportDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              disabled={!reportReason}
+              onClick={handleReportSubmit}
+            >
+              <Send className="mr-2 h-4 w-4" />
+              Submit report
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -1,9 +1,9 @@
 'use client';
 
-import { Search, Phone, LogOut, User } from 'lucide-react';
+import { Search, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from '@/components/theme';
 import { NotificationDropdown } from '@/components/dashboard/notification-dropdown';
+import { EmergencyHeaderButton } from '@/components/dashboard/emergency-header-button';
 import { toast } from 'sonner';
 
 interface DesktopTopNavProps {
@@ -21,11 +22,17 @@ interface DesktopTopNavProps {
     name: string;
     email: string;
     role: string;
+    avatar?: string;
   };
   onLogout: () => void;
+  onEmergencyClick?: () => void;
 }
 
-export function DesktopTopNav({ user, onLogout }: DesktopTopNavProps) {
+export function DesktopTopNav({
+  user,
+  onLogout,
+  onEmergencyClick,
+}: DesktopTopNavProps) {
   const initials = user.name
     .split(' ')
     .map((n) => n[0])
@@ -52,19 +59,16 @@ export function DesktopTopNav({ user, onLogout }: DesktopTopNavProps) {
       {/* Right side actions */}
       <div className="flex items-center gap-2">
         {/* Emergency Button */}
-        <Button
-          size="sm"
-          variant="destructive"
-          className="h-10 font-bold"
-          onClick={() =>
-            toast.error('Emergency dispatch alerted', {
-              description: 'Hotline 1166 notified',
-            })
+        <EmergencyHeaderButton
+          role={user.role}
+          onClick={
+            onEmergencyClick ||
+            (() =>
+              toast.error('Emergency dispatch alerted', {
+                description: 'Hotline 1166 notified',
+              }))
           }
-        >
-          <Phone className="mr-2 h-4 w-4" />
-          Emergency
-        </Button>
+        />
 
         {/* Notifications */}
         <NotificationDropdown role={user.role} />
@@ -76,10 +80,13 @@ export function DesktopTopNav({ user, onLogout }: DesktopTopNavProps) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
-              variant="ghost"
+              variant="outline"
               className="h-10 gap-2 px-2 hover:bg-secondary/50 transition-all"
             >
               <Avatar className="h-8 w-8 border-2 border-border/20">
+                {user.avatar && (
+                  <AvatarImage src={user.avatar} alt={user.name} />
+                )}
                 <AvatarFallback className="bg-primary/10 text-xs font-bold text-primary">
                   {initials}
                 </AvatarFallback>

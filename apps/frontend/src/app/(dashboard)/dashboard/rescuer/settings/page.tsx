@@ -536,16 +536,31 @@ export default function RescuerSettingsPage() {
         onValueChange={setSection}
         className="grid gap-6 lg:grid-cols-[280px_1fr] lg:items-start"
       >
-        {/* Mobile / tablet: horizontal scrollable pill nav */}
-        <TabsList className="h-auto w-full justify-start gap-1 overflow-x-auto bg-transparent p-0 lg:hidden">
-          {NAV_ITEMS.map(({ value, label, icon: Icon }) => (
+        {/* Mobile / tablet: compact wrapping settings navigation */}
+        <TabsList className="flex h-auto w-full flex-wrap items-center justify-start gap-2 rounded-xl border border-border bg-card p-3 shadow-sm lg:hidden">
+          {NAV_ITEMS.map(({ value, label, icon: Icon }, index) => (
             <TabsTrigger
               key={value}
               value={value}
-              className="shrink-0 gap-2 whitespace-nowrap"
+              className="h-10 w-auto shrink-0 justify-start gap-2 rounded-lg px-3 text-left text-sm font-medium"
             >
-              <Icon className="h-4 w-4" />
-              {label}
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+                <Icon className="h-4 w-4" />
+              </span>
+              <span className="truncate sm:hidden">
+                {
+                  [
+                    'Profile',
+                    'Rescue',
+                    'Availability',
+                    'Alerts',
+                    'Location',
+                    'Payments',
+                    'Security',
+                  ][index]
+                }
+              </span>
+              <span className="hidden truncate sm:inline">{label}</span>
             </TabsTrigger>
           ))}
         </TabsList>
@@ -1123,7 +1138,7 @@ export default function RescuerSettingsPage() {
                     />
                     <Button
                       type="button"
-                      variant="ghost"
+                      variant="outline"
                       size="icon"
                       className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2"
                       aria-label={
@@ -1163,7 +1178,7 @@ export default function RescuerSettingsPage() {
                     />
                     <Button
                       type="button"
-                      variant="ghost"
+                      variant="outline"
                       size="icon"
                       className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2"
                       aria-label={
@@ -1206,7 +1221,7 @@ export default function RescuerSettingsPage() {
                     />
                     <Button
                       type="button"
-                      variant="ghost"
+                      variant="outline"
                       size="icon"
                       className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2"
                       aria-label={

@@ -13,7 +13,7 @@ import { UpdateRescueStatusUseCase } from '../../../application/use-cases/update
 import { CompleteRescueUseCase } from '../../../application/use-cases/complete-rescue.use-case.js';
 import { CancelRescueUseCase } from '../../../application/use-cases/cancel-rescue.use-case.js';
 import { RescueValidator } from '../../validators/rescue.validator.js';
-// import { createRescueNotifications } from '../../../../notifications.resolver.js';  // Commented out due to build errors
+import { createRescueNotifications } from '../../../../notifications.resolver.js';
 import { RescueFinancialService } from '../../../../finance/application/rescue-financial.service.js';
 
 export const rescueMutationResolvers = {
@@ -36,8 +36,17 @@ export const rescueMutationResolvers = {
       const rescueRepository = new RescueRepository(prisma);
       const useCase = new CreateRescueUseCase(rescueRepository);
       const result = await useCase.execute(input, context.user.id);
-      // TODO: Re-enable notifications after resolving build issues
-      // // await createRescueNotifications(...)
+      if (input.isEmergency || input.hasBite) {
+        await createRescueNotifications(
+          result.id,
+          'RESCUE_CREATED',
+          'Emergency rescue request',
+          input.hasBite
+            ? 'A snake bite emergency needs immediate attention.'
+            : 'A high-priority emergency rescue request needs attention.',
+          context.user.id,
+        );
+      }
 
       // 3. Return response
       return result;

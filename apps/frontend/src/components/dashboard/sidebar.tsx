@@ -94,7 +94,7 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/map', label: 'Track Rescue', icon: Map },
         { href: '/notifications', label: 'Notifications', icon: Bell },
         { href: '/emergency', label: 'Emergency', icon: AlertCircle },
-        { href: '/profile', label: 'Settings', icon: Settings },
+        { href: '/settings', label: 'Settings', icon: Settings },
       ],
     },
     ADMIN: {
@@ -189,7 +189,7 @@ export function Sidebar({ role }: SidebarProps) {
   const isActive = (href: string) => {
     const fullPath = `${config.basePath}${href}`;
     if (href === '') return pathname === config.basePath;
-    return pathname.startsWith(fullPath);
+    return pathname === fullPath || pathname.startsWith(`${fullPath}/`);
   };
 
   return (
@@ -246,7 +246,7 @@ export function Sidebar({ role }: SidebarProps) {
                     key={link.href || 'overview'}
                     href={fullPath}
                     className={cn(
-                      'group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all duration-200',
+                      'group relative flex items-center gap-3 px-3 py-2.5 text-sm font-semibold transition-all duration-200',
                       isEmergency
                         ? active
                           ? 'bg-destructive/15 text-destructive shadow-sm'
@@ -274,9 +274,6 @@ export function Sidebar({ role }: SidebarProps) {
                           active && !isEmergency && 'text-primary',
                         )}
                       />
-                      {isEmergency && !collapsed && (
-                        <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-destructive animate-ping" />
-                      )}
                     </span>
 
                     {!collapsed && (
@@ -316,7 +313,7 @@ export function Sidebar({ role }: SidebarProps) {
           {/* Collapse Button */}
           <div className="border-t border-border/20 p-3">
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={() => setCollapsed(!collapsed)}
               className={cn(

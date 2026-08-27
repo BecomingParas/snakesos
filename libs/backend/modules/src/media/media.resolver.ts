@@ -8,9 +8,15 @@ import {
   type MediaType,
 } from './media.service.js';
 
-function requireRescuer(context: GraphQLContext) {
+function requireMediaOwner(context: GraphQLContext) {
   context.requireAuth();
-  context.requireRole(['VOLUNTEER', 'VERIFIED_RESCUER']);
+  context.requireRole([
+    'CITIZEN',
+    'VOLUNTEER',
+    'VERIFIED_RESCUER',
+    'ADMIN',
+    'SUPER_ADMIN',
+  ]);
   return context.user;
 }
 
@@ -53,7 +59,7 @@ export const mediaResolvers = {
       },
       context: GraphQLContext,
     ) => {
-      const user = requireRescuer(context);
+      const user = requireMediaOwner(context);
       const signature = createMediaUploadSignature({
         userId: user.id,
         ...args.input,
@@ -77,7 +83,7 @@ export const mediaResolvers = {
       args: { mediaId: string },
       context: GraphQLContext,
     ) => {
-      const user = requireRescuer(context);
+      const user = requireMediaOwner(context);
       const asset = await prisma.mediaAsset.findUnique({
         where: { id: args.mediaId },
       });
@@ -103,11 +109,21 @@ export const mediaResolvers = {
           sizeBytes: resource.bytes ? BigInt(resource.bytes) : asset.sizeBytes,
         },
       });
-      if (asset.mediaType === 'RESCUER_PROFILE_IMAGE') {
+      if (
+        asset.mediaType === 'RESCUER_PROFILE_IMAGE' ||
+        asset.mediaType === 'CITIZEN_PROFILE_IMAGE' ||
+        asset.mediaType === 'ADMIN_PROFILE_IMAGE'
+      ) {
         await prisma.mediaAsset.updateMany({
           where: {
             ownerId: user.id,
-            mediaType: 'RESCUER_PROFILE_IMAGE',
+            mediaType: {
+              in: [
+                'RESCUER_PROFILE_IMAGE',
+                'CITIZEN_PROFILE_IMAGE',
+                'ADMIN_PROFILE_IMAGE',
+              ],
+            },
             id: { not: asset.id },
             status: { in: ['PENDING', 'UPLOADED', 'VERIFIED'] },
           },

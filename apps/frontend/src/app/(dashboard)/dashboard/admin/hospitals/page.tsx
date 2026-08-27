@@ -973,7 +973,7 @@ export default function HospitalsPage() {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="icon"
                           aria-label={`Actions for ${hospital.name}`}
                           onClick={(event) => event.stopPropagation()}

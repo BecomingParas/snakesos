@@ -1231,6 +1231,15 @@ type EmailVerificationPayload {
   user: User
 }
 
+type EmergencyContact {
+  createdAt: DateTime!
+  id: ID!
+  name: String!
+  phone: Phone!
+  relationship: String!
+  updatedAt: DateTime!
+}
+
 """
 Engagement metrics
 """
@@ -2461,6 +2470,7 @@ type Mutation {
   Approve or reject volunteer application
   """
   reviewVolunteerApplication(input: ReviewVolunteerInput!): Volunteer!
+  saveEmergencyContact(input: SaveEmergencyContactInput!): EmergencyContact!
 
   """
   Send bulk notifications (admin only)
@@ -3137,6 +3147,7 @@ type Query {
     pagination: PaginationInput
     sort: SnakeSpeciesSortInput
   ): SnakeSpeciesConnection!
+  assignedRescuePaymentIntent(rescueId: ID!): PaymentIntent
 
   """
   Get available AI models
@@ -3236,6 +3247,11 @@ type Query {
     pagination: PaginationInput
     sort: DonationSortInput
   ): DonationConnection!
+
+  """
+  Count of active emergency requests for the current dashboard role
+  """
+  emergencyRescuesCount: Int!
 
   """
   Get engagement metrics
@@ -3376,6 +3392,7 @@ type Query {
   Get my donations
   """
   myDonations(pagination: PaginationInput): DonationConnection!
+  myEmergencyContact: EmergencyContact
 
   """
   Get my identification history
@@ -4443,6 +4460,12 @@ enum RoutingProfile {
   DRIVING_FAST
   EMERGENCY
   WALKING
+}
+
+input SaveEmergencyContactInput {
+  name: String!
+  phone: Phone!
+  relationship: String!
 }
 
 enum Season {

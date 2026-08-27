@@ -60,7 +60,11 @@ export function DashboardNav() {
         label: 'My Requests',
         icon: MapPin,
       },
-      { href: '/dashboard/citizen/profile', label: 'Profile', icon: Settings },
+      {
+        href: '/dashboard/citizen/settings',
+        label: 'Settings',
+        icon: Settings,
+      },
     ],
   };
 
@@ -103,10 +107,10 @@ export function DashboardNav() {
 
         {/* User Menu */}
         <div className="hidden items-center gap-2 md:flex">
-          <Button variant="ghost" size="sm" asChild>
+          <Button variant="outline" size="sm" asChild>
             <Link href="/">Back to Site</Link>
           </Button>
-          <Button variant="ghost" size="sm">
+          <Button variant="outline" size="sm">
             <LogOut className="mr-2 h-4 w-4" />
             Logout
           </Button>
@@ -114,7 +118,7 @@ export function DashboardNav() {
 
         {/* Mobile Menu Button */}
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
           className="md:hidden"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -156,7 +160,7 @@ export function DashboardNav() {
             <Button variant="outline" size="sm" asChild className="w-full">
               <Link href="/">Back to Site</Link>
             </Button>
-            <Button variant="ghost" size="sm" className="w-full">
+            <Button variant="outline" size="sm" className="w-full">
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </Button>

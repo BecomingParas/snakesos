@@ -52,78 +52,6 @@ function channelsData(channels?: string[]) {
   };
 }
 
-function rescueNotificationType(status: string) {
-  switch (status) {
-    case 'COMPLETED':
-      return 'RESCUE_COMPLETED';
-    case 'CANCELLED':
-      return 'RESCUE_CANCELLED';
-    case 'ASSIGNED':
-      return 'RESCUE_ASSIGNED';
-    case 'ACCEPTED':
-      return 'RESCUE_ACCEPTED';
-    default:
-      return 'RESCUE_CREATED';
-  }
-}
-
-async function ensureCurrentRescueNotifications(context: GraphQLContext) {
-  const isAdmin = ADMIN_ROLES.includes(context.user!.role);
-  const isRescuer = [
-    'VOLUNTEER',
-    'VERIFIED_RESCUER',
-    'DISTRICT_COORDINATOR',
-  ].includes(context.user!.role);
-  const where = {
-    deletedAt: null,
-    ...(isAdmin
-      ? {}
-      : isRescuer
-        ? { assignedVolunteer: { userId: context.user!.id } }
-        : { userId: context.user!.id }),
-  };
-  const rescues = await prisma.rescueRequest.findMany({
-    where,
-    orderBy: { updatedAt: 'desc' },
-    take: 100,
-    select: {
-      id: true,
-      status: true,
-      priority: true,
-      referenceNumber: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
-
-  await Promise.all(
-    rescues.map(async (rescue) => {
-      const type = rescueNotificationType(rescue.status);
-      const exists = await prisma.notification.findFirst({
-        where: { userId: context.user!.id, rescueId: rescue.id, type },
-        select: { id: true },
-      });
-      if (exists) return;
-
-      const reference = rescue.referenceNumber || rescue.id;
-      await prisma.notification.create({
-        data: {
-          userId: context.user!.id,
-          rescueId: rescue.id,
-          type,
-          title: `Rescue ${rescue.status.toLowerCase().replace('_', ' ')}`,
-          message: `Rescue request ${reference} is currently ${rescue.status.toLowerCase().replace('_', ' ')}.`,
-          actionUrl: isAdmin
-            ? `/dashboard/admin/rescues/${rescue.id}`
-            : `/dashboard/${isRescuer ? 'rescuer' : 'citizen'}/requests/${rescue.id}`,
-          priority: 'NORMAL',
-          createdAt: rescue.updatedAt || rescue.createdAt,
-        },
-      });
-    }),
-  );
-}
-
 export async function createRescueNotifications(
   rescueId: string,
   type: string,
@@ -137,15 +65,21 @@ export async function createRescueNotifications(
   });
   if (!rescue) return;
 
-  const admins = await prisma.user.findMany({
-    where: { role: { in: ADMIN_ROLES as any }, status: 'ACTIVE' },
-    select: { id: true },
+  const recipients = await prisma.user.findMany({
+    where: {
+      status: 'ACTIVE',
+      OR: [
+        { role: { in: ADMIN_ROLES as any } },
+        { role: { in: ['VOLUNTEER', 'VERIFIED_RESCUER'] as any } },
+      ],
+    },
+    select: { id: true, role: true },
   });
   const recipientIds = [
     ...new Set([
       rescue.userId,
       rescue.assignedVolunteer?.userId,
-      ...admins.map((admin) => admin.id),
+      ...recipients.map((recipient) => recipient.id),
     ]),
   ].filter((id): id is string => Boolean(id) && id !== actorId);
   if (!recipientIds.length) return;
@@ -157,7 +91,7 @@ export async function createRescueNotifications(
       title,
       message,
       rescueId,
-      actionUrl: `/dashboard/${ADMIN_ROLES.includes('ADMIN') && admins.some((admin) => admin.id === userId) ? 'admin/rescues' : 'citizen/requests'}/${rescueId}`,
+      actionUrl: `/dashboard/${recipients.find((recipient) => recipient.id === userId && ADMIN_ROLES.includes(recipient.role)) ? 'admin/rescues' : 'rescuer/requests'}/${rescueId}`,
       priority: type === 'RESCUE_CREATED' ? 'HIGH' : 'NORMAL',
     })),
   });
@@ -186,7 +120,6 @@ export const notificationResolvers = {
     },
     myNotifications: async (_: unknown, args: any, context: GraphQLContext) => {
       context.requireAuth();
-      await ensureCurrentRescueNotifications(context);
       const limit = Math.min(args.pagination?.limit || 50, 100);
       const page = Math.max(args.pagination?.page || 1, 1);
       const where = notificationWhere(context, args.filter);

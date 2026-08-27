@@ -9,6 +9,7 @@ import {
   START_PAYMENT,
   CONFIRM_PAYMENT,
   CREATE_PAYOUT,
+  ASSIGNED_RESCUE_PAYMENT_INTENT,
 } from '../queries/finance.queries';
 
 export type FinanceStatus =
@@ -112,6 +113,18 @@ export function useMyRescuePaymentIntent(rescueId: string) {
     pollInterval: 3000,
     // A payment status is finalized asynchronously by the provider webhook.
     // Never render a stale cached status as the source of truth after checkout.
+    fetchPolicy: 'network-only',
+  });
+}
+
+export function useAssignedRescuePaymentIntent(rescueId: string) {
+  return useQuery<
+    { assignedRescuePaymentIntent: PaymentIntentRecord | null },
+    { rescueId: string }
+  >(ASSIGNED_RESCUE_PAYMENT_INTENT, {
+    variables: { rescueId },
+    skip: !rescueId,
+    pollInterval: 3000,
     fetchPolicy: 'network-only',
   });
 }

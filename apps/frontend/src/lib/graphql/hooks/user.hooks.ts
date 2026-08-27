@@ -178,6 +178,7 @@ const GET_USERS = gql`
         name
         email
         phone
+        avatar
         role
         status
         emailVerified

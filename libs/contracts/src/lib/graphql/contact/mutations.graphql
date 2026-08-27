@@ -3,6 +3,8 @@
 # ===================================================================
 
 extend type Mutation {
+  saveEmergencyContact(input: SaveEmergencyContactInput!): EmergencyContact! @auth
+
   """
   Submit a contact message
   """

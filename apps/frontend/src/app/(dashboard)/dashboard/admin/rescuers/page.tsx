@@ -22,6 +22,7 @@ import {
 import { useVolunteersQuery } from '@/lib/graphql/hooks/volunteer.hooks';
 import { toast } from 'sonner';
 import { DashboardPagination } from '@/components/dashboard/dashboard-pagination';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 /**
  * Admin Rescuers Management Page - NOW WITH GRAPHQL INTEGRATION ✅
@@ -244,9 +245,17 @@ export default function AdminRescuersPage() {
                 {/* Header */}
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Users className="h-6 w-6 text-primary" />
-                    </div>
+                    <Avatar className="h-12 w-12">
+                      {volunteer.user.avatar && (
+                        <AvatarImage
+                          src={volunteer.user.avatar}
+                          alt={volunteer.user.name}
+                        />
+                      )}
+                      <AvatarFallback className="bg-primary/10 text-primary">
+                        {volunteer.user.name.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
                       <h3 className="font-semibold">{volunteer.user.name}</h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400">

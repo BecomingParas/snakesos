@@ -11,6 +11,7 @@ extend type Query {
   mySettlements(pagination: PaginationInput): SettlementConnection! @auth
   myPayouts(pagination: PaginationInput): PayoutConnection! @auth
   myRescuePaymentIntent(rescueId: ID!): PaymentIntent @auth
+  assignedRescuePaymentIntent(rescueId: ID!): PaymentIntent @auth(requires: [VOLUNTEER, VERIFIED_RESCUER, DISTRICT_COORDINATOR])
 
   """
   Check Stripe connection status (DEVELOPMENT ONLY)
