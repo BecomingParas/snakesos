@@ -2,14 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  Menu,
-  Phone,
-  LayoutDashboard,
-  User,
-  LogOut,
-  ChevronDown,
-} from 'lucide-react';
+import { Menu, Phone, LayoutDashboard, User, LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
@@ -36,7 +29,6 @@ const links = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
-  const [nepali, setNepali] = useState(false);
   const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
 
@@ -74,16 +66,9 @@ export function Header() {
           <img
             src="/snakesoslogo.png"
             alt="SnakeSOS Logo"
-            className="h-16 w-16 sm:h-20 sm:w-20 object-contain transition-transform group-hover:scale-105"
+            className="h-16 w-16 sm:h-20 sm:w-20 lg:h-48 lg:w-48 object-contain transition-transform group-hover:scale-105"
           />
-          <span className="leading-tight">
-            <span className="block text-[17px] sm:text-[19px] font-extrabold tracking-tight text-foreground">
-              Snake<span className="text-primary">SOS</span>
-            </span>
-            <span className="block text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
-              24/7 wildlife rescue
-            </span>
-          </span>
+         
         </Link>
 
         <nav className="mx-auto hidden items-center gap-1 lg:flex">
@@ -113,15 +98,6 @@ export function Header() {
           <div className="hidden lg:flex items-center gap-2">
             {/* Theme Toggle - Desktop only */}
             <ThemeToggle />
-
-            <button
-              type="button"
-              onClick={() => setNepali((v) => !v)}
-              aria-label="Toggle language"
-              className="h-9 w-9 grid place-items-center rounded-lg border border-border/30 bg-secondary/40 text-sm font-semibold text-foreground transition-all hover:bg-secondary/60 hover:border-border/50"
-            >
-              {nepali ? 'EN' : 'ने'}
-            </button>
 
             {/* User Avatar Dropdown or Sign in Button */}
             {isLoggedIn && user ? (
@@ -282,7 +258,7 @@ export function Header() {
               })}
             </div>
 
-            {/* Settings Section - Theme and Language */}
+            {/* Settings Section - Theme */}
             <div className="space-y-1 mb-3 pt-2 border-t border-border/20">
               {/* Theme Toggle */}
               <button
@@ -294,17 +270,6 @@ export function Header() {
                 <span>Theme</span>
                 <span className="text-sm text-muted-foreground">
                   Light / Dark
-                </span>
-              </button>
-
-              {/* Language Toggle */}
-              <button
-                onClick={() => setNepali((v) => !v)}
-                className="flex w-full items-center justify-between rounded-lg px-4 py-3 text-base font-medium text-foreground hover:bg-secondary/50 transition-colors"
-              >
-                <span>Language</span>
-                <span className="text-sm text-muted-foreground">
-                  {nepali ? 'English' : 'नेपाली'}
                 </span>
               </button>
             </div>

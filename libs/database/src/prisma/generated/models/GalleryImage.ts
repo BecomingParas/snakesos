@@ -43,6 +43,7 @@ export type GalleryImageMinAggregateOutputType = {
   title: string | null
   description: string | null
   imageUrl: string | null
+  videoUrl: string | null
   thumbnailUrl: string | null
   category: string | null
   rescueId: string | null
@@ -65,6 +66,7 @@ export type GalleryImageMaxAggregateOutputType = {
   title: string | null
   description: string | null
   imageUrl: string | null
+  videoUrl: string | null
   thumbnailUrl: string | null
   category: string | null
   rescueId: string | null
@@ -87,6 +89,7 @@ export type GalleryImageCountAggregateOutputType = {
   title: number
   description: number
   imageUrl: number
+  videoUrl: number
   thumbnailUrl: number
   category: number
   tags: number
@@ -124,6 +127,7 @@ export type GalleryImageMinAggregateInputType = {
   title?: true
   description?: true
   imageUrl?: true
+  videoUrl?: true
   thumbnailUrl?: true
   category?: true
   rescueId?: true
@@ -146,6 +150,7 @@ export type GalleryImageMaxAggregateInputType = {
   title?: true
   description?: true
   imageUrl?: true
+  videoUrl?: true
   thumbnailUrl?: true
   category?: true
   rescueId?: true
@@ -168,6 +173,7 @@ export type GalleryImageCountAggregateInputType = {
   title?: true
   description?: true
   imageUrl?: true
+  videoUrl?: true
   thumbnailUrl?: true
   category?: true
   tags?: true
@@ -277,7 +283,8 @@ export type GalleryImageGroupByOutputType = {
   id: string
   title: string | null
   description: string | null
-  imageUrl: string
+  imageUrl: string | null
+  videoUrl: string | null
   thumbnailUrl: string | null
   category: string | null
   tags: string[]
@@ -323,7 +330,8 @@ export type GalleryImageWhereInput = {
   id?: Prisma.StringFilter<"GalleryImage"> | string
   title?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
   description?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
-  imageUrl?: Prisma.StringFilter<"GalleryImage"> | string
+  imageUrl?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
+  videoUrl?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
   thumbnailUrl?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
   category?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
   tags?: Prisma.StringNullableListFilter<"GalleryImage">
@@ -347,7 +355,8 @@ export type GalleryImageOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  videoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   thumbnailUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   category?: Prisma.SortOrderInput | Prisma.SortOrder
   tags?: Prisma.SortOrder
@@ -374,7 +383,8 @@ export type GalleryImageWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.GalleryImageWhereInput | Prisma.GalleryImageWhereInput[]
   title?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
   description?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
-  imageUrl?: Prisma.StringFilter<"GalleryImage"> | string
+  imageUrl?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
+  videoUrl?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
   thumbnailUrl?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
   category?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
   tags?: Prisma.StringNullableListFilter<"GalleryImage">
@@ -398,7 +408,8 @@ export type GalleryImageOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   title?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  imageUrl?: Prisma.SortOrder
+  imageUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  videoUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   thumbnailUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   category?: Prisma.SortOrderInput | Prisma.SortOrder
   tags?: Prisma.SortOrder
@@ -429,7 +440,8 @@ export type GalleryImageScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"GalleryImage"> | string
   title?: Prisma.StringNullableWithAggregatesFilter<"GalleryImage"> | string | null
   description?: Prisma.StringNullableWithAggregatesFilter<"GalleryImage"> | string | null
-  imageUrl?: Prisma.StringWithAggregatesFilter<"GalleryImage"> | string
+  imageUrl?: Prisma.StringNullableWithAggregatesFilter<"GalleryImage"> | string | null
+  videoUrl?: Prisma.StringNullableWithAggregatesFilter<"GalleryImage"> | string | null
   thumbnailUrl?: Prisma.StringNullableWithAggregatesFilter<"GalleryImage"> | string | null
   category?: Prisma.StringNullableWithAggregatesFilter<"GalleryImage"> | string | null
   tags?: Prisma.StringNullableListFilter<"GalleryImage">
@@ -452,7 +464,8 @@ export type GalleryImageCreateInput = {
   id?: string
   title?: string | null
   description?: string | null
-  imageUrl: string
+  imageUrl?: string | null
+  videoUrl?: string | null
   thumbnailUrl?: string | null
   category?: string | null
   tags?: Prisma.GalleryImageCreatetagsInput | string[]
@@ -475,7 +488,8 @@ export type GalleryImageUncheckedCreateInput = {
   id?: string
   title?: string | null
   description?: string | null
-  imageUrl: string
+  imageUrl?: string | null
+  videoUrl?: string | null
   thumbnailUrl?: string | null
   category?: string | null
   tags?: Prisma.GalleryImageCreatetagsInput | string[]
@@ -498,7 +512,8 @@ export type GalleryImageUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tags?: Prisma.GalleryImageUpdatetagsInput | string[]
@@ -521,7 +536,8 @@ export type GalleryImageUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tags?: Prisma.GalleryImageUpdatetagsInput | string[]
@@ -544,7 +560,8 @@ export type GalleryImageCreateManyInput = {
   id?: string
   title?: string | null
   description?: string | null
-  imageUrl: string
+  imageUrl?: string | null
+  videoUrl?: string | null
   thumbnailUrl?: string | null
   category?: string | null
   tags?: Prisma.GalleryImageCreatetagsInput | string[]
@@ -567,7 +584,8 @@ export type GalleryImageUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tags?: Prisma.GalleryImageUpdatetagsInput | string[]
@@ -589,7 +607,8 @@ export type GalleryImageUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tags?: Prisma.GalleryImageUpdatetagsInput | string[]
@@ -623,6 +642,7 @@ export type GalleryImageCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrder
+  videoUrl?: Prisma.SortOrder
   thumbnailUrl?: Prisma.SortOrder
   category?: Prisma.SortOrder
   tags?: Prisma.SortOrder
@@ -652,6 +672,7 @@ export type GalleryImageMaxOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrder
+  videoUrl?: Prisma.SortOrder
   thumbnailUrl?: Prisma.SortOrder
   category?: Prisma.SortOrder
   rescueId?: Prisma.SortOrder
@@ -674,6 +695,7 @@ export type GalleryImageMinOrderByAggregateInput = {
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
   imageUrl?: Prisma.SortOrder
+  videoUrl?: Prisma.SortOrder
   thumbnailUrl?: Prisma.SortOrder
   category?: Prisma.SortOrder
   rescueId?: Prisma.SortOrder
@@ -752,7 +774,8 @@ export type GalleryImageCreateWithoutUploaderInput = {
   id?: string
   title?: string | null
   description?: string | null
-  imageUrl: string
+  imageUrl?: string | null
+  videoUrl?: string | null
   thumbnailUrl?: string | null
   category?: string | null
   tags?: Prisma.GalleryImageCreatetagsInput | string[]
@@ -774,7 +797,8 @@ export type GalleryImageUncheckedCreateWithoutUploaderInput = {
   id?: string
   title?: string | null
   description?: string | null
-  imageUrl: string
+  imageUrl?: string | null
+  videoUrl?: string | null
   thumbnailUrl?: string | null
   category?: string | null
   tags?: Prisma.GalleryImageCreatetagsInput | string[]
@@ -825,7 +849,8 @@ export type GalleryImageScalarWhereInput = {
   id?: Prisma.StringFilter<"GalleryImage"> | string
   title?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
   description?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
-  imageUrl?: Prisma.StringFilter<"GalleryImage"> | string
+  imageUrl?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
+  videoUrl?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
   thumbnailUrl?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
   category?: Prisma.StringNullableFilter<"GalleryImage"> | string | null
   tags?: Prisma.StringNullableListFilter<"GalleryImage">
@@ -848,7 +873,8 @@ export type GalleryImageCreateManyUploaderInput = {
   id?: string
   title?: string | null
   description?: string | null
-  imageUrl: string
+  imageUrl?: string | null
+  videoUrl?: string | null
   thumbnailUrl?: string | null
   category?: string | null
   tags?: Prisma.GalleryImageCreatetagsInput | string[]
@@ -870,7 +896,8 @@ export type GalleryImageUpdateWithoutUploaderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tags?: Prisma.GalleryImageUpdatetagsInput | string[]
@@ -892,7 +919,8 @@ export type GalleryImageUncheckedUpdateWithoutUploaderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tags?: Prisma.GalleryImageUpdatetagsInput | string[]
@@ -914,7 +942,8 @@ export type GalleryImageUncheckedUpdateManyWithoutUploaderInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  imageUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  imageUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  videoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   tags?: Prisma.GalleryImageUpdatetagsInput | string[]
@@ -939,6 +968,7 @@ export type GalleryImageSelect<ExtArgs extends runtime.Types.Extensions.Internal
   title?: boolean
   description?: boolean
   imageUrl?: boolean
+  videoUrl?: boolean
   thumbnailUrl?: boolean
   category?: boolean
   tags?: boolean
@@ -963,6 +993,7 @@ export type GalleryImageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   title?: boolean
   description?: boolean
   imageUrl?: boolean
+  videoUrl?: boolean
   thumbnailUrl?: boolean
   category?: boolean
   tags?: boolean
@@ -987,6 +1018,7 @@ export type GalleryImageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   title?: boolean
   description?: boolean
   imageUrl?: boolean
+  videoUrl?: boolean
   thumbnailUrl?: boolean
   category?: boolean
   tags?: boolean
@@ -1011,6 +1043,7 @@ export type GalleryImageSelectScalar = {
   title?: boolean
   description?: boolean
   imageUrl?: boolean
+  videoUrl?: boolean
   thumbnailUrl?: boolean
   category?: boolean
   tags?: boolean
@@ -1029,7 +1062,7 @@ export type GalleryImageSelectScalar = {
   deletedAt?: boolean
 }
 
-export type GalleryImageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "imageUrl" | "thumbnailUrl" | "category" | "tags" | "rescueId" | "speciesId" | "uploadedBy" | "isPublic" | "isFeatured" | "views" | "likes" | "fileSize" | "dimensions" | "format" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["galleryImage"]>
+export type GalleryImageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "imageUrl" | "videoUrl" | "thumbnailUrl" | "category" | "tags" | "rescueId" | "speciesId" | "uploadedBy" | "isPublic" | "isFeatured" | "views" | "likes" | "fileSize" | "dimensions" | "format" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["galleryImage"]>
 export type GalleryImageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   uploader?: boolean | Prisma.GalleryImage$uploaderArgs<ExtArgs>
 }
@@ -1049,7 +1082,8 @@ export type $GalleryImagePayload<ExtArgs extends runtime.Types.Extensions.Intern
     id: string
     title: string | null
     description: string | null
-    imageUrl: string
+    imageUrl: string | null
+    videoUrl: string | null
     thumbnailUrl: string | null
     category: string | null
     tags: string[]
@@ -1494,6 +1528,7 @@ export interface GalleryImageFieldRefs {
   readonly title: Prisma.FieldRef<"GalleryImage", 'String'>
   readonly description: Prisma.FieldRef<"GalleryImage", 'String'>
   readonly imageUrl: Prisma.FieldRef<"GalleryImage", 'String'>
+  readonly videoUrl: Prisma.FieldRef<"GalleryImage", 'String'>
   readonly thumbnailUrl: Prisma.FieldRef<"GalleryImage", 'String'>
   readonly category: Prisma.FieldRef<"GalleryImage", 'String'>
   readonly tags: Prisma.FieldRef<"GalleryImage", 'String[]'>

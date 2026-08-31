@@ -33,6 +33,7 @@
       "@snake-rescue/ui": ["libs/frontend/ui/src/index.ts"],
       "@snake-rescue/backend/core": ["libs/backend/core/src/index.ts"],
       "@snake-rescue/backend/modules": ["libs/backend/modules/src/index.ts"],
+      "@snake-rescue/modules": ["libs/backend/modules/src/index.ts"],
       "@snake-rescue/backend/loaders": ["libs/backend/loaders/src/index.ts"],
       "@snake-rescue/backend/services": ["libs/backend/services/src/index.ts"],
       "@snake-rescue/backend/repositories": ["libs/backend/repositories/src/index.ts"]

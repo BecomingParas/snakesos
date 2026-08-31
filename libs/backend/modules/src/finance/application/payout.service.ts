@@ -40,6 +40,12 @@ export class PayoutService {
         );
       }
 
+      // A settlement can only have one payout request, even if the client retries.
+      const existingForSettlement = await transaction.payout.findUnique({
+        where: { settlementId: input.settlementId },
+      });
+      if (existingForSettlement) return existingForSettlement;
+
       const existing = await transaction.payout.findUnique({
         where: { idempotencyKey: input.idempotencyKey },
       });

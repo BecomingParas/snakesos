@@ -6,7 +6,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { HospitalMap, type HospitalLocation } from './HospitalMap';
+import { GoogleHospitalMap } from './GoogleHospitalMap';
+import type { HospitalLocation } from './map.types';
 import { useNearbyHospitals } from '@/lib/graphql/hooks/hospital.hooks';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -235,7 +236,7 @@ export function HospitalMapWithData({
       )}
 
       {/* Hospital Map */}
-      <HospitalMap
+      <GoogleHospitalMap
         hospitals={hospitals}
         center={
           userLocation

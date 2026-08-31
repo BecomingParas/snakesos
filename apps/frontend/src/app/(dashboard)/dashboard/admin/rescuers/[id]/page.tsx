@@ -7,6 +7,8 @@ import {
   Award,
   Calendar,
   CheckCircle,
+  ExternalLink,
+  FileText,
   Loader2,
   Mail,
   MapPin,
@@ -16,6 +18,7 @@ import {
   Target,
   Trash2,
   Truck,
+  Video,
   UserCheck,
   Wrench,
   XCircle,
@@ -394,6 +397,52 @@ export default function RescuerDetailPage({ params }: PageProps) {
           </div>
         </Card>
       </div>
+
+      <Card className="border-white/10 bg-white/[0.03] p-6">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Application evidence
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Private documents and profile media submitted for verification.
+        </p>
+        {rescuer.mediaAssets?.length ? (
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {rescuer.mediaAssets.map((asset) => (
+              <div key={asset.id} className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
+                <div className="flex items-start gap-3">
+                  {asset.mediaType === 'RESCUER_PROFILE_VIDEO' ? (
+                    <Video className="mt-0.5 h-5 w-5 text-primary" />
+                  ) : (
+                    <FileText className="mt-0.5 h-5 w-5 text-primary" />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">
+                      {asset.originalFileName || asset.mediaType.replaceAll('_', ' ')}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {asset.status} · {new Date(asset.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  {asset.secureUrl && (
+                    <a
+                      href={asset.secureUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                    >
+                      View <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-4 rounded-lg border border-dashed border-white/10 p-4 text-sm text-muted-foreground">
+            No uploaded application evidence found.
+          </p>
+        )}
+      </Card>
 
       <Card className="border-white/10 bg-white/[0.03] p-6">
         <div className="flex items-center justify-between gap-4">

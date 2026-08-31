@@ -21,8 +21,7 @@ import {
   Heart,
   Siren,
 } from 'lucide-react';
-import type { IncidentLocation } from './EmergencyMap';
-import type { HospitalLocation } from './HospitalMap';
+import type { IncidentLocation, HospitalLocation } from './map.types';
 import { formatDistance } from '@/lib/map/distance';
 
 interface EmergencyModePanelProps {

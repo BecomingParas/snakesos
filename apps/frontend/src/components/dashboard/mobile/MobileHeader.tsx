@@ -54,7 +54,7 @@ export function MobileHeader({
         <a href="/" className="flex items-center gap-2 min-w-0 group">
           <div className="h-8 w-8 rounded-lg overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
             <img
-              src="/snakesoslogo.png"
+              src="/logo.jpg"
               alt="SnakeSOS Logo"
               className="h-7 w-7 object-contain transition-transform group-hover:scale-105"
             />

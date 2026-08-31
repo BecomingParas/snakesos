@@ -49,6 +49,9 @@ export default function RescuerEarningsPage() {
   const [createPayout, { loading: requestingPayout }] = useCreatePayout();
   const settlements = data?.mySettlements?.edges.map((edge) => edge.node) || [];
   const payouts = data?.myPayouts?.edges.map((edge) => edge.node) || [];
+  const payoutBySettlementId = new Map(
+    payouts.map((payout) => [payout.settlementId, payout]),
+  );
   const earned = payouts
     .filter((payout) => payout.status === 'PAID')
     .reduce((total, payout) => total + Number(payout.amount), 0);
@@ -151,35 +154,40 @@ export default function RescuerEarningsPage() {
                 <Badge className={statusClass(settlement.status)}>
                   {settlement.status}
                 </Badge>
-                {settlement.status === 'ELIGIBLE' && (
-                  <Button
-                    size="sm"
-                    disabled={requestingPayout}
-                    onClick={async (event) => {
-                      event.stopPropagation();
-                      try {
-                        await createPayout({
-                          variables: {
-                            input: {
-                              settlementId: settlement.id,
-                              idempotencyKey: crypto.randomUUID(),
+                {settlement.status === 'ELIGIBLE' &&
+                  (payoutBySettlementId.get(settlement.id) ? (
+                    <Badge className="bg-warning/15 text-warning">
+                      PAYOUT REQUESTED
+                    </Badge>
+                  ) : (
+                    <Button
+                      size="sm"
+                      disabled={requestingPayout}
+                      onClick={async (event) => {
+                        event.stopPropagation();
+                        try {
+                          await createPayout({
+                            variables: {
+                              input: {
+                                settlementId: settlement.id,
+                                idempotencyKey: `settlement:${settlement.id}`,
+                              },
                             },
-                          },
-                        });
-                        toast.success('Payout requested');
-                        await refetch();
-                      } catch (requestError) {
-                        toast.error(
-                          requestError instanceof Error
-                            ? requestError.message
-                            : 'Unable to request payout',
-                        );
-                      }
-                    }}
-                  >
-                    Request payout
-                  </Button>
-                )}
+                          });
+                          toast.success('Payout requested');
+                          await refetch();
+                        } catch (requestError) {
+                          toast.error(
+                            requestError instanceof Error
+                              ? requestError.message
+                              : 'Unable to request payout',
+                          );
+                        }
+                      }}
+                    >
+                      Request payout
+                    </Button>
+                  ))}
               </div>
             </div>
           ))}

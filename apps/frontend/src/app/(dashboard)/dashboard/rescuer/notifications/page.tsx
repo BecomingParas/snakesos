@@ -71,6 +71,7 @@ type NotificationsData = {
     pageInfo: { hasNextPage: boolean; hasPreviousPage: boolean };
     totalCount: number;
   };
+  unreadNotificationsCount: number;
 };
 
 /**

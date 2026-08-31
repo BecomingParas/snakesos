@@ -15,9 +15,173 @@ import { CancelRescueUseCase } from '../../../application/use-cases/cancel-rescu
 import { RescueValidator } from '../../validators/rescue.validator.js';
 import { createRescueNotifications } from '../../../../notifications.resolver.js';
 import { RescueFinancialService } from '../../../../finance/application/rescue-financial.service.js';
+import { BadRequestError } from '@snake-rescue/shared';
+
+const PUBLIC_SUBMISSION_WINDOW_MS = 15 * 60 * 1000;
+const PUBLIC_SUBMISSION_LIMIT = 5;
+const publicSubmissionAttempts = new Map<
+  string,
+  { count: number; resetAt: number }
+>();
+
+function enforcePublicSubmissionLimit(
+  ip: string,
+  phone: string,
+  deviceId: string,
+) {
+  const now = Date.now();
+  for (const [key, attempt] of publicSubmissionAttempts) {
+    if (attempt.resetAt <= now) publicSubmissionAttempts.delete(key);
+  }
+  for (const key of [`ip:${ip}`, `phone:${phone}`, `device:${deviceId}`]) {
+    const attempt = publicSubmissionAttempts.get(key);
+    if (
+      attempt &&
+      attempt.count >= PUBLIC_SUBMISSION_LIMIT &&
+      attempt.resetAt > now
+    ) {
+      throw new BadRequestError(
+        'Too many emergency submissions. Please call the hotline.',
+      );
+    }
+    publicSubmissionAttempts.set(key, {
+      count: (attempt?.count || 0) + 1,
+      resetAt: attempt?.resetAt || now + PUBLIC_SUBMISSION_WINDOW_MS,
+    });
+  }
+}
+
+function normalizePublicPhone(phone: string) {
+  const digits = phone.replace(/\D/g, '');
+  return digits.startsWith('977') && digits.length === 13
+    ? digits.slice(3)
+    : digits;
+}
 
 export const rescueMutationResolvers = {
   Mutation: {
+    submitPublicEmergencyRequest: async (
+      _parent: unknown,
+      args: { input: Record<string, unknown> },
+      context: GraphQLContext,
+    ) => {
+      const input = args.input;
+      const idempotencyKey = String(input.idempotencyKey || '');
+      const deviceId = String(input.deviceId || 'unknown');
+      if (!idempotencyKey || idempotencyKey.length > 100) {
+        throw new BadRequestError('A valid idempotency key is required');
+      }
+
+      const existing = await prisma.rescueRequest.findUnique({
+        where: { publicIdempotencyKey: idempotencyKey },
+      });
+      if (existing) {
+        return {
+          success: true,
+          referenceNumber:
+            existing.referenceNumber ||
+            `BR-${existing.createdAt.getFullYear()}-${existing.id.replace(/-/g, '').slice(0, 8).toUpperCase()}`,
+          publicStatus: 'OPEN',
+          createdAt: existing.createdAt,
+        };
+      }
+
+      const phone = normalizePublicPhone(String(input.phone || ''));
+      const municipality = String(input.municipality || '');
+      enforcePublicSubmissionLimit(
+        context.req.ip || 'unknown',
+        phone,
+        deviceId,
+      );
+      const recentDuplicate = await prisma.rescueRequest.findFirst({
+        where: {
+          phone,
+          municipality,
+          createdAt: { gte: new Date(Date.now() - 10 * 60 * 1000) },
+          status: { in: ['PENDING', 'ASSIGNED', 'ACCEPTED', 'IN_PROGRESS'] },
+        },
+      });
+      if (recentDuplicate) {
+        return {
+          success: true,
+          referenceNumber:
+            recentDuplicate.referenceNumber || recentDuplicate.id,
+          publicStatus: 'OPEN',
+          createdAt: recentDuplicate.createdAt,
+        };
+      }
+
+      const validated = RescueValidator.validateCreateRescue({
+        name: input.fullName,
+        phone,
+        email: input.email,
+        municipality,
+        ward: input.ward,
+        address: input.address || input.generalArea,
+        landmark: input.landmark,
+        lat: input.latitude,
+        lng: input.longitude,
+        snakeDescription: input.snakeDescription,
+        priority: input.urgency,
+        notes: input.notes,
+        isEmergency: true,
+        hasBite: input.hasBite,
+        publicIdempotencyKey: idempotencyKey,
+      });
+      const result = await new CreateRescueUseCase(
+        new RescueRepository(prisma),
+      ).execute(validated, context.user?.id);
+      const updated = result;
+      await createRescueNotifications(
+        updated.id,
+        'RESCUE_CREATED',
+        'Public emergency rescue request',
+        'A public emergency rescue request needs immediate attention.',
+        context.user?.id,
+      );
+      return {
+        success: true,
+        referenceNumber:
+          updated.referenceNumber ||
+          `BR-${updated.createdAt.getFullYear()}-${updated.id.replace(/-/g, '').slice(0, 8).toUpperCase()}`,
+        publicStatus: 'OPEN',
+        createdAt: updated.createdAt,
+      };
+    },
+
+    submitPublicRescueReport: async (
+      _parent: unknown,
+      args: { input: any },
+      context: GraphQLContext,
+    ) => {
+      const input = RescueValidator.validateCreateRescue({
+        name: args.input.name,
+        phone: args.input.phone,
+        email: args.input.email,
+        municipality: args.input.municipality,
+        ward: args.input.ward,
+        address: args.input.generalArea,
+        lat: args.input.latitude,
+        lng: args.input.longitude,
+        snakeDescription: args.input.description,
+        priority: args.input.urgency,
+        isEmergency: args.input.isEmergency,
+        hasBite: args.input.hasBite,
+        source: 'WEB',
+      });
+      const rescueRepository = new RescueRepository(prisma);
+      const result = await new CreateRescueUseCase(rescueRepository).execute(
+        input,
+        context.user?.id,
+      );
+      return {
+        success: true,
+        referenceNumber: result.referenceNumber || result.id,
+        publicStatus: 'OPEN',
+        createdAt: result.createdAt,
+      };
+    },
+
     /**
      * Create a new rescue request
      */
@@ -57,15 +221,11 @@ export const rescueMutationResolvers = {
      */
     updateRescueRequest: async (
       _parent: any,
-      args: { id: string; input: { priority?: string } },
+      args: { id: string; input: Record<string, unknown> },
       context: GraphQLContext,
     ) => {
       context.requireAuth();
       context.requireRole(['ADMIN', 'SUPER_ADMIN']);
-
-      if (!args.input.priority) {
-        throw new Error('Priority is required');
-      }
 
       const rescueRepository = new RescueRepository(prisma);
       const rescue = await rescueRepository.findById(args.id);
@@ -73,11 +233,34 @@ export const rescueMutationResolvers = {
         throw new Error('Rescue request not found');
       }
 
-      const updatedRescue = await rescueRepository.update(args.id, {
-        priority: args.input.priority as any,
-      });
+      const updateData = Object.fromEntries(
+        Object.entries(args.input).filter(
+          ([field, value]) =>
+            [
+              'municipality',
+              'ward',
+              'address',
+              'landmark',
+              'snakeDescription',
+              'snakeSize',
+              'snakeColor',
+              'priority',
+              'stillPresent',
+              'notes',
+              'isEmergency',
+              'emergencyDetails',
+              'hasBite',
+              'biteDetails',
+            ].includes(field) && value !== undefined,
+        ),
+      );
+      if (Object.keys(updateData).length === 0) {
+        throw new Error('At least one rescue field is required');
+      }
 
-      if (rescue.priority !== args.input.priority) {
+      const updatedRescue = await rescueRepository.update(args.id, updateData);
+
+      if (args.input.priority && rescue.priority !== args.input.priority) {
         await rescueRepository.addTimelineEvent({
           rescueId: args.id,
           event: 'PRIORITY_UPDATED',
@@ -327,6 +510,30 @@ export const rescueMutationResolvers = {
         lng: args.input.location?.lng,
         metadata: args.input.metadata,
       });
+    },
+
+    deleteRescueRequest: async (
+      _parent: unknown,
+      args: { id: string },
+      context: GraphQLContext,
+    ) => {
+      context.requireAuth();
+      context.requireRole(['SUPER_ADMIN']);
+
+      const rescue = await prisma.rescueRequest.findUnique({
+        where: { id: args.id },
+        select: { id: true, deletedAt: true },
+      });
+      if (!rescue) throw new BadRequestError('Rescue request not found');
+      if (rescue.deletedAt) {
+        return { success: true, message: 'Rescue request already deleted' };
+      }
+
+      await prisma.rescueRequest.update({
+        where: { id: args.id },
+        data: { deletedAt: new Date() },
+      });
+      return { success: true, message: 'Rescue request deleted' };
     },
   },
 };

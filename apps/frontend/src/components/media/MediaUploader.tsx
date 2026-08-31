@@ -9,7 +9,10 @@ type MediaType =
   | 'RESCUER_PROFILE_IMAGE'
   | 'CITIZEN_PROFILE_IMAGE'
   | 'ADMIN_PROFILE_IMAGE'
-  | 'RESCUER_VERIFICATION_DOCUMENT';
+  | 'RESCUER_VERIFICATION_DOCUMENT'
+  | 'RESCUER_PROFILE_VIDEO'
+  | 'GALLERY_IMAGE'
+  | 'GALLERY_VIDEO';
 
 export function MediaUploader({
   mediaType,
@@ -32,7 +35,12 @@ export function MediaUploader({
   const uploadState = useMediaUpload();
 
   const chooseFile = async (file: File) => {
-    const maxSize = mediaType !== 'RESCUER_VERIFICATION_DOCUMENT' ? 5 : 10;
+    const maxSize =
+      mediaType === 'RESCUER_PROFILE_VIDEO' || mediaType === 'GALLERY_VIDEO'
+        ? 50
+        : mediaType !== 'RESCUER_VERIFICATION_DOCUMENT'
+          ? 5
+          : 10;
     if (file.size > maxSize * 1024 * 1024) {
       return;
     }

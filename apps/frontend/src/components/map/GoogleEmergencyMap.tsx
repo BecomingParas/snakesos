@@ -7,31 +7,19 @@
 'use client';
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import {
-  GoogleMap,
-  LoadScript,
-  Marker,
-  Polyline,
-} from '@react-google-maps/api';
+import { GoogleMap, Marker, Polyline } from '@react-google-maps/api';
 import { AlertTriangle } from 'lucide-react';
 import { calculateDistance } from '@/lib/map/distance';
 import { isValidCoordinate } from '@/lib/map/coordinates';
-import type { HospitalLocation } from './HospitalMap';
+import { useGoogleMapsApi } from '@/lib/map/google-maps-loader';
+import {
+  GoogleMapsLoadErrorState,
+  GoogleMapsMissingKeyState,
+} from './GoogleMapsStatus';
+import type { HospitalLocation, IncidentLocation } from './map.types';
 import type { Route as RouteData } from '@/lib/map/routing.types';
 
 // ==================== TYPES ====================
-
-export interface IncidentLocation {
-  id: string;
-  latitude: number;
-  longitude: number;
-  address: string;
-  snakeSpecies?: string;
-  priority: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
-  status: 'PENDING' | 'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED';
-  reportedAt: string;
-  notes?: string;
-}
 
 export interface RescuerLocation {
   id: string;
@@ -68,9 +56,6 @@ export interface GoogleEmergencyMapProps {
   showRescuers?: boolean;
   showHospitals?: boolean;
   emergencyMode?: boolean;
-
-  // Google Maps API Key
-  googleMapsApiKey?: string;
 }
 
 // ==================== CONSTANTS ====================
@@ -152,14 +137,19 @@ export function GoogleEmergencyMap({
   showRescuers = true,
   showHospitals = true,
   emergencyMode = false,
-  googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
 }: GoogleEmergencyMapProps) {
   const [selectedMarker, setSelectedMarker] = useState<{
     type: string;
     id: string;
   } | null>(null);
   const [mapInstance, setMapInstance] = useState<google.maps.Map | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+
+  const {
+    isLoaded: mapsLoaded,
+    error: loadError,
+    retry,
+    apiKeyConfigured,
+  } = useGoogleMapsApi();
 
   // Calculate map center and bounds
   const mapCenter = useMemo(() => {
@@ -250,7 +240,7 @@ export function GoogleEmergencyMap({
   // Simpler marker icons that don't require google.maps to be loaded
   const getIncidentIcon = useCallback(
     (priority: string) => {
-      if (!isLoaded || typeof google === 'undefined') return undefined;
+      if (!mapsLoaded || typeof google === 'undefined') return undefined;
 
       return {
         url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
@@ -263,12 +253,12 @@ export function GoogleEmergencyMap({
         anchor: new google.maps.Point(20, 20),
       };
     },
-    [isLoaded],
+    [mapsLoaded],
   );
 
   const getRescuerIcon = useCallback(
     (status: string) => {
-      if (!isLoaded || typeof google === 'undefined') return undefined;
+      if (!mapsLoaded || typeof google === 'undefined') return undefined;
 
       return {
         url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
@@ -281,12 +271,12 @@ export function GoogleEmergencyMap({
         anchor: new google.maps.Point(18, 18),
       };
     },
-    [isLoaded],
+    [mapsLoaded],
   );
 
   const getHospitalIcon = useCallback(
     (hospital: HospitalLocation) => {
-      if (!isLoaded || typeof google === 'undefined') return undefined;
+      if (!mapsLoaded || typeof google === 'undefined') return undefined;
 
       return {
         url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
@@ -299,43 +289,36 @@ export function GoogleEmergencyMap({
         anchor: new google.maps.Point(18, 18),
       };
     },
-    [isLoaded],
+    [mapsLoaded],
   );
 
-  if (!googleMapsApiKey) {
+  if (!apiKeyConfigured) {
     return (
-      <div className="w-full h-full min-h-[500px] bg-gray-100 flex items-center justify-center">
-        <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-md">
-          <AlertTriangle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
-          <h3 className="text-xl font-bold mb-2">
-            Google Maps API Key Required
-          </h3>
-          <p className="text-gray-600 mb-4">
-            Please add your Google Maps API key to your environment variables:
-          </p>
-          <code className="block bg-gray-100 p-2 rounded text-sm mb-4">
-            NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_api_key_here
-          </code>
-          <a
-            href="https://console.cloud.google.com/google/maps-apis"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
-          >
-            Get your API key →
-          </a>
-        </div>
-      </div>
+      <GoogleMapsMissingKeyState
+        style={{ width: '100%', height: '100%', minHeight: '500px' }}
+      />
+    );
+  }
+
+  if (loadError) {
+    return (
+      <GoogleMapsLoadErrorState
+        error={loadError}
+        onRetry={retry}
+        style={{ width: '100%', height: '100%', minHeight: '500px' }}
+      />
     );
   }
 
   return (
     <div className="w-full h-full relative">
-      <LoadScript
-        googleMapsApiKey={googleMapsApiKey}
-        onLoad={() => setIsLoaded(true)}
-        onError={() => console.error('Error loading Google Maps')}
-      >
+      {!mapsLoaded ? (
+        <div className="w-full h-full min-h-[500px] bg-gray-100 flex items-center justify-center">
+          <div className="text-center text-slate-600">
+            <p className="font-semibold">Loading Map...</p>
+          </div>
+        </div>
+      ) : (
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
           center={mapCenter}
@@ -425,7 +408,7 @@ export function GoogleEmergencyMap({
             />
           )}
         </GoogleMap>
-      </LoadScript>
+      )}
 
       {/* Emergency Mode Indicator */}
       {emergencyMode && (

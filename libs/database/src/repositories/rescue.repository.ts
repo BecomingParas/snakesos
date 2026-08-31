@@ -54,6 +54,31 @@ export class RescueRepository extends BaseRepository<
     });
   }
 
+  async findPublicMany(args: {
+    where: Prisma.RescueRequestWhereInput;
+    skip: number;
+    take: number;
+  }) {
+    return this.model.findMany({
+      ...args,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        referenceNumber: true,
+        municipality: true,
+        ward: true,
+        lat: true,
+        lng: true,
+        priority: true,
+        status: true,
+        completedAt: true,
+        assignedVolunteer: { select: { user: { select: { name: true } } } },
+        species: true,
+        createdAt: true,
+      },
+    });
+  }
+
   /**
    * Find rescues by status
    */

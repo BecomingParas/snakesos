@@ -21,6 +21,30 @@ function requireMediaOwner(context: GraphQLContext) {
 }
 
 export const mediaResolvers = {
+  MediaAsset: {
+    secureUrl: async (parent: {
+      id: string;
+      ownerId: string;
+      publicId: string;
+      resourceType: string;
+      mediaType: MediaType;
+    }, _args: unknown, context: GraphQLContext) => {
+      context.requireAuth();
+      if (
+        parent.ownerId !== context.user.id &&
+        !context.hasRole('ADMIN') &&
+        !context.hasRole('SUPER_ADMIN') &&
+        !context.hasRole('DISTRICT_COORDINATOR')
+      ) {
+        throw new Error('MEDIA_ACCESS_DENIED');
+      }
+      return createSecureMediaUrl(
+        parent.publicId,
+        parent.resourceType,
+        parent.mediaType,
+      );
+    },
+  },
   Query: {
     getSecureMediaUrl: async (
       _parent: unknown,
@@ -51,7 +75,7 @@ export const mediaResolvers = {
       _parent: unknown,
       args: {
         input: {
-          mediaType: MediaType;
+          mediaType: MediaType | string;
           fileName: string;
           mimeType: string;
           sizeBytes: number;
@@ -59,36 +83,79 @@ export const mediaResolvers = {
       },
       context: GraphQLContext,
     ) => {
-      const user = requireMediaOwner(context);
+      const mediaType = args.input.mediaType as MediaType;
+      
+      // Allow public uploads for gallery images (e.g., snake identification)
+      const user = mediaType === 'GALLERY_IMAGE' ? null : context.user;
+      
+      // Require auth for user profile and document uploads
+      if (!user && mediaType !== 'GALLERY_IMAGE') {
+        context.requireAuth();
+      }
+      
       const signature = createMediaUploadSignature({
-        userId: user.id,
-        ...args.input,
+        userId: user?.id ?? 'public',
+        mediaType,
+        fileName: args.input.fileName,
+        mimeType: args.input.mimeType,
+        sizeBytes: args.input.sizeBytes,
       });
       const cloudinaryPublicId = `${signature.folder}/${signature.publicId}`;
-      const asset = await prisma.mediaAsset.create({
-        data: {
-          ownerId: user.id,
-          mediaType: args.input.mediaType,
-          publicId: cloudinaryPublicId,
-          resourceType: signature.resourceType,
-          originalFileName: args.input.fileName,
-          mimeType: args.input.mimeType,
-          sizeBytes: BigInt(args.input.sizeBytes),
-        },
-      });
-      return { mediaId: asset.id, ...signature };
+      
+      // Only create mediaAsset for authenticated uploads
+      let assetId = '';
+      if (user) {
+        const asset = await prisma.mediaAsset.create({
+          data: {
+            ownerId: user.id,
+            mediaType: mediaType as any,
+            publicId: cloudinaryPublicId,
+            resourceType: signature.resourceType,
+            originalFileName: args.input.fileName,
+            mimeType: args.input.mimeType,
+            sizeBytes: BigInt(args.input.sizeBytes),
+          },
+        });
+        assetId = asset.id;
+      } else {
+        // For public uploads, generate a temporary mediaId (we won't track these)
+        assetId = `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+      
+      return { mediaId: assetId, ...signature };
     },
     confirmMediaUpload: async (
       _parent: unknown,
       args: { mediaId: string },
       context: GraphQLContext,
     ) => {
-      const user = requireMediaOwner(context);
+      // For temporary public upload IDs (gallery/identify), skip DB lookup entirely.
+      // These IDs are generated for unauthenticated uploads and are not stored in the database.
+      if (args.mediaId.startsWith('temp-')) {
+        return {
+          id: args.mediaId,
+          status: 'VERIFIED',
+          mediaType: 'GALLERY_IMAGE',
+          publicId: '',
+          format: null,
+          width: null,
+          height: null,
+        };
+      }
+
       const asset = await prisma.mediaAsset.findUnique({
         where: { id: args.mediaId },
       });
-      if (!asset || asset.ownerId !== user.id)
+      
+      if (!asset) {
         throw new Error('MEDIA_UPLOAD_NOT_FOUND');
+      }
+      
+      if (asset.mediaType !== 'GALLERY_IMAGE') {
+        const user = context.user;
+        if (!user || asset.ownerId !== user.id)
+          throw new Error('MEDIA_UPLOAD_NOT_FOUND');
+      }
       if (asset.status === 'UPLOADED' || asset.status === 'VERIFIED') {
         return {
           ...asset,

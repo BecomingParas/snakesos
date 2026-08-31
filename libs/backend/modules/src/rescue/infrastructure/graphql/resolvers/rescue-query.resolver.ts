@@ -9,7 +9,9 @@ import { AuthorizationError } from '@snake-rescue/shared';
 import { GetRescueQuery } from '../../../application/queries/get-rescue.query.js';
 import { ListRescuesQuery } from '../../../application/queries/list-rescues.query.js';
 import { AvailableRescuesQuery } from '../../../application/queries/available-rescues.query.js';
+import { ListPublicRescuesQuery } from '../../../application/queries/list-public-rescues.query.js';
 import { calculateRescuerRankingScore } from '../../../../lib/rescuer-ranking.js';
+import { isEligibleForAssignment } from '../../../../lib/rescuer-eligibility.js';
 
 const RESCUE_MANAGEMENT_ROLES = [
   'ADMIN',
@@ -38,6 +40,14 @@ export const rescueQueryResolvers = {
     },
   },
   Query: {
+    publicRescues: async (
+      _parent: unknown,
+      args: { pagination?: { page?: number; limit?: number }; filter?: any },
+    ) => {
+      const query = new ListPublicRescuesQuery(new RescueRepository(prisma));
+      return query.execute(args.filter, args.pagination);
+    },
+
     /**
      * Get a single rescue request by ID
      */
@@ -461,11 +471,14 @@ export const rescueQueryResolvers = {
         Array<{
           id: string;
           userId: string;
+          userStatus: string | null;
           distance: number | null;
           currentLat: number | null;
           currentLng: number | null;
           isAvailableNow: boolean;
           status: string;
+          verifiedAt: Date | null;
+          deletedAt: Date | null;
           lastLocationUpdate: Date | null;
           rating: number | null;
           totalRatings: number;
@@ -475,10 +488,13 @@ export const rescueQueryResolvers = {
         SELECT 
           v.id,
           v."userId",
+          u."status" as "userStatus",
           v."currentLat",
           v."currentLng",
           v."isAvailableNow",
           v."status",
+          v."verifiedAt",
+          v."deletedAt",
           v."lastLocationUpdate",
           v."rating",
           v."totalRatings",
@@ -493,8 +509,12 @@ export const rescueQueryResolvers = {
             )
           ) AS distance
         FROM "volunteers" v
+        LEFT JOIN "users" u ON u.id = v."userId"
         WHERE v."isAvailableNow" = true
           AND v."status" = 'VERIFIED'
+          AND u."status" = 'ACTIVE'
+          AND v."deletedAt" IS NULL
+          AND v."verifiedAt" IS NOT NULL
         AND (
           v."currentLat" IS NULL OR v."currentLng" IS NULL OR (
             6371 * acos(
@@ -522,6 +542,19 @@ export const rescueQueryResolvers = {
             where: { assignedTo: v.id },
           });
 
+          if (
+            !volunteerFull ||
+            !isEligibleForAssignment({
+              status: volunteerFull.status,
+              isAvailableNow: volunteerFull.isAvailableNow,
+              userStatus: volunteerFull.user?.status ?? null,
+              verifiedAt: volunteerFull.verifiedAt,
+              deletedAt: volunteerFull.deletedAt,
+            })
+          ) {
+            return null;
+          }
+
           return {
             volunteer: volunteerFull,
             distance:
@@ -536,7 +569,9 @@ export const rescueQueryResolvers = {
       );
 
       const rankedVolunteers = volunteersWithUsers
-        .filter((v) => v.volunteer !== null)
+        .filter(
+          (v): v is NonNullable<typeof v> => v !== null && v.volunteer !== null,
+        )
         .map((entry) => {
           const source = volunteers.find(
             (volunteer) => volunteer.id === entry.volunteer?.id,
@@ -555,7 +590,11 @@ export const rescueQueryResolvers = {
         )
         .slice(0, limit);
 
-      return rankedVolunteers.map(({ source: _source, ...entry }) => entry);
+      return rankedVolunteers.map((entry) => {
+        const next = { ...entry } as typeof entry;
+        delete (next as { source?: unknown }).source;
+        return next;
+      });
     },
   },
 };

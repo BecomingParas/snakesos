@@ -134,6 +134,9 @@ enum MediaType {
   CITIZEN_PROFILE_IMAGE
   ADMIN_PROFILE_IMAGE
   RESCUER_VERIFICATION_DOCUMENT
+  RESCUER_PROFILE_VIDEO
+  GALLERY_IMAGE
+  GALLERY_VIDEO
 }
 
 model MediaAsset {
@@ -342,11 +345,12 @@ model RescueRequest {
   biteDetails      String?
 
   // Metadata
-  source          String    @default("WEB") // WEB, APP, PHONE, TELEGRAM
-  referenceNumber String?   @unique // Human-readable ref like "BR-2024-001"
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  deletedAt       DateTime?
+  source               String    @default("WEB") // WEB, APP, PHONE, TELEGRAM
+  referenceNumber      String?   @unique // Human-readable ref like "BR-2024-001"
+  publicIdempotencyKey String?   @unique
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  deletedAt            DateTime?
 
   // Geospatial Intelligence Enhancements
   estimatedTravelTimeMinutes Int? // Estimated travel time to location
@@ -825,7 +829,8 @@ model GalleryImage {
   // Content
   title        String?
   description  String? @db.Text
-  imageUrl     String
+  imageUrl     String?
+  videoUrl     String?
   thumbnailUrl String?
 
   // Categorization
@@ -1106,6 +1111,7 @@ model Payout {
   failedAt          DateTime?
   failureReason     String?
 
+  @@unique([settlementId])
   @@index([rescuerId, status])
   @@index([settlementId])
   @@map("payouts")
@@ -1270,6 +1276,7 @@ enum NotificationType {
   RESCUE_CANCELLED
   VOLUNTEER_APPROVED
   VOLUNTEER_REJECTED
+  RESCUER_APPLICATION_SUBMITTED
   TRAINING_SCHEDULED
   TRAINING_REMINDER
   DONATION_RECEIVED

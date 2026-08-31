@@ -5,12 +5,21 @@ export type MediaType =
   | 'RESCUER_PROFILE_IMAGE'
   | 'CITIZEN_PROFILE_IMAGE'
   | 'ADMIN_PROFILE_IMAGE'
-  | 'RESCUER_VERIFICATION_DOCUMENT';
+  | 'RESCUER_VERIFICATION_DOCUMENT'
+  | 'RESCUER_PROFILE_VIDEO'
+  | 'GALLERY_IMAGE'
+  | 'GALLERY_VIDEO';
 
 const isProfileImage = (mediaType: MediaType) =>
   mediaType === 'RESCUER_PROFILE_IMAGE' ||
   mediaType === 'CITIZEN_PROFILE_IMAGE' ||
   mediaType === 'ADMIN_PROFILE_IMAGE';
+
+const isProfileVideo = (mediaType: MediaType) =>
+  mediaType === 'RESCUER_PROFILE_VIDEO';
+
+const isGalleryImage = (mediaType: MediaType) => mediaType === 'GALLERY_IMAGE';
+const isGalleryVideo = (mediaType: MediaType) => mediaType === 'GALLERY_VIDEO';
 
 const mimeTypes: Record<MediaType, string[]> = {
   RESCUER_PROFILE_IMAGE: ['image/jpeg', 'image/png', 'image/webp'],
@@ -22,6 +31,9 @@ const mimeTypes: Record<MediaType, string[]> = {
     'image/webp',
     'application/pdf',
   ],
+  RESCUER_PROFILE_VIDEO: ['video/mp4', 'video/webm', 'video/quicktime'],
+  GALLERY_IMAGE: ['image/jpeg', 'image/png', 'image/webp'],
+  GALLERY_VIDEO: ['video/mp4', 'video/webm', 'video/quicktime'],
 };
 
 const maxSizes: Record<MediaType, number> = {
@@ -29,6 +41,9 @@ const maxSizes: Record<MediaType, number> = {
   CITIZEN_PROFILE_IMAGE: 5 * 1024 * 1024,
   ADMIN_PROFILE_IMAGE: 5 * 1024 * 1024,
   RESCUER_VERIFICATION_DOCUMENT: 10 * 1024 * 1024,
+  RESCUER_PROFILE_VIDEO: 50 * 1024 * 1024,
+  GALLERY_IMAGE: 10 * 1024 * 1024,
+  GALLERY_VIDEO: 50 * 1024 * 1024,
 };
 
 function configureCloudinary() {
@@ -73,15 +88,25 @@ export function createMediaUploadSignature(input: {
   validateMediaInput(input.mediaType, input.mimeType, input.sizeBytes);
   const { cloudName, apiKey, apiSecret } = configureCloudinary();
   const timestamp = Math.floor(Date.now() / 1000);
-  const folder = isProfileImage(input.mediaType)
-    ? `snakesos/users/${input.userId}/rescuer/profile`
-    : `snakesos/users/${input.userId}/rescuer/verification`;
-  const publicId = `${isProfileImage(input.mediaType) ? 'profile' : 'verification'}/${randomUUID()}`;
+  const folder =
+    isProfileImage(input.mediaType) || isProfileVideo(input.mediaType)
+      ? `snakesos/users/${input.userId}/rescuer/profile`
+      : isGalleryImage(input.mediaType) || isGalleryVideo(input.mediaType)
+        ? 'snakesos/gallery'
+        : `snakesos/users/${input.userId}/rescuer/verification`;
+  const publicId =
+    isProfileImage(input.mediaType) || isProfileVideo(input.mediaType)
+      ? `profile/${randomUUID()}`
+      : isGalleryImage(input.mediaType) || isGalleryVideo(input.mediaType)
+        ? `gallery/${randomUUID()}`
+        : `verification/${randomUUID()}`;
   const resourceType =
-    input.mediaType === 'RESCUER_VERIFICATION_DOCUMENT' &&
-    input.mimeType === 'application/pdf'
-      ? 'raw'
-      : 'image';
+    isProfileVideo(input.mediaType) || isGalleryVideo(input.mediaType)
+      ? 'video'
+      : input.mediaType === 'RESCUER_VERIFICATION_DOCUMENT' &&
+          input.mimeType === 'application/pdf'
+        ? 'raw'
+        : 'image';
   const signature = cloudinary.utils.api_sign_request(
     { folder, public_id: publicId, timestamp },
     apiSecret,

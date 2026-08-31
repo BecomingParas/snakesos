@@ -89,6 +89,22 @@ type RescueRequest {
   notifications: [Notification!]!
 }
 
+type PublicRescue {
+  id: ID!
+  referenceNumber: String!
+  municipality: String!
+  district: String
+  generalArea: String
+  species: SnakeSpecies
+  venomStatus: PublicVenomStatus!
+  priority: RescuePriority!
+  publicStatus: PublicRescueStatus!
+  approximateLatitude: Latitude
+  approximateLongitude: Longitude
+  assignedRescuerName: String
+  createdAt: DateTime!
+}
+
 type RescueRating {
   id: ID!
   rescueId: ID!

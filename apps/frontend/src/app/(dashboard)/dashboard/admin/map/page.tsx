@@ -12,16 +12,19 @@ import { useUserLocation } from '@/hooks/useUserLocation';
 import { useActiveRescuesQuery } from '@/lib/graphql/hooks/rescue.hooks';
 import { useHospitals } from '@/lib/graphql/hooks/hospital.hooks';
 import { useVolunteersQuery } from '@/lib/graphql/hooks/volunteer.hooks';
-import { useSnakebiteHotspots } from '@/lib/graphql/hooks/map.hooks';
+import {
+  useGeographicHeatmap,
+  useSnakebiteHotspots,
+} from '@/lib/graphql/hooks/map.hooks';
 import { MapPin, Users, AlertCircle, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
-// Dynamic import to avoid SSR issues - Using Leaflet (FREE, no API key needed)
+// Dynamic import to avoid SSR issues - use Google Maps-backed component
 const RescueMap = dynamic(
   () =>
-    import('@/components/map/RescueMap').then((mod) => ({
-      default: mod.RescueMap,
+    import('@/components/map/GoogleRescueMap').then((mod) => ({
+      default: mod.GoogleRescueMap,
     })),
   {
     ssr: false,
@@ -235,6 +238,7 @@ export default function AdminMapPage() {
   const [showRescuers, setShowRescuers] = useState(true);
   const [showHospitals, setShowHospitals] = useState(true);
   const [showHotspots, setShowHotspots] = useState(true);
+  const [showHeatmap, setShowHeatmap] = useState(false);
   const [showRoutes, setShowRoutes] = useState(true);
   const [isPriorityDropdownOpen, setIsPriorityDropdownOpen] = useState(false);
   const priorityDropdownRef = useRef<HTMLDivElement>(null);
@@ -273,6 +277,7 @@ export default function AdminMapPage() {
     showRescuers &&
     showHospitals &&
     showHotspots &&
+    !showHeatmap &&
     showRoutes;
 
   const toggleAllFilters = () => {
@@ -284,6 +289,7 @@ export default function AdminMapPage() {
     setShowRescuers(newState);
     setShowHospitals(newState);
     setShowHotspots(newState);
+    setShowHeatmap(false);
     setShowRoutes(newState);
   };
 
@@ -336,6 +342,20 @@ export default function AdminMapPage() {
     error: hotspotsError,
   } = useSnakebiteHotspots();
 
+  const {
+    data: heatmapData,
+    loading: heatmapLoading,
+    error: heatmapError,
+  } = useGeographicHeatmap();
+
+  const heatmapPoints = useMemo(
+    () =>
+      (heatmapData?.geographicHeatmap ?? []).filter((point) =>
+        hasValidCoords(point.lat, point.lng),
+      ),
+    [heatmapData],
+  );
+
   const hotspots: HotspotRecord[] = useMemo(() => {
     if (!hotspotsData || typeof hotspotsData !== 'object') {
       return [];
@@ -360,6 +380,11 @@ export default function AdminMapPage() {
     if (hotspotsError)
       toast.error(`Failed to load hotspots: ${hotspotsError.message}`);
   }, [hotspotsError]);
+
+  useEffect(() => {
+    if (heatmapError)
+      toast.error(`Failed to load heatmap: ${heatmapError.message}`);
+  }, [heatmapError]);
 
   // Merge "available now" volunteers with rescuers currently en route on an
   // active job, de-duplicated by id in O(n) rather than a nested find().
@@ -472,7 +497,7 @@ export default function AdminMapPage() {
   const handleRescueClick = (rescueId: string) => setSelectedRescueId(rescueId);
 
   const isMapDataLoading =
-    loading || hospitalsLoading || volunteersLoading || hotspotsLoading;
+    loading || hospitalsLoading || volunteersLoading || hotspotsLoading || heatmapLoading;
 
   return (
     <div className="min-h-screen flex flex-col p-6 space-y-4">
@@ -778,6 +803,24 @@ export default function AdminMapPage() {
             />
           </label>
 
+          {/* Heatmap Toggle */}
+          <label className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg border-2 border-input bg-surface-elevated hover:border-warning transition-colors cursor-pointer">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-full bg-warning/20 border-2 border-warning flex items-center justify-center text-xs">
+                ◉
+              </div>
+              <span className="text-sm font-medium text-foreground">
+                Risk heatmap
+              </span>
+            </div>
+            <input
+              type="checkbox"
+              checked={showHeatmap}
+              onChange={(e) => setShowHeatmap(e.target.checked)}
+              className="w-4 h-4 accent-warning rounded"
+            />
+          </label>
+
           {/* Your Location Indicator */}
           {location && (
             <div className="flex items-center gap-2 px-3 py-2 rounded-lg border-2 border-info/40 bg-info/10">
@@ -792,92 +835,91 @@ export default function AdminMapPage() {
 
       {/* Map Container */}
       <div
-        className="bg-card rounded-lg shadow-sm border border-border overflow-hidden"
+        className="bg-card rounded-lg shadow-sm border border-border overflow-hidden flex flex-col"
         style={{ height: '600px' }}
       >
-        <div className="h-full w-full">
-          {isMapDataLoading ? (
-            <div className="h-full flex items-center justify-center">
-              <div className="text-center">
-                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-                <p className="text-muted-foreground">Loading rescues...</p>
-              </div>
+        {isMapDataLoading ? (
+          <div className="h-full w-full flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4" />
+              <p className="text-muted-foreground">Loading rescues...</p>
             </div>
-          ) : error ? (
-            <div className="h-full flex items-center justify-center">
-              <div className="text-center text-destructive">
-                <AlertCircle className="h-12 w-12 mx-auto mb-4" />
-                <p>Failed to load rescues</p>
-                <Button onClick={() => refetch()} className="mt-4">
-                  Try Again
-                </Button>
-              </div>
+          </div>
+        ) : error ? (
+          <div className="h-full w-full flex items-center justify-center">
+            <div className="text-center text-destructive">
+              <AlertCircle className="h-12 w-12 mx-auto mb-4" />
+              <p>Failed to load rescues</p>
+              <Button onClick={() => refetch()} className="mt-4">
+                Try Again
+              </Button>
             </div>
-          ) : (
-            <RescueMap
-              rescues={plottableRescues.map((r) => ({
-                id: r.id,
-                lat: r.lat as number,
-                lng: r.lng as number,
-                address: r.address,
-                municipality: r.municipality,
-                status: r.status,
-                priority: r.priority,
-                name: r.name,
-                phone: r.phone,
-                snakeDescription: r.snakeDescription,
-              }))}
-              rescuers={showRescuers ? mockRescuers : []}
-              hospitals={
-                showHospitals
-                  ? plottableHospitals.map((h) => ({
-                      id: h.id,
-                      name: h.name,
-                      latitude: h.latitude as number,
-                      longitude: h.longitude as number,
-                      address: h.address,
-                      municipality: h.municipality,
-                      district: h.district,
-                      phone: h.phone,
-                      emergencyPhone: h.emergencyPhone,
-                      antivenomStatus: h.antivenomStatus,
-                      emergency24x7: h.emergency24x7,
-                      snakebiteTreatmentAvailable:
-                        h.snakebiteTreatmentAvailable,
-                      ventilatorAvailable: h.ventilatorAvailable,
-                    }))
-                  : []
-              }
-              hotspots={
-                showHotspots
-                  ? hotspots.map((h) => ({
-                      id: h.id,
-                      name: h.name,
-                      district: h.district,
-                      province: h.province,
-                      riskLevel: h.riskLevel as
-                        | 'LOW'
-                        | 'MODERATE'
-                        | 'HIGH'
-                        | 'VERY_HIGH'
-                        | 'EXTREME',
-                      riskScore: h.riskScore,
-                      source: h.source,
-                      sourceUrl: h.sourceUrl,
-                      studyYear: h.studyYear,
-                      populationAtRisk: h.populationAtRisk,
-                    }))
-                  : []
-              }
-              userLocation={location}
-              selectedRescueId={selectedRescueId}
-              onRescueClick={handleRescueClick}
-              center={mapCenter}
-              zoom={mapZoom}
-              showRoutes={showRoutes}
-            />
-          )}
-        </div>
+          </div>
+        ) : (
+          <RescueMap
+            rescues={plottableRescues.map((r) => ({
+              id: r.id,
+              lat: r.lat as number,
+              lng: r.lng as number,
+              address: r.address,
+              municipality: r.municipality,
+              status: r.status,
+              priority: r.priority,
+              name: r.name,
+              phone: r.phone,
+              snakeDescription: r.snakeDescription,
+            }))}
+            rescuers={showRescuers ? mockRescuers : []}
+            hospitals={
+              showHospitals
+                ? plottableHospitals.map((h) => ({
+                    id: h.id,
+                    name: h.name,
+                    latitude: h.latitude as number,
+                    longitude: h.longitude as number,
+                    address: h.address,
+                    municipality: h.municipality,
+                    district: h.district,
+                    phone: h.phone,
+                    emergencyPhone: h.emergencyPhone,
+                    antivenomStatus: h.antivenomStatus,
+                    emergency24x7: h.emergency24x7,
+                    snakebiteTreatmentAvailable: h.snakebiteTreatmentAvailable,
+                    ventilatorAvailable: h.ventilatorAvailable,
+                  }))
+                : []
+            }
+            hotspots={
+              showHotspots
+                ? hotspots.map((h) => ({
+                    id: h.id,
+                    name: h.name,
+                    district: h.district,
+                    province: h.province,
+                    riskLevel: h.riskLevel as
+                      | 'LOW'
+                      | 'MODERATE'
+                      | 'HIGH'
+                      | 'VERY_HIGH'
+                      | 'EXTREME',
+                    riskScore: h.riskScore,
+                    source: h.source,
+                    sourceUrl: h.sourceUrl,
+                    studyYear: h.studyYear,
+                    populationAtRisk: h.populationAtRisk,
+                  }))
+                : []
+            }
+            userLocation={location}
+            selectedRescueId={selectedRescueId}
+            onRescueClick={handleRescueClick}
+            center={mapCenter}
+            zoom={mapZoom}
+            showRoutes={showRoutes}
+            heatmapPoints={heatmapPoints}
+            showHeatmap={showHeatmap}
+          />
+        )}
       </div>
 
       {/* Location Error Alert */}

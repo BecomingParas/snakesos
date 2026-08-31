@@ -22,9 +22,9 @@ import { cn } from "@/lib/utils";
 import type { MapMarker, SeriesPoint, StatDef } from "@/lib/dashboard-data";
 import { getIcon } from "./icons";
 
-// Dynamic import for Leaflet map
+// Dynamic import for the active rescue map
 const RescueMap = dynamic(
-  () => import('@/components/map/RescueMap').then(mod => ({ default: mod.RescueMap })),
+  () => import('@/components/map/GoogleRescueMap').then(mod => ({ default: mod.GoogleRescueMap })),
   { 
     ssr: false,
     loading: () => (

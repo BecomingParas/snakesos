@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import { formatDistance } from '@/lib/map/distance';
 import { RoutingService } from '@/lib/map/routing.service';
-import type { HospitalLocation } from './HospitalMap';
+import type { HospitalLocation } from './map.types';
 
 interface HospitalInfoCardProps {
   hospital: HospitalLocation;

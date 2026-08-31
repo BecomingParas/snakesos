@@ -157,6 +157,52 @@ input RescueRequestFilterInput {
   search: String
 }
 
+input PublicRescueFilterInput {
+  status: PublicRescueStatus
+  priority: RescuePriority
+  municipality: String
+  district: String
+  speciesId: ID
+  venomStatus: PublicVenomStatus
+  unassigned: Boolean
+}
+
+input PublicRescueReportInput {
+  name: String!
+  phone: Phone!
+  email: Email
+  municipality: String!
+  ward: Int
+  generalArea: String!
+  latitude: Latitude
+  longitude: Longitude
+  description: String
+  urgency: RescuePriority
+  isEmergency: Boolean
+  hasBite: Boolean
+}
+
+input PublicEmergencyRequestInput {
+  fullName: String!
+  phone: Phone!
+  email: Email
+  municipality: String!
+  district: String
+  generalArea: String!
+  address: String
+  latitude: Latitude
+  longitude: Longitude
+  landmark: String
+  snakeDescription: String
+  snakeSpeciesId: ID
+  urgency: RescuePriority!
+  notes: String
+  isEmergency: Boolean
+  hasBite: Boolean
+  idempotencyKey: String!
+  deviceId: String
+}
+
 """
 Sort input for rescue queries
 """

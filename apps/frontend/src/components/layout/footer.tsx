@@ -9,7 +9,7 @@ export function Footer() {
         <div>
           <p className="flex items-center gap-2 font-display text-lg font-bold">
             <img 
-              src="/snakesoslogo.png" 
+              src="/logo.jpg" 
               alt="SnakeSOS Logo" 
               className="h-12 w-12 object-contain"
             /> SnakeSOS

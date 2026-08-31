@@ -56,3 +56,16 @@ enum RescueSource {
   PHONE
   TELEGRAM
 }
+
+enum PublicRescueStatus {
+  OPEN
+  RESPONDER_ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum PublicVenomStatus {
+  VENOMOUS
+  NON_VENOMOUS
+  UNKNOWN
+}

@@ -33,6 +33,18 @@ export const authResolvers = {
         where: { rescuerId: parent.id },
         orderBy: { createdAt: 'desc' },
       }),
+    mediaAssets: async (
+      parent: { userId?: string | null },
+      _args: unknown,
+      context: GraphQLContext,
+    ) => {
+      context.requireRole(['ADMIN', 'SUPER_ADMIN', 'DISTRICT_COORDINATOR']);
+      if (!parent.userId) return [];
+      return prisma.mediaAsset.findMany({
+        where: { ownerId: parent.userId, status: { in: ['UPLOADED', 'VERIFIED'] } },
+        orderBy: { createdAt: 'desc' },
+      });
+    },
   },
   Query: {
     /**
@@ -309,6 +321,100 @@ export const authResolvers = {
   },
 
   Mutation: {
+    applyVolunteer: async (
+      _parent: unknown,
+      args: { input: Record<string, unknown> },
+      context: GraphQLContext,
+    ) => {
+      context.requireAuth();
+
+      const existing = await prisma.volunteer.findUnique({
+        where: { userId: context.user.id },
+      });
+      if (existing && !existing.deletedAt) {
+        throw new Error(
+          'A rescuer application already exists for this account',
+        );
+      }
+
+      const input = args.input;
+      const volunteer = await prisma.volunteer.create({
+        data: {
+          userId: context.user.id,
+          name: String(input.name),
+          contact: String(input.contact),
+          email: input.email ? String(input.email) : undefined,
+          address: String(input.address),
+          municipality: String(input.municipality),
+          ward: typeof input.ward === 'number' ? input.ward : undefined,
+          emergencyContact: input.emergencyContact
+            ? String(input.emergencyContact)
+            : undefined,
+          emergencyPhone: input.emergencyPhone
+            ? String(input.emergencyPhone)
+            : undefined,
+          experience: String(input.experience),
+          experienceYears:
+            typeof input.experienceYears === 'number'
+              ? input.experienceYears
+              : undefined,
+          vehicle: String(input.vehicle),
+          vehicleDetails: input.vehicleDetails
+            ? String(input.vehicleDetails)
+            : undefined,
+          skills: Array.isArray(input.skills) ? input.skills.map(String) : [],
+          certifications: Array.isArray(input.certifications)
+            ? input.certifications.map(String)
+            : [],
+          availableTime: String(input.availableTime),
+          availableDays: Array.isArray(input.availableDays)
+            ? input.availableDays.map(String)
+            : [],
+          emergencyAvailability: Boolean(input.emergencyAvailability),
+          assignedZone: input.assignedZone
+            ? String(input.assignedZone)
+            : undefined,
+          coverageRadius:
+            typeof input.coverageRadius === 'number'
+              ? input.coverageRadius
+              : 20,
+          bio: input.bio ? String(input.bio) : undefined,
+          hasEquipment: Boolean(input.hasEquipment),
+          equipment: Array.isArray(input.equipment)
+            ? input.equipment.map(String)
+            : [],
+          status: 'PENDING',
+          isAvailableNow: false,
+          verifiedAt: null,
+          verifiedBy: null,
+        },
+        include: { user: true },
+      });
+
+      const admins = await prisma.user.findMany({
+        where: {
+          status: 'ACTIVE',
+          role: { in: ['ADMIN', 'SUPER_ADMIN'] },
+        },
+        select: { id: true },
+      });
+      if (admins.length > 0) {
+        await prisma.notification.createMany({
+          data: admins.map((admin) => ({
+            userId: admin.id,
+            type: 'RESCUER_APPLICATION_SUBMITTED' as any,
+            title: 'New rescuer application',
+            message: `${volunteer.name} submitted a rescuer application for review.`,
+            actionUrl: `/dashboard/admin/rescuers/${volunteer.id}`,
+            link: `/dashboard/admin/rescuers/${volunteer.id}`,
+            priority: 'HIGH' as any,
+          })),
+        });
+      }
+
+      return volunteer;
+    },
+
     /**
      * Login mutation
      */

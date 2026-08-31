@@ -1199,7 +1199,7 @@ export type GalleryImage = {
   fileSize?: Maybe<Scalars['Int']['output']>;
   format?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  imageUrl: Scalars['String']['output'];
+  imageUrl?: Maybe<Scalars['String']['output']>;
   isFeatured: Scalars['Boolean']['output'];
   isPublic: Scalars['Boolean']['output'];
   likes: Scalars['Int']['output'];
@@ -1212,6 +1212,7 @@ export type GalleryImage = {
   title?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   uploader?: Maybe<User>;
+  videoUrl?: Maybe<Scalars['String']['output']>;
   views: Scalars['Int']['output'];
 };
 
@@ -1680,6 +1681,7 @@ export type MediaAsset = {
   provider: Scalars['String']['output'];
   publicId: Scalars['String']['output'];
   resourceType: Scalars['String']['output'];
+  secureUrl?: Maybe<Scalars['String']['output']>;
   sizeBytes?: Maybe<Scalars['Int']['output']>;
   status: MediaStatus;
   updatedAt: Scalars['DateTime']['output'];
@@ -1695,7 +1697,12 @@ export type MediaStatus =
   | '%future added value';
 
 export type MediaType =
+  | 'ADMIN_PROFILE_IMAGE'
+  | 'CITIZEN_PROFILE_IMAGE'
+  | 'GALLERY_IMAGE'
+  | 'GALLERY_VIDEO'
   | 'RESCUER_PROFILE_IMAGE'
+  | 'RESCUER_PROFILE_VIDEO'
   | 'RESCUER_VERIFICATION_DOCUMENT'
   | '%future added value';
 
@@ -1945,6 +1952,8 @@ export type Mutation = {
   startPayment: PaymentIntentCheckout;
   /** Submit a contact message */
   submitContactMessage: ContactMessage;
+  submitPublicEmergencyRequest: PublicEmergencyRequestResult;
+  submitPublicRescueReport: PublicRescueReportResult;
   /** Suspend volunteer */
   suspendVolunteer: Volunteer;
   /** Test notification delivery */
@@ -1977,6 +1986,8 @@ export type Mutation = {
   updateSnakeSpecies: SnakeSpecies;
   /** Update a training session */
   updateTraining: Training;
+  /** Change another user's role (admin only; administrators cannot change their own role) */
+  updateUserRole: User;
   /** Update a user's account status (admin only) */
   updateUserStatus: User;
   /** Update volunteer availability status */
@@ -2327,6 +2338,14 @@ export type MutationSubmitContactMessageArgs = {
   input: SubmitContactMessageInput;
 };
 
+export type MutationSubmitPublicEmergencyRequestArgs = {
+  input: PublicEmergencyRequestInput;
+};
+
+export type MutationSubmitPublicRescueReportArgs = {
+  input: PublicRescueReportInput;
+};
+
 export type MutationSuspendVolunteerArgs = {
   reason: Scalars['String']['input'];
   volunteerId: Scalars['ID']['input'];
@@ -2407,6 +2426,10 @@ export type MutationUpdateSnakeSpeciesArgs = {
 export type MutationUpdateTrainingArgs = {
   id: Scalars['ID']['input'];
   input: UpdateTrainingInput;
+};
+
+export type MutationUpdateUserRoleArgs = {
+  input: UpdateUserRoleInput;
 };
 
 export type MutationUpdateUserStatusArgs = {
@@ -2659,6 +2682,7 @@ export type NotificationStats = {
 export type NotificationType =
   | 'ANNOUNCEMENT'
   | 'DONATION_RECEIVED'
+  | 'RESCUER_APPLICATION_SUBMITTED'
   | 'RESCUE_ACCEPTED'
   | 'RESCUE_ASSIGNED'
   | 'RESCUE_CANCELLED'
@@ -2875,6 +2899,111 @@ export type ProvinceHospitalCount = {
   withAntivenom: Scalars['Int']['output'];
 };
 
+export type PublicEmergencyRequestInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  deviceId?: InputMaybe<Scalars['String']['input']>;
+  district?: InputMaybe<Scalars['String']['input']>;
+  email?: InputMaybe<Scalars['Email']['input']>;
+  fullName: Scalars['String']['input'];
+  generalArea: Scalars['String']['input'];
+  hasBite?: InputMaybe<Scalars['Boolean']['input']>;
+  idempotencyKey: Scalars['String']['input'];
+  isEmergency?: InputMaybe<Scalars['Boolean']['input']>;
+  landmark?: InputMaybe<Scalars['String']['input']>;
+  latitude?: InputMaybe<Scalars['Latitude']['input']>;
+  longitude?: InputMaybe<Scalars['Longitude']['input']>;
+  municipality: Scalars['String']['input'];
+  notes?: InputMaybe<Scalars['String']['input']>;
+  phone: Scalars['Phone']['input'];
+  snakeDescription?: InputMaybe<Scalars['String']['input']>;
+  snakeSpeciesId?: InputMaybe<Scalars['ID']['input']>;
+  urgency: RescuePriority;
+};
+
+export type PublicEmergencyRequestResult = {
+  __typename?: 'PublicEmergencyRequestResult';
+  createdAt: Scalars['DateTime']['output'];
+  publicStatus: PublicRescueStatus;
+  referenceNumber: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
+export type PublicRescue = {
+  __typename?: 'PublicRescue';
+  approximateLatitude?: Maybe<Scalars['Latitude']['output']>;
+  approximateLongitude?: Maybe<Scalars['Longitude']['output']>;
+  assignedRescuerName?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  district?: Maybe<Scalars['String']['output']>;
+  generalArea?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  municipality: Scalars['String']['output'];
+  priority: RescuePriority;
+  publicStatus: PublicRescueStatus;
+  referenceNumber: Scalars['String']['output'];
+  species?: Maybe<SnakeSpecies>;
+  venomStatus: PublicVenomStatus;
+};
+
+export type PublicRescueConnection = {
+  __typename?: 'PublicRescueConnection';
+  edges: Array<PublicRescueEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type PublicRescueEdge = {
+  __typename?: 'PublicRescueEdge';
+  cursor: Scalars['String']['output'];
+  node: PublicRescue;
+};
+
+export type PublicRescueFilterInput = {
+  district?: InputMaybe<Scalars['String']['input']>;
+  municipality?: InputMaybe<Scalars['String']['input']>;
+  priority?: InputMaybe<RescuePriority>;
+  speciesId?: InputMaybe<Scalars['ID']['input']>;
+  status?: InputMaybe<PublicRescueStatus>;
+  unassigned?: InputMaybe<Scalars['Boolean']['input']>;
+  venomStatus?: InputMaybe<PublicVenomStatus>;
+};
+
+export type PublicRescueReportInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  email?: InputMaybe<Scalars['Email']['input']>;
+  generalArea: Scalars['String']['input'];
+  hasBite?: InputMaybe<Scalars['Boolean']['input']>;
+  isEmergency?: InputMaybe<Scalars['Boolean']['input']>;
+  latitude?: InputMaybe<Scalars['Latitude']['input']>;
+  longitude?: InputMaybe<Scalars['Longitude']['input']>;
+  municipality: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  phone: Scalars['Phone']['input'];
+  urgency?: InputMaybe<RescuePriority>;
+  ward?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type PublicRescueReportResult = {
+  __typename?: 'PublicRescueReportResult';
+  createdAt: Scalars['DateTime']['output'];
+  publicStatus: PublicRescueStatus;
+  referenceNumber: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
+export type PublicRescueStatus =
+  | 'COMPLETED'
+  | 'IN_PROGRESS'
+  | 'OPEN'
+  | 'RESPONDER_ASSIGNED'
+  | '%future added value';
+
+export type PublicVenomStatus =
+  | 'NON_VENOMOUS'
+  | 'UNKNOWN'
+  | 'VENOMOUS'
+  | '%future added value';
+
 export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']['output']>;
@@ -3029,6 +3158,7 @@ export type Query = {
   pendingRescuesCount: Scalars['Int']['output'];
   /** Get pending volunteer applications */
   pendingVolunteerApplications: VolunteerConnection;
+  publicRescues: PublicRescueConnection;
   /** Get published blog posts (public) */
   publishedBlogPosts: BlogPostConnection;
   /**
@@ -3423,6 +3553,11 @@ export type QueryPayoutsArgs = {
 };
 
 export type QueryPendingVolunteerApplicationsArgs = {
+  pagination?: InputMaybe<PaginationInput>;
+};
+
+export type QueryPublicRescuesArgs = {
+  filter?: InputMaybe<PublicRescueFilterInput>;
   pagination?: InputMaybe<PaginationInput>;
 };
 
@@ -4905,14 +5040,16 @@ export type UpdateBlogPostInput = {
   videoUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** Input for updating gallery image */
+/** Input for updating gallery media */
 export type UpdateGalleryImageInput = {
   category?: InputMaybe<GalleryCategory>;
   description?: InputMaybe<Scalars['String']['input']>;
+  imageUrl?: InputMaybe<Scalars['String']['input']>;
   isFeatured?: InputMaybe<Scalars['Boolean']['input']>;
   isPublic?: InputMaybe<Scalars['Boolean']['input']>;
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
   title?: InputMaybe<Scalars['String']['input']>;
+  videoUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateHospitalInput = {
@@ -5087,6 +5224,11 @@ export type UpdateUserProfileInput = {
   timezone?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateUserRoleInput = {
+  role: UserRole;
+  userId: Scalars['ID']['input'];
+};
+
 /** Input for updating volunteer availability */
 export type UpdateVolunteerAvailabilityInput = {
   currentLat?: InputMaybe<Scalars['Latitude']['input']>;
@@ -5123,11 +5265,11 @@ export type UpdateVolunteerInput = {
   ward?: InputMaybe<Scalars['Int']['input']>;
 };
 
-/** Input for uploading gallery image */
+/** Input for uploading gallery media */
 export type UploadGalleryImageInput = {
   category?: InputMaybe<GalleryCategory>;
   description?: InputMaybe<Scalars['String']['input']>;
-  imageUrl: Scalars['String']['input'];
+  imageUrl?: InputMaybe<Scalars['String']['input']>;
   isFeatured?: InputMaybe<Scalars['Boolean']['input']>;
   isPublic?: InputMaybe<Scalars['Boolean']['input']>;
   rescueId?: InputMaybe<Scalars['ID']['input']>;
@@ -5135,6 +5277,7 @@ export type UploadGalleryImageInput = {
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
   thumbnailUrl?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
+  videoUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Upload source for identification */
@@ -5446,6 +5589,7 @@ export type Volunteer = {
   isAvailableNow: Scalars['Boolean']['output'];
   languages: Array<Scalars['String']['output']>;
   lastLocationUpdate?: Maybe<Scalars['DateTime']['output']>;
+  mediaAssets: Array<MediaAsset>;
   municipality: Scalars['String']['output'];
   name: Scalars['String']['output'];
   rating?: Maybe<Scalars['Float']['output']>;
@@ -6078,6 +6222,26 @@ export type ResolversTypes = ResolversObject<{
   Priority: Priority;
   ProcessPaymentInput: ProcessPaymentInput;
   ProvinceHospitalCount: ResolverTypeWrapper<ProvinceHospitalCount>;
+  PublicEmergencyRequestInput: PublicEmergencyRequestInput;
+  PublicEmergencyRequestResult: ResolverTypeWrapper<PublicEmergencyRequestResult>;
+  PublicRescue: ResolverTypeWrapper<
+    Omit<PublicRescue, 'species'> & {
+      species?: Maybe<ResolversTypes['SnakeSpecies']>;
+    }
+  >;
+  PublicRescueConnection: ResolverTypeWrapper<
+    Omit<PublicRescueConnection, 'edges'> & {
+      edges: Array<ResolversTypes['PublicRescueEdge']>;
+    }
+  >;
+  PublicRescueEdge: ResolverTypeWrapper<
+    Omit<PublicRescueEdge, 'node'> & { node: ResolversTypes['PublicRescue'] }
+  >;
+  PublicRescueFilterInput: PublicRescueFilterInput;
+  PublicRescueReportInput: PublicRescueReportInput;
+  PublicRescueReportResult: ResolverTypeWrapper<PublicRescueReportResult>;
+  PublicRescueStatus: PublicRescueStatus;
+  PublicVenomStatus: PublicVenomStatus;
   Query: ResolverTypeWrapper<Record<PropertyKey, never>>;
   RadiusInput: RadiusInput;
   RankedTreatmentCenter: ResolverTypeWrapper<RankedTreatmentCenter>;
@@ -6277,6 +6441,7 @@ export type ResolversTypes = ResolversObject<{
   UpdateSnakeSpeciesInput: UpdateSnakeSpeciesInput;
   UpdateTrainingInput: UpdateTrainingInput;
   UpdateUserProfileInput: UpdateUserProfileInput;
+  UpdateUserRoleInput: UpdateUserRoleInput;
   UpdateVolunteerAvailabilityInput: UpdateVolunteerAvailabilityInput;
   UpdateVolunteerInput: UpdateVolunteerInput;
   Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
@@ -6587,6 +6752,20 @@ export type ResolversParentTypes = ResolversObject<{
   PositiveInt: Scalars['PositiveInt']['output'];
   ProcessPaymentInput: ProcessPaymentInput;
   ProvinceHospitalCount: ProvinceHospitalCount;
+  PublicEmergencyRequestInput: PublicEmergencyRequestInput;
+  PublicEmergencyRequestResult: PublicEmergencyRequestResult;
+  PublicRescue: Omit<PublicRescue, 'species'> & {
+    species?: Maybe<ResolversParentTypes['SnakeSpecies']>;
+  };
+  PublicRescueConnection: Omit<PublicRescueConnection, 'edges'> & {
+    edges: Array<ResolversParentTypes['PublicRescueEdge']>;
+  };
+  PublicRescueEdge: Omit<PublicRescueEdge, 'node'> & {
+    node: ResolversParentTypes['PublicRescue'];
+  };
+  PublicRescueFilterInput: PublicRescueFilterInput;
+  PublicRescueReportInput: PublicRescueReportInput;
+  PublicRescueReportResult: PublicRescueReportResult;
   Query: Record<PropertyKey, never>;
   RadiusInput: RadiusInput;
   RankedTreatmentCenter: RankedTreatmentCenter;
@@ -6741,6 +6920,7 @@ export type ResolversParentTypes = ResolversObject<{
   UpdateSnakeSpeciesInput: UpdateSnakeSpeciesInput;
   UpdateTrainingInput: UpdateTrainingInput;
   UpdateUserProfileInput: UpdateUserProfileInput;
+  UpdateUserRoleInput: UpdateUserRoleInput;
   UpdateVolunteerAvailabilityInput: UpdateVolunteerAvailabilityInput;
   UpdateVolunteerInput: UpdateVolunteerInput;
   Upload: Scalars['Upload']['output'];
@@ -7828,7 +8008,7 @@ export type GalleryImageResolvers<
   fileSize?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   format?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  imageUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  imageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   isFeatured?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   isPublic?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   likes?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -7853,6 +8033,7 @@ export type GalleryImageResolvers<
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   uploader?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  videoUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   views?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
@@ -8467,6 +8648,11 @@ export type MediaAssetResolvers<
   provider?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   publicId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   resourceType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  secureUrl?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
   sizeBytes?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['MediaStatus'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -9068,6 +9254,18 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationSubmitContactMessageArgs, 'input'>
   >;
+  submitPublicEmergencyRequest?: Resolver<
+    ResolversTypes['PublicEmergencyRequestResult'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationSubmitPublicEmergencyRequestArgs, 'input'>
+  >;
+  submitPublicRescueReport?: Resolver<
+    ResolversTypes['PublicRescueReportResult'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationSubmitPublicRescueReportArgs, 'input'>
+  >;
   suspendVolunteer?: Resolver<
     ResolversTypes['Volunteer'],
     ParentType,
@@ -9175,6 +9373,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationUpdateTrainingArgs, 'id' | 'input'>
+  >;
+  updateUserRole?: Resolver<
+    ResolversTypes['User'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateUserRoleArgs, 'input'>
   >;
   updateUserStatus?: Resolver<
     ResolversTypes['User'],
@@ -9696,6 +9900,111 @@ export type ProvinceHospitalCountResolvers<
   withAntivenom?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
 }>;
 
+export type PublicEmergencyRequestResultResolvers<
+  ContextType = GraphQLContext,
+  ParentType extends
+    ResolversParentTypes['PublicEmergencyRequestResult'] = ResolversParentTypes['PublicEmergencyRequestResult'],
+> = ResolversObject<{
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  publicStatus?: Resolver<
+    ResolversTypes['PublicRescueStatus'],
+    ParentType,
+    ContextType
+  >;
+  referenceNumber?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+}>;
+
+export type PublicRescueResolvers<
+  ContextType = GraphQLContext,
+  ParentType extends
+    ResolversParentTypes['PublicRescue'] = ResolversParentTypes['PublicRescue'],
+> = ResolversObject<{
+  approximateLatitude?: Resolver<
+    Maybe<ResolversTypes['Latitude']>,
+    ParentType,
+    ContextType
+  >;
+  approximateLongitude?: Resolver<
+    Maybe<ResolversTypes['Longitude']>,
+    ParentType,
+    ContextType
+  >;
+  assignedRescuerName?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  district?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  generalArea?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  municipality?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  priority?: Resolver<
+    ResolversTypes['RescuePriority'],
+    ParentType,
+    ContextType
+  >;
+  publicStatus?: Resolver<
+    ResolversTypes['PublicRescueStatus'],
+    ParentType,
+    ContextType
+  >;
+  referenceNumber?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  species?: Resolver<
+    Maybe<ResolversTypes['SnakeSpecies']>,
+    ParentType,
+    ContextType
+  >;
+  venomStatus?: Resolver<
+    ResolversTypes['PublicVenomStatus'],
+    ParentType,
+    ContextType
+  >;
+}>;
+
+export type PublicRescueConnectionResolvers<
+  ContextType = GraphQLContext,
+  ParentType extends
+    ResolversParentTypes['PublicRescueConnection'] = ResolversParentTypes['PublicRescueConnection'],
+> = ResolversObject<{
+  edges?: Resolver<
+    Array<ResolversTypes['PublicRescueEdge']>,
+    ParentType,
+    ContextType
+  >;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  totalCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+}>;
+
+export type PublicRescueEdgeResolvers<
+  ContextType = GraphQLContext,
+  ParentType extends
+    ResolversParentTypes['PublicRescueEdge'] = ResolversParentTypes['PublicRescueEdge'],
+> = ResolversObject<{
+  cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  node?: Resolver<ResolversTypes['PublicRescue'], ParentType, ContextType>;
+}>;
+
+export type PublicRescueReportResultResolvers<
+  ContextType = GraphQLContext,
+  ParentType extends
+    ResolversParentTypes['PublicRescueReportResult'] = ResolversParentTypes['PublicRescueReportResult'],
+> = ResolversObject<{
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  publicStatus?: Resolver<
+    ResolversTypes['PublicRescueStatus'],
+    ParentType,
+    ContextType
+  >;
+  referenceNumber?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+}>;
+
 export type QueryResolvers<
   ContextType = GraphQLContext,
   ParentType extends
@@ -10128,6 +10437,12 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     Partial<QueryPendingVolunteerApplicationsArgs>
+  >;
+  publicRescues?: Resolver<
+    ResolversTypes['PublicRescueConnection'],
+    ParentType,
+    ContextType,
+    Partial<QueryPublicRescuesArgs>
   >;
   publishedBlogPosts?: Resolver<
     ResolversTypes['BlogPostConnection'],
@@ -12413,6 +12728,11 @@ export type VolunteerResolvers<
     ParentType,
     ContextType
   >;
+  mediaAssets?: Resolver<
+    Array<ResolversTypes['MediaAsset']>,
+    ParentType,
+    ContextType
+  >;
   municipality?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   rating?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -12780,6 +13100,11 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   Phone?: GraphQLScalarType;
   PositiveInt?: GraphQLScalarType;
   ProvinceHospitalCount?: ProvinceHospitalCountResolvers<ContextType>;
+  PublicEmergencyRequestResult?: PublicEmergencyRequestResultResolvers<ContextType>;
+  PublicRescue?: PublicRescueResolvers<ContextType>;
+  PublicRescueConnection?: PublicRescueConnectionResolvers<ContextType>;
+  PublicRescueEdge?: PublicRescueEdgeResolvers<ContextType>;
+  PublicRescueReportResult?: PublicRescueReportResultResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RankedTreatmentCenter?: RankedTreatmentCenterResolvers<ContextType>;
   RankingScoreDetails?: RankingScoreDetailsResolvers<ContextType>;

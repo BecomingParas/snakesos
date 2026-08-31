@@ -104,7 +104,7 @@ export function NotificationDropdown({ role }: { role: string }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
           className="relative h-10 w-10 hover:bg-secondary/50"
           aria-label="Open notifications"

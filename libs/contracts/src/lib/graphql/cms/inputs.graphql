@@ -45,12 +45,13 @@ input UpdateBlogPostInput {
 }
 
 """
-Input for uploading gallery image
+Input for uploading gallery media
 """
 input UploadGalleryImageInput {
   title: String
   description: String
-  imageUrl: String!
+  imageUrl: String
+  videoUrl: String
   thumbnailUrl: String
   category: GalleryCategory
   tags: [String!]
@@ -61,11 +62,13 @@ input UploadGalleryImageInput {
 }
 
 """
-Input for updating gallery image
+Input for updating gallery media
 """
 input UpdateGalleryImageInput {
   title: String
   description: String
+  imageUrl: String
+  videoUrl: String
   category: GalleryCategory
   tags: [String!]
   isPublic: Boolean

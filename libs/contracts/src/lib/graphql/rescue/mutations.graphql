@@ -3,6 +3,10 @@
 # ===================================================================
 
 extend type Mutation {
+  submitPublicEmergencyRequest(input: PublicEmergencyRequestInput!): PublicEmergencyRequestResult!
+
+  submitPublicRescueReport(input: PublicRescueReportInput!): PublicRescueReportResult!
+
   """
   Create a new rescue request
   """
@@ -73,4 +77,18 @@ extend type Mutation {
   Delete rescue request (soft delete, admin only)
   """
   deleteRescueRequest(id: ID!): SuccessResponse! @auth(requires: [SUPER_ADMIN])
+}
+
+type PublicRescueReportResult {
+  success: Boolean!
+  referenceNumber: String!
+  publicStatus: PublicRescueStatus!
+  createdAt: DateTime!
+}
+
+type PublicEmergencyRequestResult {
+  success: Boolean!
+  referenceNumber: String!
+  publicStatus: PublicRescueStatus!
+  createdAt: DateTime!
 }

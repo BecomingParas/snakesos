@@ -11,6 +11,7 @@ type MediaAsset {
   height: Int
   format: String
   status: MediaStatus!
+  secureUrl: String
   createdAt: DateTime!
   updatedAt: DateTime!
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Activity,
@@ -22,12 +22,26 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import {
+  type RescueRequest,
   useAcceptRescueMutation,
   useAvailableRescuesQuery,
   useMyAssignedRescuesQuery,
 } from '@/lib/graphql/hooks/rescue.hooks';
+import {
+  useMyVolunteerProfileQuery,
+  useUpdateVolunteerProfileMutation,
+} from '@/lib/graphql/hooks/volunteer.hooks';
+import { useMyProfileQuery } from '@/lib/graphql/hooks/user.hooks';
 import { toast } from 'sonner';
 
 /**
@@ -40,57 +54,12 @@ import { toast } from 'sonner';
  * - Today's statistics
  */
 
-// Mock data - TODO: Replace with GraphQL queries
-const mockVolunteer = {
-  id: 'vol-1',
-  name: 'Ram Prasad Sharma',
-  isAvailableNow: true,
-  totalRescues: 156,
-  completedRescues: 148,
-  rating: 4.8,
-  todayRescues: 3,
+const DEFAULT_VOLUNTEER_STATS = {
+  totalRescues: 0,
+  completedRescues: 0,
+  rating: 0,
+  todayRescues: 0,
 };
-
-const mockActiveRescue = {
-  id: 'rescue-active-1',
-  referenceNumber: 'BR-2024-102',
-  status: 'IN_PROGRESS',
-  priority: 'HIGH',
-  municipality: 'Butwal',
-  ward: 12,
-  address: 'Traffic Chowk, Main Road',
-  snakeDescription: 'Large brown snake, approximately 4 feet',
-  createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-  acceptedAt: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
-  distance: 2.3,
-  citizenName: 'John Doe',
-  citizenPhone: '9841234567',
-};
-
-const mockPendingAssignments = [
-  {
-    id: 'rescue-pending-1',
-    referenceNumber: 'BR-2024-103',
-    status: 'ASSIGNED',
-    priority: 'MEDIUM',
-    municipality: 'Butwal',
-    address: 'Near City Mall',
-    snakeDescription: 'Small green snake in garden',
-    distance: 1.5,
-    createdAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-  },
-  {
-    id: 'rescue-pending-2',
-    referenceNumber: 'BR-2024-104',
-    status: 'ASSIGNED',
-    priority: 'HIGH',
-    municipality: 'Butwal',
-    address: 'Hospital Road',
-    snakeDescription: 'Snake inside house, possibly venomous',
-    distance: 3.2,
-    createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-  },
-];
 
 const PRIORITY_COLORS = {
   LOW: 'bg-gray-500',
@@ -101,9 +70,32 @@ const PRIORITY_COLORS = {
 
 export default function RescuerDashboard() {
   const router = useRouter();
-  const [isAvailable, setIsAvailable] = useState(mockVolunteer.isAvailableNow);
+  const { data: userData } = useMyProfileQuery({
+    fetchPolicy: 'cache-and-network',
+  });
+  const { data: profileData, refetch: refetchProfile } =
+    useMyVolunteerProfileQuery({ fetchPolicy: 'cache-and-network' });
+  const profile = profileData?.myVolunteerProfile;
+  const volunteerName = userData?.me?.name || 'Rescuer';
+  const verificationStatus = profile?.status || 'UNDER_REVIEW';
+  const accountStatus = userData?.me?.status || 'INACTIVE';
+  const isOperationallyEligible =
+    verificationStatus === 'VERIFIED' && accountStatus === 'ACTIVE';
+  const liveStats = {
+    totalRescues: profile?.totalRescues ?? DEFAULT_VOLUNTEER_STATS.totalRescues,
+    completedRescues:
+      profile?.completedRescues ?? DEFAULT_VOLUNTEER_STATS.completedRescues,
+    rating: profile?.rating ?? DEFAULT_VOLUNTEER_STATS.rating,
+  };
+  const [isAvailable, setIsAvailable] = useState<boolean>(
+    profile?.isAvailableNow ?? false,
+  );
   const [updatingAvailability, setUpdatingAvailability] = useState(false);
   const [accepting, setAccepting] = useState<string | null>(null);
+  const [selectedAssignment, setSelectedAssignment] =
+    useState<RescueRequest | null>(null);
+
+  const [updateVolunteerProfile] = useUpdateVolunteerProfileMutation();
 
   // Fetch assigned rescues
   const { data, loading, refetch } = useMyAssignedRescuesQuery({
@@ -142,6 +134,12 @@ export default function RescuerDashboard() {
   const pendingAssignments = allRescues.filter((r) => r.status === 'ASSIGNED');
   const openAlertsCount = openAlertsData?.availableRescues?.totalCount || 0;
 
+  useEffect(() => {
+    if (profile?.isAvailableNow !== undefined) {
+      setIsAvailable(profile.isAvailableNow);
+    }
+  }, [profile?.isAvailableNow]);
+
   // Calculate stats from real data
   const todayRescues = allRescues.filter((r) => {
     const today = new Date().setHours(0, 0, 0, 0);
@@ -150,16 +148,30 @@ export default function RescuerDashboard() {
   }).length;
 
   const handleAvailabilityToggle = async (checked: boolean) => {
+    if (!isOperationallyEligible) {
+      toast.error('Your rescuer account is not eligible for operations yet');
+      return;
+    }
+
     setUpdatingAvailability(true);
     try {
-      // TODO: Call GraphQL mutation to update availability
-      // await updateVolunteerAvailability({ available: checked })
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await updateVolunteerProfile({
+        variables: {
+          input: {
+            isAvailableNow: checked,
+          },
+        },
+      });
       setIsAvailable(checked);
       toast.success(checked ? 'You are now online' : 'You are now offline');
+      await refetchProfile();
     } catch (error) {
       console.error('Failed to update availability:', error);
-      toast.error('Failed to update availability');
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Failed to update availability',
+      );
     } finally {
       setUpdatingAvailability(false);
     }
@@ -185,7 +197,7 @@ export default function RescuerDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-6">
       <div className="mx-auto max-w-7xl space-y-6">
         {/* Header */}
         <div>
@@ -193,7 +205,7 @@ export default function RescuerDashboard() {
             Rescuer Dashboard
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
-            Welcome back, {mockVolunteer.name}
+            Welcome back, {volunteerName}
           </p>
         </div>
 
@@ -204,6 +216,26 @@ export default function RescuerDashboard() {
             <p className="text-gray-600 dark:text-gray-400">
               Loading your dashboard...
             </p>
+          </Card>
+        )}
+
+        {!isOperationallyEligible && (
+          <Card className="border-2 border-amber-300 bg-amber-50 p-6 dark:border-amber-700 dark:bg-amber-950/30">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
+              <div>
+                <h2 className="font-semibold text-amber-950 dark:text-amber-100">
+                  Rescuer verification required
+                </h2>
+                <p className="mt-1 text-sm text-amber-900 dark:text-amber-200">
+                  Your account is not eligible for rescue assignments until your
+                  application is verified and your account is active.
+                </p>
+                <Badge className="mt-3 bg-amber-600 text-white">
+                  Application status: {verificationStatus.replace('_', ' ')}
+                </Badge>
+              </div>
+            </div>
           </Card>
         )}
 
@@ -238,32 +270,35 @@ export default function RescuerDashboard() {
             <Switch
               checked={isAvailable}
               onCheckedChange={handleAvailabilityToggle}
-              disabled={updatingAvailability}
+              disabled={updatingAvailability || !isOperationallyEligible}
             />
           </div>
         </Card>
 
         {/* Open Rescue Alerts */}
-        <Card className="border-2 border-primary/30 bg-primary/5 p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-semibold">Open Rescue Alerts</h2>
-                <Badge className="bg-primary text-primary-foreground">
-                  {openAlertsLoading ? 'Loading…' : openAlertsCount}
-                </Badge>
+        {isOperationallyEligible && (
+          <Card className="border-2 border-primary/30 bg-primary/5 p-6">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-xl font-semibold">Open Rescue Alerts</h2>
+                  <Badge className="bg-primary text-primary-foreground">
+                    {openAlertsLoading ? 'Loading…' : openAlertsCount}
+                  </Badge>
+                </div>
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                  View unassigned requests, then claim one securely. Exact
+                  contact and location details are shared after a successful
+                  claim.
+                </p>
               </div>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                View unassigned requests, then claim one securely. Exact contact
-                and location details are shared after a successful claim.
-              </p>
+              <Button onClick={() => router.push('/dashboard/rescuer/queue')}>
+                <AlertTriangle className="mr-2 h-4 w-4" />
+                View Open Rescues
+              </Button>
             </div>
-            <Button onClick={() => router.push('/dashboard/rescuer/queue')}>
-              <AlertTriangle className="mr-2 h-4 w-4" />
-              View Open Rescues
-            </Button>
-          </div>
-        </Card>
+          </Card>
+        )}
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
@@ -274,7 +309,7 @@ export default function RescuerDashboard() {
                   Total Rescues
                 </p>
                 <p className="mt-1 text-2xl font-bold">
-                  {mockVolunteer.totalRescues}
+                  {liveStats.totalRescues}
                 </p>
               </div>
               <Activity className="h-8 w-8 text-primary" />
@@ -288,11 +323,12 @@ export default function RescuerDashboard() {
                   Success Rate
                 </p>
                 <p className="mt-1 text-2xl font-bold">
-                  {Math.round(
-                    (mockVolunteer.completedRescues /
-                      mockVolunteer.totalRescues) *
-                      100,
-                  )}
+                  {liveStats.totalRescues > 0
+                    ? Math.round(
+                        (liveStats.completedRescues / liveStats.totalRescues) *
+                          100,
+                      )
+                    : 0}
                   %
                 </p>
               </div>
@@ -307,7 +343,7 @@ export default function RescuerDashboard() {
                   Rating
                 </p>
                 <p className="mt-1 text-2xl font-bold">
-                  ⭐ {mockVolunteer.rating}
+                  ⭐ {liveStats.rating || 0}
                 </p>
               </div>
               <Award className="h-8 w-8 text-yellow-500" />
@@ -491,7 +527,7 @@ export default function RescuerDashboard() {
 
                       <div className="grid gap-2 sm:grid-cols-2">
                         <Button
-                          onClick={() => handleAcceptRescue(assignment.id)}
+                          onClick={() => setSelectedAssignment(assignment)}
                           disabled={accepting === assignment.id}
                           className="w-full bg-green-600 hover:bg-green-700"
                         >
@@ -563,10 +599,7 @@ export default function RescuerDashboard() {
                   onClick={() => router.push('/dashboard/rescuer/history')}
                 >
                   <Clock className="mr-2 h-4 w-4 shrink-0" />
-                  <span className="truncate">
-                    <span className="hidden sm:inline">Rescue </span>
-                    History
-                  </span>
+                  <span className="truncate">History</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -636,6 +669,112 @@ export default function RescuerDashboard() {
           </div>
         </div>
       </div>
+
+      <Dialog
+        open={Boolean(selectedAssignment)}
+        onOpenChange={(open) => {
+          if (!open) setSelectedAssignment(null);
+        }}
+      >
+        <DialogContent className="sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Accept rescue assignment</DialogTitle>
+            <DialogDescription>
+              Review the rescue details before confirming. This will move the
+              case into your active rescue queue.
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedAssignment && (
+            <div className="space-y-4 py-2">
+              <div className="rounded-lg border bg-muted/30 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Reference</p>
+                    <p className="text-lg font-semibold">
+                      {selectedAssignment.referenceNumber}
+                    </p>
+                  </div>
+                  <Badge
+                    className={cn(
+                      'text-white',
+                      PRIORITY_COLORS[
+                        selectedAssignment.priority as keyof typeof PRIORITY_COLORS
+                      ],
+                    )}
+                  >
+                    {selectedAssignment.priority}
+                  </Badge>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <div className="flex items-start gap-2">
+                  <MapPin className="mt-0.5 h-4 w-4" />
+                  <span>
+                    {selectedAssignment.address},{' '}
+                    {selectedAssignment.municipality}
+                  </span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Clock className="mt-0.5 h-4 w-4" />
+                  <span>
+                    Reported{' '}
+                    {new Date(selectedAssignment.createdAt).toLocaleString(
+                      'en-US',
+                      {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      },
+                    )}
+                  </span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="mt-0.5 h-4 w-4" />
+                  <span>
+                    {selectedAssignment.snakeDescription ||
+                      'No snake description provided yet.'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setSelectedAssignment(null)}
+              disabled={!!accepting}
+            >
+              Cancel
+            </Button>
+            <Button
+              className="bg-green-600 hover:bg-green-700"
+              onClick={async () => {
+                if (!selectedAssignment) return;
+                const assignmentToAccept = selectedAssignment;
+                setSelectedAssignment(null);
+                await handleAcceptRescue(assignmentToAccept.id);
+              }}
+              disabled={!!accepting}
+            >
+              {accepting === selectedAssignment?.id ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Accepting...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Confirm accept
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

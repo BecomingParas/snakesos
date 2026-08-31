@@ -6,6 +6,12 @@
 import type { GraphQLContext } from '@snake-rescue/core';
 import { mapService, type MapBounds, type MapFilters } from '../../../application/map.service.js';
 
+const MAP_MANAGEMENT_ROLES = [
+  'ADMIN',
+  'SUPER_ADMIN',
+  'DISTRICT_COORDINATOR',
+] as const;
+
 export const mapQueryResolvers = {
   Query: {
     /**
@@ -20,6 +26,8 @@ export const mapQueryResolvers = {
       },
       context: GraphQLContext
     ) => {
+      context.requireAuth();
+      context.requireRole([...MAP_MANAGEMENT_ROLES]);
       return mapService.getMapOverview(args.bounds, args.filters);
     },
 
@@ -35,6 +43,11 @@ export const mapQueryResolvers = {
       },
       context: GraphQLContext
     ) => {
+      context.requireAuth();
+      context.requireRole([
+        'RESCUER',
+        ...MAP_MANAGEMENT_ROLES,
+      ]);
       return mapService.getNearbyRescuers(
         args.latitude,
         args.longitude,
@@ -54,6 +67,7 @@ export const mapQueryResolvers = {
       },
       context: GraphQLContext
     ) => {
+      context.requireAuth();
       return mapService.getNearbyTreatmentCenters(
         args.latitude,
         args.longitude,
@@ -73,6 +87,8 @@ export const mapQueryResolvers = {
       },
       context: GraphQLContext
     ) => {
+      context.requireAuth();
+      context.requireRole([...MAP_MANAGEMENT_ROLES]);
       return mapService.getAllHotspots();
     },
   },

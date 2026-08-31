@@ -3,6 +3,11 @@
 # ===================================================================
 
 extend type Query {
+  publicRescues(
+    pagination: PaginationInput
+    filter: PublicRescueFilterInput
+  ): PublicRescueConnection!
+
   """
   Get rescue request by ID
   """
@@ -88,6 +93,17 @@ extend type Query {
   Used for admin assignment
   """
   availableVolunteers(input: FindAvailableVolunteersInput!): [AvailableVolunteer!]! @auth(requires: [ADMIN, SUPER_ADMIN, DISTRICT_COORDINATOR])
+}
+
+type PublicRescueConnection {
+  edges: [PublicRescueEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type PublicRescueEdge {
+  node: PublicRescue!
+  cursor: String!
 }
 
 """

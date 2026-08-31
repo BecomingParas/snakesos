@@ -152,6 +152,30 @@ export interface CompleteRescueInput {
   hospitalNotes?: string;
 }
 
+export interface UpdateRescueRequestInput {
+  municipality?: string;
+  ward?: number | null;
+  address?: string;
+  landmark?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  snakeDescription?: string | null;
+  snakeSize?: string | null;
+  snakeColor?: string | null;
+  snakeImageUrl?: string | null;
+  snakeImages?: string[];
+  speciesId?: string;
+  status?: string;
+  priority?: string;
+  stillPresent?: boolean;
+  notes?: string | null;
+  internalNotes?: string | null;
+  isEmergency?: boolean;
+  emergencyDetails?: string | null;
+  hasBite?: boolean;
+  biteDetails?: string | null;
+}
+
 export interface RescueRequestConnection {
   edges: Array<{
     node: RescueRequest;
@@ -201,6 +225,9 @@ const CREATE_RESCUE_REQUEST = gql`
       snakeSize
       snakeColor
       snakeImages
+      notes
+      emergencyDetails
+      biteDetails
       isEmergency
       hasBite
       createdAt
@@ -684,12 +711,12 @@ export function useAssignRescueMutation(
 export function useUpdateRescueRequestMutation(
   options?: MutationHookOptions<
     { updateRescueRequest: RescueRequest },
-    { id: string; input: { priority: string } }
+    { id: string; input: UpdateRescueRequestInput }
   >,
 ) {
   return useMutation<
     { updateRescueRequest: RescueRequest },
-    { id: string; input: { priority: string } }
+    { id: string; input: UpdateRescueRequestInput }
   >(UPDATE_RESCUE_REQUEST, options);
 }
 

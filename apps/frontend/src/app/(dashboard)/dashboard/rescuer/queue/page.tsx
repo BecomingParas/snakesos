@@ -1,34 +1,36 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Clock,
   MapPin,
-  Navigation,
   AlertTriangle,
   CheckCircle,
   Filter,
   RefreshCw,
   Loader2,
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { cn } from '@/lib/utils'
+} from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 import {
+  type RescueRequest,
   useAvailableRescuesQuery,
   useAcceptFromQueueMutation,
-} from '@/lib/graphql/hooks/rescue.hooks'
-import { toast } from 'sonner'
-import { DashboardPagination } from '@/components/dashboard/dashboard-pagination'
+} from '@/lib/graphql/hooks/rescue.hooks';
+import { useMyVolunteerProfileQuery } from '@/lib/graphql/hooks/volunteer.hooks';
+import { useMyProfileQuery } from '@/lib/graphql/hooks/user.hooks';
+import { toast } from 'sonner';
+import { DashboardPagination } from '@/components/dashboard/dashboard-pagination';
 
 /**
  * Rescue Queue Page
@@ -46,25 +48,31 @@ const MUNICIPALITIES = [
   'Bhaktapur',
   'Kirtipur',
   'Madhyapur Thimi',
-]
+];
 
 const SORT_OPTIONS = [
   { value: 'PRIORITY', label: 'Priority' },
   { value: 'NEAREST', label: 'Nearest' },
   { value: 'OLDEST', label: 'Oldest' },
-]
+];
 
 export default function RescueQueuePage() {
-  const router = useRouter()
-  const [municipality, setMunicipality] = useState('')
-  const [sortBy, setSortBy] = useState('PRIORITY')
-  const [autoRefresh, setAutoRefresh] = useState(true)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
+  const router = useRouter();
+  const { data: userData, loading: userLoading } = useMyProfileQuery();
+  const { data: profileData, loading: profileLoading } =
+    useMyVolunteerProfileQuery();
+  const profile = profileData?.myVolunteerProfile;
+  const isOperationallyEligible =
+    profile?.status === 'VERIFIED' && userData?.me?.status === 'ACTIVE';
+  const [municipality, setMunicipality] = useState('');
+  const [sortBy, setSortBy] = useState('PRIORITY');
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
-    setCurrentPage(1)
-  }, [municipality, sortBy])
+    setCurrentPage(1);
+  }, [municipality, sortBy]);
 
   // Fetch available rescues
   const { data, loading, refetch } = useAvailableRescuesQuery({
@@ -75,46 +83,82 @@ export default function RescueQueuePage() {
       },
     },
     fetchPolicy: 'cache-and-network',
-  })
+  });
 
   // Accept from queue mutation
   const [acceptFromQueue, { loading: accepting }] = useAcceptFromQueueMutation({
     onCompleted: () => {
-      toast.success('Rescue claimed. Review and accept the assignment to begin.')
+      toast.success(
+        'Rescue claimed. Review and accept the assignment to begin.',
+      );
       setTimeout(() => {
-        router.push('/dashboard/rescuer/assignments')
-      }, 1500)
+        router.push('/dashboard/rescuer/assignments');
+      }, 1500);
     },
     onError: (error) => {
       if (error.message.includes('already assigned')) {
-        toast.error('This rescue was just taken by another rescuer')
-        refetch()
+        toast.error('This rescue was just taken by another rescuer');
+        refetch();
       } else {
-        toast.error(`Failed to accept: ${error.message}`)
+        toast.error(`Failed to accept: ${error.message}`);
       }
     },
-  })
+  });
 
   // Auto-refresh every 5 seconds
   useEffect(() => {
-    if (!autoRefresh) return undefined
+    if (!autoRefresh) return undefined;
 
     const interval = setInterval(() => {
-      refetch()
-    }, 5000)
+      refetch();
+    }, 5000);
 
-    return () => clearInterval(interval)
-  }, [autoRefresh, refetch])
+    return () => clearInterval(interval);
+  }, [autoRefresh, refetch]);
 
   const handleAccept = async (rescueId: string): Promise<void> => {
     await acceptFromQueue({
       variables: {
         input: { rescueId },
       },
-    })
+    });
+  };
+
+  const availableRescues =
+    data?.availableRescues?.edges?.map((edge) => edge.node) || [];
+
+  if (userLoading || profileLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
-  const availableRescues = data?.availableRescues?.edges?.map(edge => edge.node) || []
+  if (!isOperationallyEligible) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6 dark:bg-gray-900">
+        <div className="mx-auto max-w-2xl">
+          <Card className="border-2 border-amber-300 bg-amber-50 p-8 dark:border-amber-700 dark:bg-amber-950/30">
+            <AlertTriangle className="h-8 w-8 text-amber-600" />
+            <h1 className="mt-4 text-2xl font-bold">
+              Rescuer verification required
+            </h1>
+            <p className="mt-2 text-sm text-amber-900 dark:text-amber-200">
+              Your account is not eligible to view or claim live rescue requests
+              until it is verified and active.
+            </p>
+            <Button
+              className="mt-6"
+              onClick={() => router.push('/dashboard/rescuer')}
+            >
+              Back to dashboard
+            </Button>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
@@ -132,7 +176,7 @@ export default function RescueQueuePage() {
               <RefreshCw
                 className={cn(
                   'h-4 w-4',
-                  autoRefresh && 'animate-spin text-green-500'
+                  autoRefresh && 'animate-spin text-green-500',
                 )}
               />
               <span className="text-sm text-gray-600 dark:text-gray-400">
@@ -158,7 +202,9 @@ export default function RescueQueuePage() {
             <Filter className="h-5 w-5 text-gray-500" />
             <div className="flex-1 grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Municipality</label>
+                <label className="text-sm font-medium mb-2 block">
+                  Municipality
+                </label>
                 <Select value={municipality} onValueChange={setMunicipality}>
                   <SelectTrigger>
                     <SelectValue placeholder="All municipalities" />
@@ -174,7 +220,9 @@ export default function RescueQueuePage() {
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block">Sort By</label>
+                <label className="text-sm font-medium mb-2 block">
+                  Sort By
+                </label>
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger>
                     <SelectValue />
@@ -201,7 +249,9 @@ export default function RescueQueuePage() {
               </div>
               <div>
                 <p className="text-2xl font-bold">{availableRescues.length}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Available</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Available
+                </p>
               </div>
             </div>
           </Card>
@@ -212,9 +262,15 @@ export default function RescueQueuePage() {
               </div>
               <div>
                 <p className="text-2xl font-bold">
-                  {availableRescues.filter((r: any) => r.priority === 'HIGH').length}
+                  {
+                    availableRescues.filter(
+                      (rescue: RescueRequest) => rescue.priority === 'HIGH',
+                    ).length
+                  }
                 </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">High Priority</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  High Priority
+                </p>
               </div>
             </div>
           </Card>
@@ -261,7 +317,7 @@ export default function RescueQueuePage() {
           </Card>
         ) : (
           <div className="grid gap-4">
-            {availableRescues.map((rescue: any) => (
+            {availableRescues.map((rescue: RescueRequest) => (
               <Card
                 key={rescue.id}
                 className="p-6 hover:shadow-lg transition-shadow"
@@ -277,7 +333,7 @@ export default function RescueQueuePage() {
                           'text-white',
                           rescue.priority === 'HIGH' && 'bg-red-500',
                           rescue.priority === 'MEDIUM' && 'bg-yellow-500',
-                          rescue.priority === 'LOW' && 'bg-green-500'
+                          rescue.priority === 'LOW' && 'bg-green-500',
                         )}
                       >
                         {rescue.priority}
@@ -349,11 +405,11 @@ export default function RescueQueuePage() {
           pageInfo={data?.availableRescues?.pageInfo}
           onPageChange={setCurrentPage}
           onPageSizeChange={(nextPageSize) => {
-            setPageSize(nextPageSize)
-            setCurrentPage(1)
+            setPageSize(nextPageSize);
+            setCurrentPage(1);
           }}
         />
       </div>
     </div>
-  )
+  );
 }

@@ -1182,7 +1182,7 @@ export type GalleryImage = {
   fileSize?: Maybe<Scalars['Int']['output']>;
   format?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  imageUrl: Scalars['String']['output'];
+  imageUrl?: Maybe<Scalars['String']['output']>;
   isFeatured: Scalars['Boolean']['output'];
   isPublic: Scalars['Boolean']['output'];
   likes: Scalars['Int']['output'];
@@ -1195,6 +1195,7 @@ export type GalleryImage = {
   title?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   uploader?: Maybe<User>;
+  videoUrl?: Maybe<Scalars['String']['output']>;
   views: Scalars['Int']['output'];
 };
 
@@ -1663,6 +1664,7 @@ export type MediaAsset = {
   provider: Scalars['String']['output'];
   publicId: Scalars['String']['output'];
   resourceType: Scalars['String']['output'];
+  secureUrl?: Maybe<Scalars['String']['output']>;
   sizeBytes?: Maybe<Scalars['Int']['output']>;
   status: MediaStatus;
   updatedAt: Scalars['DateTime']['output'];
@@ -1678,7 +1680,12 @@ export type MediaStatus =
   | '%future added value';
 
 export type MediaType =
+  | 'ADMIN_PROFILE_IMAGE'
+  | 'CITIZEN_PROFILE_IMAGE'
+  | 'GALLERY_IMAGE'
+  | 'GALLERY_VIDEO'
   | 'RESCUER_PROFILE_IMAGE'
+  | 'RESCUER_PROFILE_VIDEO'
   | 'RESCUER_VERIFICATION_DOCUMENT'
   | '%future added value';
 
@@ -1928,6 +1935,8 @@ export type Mutation = {
   startPayment: PaymentIntentCheckout;
   /** Submit a contact message */
   submitContactMessage: ContactMessage;
+  submitPublicEmergencyRequest: PublicEmergencyRequestResult;
+  submitPublicRescueReport: PublicRescueReportResult;
   /** Suspend volunteer */
   suspendVolunteer: Volunteer;
   /** Test notification delivery */
@@ -1960,6 +1969,8 @@ export type Mutation = {
   updateSnakeSpecies: SnakeSpecies;
   /** Update a training session */
   updateTraining: Training;
+  /** Change another user's role (admin only; administrators cannot change their own role) */
+  updateUserRole: User;
   /** Update a user's account status (admin only) */
   updateUserStatus: User;
   /** Update volunteer availability status */
@@ -2310,6 +2321,14 @@ export type MutationSubmitContactMessageArgs = {
   input: SubmitContactMessageInput;
 };
 
+export type MutationSubmitPublicEmergencyRequestArgs = {
+  input: PublicEmergencyRequestInput;
+};
+
+export type MutationSubmitPublicRescueReportArgs = {
+  input: PublicRescueReportInput;
+};
+
 export type MutationSuspendVolunteerArgs = {
   reason: Scalars['String']['input'];
   volunteerId: Scalars['ID']['input'];
@@ -2390,6 +2409,10 @@ export type MutationUpdateSnakeSpeciesArgs = {
 export type MutationUpdateTrainingArgs = {
   id: Scalars['ID']['input'];
   input: UpdateTrainingInput;
+};
+
+export type MutationUpdateUserRoleArgs = {
+  input: UpdateUserRoleInput;
 };
 
 export type MutationUpdateUserStatusArgs = {
@@ -2642,6 +2665,7 @@ export type NotificationStats = {
 export type NotificationType =
   | 'ANNOUNCEMENT'
   | 'DONATION_RECEIVED'
+  | 'RESCUER_APPLICATION_SUBMITTED'
   | 'RESCUE_ACCEPTED'
   | 'RESCUE_ASSIGNED'
   | 'RESCUE_CANCELLED'
@@ -2858,6 +2882,111 @@ export type ProvinceHospitalCount = {
   withAntivenom: Scalars['Int']['output'];
 };
 
+export type PublicEmergencyRequestInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  deviceId?: InputMaybe<Scalars['String']['input']>;
+  district?: InputMaybe<Scalars['String']['input']>;
+  email?: InputMaybe<Scalars['Email']['input']>;
+  fullName: Scalars['String']['input'];
+  generalArea: Scalars['String']['input'];
+  hasBite?: InputMaybe<Scalars['Boolean']['input']>;
+  idempotencyKey: Scalars['String']['input'];
+  isEmergency?: InputMaybe<Scalars['Boolean']['input']>;
+  landmark?: InputMaybe<Scalars['String']['input']>;
+  latitude?: InputMaybe<Scalars['Latitude']['input']>;
+  longitude?: InputMaybe<Scalars['Longitude']['input']>;
+  municipality: Scalars['String']['input'];
+  notes?: InputMaybe<Scalars['String']['input']>;
+  phone: Scalars['Phone']['input'];
+  snakeDescription?: InputMaybe<Scalars['String']['input']>;
+  snakeSpeciesId?: InputMaybe<Scalars['ID']['input']>;
+  urgency: RescuePriority;
+};
+
+export type PublicEmergencyRequestResult = {
+  __typename?: 'PublicEmergencyRequestResult';
+  createdAt: Scalars['DateTime']['output'];
+  publicStatus: PublicRescueStatus;
+  referenceNumber: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
+export type PublicRescue = {
+  __typename?: 'PublicRescue';
+  approximateLatitude?: Maybe<Scalars['Latitude']['output']>;
+  approximateLongitude?: Maybe<Scalars['Longitude']['output']>;
+  assignedRescuerName?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  district?: Maybe<Scalars['String']['output']>;
+  generalArea?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  municipality: Scalars['String']['output'];
+  priority: RescuePriority;
+  publicStatus: PublicRescueStatus;
+  referenceNumber: Scalars['String']['output'];
+  species?: Maybe<SnakeSpecies>;
+  venomStatus: PublicVenomStatus;
+};
+
+export type PublicRescueConnection = {
+  __typename?: 'PublicRescueConnection';
+  edges: Array<PublicRescueEdge>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type PublicRescueEdge = {
+  __typename?: 'PublicRescueEdge';
+  cursor: Scalars['String']['output'];
+  node: PublicRescue;
+};
+
+export type PublicRescueFilterInput = {
+  district?: InputMaybe<Scalars['String']['input']>;
+  municipality?: InputMaybe<Scalars['String']['input']>;
+  priority?: InputMaybe<RescuePriority>;
+  speciesId?: InputMaybe<Scalars['ID']['input']>;
+  status?: InputMaybe<PublicRescueStatus>;
+  unassigned?: InputMaybe<Scalars['Boolean']['input']>;
+  venomStatus?: InputMaybe<PublicVenomStatus>;
+};
+
+export type PublicRescueReportInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  email?: InputMaybe<Scalars['Email']['input']>;
+  generalArea: Scalars['String']['input'];
+  hasBite?: InputMaybe<Scalars['Boolean']['input']>;
+  isEmergency?: InputMaybe<Scalars['Boolean']['input']>;
+  latitude?: InputMaybe<Scalars['Latitude']['input']>;
+  longitude?: InputMaybe<Scalars['Longitude']['input']>;
+  municipality: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  phone: Scalars['Phone']['input'];
+  urgency?: InputMaybe<RescuePriority>;
+  ward?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type PublicRescueReportResult = {
+  __typename?: 'PublicRescueReportResult';
+  createdAt: Scalars['DateTime']['output'];
+  publicStatus: PublicRescueStatus;
+  referenceNumber: Scalars['String']['output'];
+  success: Scalars['Boolean']['output'];
+};
+
+export type PublicRescueStatus =
+  | 'COMPLETED'
+  | 'IN_PROGRESS'
+  | 'OPEN'
+  | 'RESPONDER_ASSIGNED'
+  | '%future added value';
+
+export type PublicVenomStatus =
+  | 'NON_VENOMOUS'
+  | 'UNKNOWN'
+  | 'VENOMOUS'
+  | '%future added value';
+
 export type Query = {
   __typename?: 'Query';
   _empty?: Maybe<Scalars['String']['output']>;
@@ -3012,6 +3141,7 @@ export type Query = {
   pendingRescuesCount: Scalars['Int']['output'];
   /** Get pending volunteer applications */
   pendingVolunteerApplications: VolunteerConnection;
+  publicRescues: PublicRescueConnection;
   /** Get published blog posts (public) */
   publishedBlogPosts: BlogPostConnection;
   /**
@@ -3406,6 +3536,11 @@ export type QueryPayoutsArgs = {
 };
 
 export type QueryPendingVolunteerApplicationsArgs = {
+  pagination?: InputMaybe<PaginationInput>;
+};
+
+export type QueryPublicRescuesArgs = {
+  filter?: InputMaybe<PublicRescueFilterInput>;
   pagination?: InputMaybe<PaginationInput>;
 };
 
@@ -4888,14 +5023,16 @@ export type UpdateBlogPostInput = {
   videoUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** Input for updating gallery image */
+/** Input for updating gallery media */
 export type UpdateGalleryImageInput = {
   category?: InputMaybe<GalleryCategory>;
   description?: InputMaybe<Scalars['String']['input']>;
+  imageUrl?: InputMaybe<Scalars['String']['input']>;
   isFeatured?: InputMaybe<Scalars['Boolean']['input']>;
   isPublic?: InputMaybe<Scalars['Boolean']['input']>;
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
   title?: InputMaybe<Scalars['String']['input']>;
+  videoUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateHospitalInput = {
@@ -5070,6 +5207,11 @@ export type UpdateUserProfileInput = {
   timezone?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateUserRoleInput = {
+  role: UserRole;
+  userId: Scalars['ID']['input'];
+};
+
 /** Input for updating volunteer availability */
 export type UpdateVolunteerAvailabilityInput = {
   currentLat?: InputMaybe<Scalars['Latitude']['input']>;
@@ -5106,11 +5248,11 @@ export type UpdateVolunteerInput = {
   ward?: InputMaybe<Scalars['Int']['input']>;
 };
 
-/** Input for uploading gallery image */
+/** Input for uploading gallery media */
 export type UploadGalleryImageInput = {
   category?: InputMaybe<GalleryCategory>;
   description?: InputMaybe<Scalars['String']['input']>;
-  imageUrl: Scalars['String']['input'];
+  imageUrl?: InputMaybe<Scalars['String']['input']>;
   isFeatured?: InputMaybe<Scalars['Boolean']['input']>;
   isPublic?: InputMaybe<Scalars['Boolean']['input']>;
   rescueId?: InputMaybe<Scalars['ID']['input']>;
@@ -5118,6 +5260,7 @@ export type UploadGalleryImageInput = {
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
   thumbnailUrl?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
+  videoUrl?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Upload source for identification */
@@ -5429,6 +5572,7 @@ export type Volunteer = {
   isAvailableNow: Scalars['Boolean']['output'];
   languages: Array<Scalars['String']['output']>;
   lastLocationUpdate?: Maybe<Scalars['DateTime']['output']>;
+  mediaAssets: Array<MediaAsset>;
   municipality: Scalars['String']['output'];
   name: Scalars['String']['output'];
   rating?: Maybe<Scalars['Float']['output']>;
@@ -5904,6 +6048,7 @@ export type NotificationPriority =
 export type NotificationType =
   | 'ANNOUNCEMENT'
   | 'DONATION_RECEIVED'
+  | 'RESCUER_APPLICATION_SUBMITTED'
   | 'RESCUE_ACCEPTED'
   | 'RESCUE_ASSIGNED'
   | 'RESCUE_CANCELLED'
@@ -6902,7 +7047,7 @@ export type BlogPostListItemFragment = {
 export type GalleryImageCoreFragment = {
   id: string;
   title: string | null;
-  imageUrl: string;
+  imageUrl: string | null;
   thumbnailUrl: string | null;
   category: GalleryCategory | null;
   isPublic: boolean;
@@ -6915,7 +7060,7 @@ export type GalleryImageWithContextFragment = {
   tags: Array<string>;
   id: string;
   title: string | null;
-  imageUrl: string;
+  imageUrl: string | null;
   thumbnailUrl: string | null;
   category: GalleryCategory | null;
   isPublic: boolean;
@@ -6936,7 +7081,7 @@ export type GalleryImageFullFragment = {
   tags: Array<string>;
   id: string;
   title: string | null;
-  imageUrl: string;
+  imageUrl: string | null;
   thumbnailUrl: string | null;
   category: GalleryCategory | null;
   isPublic: boolean;
@@ -6952,7 +7097,7 @@ export type GalleryImageListItemFragment = {
   likes: number;
   id: string;
   title: string | null;
-  imageUrl: string;
+  imageUrl: string | null;
   thumbnailUrl: string | null;
   category: GalleryCategory | null;
   isPublic: boolean;

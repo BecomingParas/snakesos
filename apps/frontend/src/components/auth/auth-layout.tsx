@@ -24,7 +24,7 @@ export function AuthLayout({
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center  mb-6">
             <img 
-              src="/snakesoslogo.png" 
+              src="/logo.jpg" 
               alt="SnakeSOS Logo" 
               className="h-28 w-28 object-contain"
             />

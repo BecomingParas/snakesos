@@ -65,6 +65,15 @@ export interface Volunteer {
   certificationExpiry?: string;
   createdAt: string;
   updatedAt: string;
+  mediaAssets?: Array<{
+    id: string;
+    mediaType: string;
+    originalFileName?: string;
+    mimeType: string;
+    status: string;
+    secureUrl?: string;
+    createdAt: string;
+  }>;
   ratings?: Array<{
     id: string;
     rating: number;
@@ -75,6 +84,31 @@ export interface Volunteer {
     safetyHandling?: number;
     createdAt: string;
   }>;
+}
+
+export interface ApplyVolunteerInput {
+  name: string;
+  contact: string;
+  email?: string;
+  address: string;
+  municipality: string;
+  ward?: number;
+  emergencyContact?: string;
+  emergencyPhone?: string;
+  experience: string;
+  experienceYears?: number;
+  vehicle: string;
+  vehicleDetails?: string;
+  skills?: string[];
+  certifications?: string[];
+  availableTime: string;
+  availableDays: string[];
+  emergencyAvailability: boolean;
+  assignedZone?: string;
+  coverageRadius?: number;
+  bio?: string;
+  hasEquipment: boolean;
+  equipment?: string[];
 }
 
 export interface VolunteerProfile {
@@ -263,6 +297,19 @@ const UPDATE_VOLUNTEER_STATUS = gql`
   }
 `;
 
+const APPLY_VOLUNTEER = gql`
+  mutation ApplyVolunteer($input: ApplyVolunteerInput!) {
+    applyVolunteer(input: $input) {
+      id
+      name
+      status
+      verifiedAt
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 const GET_VOLUNTEER = gql`
   query GetVolunteer($id: ID!) {
     volunteer(id: $id) {
@@ -299,6 +346,15 @@ const GET_VOLUNTEER = gql`
       status
       verifiedAt
       rejectionReason
+      mediaAssets {
+        id
+        mediaType
+        originalFileName
+        mimeType
+        status
+        secureUrl
+        createdAt
+      }
       totalRescues
       completedRescues
       cancelledRescues
@@ -519,6 +575,18 @@ export function useUpdateVolunteerStatusMutation(
     { updateVolunteerStatus: Volunteer },
     { input: UpdateVolunteerStatusInput }
   >(UPDATE_VOLUNTEER_STATUS, options);
+}
+
+export function useApplyVolunteerMutation(
+  options?: MutationHookOptions<
+    { applyVolunteer: Volunteer },
+    { input: ApplyVolunteerInput }
+  >,
+) {
+  return useMutation<
+    { applyVolunteer: Volunteer },
+    { input: ApplyVolunteerInput }
+  >(APPLY_VOLUNTEER, options);
 }
 
 export function useVolunteerQuery(

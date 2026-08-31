@@ -59,7 +59,8 @@ type GalleryImage {
   # Content
   title: String
   description: String
-  imageUrl: String!
+  imageUrl: String
+  videoUrl: String
   thumbnailUrl: String
   
   # Categorization

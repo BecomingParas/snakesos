@@ -41,7 +41,7 @@ export function TwoColumnAuthLayout({
               >
                 <div className="flex h-16 w-16 shrink-0 items-center justify-center">
                   <img
-                    src="/snakesoslogo.png"
+                    src="/logo.jpg"
                     alt="SnakeSOS Logo"
                     className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
                   />
@@ -120,7 +120,7 @@ export function TwoColumnAuthLayout({
               className="mb-4 inline-flex items-center justify-center"
             >
               <img
-                src="/snakesoslogo.png"
+                src="/logo.jpg"
                 alt="SnakeSOS Logo"
                 className="h-24 w-24 object-contain"
               />

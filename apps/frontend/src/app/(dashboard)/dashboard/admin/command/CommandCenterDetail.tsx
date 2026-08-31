@@ -49,8 +49,8 @@ import { toast } from 'sonner';
 // Dynamic import for map
 const RescueMap = dynamic(
   () =>
-    import('@/components/map/RescueMap').then((mod) => ({
-      default: mod.RescueMap,
+    import('@/components/map/GoogleRescueMap').then((mod) => ({
+      default: mod.GoogleRescueMap,
     })),
   {
     ssr: false,

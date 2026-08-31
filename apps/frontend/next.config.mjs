@@ -1,3 +1,18 @@
+import nextEnv from '@next/env';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const { loadEnvConfig } = nextEnv;
+
+// Nx serves the Next app from apps/frontend, so Next only auto-loads
+// apps/frontend/.env*. Load workspace-root env as well so local maps keys
+// in .env / .env.local reach NEXT_PUBLIC_* the same way the backend does.
+const workspaceRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '../..',
+);
+loadEnvConfig(workspaceRoot);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -28,6 +43,10 @@ const nextConfig = {
   
   // Configure page extensions
   pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
+  env: {
+    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:
+      process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
+  },
 };
 
 export default nextConfig;

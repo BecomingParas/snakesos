@@ -12,12 +12,17 @@ import type { RescueRequest } from '@snake-rescue/database';
 const logger = createLogger('CreateRescueUseCase');
 
 export class CreateRescueUseCase {
-  constructor(
-    private readonly rescueRepository: RescueRepository
-  ) {}
+  constructor(private readonly rescueRepository: RescueRepository) {}
 
-  async execute(input: CreateRescueInput, reporterId: string): Promise<RescueRequest> {
-    logger.info({ msg: 'Creating rescue request', reporterId, municipality: input.municipality });
+  async execute(
+    input: CreateRescueInput,
+    reporterId?: string,
+  ): Promise<RescueRequest> {
+    logger.info({
+      msg: 'Creating rescue request',
+      reporterId,
+      municipality: input.municipality,
+    });
 
     const command = new CreateRescueCommand(this.rescueRepository);
     const rescue = await command.execute(input, reporterId);

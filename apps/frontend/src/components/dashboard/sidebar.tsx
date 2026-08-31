@@ -19,6 +19,7 @@ import {
   Map,
   Hospital,
   WalletCards,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -109,6 +110,7 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/hospitals', label: 'Hospitals', icon: Hospital },
         { href: '/rescuers', label: 'Rescuers', icon: Users },
         { href: '/users', label: 'Citizens', icon: UserCheck },
+        { href: '/gallery', label: 'Gallery', icon: ImageIcon },
         { href: '/analytics', label: 'Analytics', icon: BarChart3 },
         { href: '/finance', label: 'Finance', icon: WalletCards },
         { href: '/notifications', label: 'Notifications', icon: Bell },
@@ -127,6 +129,7 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/hospitals', label: 'Hospitals', icon: Hospital },
         { href: '/rescuers', label: 'Rescuers', icon: Users },
         { href: '/users', label: 'Citizens', icon: UserCheck },
+        { href: '/gallery', label: 'Gallery', icon: ImageIcon },
         { href: '/analytics', label: 'Analytics', icon: BarChart3 },
         { href: '/finance', label: 'Finance', icon: WalletCards },
         { href: '/notifications', label: 'Notifications', icon: Bell },
@@ -143,6 +146,7 @@ export function Sidebar({ role }: SidebarProps) {
         { href: '/rescues', label: 'Rescues', icon: List },
         { href: '/map', label: 'Live Map', icon: Map },
         { href: '/rescuers', label: 'Rescuers', icon: Users },
+        { href: '/gallery', label: 'Gallery', icon: ImageIcon },
         { href: '/analytics', label: 'Analytics', icon: BarChart3 },
         { href: '/profile', label: 'Settings', icon: Settings },
       ],
@@ -211,7 +215,7 @@ export function Sidebar({ role }: SidebarProps) {
             <Link href="/" className="flex items-center gap-3 group min-w-0">
               <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 shadow-sm overflow-hidden ring-1 ring-primary/10">
                 <img
-                  src="/snakesoslogo.png"
+                  src="/logo.jpg"
                   alt="SnakeSOS Logo"
                   className="h-9 w-9 object-contain transition-transform duration-300 group-hover:scale-110"
                 />

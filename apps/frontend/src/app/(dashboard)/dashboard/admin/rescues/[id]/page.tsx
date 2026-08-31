@@ -1,9 +1,12 @@
 'use client';
 
-import { use } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { gql } from '@apollo/client';
+import { useMutation } from '@apollo/client/react';
 import {
   ArrowLeft,
+  AlertTriangle,
   Calendar,
   CheckCircle,
   Clock,
@@ -15,15 +18,54 @@ import {
   Star,
   User,
   XCircle,
+  Pencil,
+  Trash2,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   useRescueRequestQuery,
   useUpdateRescueRequestMutation,
 } from '@/lib/graphql/hooks/rescue.hooks';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent as UiDialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+
+const DELETE_RESCUE_REQUEST = gql`
+  mutation DeleteRescueRequest($id: ID!) {
+    deleteRescueRequest(id: $id) {
+      success
+      message
+    }
+  }
+`;
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -41,6 +83,9 @@ type RescueData = {
   snakeDescription?: string;
   snakeSize?: string;
   snakeColor?: string;
+  notes?: string;
+  emergencyDetails?: string;
+  biteDetails?: string;
   isEmergency?: boolean;
   hasBite?: boolean;
   createdAt: string;
@@ -69,6 +114,22 @@ type RescueData = {
 
 type QueryData = { rescueRequest?: RescueData | null };
 
+type RescueEditForm = {
+  municipality: string;
+  ward: string;
+  address: string;
+  landmark: string;
+  snakeDescription: string;
+  snakeSize: string;
+  snakeColor: string;
+  priority: string;
+  notes: string;
+  emergencyDetails: string;
+  biteDetails: string;
+  isEmergency: boolean;
+  hasBite: boolean;
+};
+
 const statusStyles: Record<string, string> = {
   PENDING: 'bg-yellow-500/15 text-yellow-700 dark:text-yellow-400',
   ASSIGNED: 'bg-blue-500/15 text-blue-700 dark:text-blue-400',
@@ -90,7 +151,7 @@ function StatTile({
   value: string;
 }) {
   return (
-    <Card className="flex items-center gap-3 border-white/10 bg-white/[0.03] p-4">
+    <Card className="flex items-center gap-3 border-white/10 bg-white/3 p-4">
       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/5 text-muted-foreground">
         <Icon className="h-4 w-4" />
       </div>
@@ -143,12 +204,82 @@ function formatDuration(minutes?: number) {
 export default function AdminRescueDetailPage({ params }: PageProps) {
   const { id } = use(params);
   const router = useRouter();
+  const [editing, setEditing] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
+  const [editForm, setEditForm] = useState<RescueEditForm | null>(null);
   const { data, loading, error } = useRescueRequestQuery({ variables: { id } });
   const [updateRescueRequest, { loading: updatingPriority }] =
     useUpdateRescueRequestMutation({
       refetchQueries: ['RescueRequest'],
     });
+  const [deleteRescue, { loading: deleting }] = useMutation(
+    DELETE_RESCUE_REQUEST,
+  );
   const rescue = (data as QueryData | undefined)?.rescueRequest;
+
+  useEffect(() => {
+    if (rescue && !editing) {
+      setEditForm({
+        municipality: rescue.municipality || '',
+        ward: rescue.ward == null ? '' : String(rescue.ward),
+        address: rescue.address || '',
+        landmark: rescue.landmark || '',
+        snakeDescription: rescue.snakeDescription || '',
+        snakeSize: rescue.snakeSize || '',
+        snakeColor: rescue.snakeColor || '',
+        priority: rescue.priority,
+        notes: rescue.notes || '',
+        emergencyDetails: rescue.emergencyDetails || '',
+        biteDetails: rescue.biteDetails || '',
+        isEmergency: Boolean(rescue.isEmergency),
+        hasBite: Boolean(rescue.hasBite),
+      });
+    }
+  }, [rescue, editing]);
+
+  const updateEditField = <Key extends keyof RescueEditForm>(
+    field: Key,
+    value: RescueEditForm[Key],
+  ) => {
+    setEditForm((current) =>
+      current ? { ...current, [field]: value } : current,
+    );
+  };
+
+  const saveEditForm = async () => {
+    if (!editForm) return;
+    try {
+      await updateRescueRequest({
+        variables: {
+          id,
+          input: {
+            municipality: editForm.municipality,
+            ward: editForm.ward ? Number(editForm.ward) : null,
+            address: editForm.address,
+            landmark: editForm.landmark || null,
+            snakeDescription: editForm.snakeDescription || null,
+            snakeSize: editForm.snakeSize || null,
+            snakeColor: editForm.snakeColor || null,
+            priority: editForm.priority,
+            notes: editForm.notes || null,
+            emergencyDetails: editForm.emergencyDetails || null,
+            biteDetails: editForm.biteDetails || null,
+            isEmergency: editForm.isEmergency,
+            hasBite: editForm.hasBite,
+          },
+        },
+      });
+      toast.success('Rescue details updated');
+      setEditing(false);
+    } catch (updateError) {
+      toast.error(
+        updateError instanceof Error
+          ? updateError.message
+          : 'Unable to update rescue details',
+      );
+    }
+  };
 
   if (loading)
     return (
@@ -200,7 +331,7 @@ export default function AdminRescueDetailPage({ params }: PageProps) {
       </Button>
 
       {/* Header */}
-      <Card className="border-white/10 bg-white/[0.03] p-6">
+      <Card className="border-white/10 bg-white/3 p-6">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div>
             <p className="text-sm text-muted-foreground">Rescue request</p>
@@ -224,35 +355,309 @@ export default function AdminRescueDetailPage({ params }: PageProps) {
                 </Badge>
               )}
             </div>
-            <label className="mt-4 flex max-w-xs flex-col gap-1 text-sm font-medium">
-              Rescue priority
-              <select
-                aria-label="Rescue priority"
-                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
-                disabled={updatingPriority}
-                value={rescue.priority}
-                onChange={(event) => {
-                  void updateRescueRequest({
-                    variables: {
-                      id,
-                      input: { priority: event.target.value },
-                    },
-                  });
-                }}
-              >
-                {priorityOptions.map((priority) => (
-                  <option key={priority} value={priority}>
-                    {priority}
-                  </option>
-                ))}
-              </select>
-            </label>
             <p className="mt-1 text-sm text-muted-foreground">
               Operational details and rescue timeline
             </p>
           </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setEditing(true)}>
+              <Pencil className="mr-2 h-4 w-4" />
+              Edit
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={deleting}
+              onClick={() => setDeleteDialogOpen(true)}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              {deleting ? 'Deleting...' : 'Delete'}
+            </Button>
+          </div>
         </div>
       </Card>
+
+      <Dialog
+        open={editing}
+        onOpenChange={(open) => {
+          setEditing(open);
+          if (!open) {
+            setEditForm((current) => current);
+          }
+        }}
+      >
+        <UiDialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Edit rescue request</DialogTitle>
+            <DialogDescription>
+              Update the rescue details for{' '}
+              {rescue.referenceNumber || 'this request'}.
+            </DialogDescription>
+          </DialogHeader>
+
+          {editForm && (
+            <div className="space-y-4 py-2">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="text-sm font-medium">
+                  Municipality
+                  <Input
+                    className="mt-1"
+                    value={editForm.municipality}
+                    onChange={(event) =>
+                      updateEditField('municipality', event.target.value)
+                    }
+                  />
+                </label>
+                <label className="text-sm font-medium">
+                  Ward
+                  <Input
+                    className="mt-1"
+                    type="number"
+                    min="1"
+                    value={editForm.ward}
+                    onChange={(event) =>
+                      updateEditField('ward', event.target.value)
+                    }
+                  />
+                </label>
+              </div>
+
+              <label className="block text-sm font-medium">
+                Address
+                <Input
+                  className="mt-1"
+                  value={editForm.address}
+                  onChange={(event) =>
+                    updateEditField('address', event.target.value)
+                  }
+                />
+              </label>
+
+              <label className="block text-sm font-medium">
+                Landmark
+                <Input
+                  className="mt-1"
+                  value={editForm.landmark}
+                  onChange={(event) =>
+                    updateEditField('landmark', event.target.value)
+                  }
+                />
+              </label>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                <label className="text-sm font-medium">
+                  Snake size
+                  <Select
+                    value={editForm.snakeSize || 'not-listed'}
+                    onValueChange={(value) =>
+                      updateEditField(
+                        'snakeSize',
+                        value === 'not-listed' ? '' : value,
+                      )
+                    }
+                  >
+                    <SelectTrigger className="mt-1 h-10 border-primary/20 bg-primary/4 font-medium shadow-sm transition-colors hover:border-primary/50 hover:bg-primary/8">
+                      <SelectValue placeholder="Not listed" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="not-listed">Not listed</SelectItem>
+                      <SelectItem value="Small (&lt;1ft)">
+                        Small (&lt;1ft)
+                      </SelectItem>
+                      <SelectItem value="Medium (1-3ft)">
+                        Medium (1-3ft)
+                      </SelectItem>
+                      <SelectItem value="Large (&gt;3ft)">
+                        Large (&gt;3ft)
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </label>
+
+                <label className="text-sm font-medium">
+                  Snake color
+                  <Input
+                    className="mt-1"
+                    value={editForm.snakeColor}
+                    onChange={(event) =>
+                      updateEditField('snakeColor', event.target.value)
+                    }
+                  />
+                </label>
+
+                <label className="text-sm font-medium">
+                  Priority
+                  <Select
+                    value={editForm.priority}
+                    onValueChange={(value) =>
+                      updateEditField('priority', value)
+                    }
+                  >
+                    <SelectTrigger className="mt-1 h-10 border-primary/20 bg-primary/4 font-medium shadow-sm transition-colors hover:border-primary/50 hover:bg-primary/8">
+                      <SelectValue placeholder="Choose priority" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {priorityOptions.map((priority) => (
+                        <SelectItem key={priority} value={priority}>
+                          {priority}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </label>
+              </div>
+
+              <label className="block text-sm font-medium">
+                Snake description
+                <Textarea
+                  className="mt-1"
+                  rows={3}
+                  value={editForm.snakeDescription}
+                  onChange={(event) =>
+                    updateEditField('snakeDescription', event.target.value)
+                  }
+                />
+              </label>
+
+              <label className="block text-sm font-medium">
+                Notes
+                <Textarea
+                  className="mt-1"
+                  rows={3}
+                  value={editForm.notes}
+                  onChange={(event) =>
+                    updateEditField('notes', event.target.value)
+                  }
+                />
+              </label>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="flex items-center gap-2 text-sm font-medium">
+                  <input
+                    type="checkbox"
+                    checked={editForm.isEmergency}
+                    onChange={(event) =>
+                      updateEditField('isEmergency', event.target.checked)
+                    }
+                  />
+                  Emergency request
+                </label>
+                <label className="flex items-center gap-2 text-sm font-medium">
+                  <input
+                    type="checkbox"
+                    checked={editForm.hasBite}
+                    onChange={(event) =>
+                      updateEditField('hasBite', event.target.checked)
+                    }
+                  />
+                  Bite reported
+                </label>
+              </div>
+
+              <label className="block text-sm font-medium">
+                Emergency details
+                <Textarea
+                  className="mt-1"
+                  rows={2}
+                  value={editForm.emergencyDetails}
+                  onChange={(event) =>
+                    updateEditField('emergencyDetails', event.target.value)
+                  }
+                />
+              </label>
+
+              <label className="block text-sm font-medium">
+                Bite details
+                <Textarea
+                  className="mt-1"
+                  rows={2}
+                  value={editForm.biteDetails}
+                  onChange={(event) =>
+                    updateEditField('biteDetails', event.target.value)
+                  }
+                />
+              </label>
+            </div>
+          )}
+
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="outline" onClick={() => setEditing(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => void saveEditForm()}
+              disabled={updatingPriority}
+            >
+              {updatingPriority ? 'Saving...' : 'Save changes'}
+            </Button>
+          </DialogFooter>
+        </UiDialogContent>
+      </Dialog>
+
+      <AlertDialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) setDeleteConfirmation('');
+        }}
+      >
+        <AlertDialogContent className="border-red-400/50 bg-red-700 text-white shadow-2xl">
+          <AlertDialogHeader>
+            <div className="flex items-start gap-3">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-red-500/10 text-red-600 dark:text-red-400">
+                <AlertTriangle className="h-5 w-5" />
+              </span>
+              <div>
+                <AlertDialogTitle>Delete rescue request?</AlertDialogTitle>
+                <AlertDialogDescription className="mt-1 text-red-100/80">
+                  You selected{' '}
+                  <strong className="text-foreground">
+                    {rescue.referenceNumber || 'this request'}
+                  </strong>
+                  . It will be removed from the active list.
+                </AlertDialogDescription>
+              </div>
+            </div>
+          </AlertDialogHeader>
+          <div className="rounded-lg border border-red-200/30 bg-red-800/50 p-3">
+            <p className="text-sm text-red-100">
+              This action cannot be undone. Type <strong>DELETE</strong> to
+              continue.
+            </p>
+            <Input
+              value={deleteConfirmation}
+              onChange={(event) => setDeleteConfirmation(event.target.value)}
+              placeholder="Type DELETE"
+              aria-label="Type DELETE to confirm deletion"
+              className="mt-3 border-red-200/40 bg-red-900/70 text-white placeholder:text-red-100/60"
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-red-200/40 bg-transparent text-red-50 hover:bg-red-900">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleteConfirmation !== 'DELETE' || deleting}
+              className="bg-red-500 text-white hover:bg-red-400 disabled:pointer-events-none disabled:opacity-50"
+              onClick={async () => {
+                try {
+                  await deleteRescue({ variables: { id } });
+                  toast.success('Rescue request deleted');
+                  setDeleteDialogOpen(false);
+                  router.push('/dashboard/admin/rescues');
+                } catch (deleteError) {
+                  toast.error(
+                    deleteError instanceof Error
+                      ? deleteError.message
+                      : 'Unable to delete rescue request',
+                  );
+                }
+              }}
+            >
+              {deleting ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Quick-glance stats */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -280,7 +685,7 @@ export default function AdminRescueDetailPage({ params }: PageProps) {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <Card className="border-white/10 bg-white/[0.03] p-6">
+          <Card className="border-white/10 bg-white/3 p-6">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Rescue details
             </h2>
@@ -328,7 +733,7 @@ export default function AdminRescueDetailPage({ params }: PageProps) {
           </Card>
 
           {operationalStamps.length > 0 && (
-            <Card className="border-white/10 bg-white/[0.03] p-6">
+            <Card className="border-white/10 bg-white/3 p-6">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Operational timestamps
               </h2>
@@ -345,7 +750,7 @@ export default function AdminRescueDetailPage({ params }: PageProps) {
             </Card>
           )}
 
-          <Card className="border-white/10 bg-white/[0.03] p-6">
+          <Card className="border-white/10 bg-white/3 p-6">
             <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               <Clock className="h-4 w-4" />
               Timeline
@@ -377,7 +782,7 @@ export default function AdminRescueDetailPage({ params }: PageProps) {
         </div>
 
         <div className="space-y-6">
-          <Card className="border-white/10 bg-white/[0.03] p-6">
+          <Card className="border-white/10 bg-white/3 p-6">
             <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               <User className="h-4 w-4" />
               Reporter
@@ -401,7 +806,7 @@ export default function AdminRescueDetailPage({ params }: PageProps) {
             </div>
           </Card>
 
-          <Card className="border-white/10 bg-white/[0.03] p-6">
+          <Card className="border-white/10 bg-white/3 p-6">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               Assigned rescuer
             </h2>

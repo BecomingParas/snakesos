@@ -88,6 +88,7 @@ export type RescueRequestMinAggregateOutputType = {
   biteDetails: string | null
   source: string | null
   referenceNumber: string | null
+  publicIdempotencyKey: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -145,6 +146,7 @@ export type RescueRequestMaxAggregateOutputType = {
   biteDetails: string | null
   source: string | null
   referenceNumber: string | null
+  publicIdempotencyKey: string | null
   createdAt: Date | null
   updatedAt: Date | null
   deletedAt: Date | null
@@ -204,6 +206,7 @@ export type RescueRequestCountAggregateOutputType = {
   biteDetails: number
   source: number
   referenceNumber: number
+  publicIdempotencyKey: number
   createdAt: number
   updatedAt: number
   deletedAt: number
@@ -284,6 +287,7 @@ export type RescueRequestMinAggregateInputType = {
   biteDetails?: true
   source?: true
   referenceNumber?: true
+  publicIdempotencyKey?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -341,6 +345,7 @@ export type RescueRequestMaxAggregateInputType = {
   biteDetails?: true
   source?: true
   referenceNumber?: true
+  publicIdempotencyKey?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -400,6 +405,7 @@ export type RescueRequestCountAggregateInputType = {
   biteDetails?: true
   source?: true
   referenceNumber?: true
+  publicIdempotencyKey?: true
   createdAt?: true
   updatedAt?: true
   deletedAt?: true
@@ -547,6 +553,7 @@ export type RescueRequestGroupByOutputType = {
   biteDetails: string | null
   source: string
   referenceNumber: string | null
+  publicIdempotencyKey: string | null
   createdAt: Date
   updatedAt: Date
   deletedAt: Date | null
@@ -630,6 +637,7 @@ export type RescueRequestWhereInput = {
   biteDetails?: Prisma.StringNullableFilter<"RescueRequest"> | string | null
   source?: Prisma.StringFilter<"RescueRequest"> | string
   referenceNumber?: Prisma.StringNullableFilter<"RescueRequest"> | string | null
+  publicIdempotencyKey?: Prisma.StringNullableFilter<"RescueRequest"> | string | null
   createdAt?: Prisma.DateTimeFilter<"RescueRequest"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RescueRequest"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"RescueRequest"> | Date | string | null
@@ -701,6 +709,7 @@ export type RescueRequestOrderByWithRelationInput = {
   biteDetails?: Prisma.SortOrderInput | Prisma.SortOrder
   source?: Prisma.SortOrder
   referenceNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  publicIdempotencyKey?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -732,6 +741,7 @@ export type RescueRequestWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   aiIdentificationId?: string
   referenceNumber?: string
+  publicIdempotencyKey?: string
   AND?: Prisma.RescueRequestWhereInput | Prisma.RescueRequestWhereInput[]
   OR?: Prisma.RescueRequestWhereInput[]
   NOT?: Prisma.RescueRequestWhereInput | Prisma.RescueRequestWhereInput[]
@@ -800,7 +810,7 @@ export type RescueRequestWhereUniqueInput = Prisma.AtLeast<{
   notifications?: Prisma.NotificationListRelationFilter
   rescueCharge?: Prisma.XOR<Prisma.RescueChargeNullableScalarRelationFilter, Prisma.RescueChargeWhereInput> | null
   rating?: Prisma.XOR<Prisma.RescueRatingNullableScalarRelationFilter, Prisma.RescueRatingWhereInput> | null
-}, "id" | "aiIdentificationId" | "referenceNumber">
+}, "id" | "aiIdentificationId" | "referenceNumber" | "publicIdempotencyKey">
 
 export type RescueRequestOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -846,6 +856,7 @@ export type RescueRequestOrderByWithAggregationInput = {
   biteDetails?: Prisma.SortOrderInput | Prisma.SortOrder
   source?: Prisma.SortOrder
   referenceNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  publicIdempotencyKey?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -914,6 +925,7 @@ export type RescueRequestScalarWhereWithAggregatesInput = {
   biteDetails?: Prisma.StringNullableWithAggregatesFilter<"RescueRequest"> | string | null
   source?: Prisma.StringWithAggregatesFilter<"RescueRequest"> | string
   referenceNumber?: Prisma.StringNullableWithAggregatesFilter<"RescueRequest"> | string | null
+  publicIdempotencyKey?: Prisma.StringNullableWithAggregatesFilter<"RescueRequest"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"RescueRequest"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"RescueRequest"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"RescueRequest"> | Date | string | null
@@ -970,6 +982,7 @@ export type RescueRequestCreateInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1038,6 +1051,7 @@ export type RescueRequestUncheckedCreateInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1098,6 +1112,7 @@ export type RescueRequestUpdateInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1166,6 +1181,7 @@ export type RescueRequestUncheckedUpdateInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1230,6 +1246,7 @@ export type RescueRequestCreateManyInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -1286,6 +1303,7 @@ export type RescueRequestUpdateManyMutationInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1343,6 +1361,7 @@ export type RescueRequestUncheckedUpdateManyInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1421,6 +1440,7 @@ export type RescueRequestCountOrderByAggregateInput = {
   biteDetails?: Prisma.SortOrder
   source?: Prisma.SortOrder
   referenceNumber?: Prisma.SortOrder
+  publicIdempotencyKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -1489,6 +1509,7 @@ export type RescueRequestMaxOrderByAggregateInput = {
   biteDetails?: Prisma.SortOrder
   source?: Prisma.SortOrder
   referenceNumber?: Prisma.SortOrder
+  publicIdempotencyKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -1546,6 +1567,7 @@ export type RescueRequestMinOrderByAggregateInput = {
   biteDetails?: Prisma.SortOrder
   source?: Prisma.SortOrder
   referenceNumber?: Prisma.SortOrder
+  publicIdempotencyKey?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
@@ -2005,6 +2027,7 @@ export type RescueRequestCreateWithoutUserInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2071,6 +2094,7 @@ export type RescueRequestUncheckedCreateWithoutUserInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2164,6 +2188,7 @@ export type RescueRequestScalarWhereInput = {
   biteDetails?: Prisma.StringNullableFilter<"RescueRequest"> | string | null
   source?: Prisma.StringFilter<"RescueRequest"> | string
   referenceNumber?: Prisma.StringNullableFilter<"RescueRequest"> | string | null
+  publicIdempotencyKey?: Prisma.StringNullableFilter<"RescueRequest"> | string | null
   createdAt?: Prisma.DateTimeFilter<"RescueRequest"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RescueRequest"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"RescueRequest"> | Date | string | null
@@ -2220,6 +2245,7 @@ export type RescueRequestCreateWithoutTimelineInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2287,6 +2313,7 @@ export type RescueRequestUncheckedCreateWithoutTimelineInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2362,6 +2389,7 @@ export type RescueRequestUpdateWithoutTimelineInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2429,6 +2457,7 @@ export type RescueRequestUncheckedUpdateWithoutTimelineInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2488,6 +2517,7 @@ export type RescueRequestCreateWithoutAssignedVolunteerInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2554,6 +2584,7 @@ export type RescueRequestUncheckedCreateWithoutAssignedVolunteerInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2640,6 +2671,7 @@ export type RescueRequestCreateWithoutRatingInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2707,6 +2739,7 @@ export type RescueRequestUncheckedCreateWithoutRatingInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2782,6 +2815,7 @@ export type RescueRequestUpdateWithoutRatingInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2849,6 +2883,7 @@ export type RescueRequestUncheckedUpdateWithoutRatingInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -2908,6 +2943,7 @@ export type RescueRequestCreateWithoutSpeciesInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -2974,6 +3010,7 @@ export type RescueRequestUncheckedCreateWithoutSpeciesInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -3060,6 +3097,7 @@ export type RescueRequestCreateWithoutAiIdentificationInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -3126,6 +3164,7 @@ export type RescueRequestUncheckedCreateWithoutAiIdentificationInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -3202,6 +3241,7 @@ export type RescueRequestUpdateWithoutAiIdentificationInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3268,6 +3308,7 @@ export type RescueRequestUncheckedUpdateWithoutAiIdentificationInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3328,6 +3369,7 @@ export type RescueRequestCreateWithoutRescueChargeInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -3395,6 +3437,7 @@ export type RescueRequestUncheckedCreateWithoutRescueChargeInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -3470,6 +3513,7 @@ export type RescueRequestUpdateWithoutRescueChargeInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3537,6 +3581,7 @@ export type RescueRequestUncheckedUpdateWithoutRescueChargeInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3596,6 +3641,7 @@ export type RescueRequestCreateWithoutNotificationsInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -3663,6 +3709,7 @@ export type RescueRequestUncheckedCreateWithoutNotificationsInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -3738,6 +3785,7 @@ export type RescueRequestUpdateWithoutNotificationsInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3805,6 +3853,7 @@ export type RescueRequestUncheckedUpdateWithoutNotificationsInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -3864,6 +3913,7 @@ export type RescueRequestCreateWithoutNearestHospitalInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -3931,6 +3981,7 @@ export type RescueRequestUncheckedCreateWithoutNearestHospitalInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -4000,6 +4051,7 @@ export type RescueRequestCreateWithoutHospitalVisitInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -4067,6 +4119,7 @@ export type RescueRequestUncheckedCreateWithoutHospitalVisitInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -4168,6 +4221,7 @@ export type RescueRequestCreateWithoutVehicleInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -4235,6 +4289,7 @@ export type RescueRequestUncheckedCreateWithoutVehicleInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -4323,6 +4378,7 @@ export type RescueRequestCreateManyUserInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -4379,6 +4435,7 @@ export type RescueRequestUpdateWithoutUserInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4445,6 +4502,7 @@ export type RescueRequestUncheckedUpdateWithoutUserInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4508,6 +4566,7 @@ export type RescueRequestUncheckedUpdateManyWithoutUserInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4567,6 +4626,7 @@ export type RescueRequestCreateManyAssignedVolunteerInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -4623,6 +4683,7 @@ export type RescueRequestUpdateWithoutAssignedVolunteerInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4689,6 +4750,7 @@ export type RescueRequestUncheckedUpdateWithoutAssignedVolunteerInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4752,6 +4814,7 @@ export type RescueRequestUncheckedUpdateManyWithoutAssignedVolunteerInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4811,6 +4874,7 @@ export type RescueRequestCreateManySpeciesInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -4867,6 +4931,7 @@ export type RescueRequestUpdateWithoutSpeciesInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4933,6 +4998,7 @@ export type RescueRequestUncheckedUpdateWithoutSpeciesInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -4996,6 +5062,7 @@ export type RescueRequestUncheckedUpdateManyWithoutSpeciesInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5056,6 +5123,7 @@ export type RescueRequestCreateManyNearestHospitalInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -5115,6 +5183,7 @@ export type RescueRequestCreateManyHospitalVisitInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -5170,6 +5239,7 @@ export type RescueRequestUpdateWithoutNearestHospitalInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5237,6 +5307,7 @@ export type RescueRequestUncheckedUpdateWithoutNearestHospitalInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5300,6 +5371,7 @@ export type RescueRequestUncheckedUpdateManyWithoutNearestHospitalInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5355,6 +5427,7 @@ export type RescueRequestUpdateWithoutHospitalVisitInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5422,6 +5495,7 @@ export type RescueRequestUncheckedUpdateWithoutHospitalVisitInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5485,6 +5559,7 @@ export type RescueRequestUncheckedUpdateManyWithoutHospitalVisitInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5544,6 +5619,7 @@ export type RescueRequestCreateManyVehicleInput = {
   biteDetails?: string | null
   source?: string
   referenceNumber?: string | null
+  publicIdempotencyKey?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   deletedAt?: Date | string | null
@@ -5599,6 +5675,7 @@ export type RescueRequestUpdateWithoutVehicleInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5666,6 +5743,7 @@ export type RescueRequestUncheckedUpdateWithoutVehicleInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5729,6 +5807,7 @@ export type RescueRequestUncheckedUpdateManyWithoutVehicleInput = {
   biteDetails?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   source?: Prisma.StringFieldUpdateOperationsInput | string
   referenceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publicIdempotencyKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -5828,6 +5907,7 @@ export type RescueRequestSelect<ExtArgs extends runtime.Types.Extensions.Interna
   biteDetails?: boolean
   source?: boolean
   referenceNumber?: boolean
+  publicIdempotencyKey?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -5900,6 +5980,7 @@ export type RescueRequestSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   biteDetails?: boolean
   source?: boolean
   referenceNumber?: boolean
+  publicIdempotencyKey?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -5967,6 +6048,7 @@ export type RescueRequestSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   biteDetails?: boolean
   source?: boolean
   referenceNumber?: boolean
+  publicIdempotencyKey?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -6034,6 +6116,7 @@ export type RescueRequestSelectScalar = {
   biteDetails?: boolean
   source?: boolean
   referenceNumber?: boolean
+  publicIdempotencyKey?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
@@ -6050,7 +6133,7 @@ export type RescueRequestSelectScalar = {
   hospitalNotes?: boolean
 }
 
-export type RescueRequestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "phone" | "email" | "municipality" | "ward" | "address" | "landmark" | "lat" | "lng" | "locationAccuracy" | "snakeDescription" | "snakeSize" | "snakeColor" | "snakeImageUrl" | "snakeImages" | "speciesId" | "aiIdentificationId" | "status" | "priority" | "stillPresent" | "notes" | "internalNotes" | "assignedTo" | "assignedAt" | "assignedBy" | "acceptedAt" | "arrivedAt" | "startedAt" | "completedAt" | "outcome" | "rescueReport" | "rescueImages" | "rescueDuration" | "verifiedBy" | "verifiedAt" | "isEmergency" | "emergencyDetails" | "hasBite" | "biteDetails" | "source" | "referenceNumber" | "createdAt" | "updatedAt" | "deletedAt" | "estimatedTravelTimeMinutes" | "routeDistance" | "routeGeometry" | "nearestHospitalId" | "vehicleId" | "victimWentToHospital" | "hospitalId" | "antivenomAdministered" | "antivenomType" | "hospitalAdmission" | "hospitalNotes", ExtArgs["result"]["rescueRequest"]>
+export type RescueRequestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "phone" | "email" | "municipality" | "ward" | "address" | "landmark" | "lat" | "lng" | "locationAccuracy" | "snakeDescription" | "snakeSize" | "snakeColor" | "snakeImageUrl" | "snakeImages" | "speciesId" | "aiIdentificationId" | "status" | "priority" | "stillPresent" | "notes" | "internalNotes" | "assignedTo" | "assignedAt" | "assignedBy" | "acceptedAt" | "arrivedAt" | "startedAt" | "completedAt" | "outcome" | "rescueReport" | "rescueImages" | "rescueDuration" | "verifiedBy" | "verifiedAt" | "isEmergency" | "emergencyDetails" | "hasBite" | "biteDetails" | "source" | "referenceNumber" | "publicIdempotencyKey" | "createdAt" | "updatedAt" | "deletedAt" | "estimatedTravelTimeMinutes" | "routeDistance" | "routeGeometry" | "nearestHospitalId" | "vehicleId" | "victimWentToHospital" | "hospitalId" | "antivenomAdministered" | "antivenomType" | "hospitalAdmission" | "hospitalNotes", ExtArgs["result"]["rescueRequest"]>
 export type RescueRequestInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.RescueRequest$userArgs<ExtArgs>
   species?: boolean | Prisma.RescueRequest$speciesArgs<ExtArgs>
@@ -6143,6 +6226,7 @@ export type $RescueRequestPayload<ExtArgs extends runtime.Types.Extensions.Inter
     biteDetails: string | null
     source: string
     referenceNumber: string | null
+    publicIdempotencyKey: string | null
     createdAt: Date
     updatedAt: Date
     deletedAt: Date | null
@@ -6634,6 +6718,7 @@ export interface RescueRequestFieldRefs {
   readonly biteDetails: Prisma.FieldRef<"RescueRequest", 'String'>
   readonly source: Prisma.FieldRef<"RescueRequest", 'String'>
   readonly referenceNumber: Prisma.FieldRef<"RescueRequest", 'String'>
+  readonly publicIdempotencyKey: Prisma.FieldRef<"RescueRequest", 'String'>
   readonly createdAt: Prisma.FieldRef<"RescueRequest", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"RescueRequest", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"RescueRequest", 'DateTime'>

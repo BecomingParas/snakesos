@@ -33,3 +33,9 @@ export * from '../emergency-contact.resolver.js';
 
 // Media Module
 export * from '../media/index.js';
+
+// AI Snake Identification Module
+export * from '../ai/index.js';
+
+// CMS gallery module
+export * from '../cms.resolver.js';

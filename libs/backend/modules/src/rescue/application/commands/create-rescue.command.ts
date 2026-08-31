@@ -7,10 +7,14 @@ import { RescueRepository } from '@snake-rescue/database';
 import type { CreateRescueInput } from '../dto/index.js';
 import { Prisma } from '@snake-rescue/database';
 
+function createReferenceNumber() {
+  return `BR-${new Date().getFullYear()}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+}
+
 export class CreateRescueCommand {
   constructor(private readonly rescueRepository: RescueRepository) {}
 
-  async execute(input: CreateRescueInput, reporterId: string) {
+  async execute(input: CreateRescueInput, reporterId?: string) {
     // Prepare data for Prisma - matches RescueRequest schema
     const data: Prisma.RescueRequestCreateInput = {
       // Reporter Information
@@ -45,6 +49,8 @@ export class CreateRescueCommand {
       // Status
       status: 'PENDING',
       stillPresent: true,
+      referenceNumber: createReferenceNumber(),
+      publicIdempotencyKey: input.publicIdempotencyKey,
 
       // Connect to user if provided
       user: reporterId

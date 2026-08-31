@@ -83,6 +83,7 @@ type Volunteer {
   createdAt: DateTime!
   updatedAt: DateTime!
   ratings: [RescueRating!]!
+  mediaAssets: [MediaAsset!]!
   
   # Relations
   rescueAssignments(

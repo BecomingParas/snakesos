@@ -14,15 +14,17 @@ export interface ListRescuesFilters {
 }
 
 export class ListRescuesQuery {
-  constructor(
-    private readonly rescueRepository: RescueRepository
-  ) {}
+  constructor(private readonly rescueRepository: RescueRepository) {}
 
-  async execute(filters: ListRescuesFilters = {}, pagination?: PaginationInput) {
-    const { page, limit, skip } = PaginationHelper.normalizePagination(pagination);
+  async execute(
+    filters: ListRescuesFilters = {},
+    pagination?: PaginationInput,
+  ) {
+    const { page, limit, skip } =
+      PaginationHelper.normalizePagination(pagination);
 
     // Build where clause
-    const where: any = {};
+    const where: any = { deletedAt: null };
     if (filters.status) where.status = filters.status;
     if (filters.municipality) where.municipality = filters.municipality;
     if (filters.volunteerId) where.assignedTo = filters.volunteerId;

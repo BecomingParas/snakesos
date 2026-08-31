@@ -1365,7 +1365,7 @@ type GalleryImage {
   fileSize: Int
   format: String
   id: ID!
-  imageUrl: String!
+  imageUrl: String
   isFeatured: Boolean!
   isPublic: Boolean!
   likes: Int!
@@ -1378,6 +1378,7 @@ type GalleryImage {
   title: String
   updatedAt: DateTime!
   uploader: User
+  videoUrl: String
   views: Int!
 }
 
@@ -1971,6 +1972,7 @@ type MediaAsset {
   provider: String!
   publicId: String!
   resourceType: String!
+  secureUrl: String
   sizeBytes: Int
   status: MediaStatus!
   updatedAt: DateTime!
@@ -1986,7 +1988,12 @@ enum MediaStatus {
 }
 
 enum MediaType {
+  ADMIN_PROFILE_IMAGE
+  CITIZEN_PROFILE_IMAGE
+  GALLERY_IMAGE
+  GALLERY_VIDEO
   RESCUER_PROFILE_IMAGE
+  RESCUER_PROFILE_VIDEO
   RESCUER_VERIFICATION_DOCUMENT
 }
 
@@ -2482,6 +2489,12 @@ type Mutation {
   Submit a contact message
   """
   submitContactMessage(input: SubmitContactMessageInput!): ContactMessage!
+  submitPublicEmergencyRequest(
+    input: PublicEmergencyRequestInput!
+  ): PublicEmergencyRequestResult!
+  submitPublicRescueReport(
+    input: PublicRescueReportInput!
+  ): PublicRescueReportResult!
 
   """
   Suspend volunteer
@@ -2562,6 +2575,11 @@ type Mutation {
   Update a training session
   """
   updateTraining(id: ID!, input: UpdateTrainingInput!): Training!
+
+  """
+  Change another user's role (admin only; administrators cannot change their own role)
+  """
+  updateUserRole(input: UpdateUserRoleInput!): User!
 
   """
   Update a user's account status (admin only)
@@ -2850,6 +2868,7 @@ Type of notification
 enum NotificationType {
   ANNOUNCEMENT
   DONATION_RECEIVED
+  RESCUER_APPLICATION_SUBMITTED
   RESCUE_ACCEPTED
   RESCUE_ASSIGNED
   RESCUE_CANCELLED
@@ -3104,6 +3123,106 @@ type ProvinceHospitalCount {
   count: Int!
   province: String!
   withAntivenom: Int!
+}
+
+input PublicEmergencyRequestInput {
+  address: String
+  deviceId: String
+  district: String
+  email: Email
+  fullName: String!
+  generalArea: String!
+  hasBite: Boolean
+  idempotencyKey: String!
+  isEmergency: Boolean
+  landmark: String
+  latitude: Latitude
+  longitude: Longitude
+  municipality: String!
+  notes: String
+  phone: Phone!
+  snakeDescription: String
+  snakeSpeciesId: ID
+  urgency: RescuePriority!
+}
+
+type PublicEmergencyRequestResult {
+  createdAt: DateTime!
+  publicStatus: PublicRescueStatus!
+  referenceNumber: String!
+  success: Boolean!
+}
+
+type PublicRescue {
+  approximateLatitude: Latitude
+  approximateLongitude: Longitude
+  assignedRescuerName: String
+  createdAt: DateTime!
+  district: String
+  generalArea: String
+  id: ID!
+  municipality: String!
+  priority: RescuePriority!
+  publicStatus: PublicRescueStatus!
+  referenceNumber: String!
+  species: SnakeSpecies
+  venomStatus: PublicVenomStatus!
+}
+
+type PublicRescueConnection {
+  edges: [PublicRescueEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type PublicRescueEdge {
+  cursor: String!
+  node: PublicRescue!
+}
+
+input PublicRescueFilterInput {
+  district: String
+  municipality: String
+  priority: RescuePriority
+  speciesId: ID
+  status: PublicRescueStatus
+  unassigned: Boolean
+  venomStatus: PublicVenomStatus
+}
+
+input PublicRescueReportInput {
+  description: String
+  email: Email
+  generalArea: String!
+  hasBite: Boolean
+  isEmergency: Boolean
+  latitude: Latitude
+  longitude: Longitude
+  municipality: String!
+  name: String!
+  phone: Phone!
+  urgency: RescuePriority
+  ward: Int
+}
+
+type PublicRescueReportResult {
+  createdAt: DateTime!
+  publicStatus: PublicRescueStatus!
+  referenceNumber: String!
+  success: Boolean!
+}
+
+enum PublicRescueStatus {
+  COMPLETED
+  IN_PROGRESS
+  OPEN
+  RESPONDER_ASSIGNED
+}
+
+enum PublicVenomStatus {
+  NON_VENOMOUS
+  UNKNOWN
+  VENOMOUS
 }
 
 type Query {
@@ -3516,6 +3635,10 @@ type Query {
   pendingVolunteerApplications(
     pagination: PaginationInput
   ): VolunteerConnection!
+  publicRescues(
+    filter: PublicRescueFilterInput
+    pagination: PaginationInput
+  ): PublicRescueConnection!
 
   """
   Get published blog posts (public)
@@ -5293,15 +5416,17 @@ input UpdateBlogPostInput {
 }
 
 """
-Input for updating gallery image
+Input for updating gallery media
 """
 input UpdateGalleryImageInput {
   category: GalleryCategory
   description: String
+  imageUrl: String
   isFeatured: Boolean
   isPublic: Boolean
   tags: [String!]
   title: String
+  videoUrl: String
 }
 
 input UpdateHospitalInput {
@@ -5494,6 +5619,11 @@ input UpdateUserProfileInput {
   timezone: String
 }
 
+input UpdateUserRoleInput {
+  role: UserRole!
+  userId: ID!
+}
+
 """
 Input for updating volunteer availability
 """
@@ -5540,12 +5670,12 @@ File upload scalar for multipart/form-data
 scalar Upload
 
 """
-Input for uploading gallery image
+Input for uploading gallery media
 """
 input UploadGalleryImageInput {
   category: GalleryCategory
   description: String
-  imageUrl: String!
+  imageUrl: String
   isFeatured: Boolean
   isPublic: Boolean
   rescueId: ID
@@ -5553,6 +5683,7 @@ input UploadGalleryImageInput {
   tags: [String!]
   thumbnailUrl: String
   title: String
+  videoUrl: String
 }
 
 """
@@ -5897,6 +6028,7 @@ type Volunteer {
   isAvailableNow: Boolean!
   languages: [String!]!
   lastLocationUpdate: DateTime
+  mediaAssets: [MediaAsset!]!
   municipality: String!
   name: String!
   rating: Float

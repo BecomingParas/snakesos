@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useQuery } from '@apollo/client/react';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { gql } from '@apollo/client';
 import {
   Search,
@@ -13,9 +13,9 @@ import {
   UserPlus,
   RefreshCw,
   MapPinOff,
+  Trash2,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 import {
   Dialog,
   DialogContent,
@@ -24,13 +24,34 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
   useAssignRescueMutation,
   useAvailableVolunteersQuery,
 } from '@/lib/graphql/hooks/rescue.hooks';
 import { toast } from 'sonner';
 import { DashboardPagination } from '@/components/dashboard/dashboard-pagination';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
+const DELETE_RESCUE_REQUEST = gql`
+  mutation DeleteRescueRequest($id: ID!) {
+    deleteRescueRequest(id: $id) {
+      success
+      message
+    }
+  }
+`;
 
 const GET_RESCUE_REQUESTS = gql`
   query GetRescueRequests(
@@ -194,6 +215,14 @@ export default function RescueRequestsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [assigningRequest, setAssigningRequest] =
     useState<RescueRequestNode | null>(null);
+  const [selectedRequestIds, setSelectedRequestIds] = useState<Set<string>>(
+    new Set(),
+  );
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
+  const [deleteRescue, { loading: deleting }] = useMutation(
+    DELETE_RESCUE_REQUEST,
+  );
   const [selectedRescuerId, setSelectedRescuerId] = useState<string | null>(
     null,
   );
@@ -281,6 +310,53 @@ export default function RescueRequestsPage() {
     [data],
   );
   const totalCount = data?.rescueRequests?.totalCount ?? 0;
+  const allCurrentPageSelected =
+    rescueRequests.length > 0 &&
+    rescueRequests.every((request) => selectedRequestIds.has(request.id));
+
+  const toggleRequest = (requestId: string, checked: boolean) => {
+    setSelectedRequestIds((current) => {
+      const next = new Set(current);
+      if (checked) next.add(requestId);
+      else next.delete(requestId);
+      return next;
+    });
+  };
+
+  const toggleCurrentPage = (checked: boolean) => {
+    setSelectedRequestIds((current) => {
+      const next = new Set(current);
+      rescueRequests.forEach((request) => {
+        if (checked) next.add(request.id);
+        else next.delete(request.id);
+      });
+      return next;
+    });
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedRequestIds.size === 0) return;
+    try {
+      await Promise.all(
+        [...selectedRequestIds].map((id) =>
+          deleteRescue({ variables: { id } }),
+        ),
+      );
+      toast.success(
+        `${selectedRequestIds.size} rescue request${selectedRequestIds.size === 1 ? '' : 's'} deleted`,
+      );
+      setSelectedRequestIds(new Set());
+      setDeleteDialogOpen(false);
+      setDeleteConfirmation('');
+      await refetch();
+    } catch (deleteError) {
+      toast.error(
+        deleteError instanceof Error
+          ? deleteError.message
+          : 'Unable to delete selected requests',
+      );
+    }
+  };
   const availableVolunteers = volunteersData?.availableVolunteers ?? [];
 
   const handleExportCsv = () => {
@@ -330,7 +406,7 @@ export default function RescueRequestsPage() {
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-3">
         {/* Search */}
-        <div className="relative flex-1 min-w-[200px] max-w-md">
+        <div className="relative min-w-50 max-w-md flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search reference, species, municipality, reporter..."
@@ -343,6 +419,18 @@ export default function RescueRequestsPage() {
 
         {/* Actions */}
         <div className="flex items-center gap-2">
+          {selectedRequestIds.size > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              className="gap-2"
+              disabled={deleting}
+              onClick={() => setDeleteDialogOpen(true)}
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete selected ({selectedRequestIds.size})
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"
@@ -367,7 +455,7 @@ export default function RescueRequestsPage() {
       {/* Table */}
       <div className="rounded-xl border border-border/70 bg-card/60 backdrop-blur-sm overflow-hidden">
         {loading ? (
-          <div className="flex min-h-[400px] items-center justify-center">
+          <div className="flex min-h-100 items-center justify-center">
             <div className="text-center">
               <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
               <p className="mt-4 text-sm text-muted-foreground">
@@ -381,6 +469,15 @@ export default function RescueRequestsPage() {
               <table className="w-full">
                 <thead className="border-b border-border/50 bg-muted/30">
                   <tr>
+                    <th className="w-12 px-4 py-3">
+                      <Checkbox
+                        aria-label="Select all rescue requests on this page"
+                        checked={allCurrentPageSelected}
+                        onCheckedChange={(checked) =>
+                          toggleCurrentPage(checked === true)
+                        }
+                      />
+                    </th>
                     <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
                       Request
                     </th>
@@ -411,7 +508,7 @@ export default function RescueRequestsPage() {
                   {rescueRequests.length === 0 ? (
                     <tr>
                       <td
-                        colSpan={8}
+                        colSpan={9}
                         className="px-4 py-12 text-center text-sm text-muted-foreground"
                       >
                         {searchQuery
@@ -442,6 +539,18 @@ export default function RescueRequestsPage() {
                           }
                         }}
                       >
+                        <td
+                          className="px-4 py-3"
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          <Checkbox
+                            aria-label={`Select ${request.referenceNumber || 'rescue request'}`}
+                            checked={selectedRequestIds.has(request.id)}
+                            onCheckedChange={(checked) =>
+                              toggleRequest(request.id, checked === true)
+                            }
+                          />
+                        </td>
                         <td className="px-4 py-3">
                           <span className="font-mono text-sm font-medium">
                             {request.referenceNumber || request.id.slice(0, 8)}
@@ -494,41 +603,43 @@ export default function RescueRequestsPage() {
                           </span>
                         </td>
                         <td className="px-4 py-3 text-right">
-                          {request.status === 'PENDING' &&
-                          !request.assignedVolunteer ? (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="gap-1.5"
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                setAssigningRequest(request);
-                              }}
-                            >
-                              <UserPlus className="h-4 w-4" />
-                              Assign
-                            </Button>
-                          ) : request.status === 'ASSIGNED' &&
-                            request.assignedVolunteer ? (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="gap-1.5"
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                setAssigningRequest(request);
-                              }}
-                            >
-                              <RefreshCw className="h-4 w-4" />
-                              Reassign
-                            </Button>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">
-                              {request.status === 'ACCEPTED'
-                                ? 'Accepted'
-                                : 'Managed'}
-                            </span>
-                          )}
+                          <div className="flex justify-end gap-2">
+                            {request.status === 'PENDING' &&
+                            !request.assignedVolunteer ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-1.5"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  setAssigningRequest(request);
+                                }}
+                              >
+                                <UserPlus className="h-4 w-4" />
+                                Assign
+                              </Button>
+                            ) : request.status === 'ASSIGNED' &&
+                              request.assignedVolunteer ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="gap-1.5"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  setAssigningRequest(request);
+                                }}
+                              >
+                                <RefreshCw className="h-4 w-4" />
+                                Reassign
+                              </Button>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">
+                                {request.status === 'ACCEPTED'
+                                  ? 'Accepted'
+                                  : 'Managed'}
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-4 py-3 text-right text-sm text-muted-foreground">
                           {formatTimeAgo(request.updatedAt)}
@@ -666,6 +777,66 @@ export default function RescueRequestsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog
+        open={deleteDialogOpen}
+        onOpenChange={(open) => {
+          setDeleteDialogOpen(open);
+          if (!open) setDeleteConfirmation('');
+        }}
+      >
+        <AlertDialogContent className="border-red-400/50 bg-red-700 text-white shadow-2xl">
+          <AlertDialogHeader>
+            <div className="flex items-start gap-3">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-red-500/10 text-red-600 dark:text-red-400">
+                <AlertTriangle className="h-5 w-5" />
+              </span>
+              <div>
+                <AlertDialogTitle>
+                  Delete{' '}
+                  {selectedRequestIds.size === 1
+                    ? 'rescue request'
+                    : 'rescue requests'}
+                  ?
+                </AlertDialogTitle>
+                <AlertDialogDescription className="mt-1 text-red-100/80">
+                  You selected{' '}
+                  <strong className="text-foreground">
+                    {selectedRequestIds.size}
+                  </strong>{' '}
+                  rescue request{selectedRequestIds.size === 1 ? '' : 's'}. They
+                  will be removed from the active list.
+                </AlertDialogDescription>
+              </div>
+            </div>
+          </AlertDialogHeader>
+          <div className="rounded-lg border border-red-200/30 bg-red-800/50 p-3">
+            <p className="text-sm text-red-100">
+              This action cannot be undone. Type <strong>DELETE</strong> to
+              continue.
+            </p>
+            <Input
+              value={deleteConfirmation}
+              onChange={(event) => setDeleteConfirmation(event.target.value)}
+              placeholder="Type DELETE"
+              aria-label="Type DELETE to confirm deletion"
+              className="mt-3 border-red-200/40 bg-red-900/70 text-white placeholder:text-red-100/60"
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-red-200/40 bg-transparent text-red-50 hover:bg-red-900">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={deleteConfirmation !== 'DELETE' || deleting}
+              className="bg-red-500 text-white hover:bg-red-400 disabled:pointer-events-none disabled:opacity-50"
+              onClick={() => void handleDeleteSelected()}
+            >
+              {deleting ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

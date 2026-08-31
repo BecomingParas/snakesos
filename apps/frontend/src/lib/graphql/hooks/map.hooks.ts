@@ -67,3 +67,33 @@ export function useSnakebiteHotspots(variables?: SnakebiteHotspotsVariables) {
     }
   );
 }
+
+export const GEOGRAPHIC_HEATMAP_QUERY = gql`
+  query GeographicHeatmap($input: GeographicHeatmapInput) {
+    geographicHeatmap(input: $input) {
+      municipality
+      lat
+      lng
+      rescueCount
+      intensity
+    }
+  }
+`;
+
+export interface GeographicHeatmapPoint {
+  municipality: string;
+  lat: number;
+  lng: number;
+  rescueCount: number;
+  intensity: number;
+}
+
+export interface GeographicHeatmapData {
+  geographicHeatmap: GeographicHeatmapPoint[];
+}
+
+export function useGeographicHeatmap() {
+  return useQuery<GeographicHeatmapData>(GEOGRAPHIC_HEATMAP_QUERY, {
+    fetchPolicy: 'cache-and-network',
+  });
+}
