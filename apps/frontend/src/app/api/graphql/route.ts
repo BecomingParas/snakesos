@@ -58,51 +58,69 @@ const resolvers = [
   snakeIdentificationResolvers,
 ];
 
-// Create Apollo Server instance
-let server: any;
-let handler: any;
+// Create Apollo Server instance (singleton pattern)
+let serverPromise: Promise<any> | null = null;
+let handler: any = null;
 
-try {
-  console.log('[GraphQL API] Creating Apollo Server...');
-  server = createApolloServer(resolvers);
-  
-  console.log('[GraphQL API] Starting Apollo Server...');
-  await server.start();
-  console.log('[GraphQL API] Apollo Server started successfully ✓');
-  
-  // Create Next.js request handler
-  handler = startServerAndCreateNextHandler(server, {
-    context: async (req) => {
-      // Adapt Next.js request to Express-like request/response
-      // This allows us to reuse the existing buildContext function
-      
-      // Create a mock Express-like request object
-      const mockReq = {
-        headers: req.headers instanceof Headers 
-          ? Object.fromEntries(req.headers.entries())
-          : req.headers,
-        method: req.method,
-        url: req.url,
-        // Better Auth will populate these from cookies
-        user: null,
-        session: null,
-      } as any;
+async function getHandler() {
+  if (handler) {
+    return handler;
+  }
 
-      // Create a mock Express-like response object
-      const mockRes = {
-        setHeader: () => {},
-        status: () => mockRes,
-        json: () => mockRes,
-      } as any;
+  if (!serverPromise) {
+    serverPromise = (async () => {
+      try {
+        console.log('[GraphQL API] Creating Apollo Server...');
+        const server = createApolloServer(resolvers);
+        
+        console.log('[GraphQL API] Starting Apollo Server...');
+        await server.start();
+        console.log('[GraphQL API] Apollo Server started successfully ✓');
+        
+        return server;
+      } catch (error) {
+        console.error('[GraphQL API] FATAL ERROR during initialization:', error);
+        serverPromise = null; // Reset on error to allow retry
+        throw error;
+      }
+    })();
+  }
 
-      // Build context using existing context builder
-      return await buildContext({ req: mockReq, res: mockRes });
-    },
-  });
-  console.log('[GraphQL API] Request handler created successfully ✓');
-} catch (error) {
-  console.error('[GraphQL API] FATAL ERROR during initialization:', error);
-  throw error;
+  const server = await serverPromise;
+
+  if (!handler) {
+    handler = startServerAndCreateNextHandler(server, {
+      context: async (req) => {
+        // Adapt Next.js request to Express-like request/response
+        // This allows us to reuse the existing buildContext function
+        
+        // Create a mock Express-like request object
+        const mockReq = {
+          headers: req.headers instanceof Headers 
+            ? Object.fromEntries(req.headers.entries())
+            : req.headers,
+          method: req.method,
+          url: req.url,
+          // Better Auth will populate these from cookies
+          user: null,
+          session: null,
+        } as any;
+
+        // Create a mock Express-like response object
+        const mockRes = {
+          setHeader: () => {},
+          status: () => mockRes,
+          json: () => mockRes,
+        } as any;
+
+        // Build context using existing context builder
+        return await buildContext({ req: mockReq, res: mockRes });
+      },
+    });
+    console.log('[GraphQL API] Request handler created successfully ✓');
+  }
+
+  return handler;
 }
 
 // CORS headers configuration
@@ -121,7 +139,9 @@ export async function OPTIONS(request: NextRequest) {
 // Export POST handler (GraphQL only uses POST)
 export async function POST(request: NextRequest) {
   try {
-    if (!handler) {
+    const requestHandler = await getHandler();
+    
+    if (!requestHandler) {
       console.error('[GraphQL API] Handler not initialized!');
       return NextResponse.json(
         {
@@ -138,7 +158,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = await handler(request);
+    const response = await requestHandler(request);
     
     // Add CORS headers to the response
     Object.entries(corsHeaders).forEach(([key, value]) => {
