@@ -129,7 +129,7 @@ export const rescueMutationResolvers = {
         publicIdempotencyKey: idempotencyKey,
       });
       const result = await new CreateRescueUseCase(
-        new RescueRepository(prisma),
+        new RescueRepository(prisma as any),
       ).execute(validated, context.user?.id);
       const updated = result;
       await createRescueNotifications(
@@ -169,7 +169,7 @@ export const rescueMutationResolvers = {
         hasBite: args.input.hasBite,
         source: 'WEB',
       });
-      const rescueRepository = new RescueRepository(prisma);
+      const rescueRepository = new RescueRepository(prisma as any);
       const result = await new CreateRescueUseCase(rescueRepository).execute(
         input,
         context.user?.id,
@@ -197,7 +197,7 @@ export const rescueMutationResolvers = {
       const input = RescueValidator.validateCreateRescue(args.input);
 
       // 2. Execute use case
-      const rescueRepository = new RescueRepository(prisma);
+      const rescueRepository = new RescueRepository(prisma as any);
       const useCase = new CreateRescueUseCase(rescueRepository);
       const result = await useCase.execute(input, context.user.id);
       if (input.isEmergency || input.hasBite) {
@@ -227,7 +227,7 @@ export const rescueMutationResolvers = {
       context.requireAuth();
       context.requireRole(['ADMIN', 'SUPER_ADMIN']);
 
-      const rescueRepository = new RescueRepository(prisma);
+      const rescueRepository = new RescueRepository(prisma as any);
       const rescue = await rescueRepository.findById(args.id);
       if (!rescue) {
         throw new Error('Rescue request not found');
@@ -292,7 +292,7 @@ export const rescueMutationResolvers = {
       const input = RescueValidator.validateAssignVolunteer(args.input);
 
       // 2. Execute use case
-      const rescueRepository = new RescueRepository(prisma);
+      const rescueRepository = new RescueRepository(prisma as any);
       const useCase = new AssignVolunteerUseCase(rescueRepository);
       const result = await useCase.execute(input, context.user.id);
 
@@ -326,7 +326,7 @@ export const rescueMutationResolvers = {
         throw new Error('Volunteer profile not found');
       }
 
-      const rescueRepository = new RescueRepository(prisma);
+      const rescueRepository = new RescueRepository(prisma as any);
       const useCase = new AcceptRescueUseCase(rescueRepository);
 
       const result = await useCase.execute(
@@ -366,7 +366,7 @@ export const rescueMutationResolvers = {
         throw new Error('Volunteer profile not found');
       }
 
-      const rescueRepository = new RescueRepository(prisma);
+      const rescueRepository = new RescueRepository(prisma as any);
       const useCase = new AcceptFromQueueUseCase(rescueRepository);
 
       const result = await useCase.execute(
@@ -398,7 +398,7 @@ export const rescueMutationResolvers = {
         'DISTRICT_COORDINATOR',
       ]);
 
-      const rescueRepository = new RescueRepository(prisma);
+      const rescueRepository = new RescueRepository(prisma as any);
       const useCase = new UpdateRescueStatusUseCase(
         rescueRepository,
         new RescueFinancialService(prisma),
@@ -437,7 +437,7 @@ export const rescueMutationResolvers = {
         throw new Error('Volunteer profile not found');
       }
 
-      const rescueRepository = new RescueRepository(prisma);
+      const rescueRepository = new RescueRepository(prisma as any);
       const useCase = new CompleteRescueUseCase(
         rescueRepository,
         new RescueFinancialService(prisma),
@@ -474,7 +474,7 @@ export const rescueMutationResolvers = {
       );
       const cancelledBy = isAdmin ? 'ADMIN' : 'CITIZEN';
 
-      const rescueRepository = new RescueRepository(prisma);
+      const rescueRepository = new RescueRepository(prisma as any);
       const useCase = new CancelRescueUseCase(rescueRepository);
 
       const result = await useCase.execute(
@@ -499,7 +499,7 @@ export const rescueMutationResolvers = {
     ) => {
       context.requireAuth();
 
-      const rescueRepository = new RescueRepository(prisma);
+      const rescueRepository = new RescueRepository(prisma as any);
 
       return await rescueRepository.addTimelineEvent({
         rescueId: args.input.rescueId,

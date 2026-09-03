@@ -44,7 +44,7 @@ export const rescueQueryResolvers = {
       _parent: unknown,
       args: { pagination?: { page?: number; limit?: number }; filter?: any },
     ) => {
-      const query = new ListPublicRescuesQuery(new RescueRepository(prisma));
+      const query = new ListPublicRescuesQuery(new RescueRepository(prisma as any));
       return query.execute(args.filter, args.pagination);
     },
 
@@ -60,7 +60,7 @@ export const rescueQueryResolvers = {
       context.requireAuth();
 
       // Execute query
-      const rescueRepository = new RescueRepository(prisma);
+      const rescueRepository = new RescueRepository(prisma as any);
       const query = new GetRescueQuery(rescueRepository);
       const rescue = await query.execute(args.id);
 
@@ -103,7 +103,7 @@ export const rescueQueryResolvers = {
       context.requireRole(RESCUE_MANAGEMENT_ROLES);
 
       // Execute query
-      const rescueRepository = new RescueRepository(prisma);
+      const rescueRepository = new RescueRepository(prisma as any);
       const query = new ListRescuesQuery(rescueRepository);
       const result = await query.execute(args.filter as any, args.pagination);
 
@@ -118,7 +118,7 @@ export const rescueQueryResolvers = {
       context.requireAuth();
       context.requireRole(RESCUE_MANAGEMENT_ROLES);
 
-      const rescueRepository = new RescueRepository(prisma);
+      const rescueRepository = new RescueRepository(prisma as any);
       const stats = await rescueRepository.getStatistics();
 
       return stats;
@@ -385,7 +385,7 @@ export const rescueQueryResolvers = {
         where: { userId: context.user.id },
       });
 
-      const rescueRepository = new RescueRepository(prisma);
+      const rescueRepository = new RescueRepository(prisma as any);
       const query = new AvailableRescuesQuery(rescueRepository);
 
       const rescues = await query.execute({
