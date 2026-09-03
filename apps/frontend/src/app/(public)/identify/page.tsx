@@ -467,8 +467,7 @@ export default function IdentifyPage() {
                               className="flex items-center justify-between gap-3"
                             >
                               <span>
-                                {match.species?.name ||
-                                  'Other species'}
+                                {match.species?.name || 'Other species'}
                               </span>
                               <span className="font-mono text-xs text-muted-foreground">
                                 {Math.round((match.confidence ?? 0) * 100)}%
