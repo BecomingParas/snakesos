@@ -186,8 +186,8 @@ model Account {
   id           String    @id @default(uuid())
   userId       String
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  providerId   String    @map("provider") // "credential", "google", "github", etc.
-  accountId    String    @map("providerAccountId") // Provider-specific account ID
+  providerId   String // "credential", "google", "github", etc. - Better Auth expects this exact name
+  accountId    String // Provider-specific account ID - Better Auth expects this exact name
   accessToken  String?   @db.Text
   refreshToken String?   @db.Text
   expiresAt    DateTime?
