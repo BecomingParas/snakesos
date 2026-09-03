@@ -1,11 +1,10 @@
 /**
- * useSignup Hook - Handles user registration with GraphQL
+ * useSignup Hook - Handles user registration with Better Auth
  */
 
-import { useMutation } from '@apollo/client/react';
-import { REGISTER_MUTATION } from '@/lib/graphql/mutations';
+import { useState } from 'react';
+import { signUp } from '@/lib/auth/better-auth-client';
 import { useAuthStore } from '@/lib/auth/auth-store';
-import { handleGraphQLError } from '@/lib/graphql';
 
 export interface SignupInput {
   name: string;
@@ -30,76 +29,73 @@ export interface SignupResult {
 }
 
 export function useSignup() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
   const setUser = useAuthStore((state) => state.setUser);
-  
-  const [registerMutation, { loading, error, data }] = useMutation(REGISTER_MUTATION, {
-    onCompleted: (data) => {
-      const responseData = data as { register?: SignupResult } | undefined;
-      // Registration complete - user will need to verify email then login
-      // No tokens or auth state to store during registration
-      console.log('Registration successful:', responseData?.register?.user);
-    },
-  });
 
   const signup = async (input: SignupInput): Promise<SignupResult> => {
+    setLoading(true);
+    setError(null);
+
     try {
-      console.group('[GRAPHQL] useSignup - Preparing Request');
+      console.group('[Better Auth] useSignup - Preparing Request');
       console.log('input:', {
         email: input.email,
         name: input.name,
         password: '[REDACTED]',
         phone: input.phone,
-        language: input.language || 'en',
-        timezone: input.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
-      console.log('GraphQL endpoint:', process.env.NEXT_PUBLIC_GRAPHQL_URL);
       console.groupEnd();
 
-      const result = await registerMutation({
-        variables: {
-          input: {
-            email: input.email.trim().toLowerCase(),
-            password: input.password,
-            name: input.name.trim(),
-            phone: input.phone,
-            language: input.language || 'en',
-            timezone: input.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
-          },
-        },
-        // Don't throw on GraphQL errors - let us handle them
-        errorPolicy: 'all',
+      // Use Better Auth's signUp method
+      const result = await signUp.email({
+        email: input.email.trim().toLowerCase(),
+        password: input.password,
+        name: input.name.trim(),
+        // Better Auth v1 doesn't support custom fields in signUp
+        // We'll update these after registration if needed
       });
 
-      console.group('[GRAPHQL] useSignup - Response Received');
+      console.group('[Better Auth] useSignup - Response Received');
       console.log('result.data:', result.data ? 'present' : 'null');
       console.log('result.error:', result.error);
       console.groupEnd();
 
-      // Check for GraphQL error first
-      if (result.error) {
-        console.log('GraphQL error detected:', result.error);
-        throw result.error;
+      // Better Auth automatically creates user and may auto-login
+      if (result.data?.user) {
+        // Return formatted result matching the expected type
+        return {
+          user: {
+            id: result.data.user.id,
+            email: result.data.user.email,
+            name: result.data.user.name,
+            role: result.data.user.role || 'CITIZEN',
+            phone: result.data.user.phone,
+            emailVerified: result.data.user.emailVerified || false,
+            createdAt: result.data.user.createdAt,
+            updatedAt: result.data.user.updatedAt,
+          },
+        };
       }
 
-      const responseData = result.data as { register?: SignupResult } | undefined;
-
-      if (!responseData?.register) {
-        throw new Error('Registration failed - no data returned');
-      }
-
-      return responseData.register;
+      throw new Error(result.error?.message || 'Registration failed');
     } catch (err) {
-      console.group('[GRAPHQL] useSignup - Error');
+      console.group('[Better Auth] useSignup - Error');
       console.error('raw error:', err);
       console.groupEnd();
-      throw handleGraphQLError(err);
+      
+      const error = err instanceof Error ? err : new Error('Registration failed');
+      setError(error);
+      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   return {
     signup,
     loading,
-    error: error ? handleGraphQLError(error) : null,
-    data: (data as { register?: SignupResult } | undefined)?.register,
+    error,
+    data: null,
   };
 }
