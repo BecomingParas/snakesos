@@ -61,7 +61,7 @@ export class CreateRescueCommand {
     };
 
     // Create rescue request
-    const rescue = await this.rescueRepository.create(data);
+    const rescue = await this.rescueRepository.create(data as any);
 
     return rescue;
   }
