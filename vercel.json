@@ -1,5 +1,5 @@
 {
-  "buildCommand": "NODE_PATH=./node_modules:./apps/frontend/node_modules ./node_modules/.bin/nx build frontend --prod",
+  "buildCommand": "npx prisma generate --config libs/database/prisma.config.ts && npx nx build frontend --prod",
   "framework": "nextjs",
   "installCommand": "npm install --legacy-peer-deps --include=dev",
   "outputDirectory": "apps/frontend/.next",
