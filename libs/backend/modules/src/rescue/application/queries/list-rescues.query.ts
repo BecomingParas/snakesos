@@ -32,7 +32,7 @@ export class ListRescuesQuery {
     // Get rescues
     const [rescues, total] = await Promise.all([
       this.rescueRepository.findMany({
-        where,
+        where: where as any,
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
@@ -46,7 +46,7 @@ export class ListRescuesQuery {
           species: true,
         },
       }),
-      this.rescueRepository.count(where),
+      this.rescueRepository.count(where as any),
     ]);
 
     // Build Relay-style connection response
