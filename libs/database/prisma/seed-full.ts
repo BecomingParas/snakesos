@@ -1,7 +1,7 @@
 // Comprehensive seed script for Snake Rescue Platform
 // Populates all tables with substantial test data
 
-import { UserRole, UserStatus, RescueStatus, RescuePriority, VolunteerStatus, PaymentMethod, PaymentStatus, DangerLevel } from '../src/prisma/generated/client';
+import { UserRole, UserStatus, RescueStatus, RescuePriority, VolunteerStatus, PaymentMethod, PaymentStatus, DangerLevel } from '../src/prisma/generated';
 import { prisma } from '../src/client';
 import bcrypt from 'bcryptjs';
 

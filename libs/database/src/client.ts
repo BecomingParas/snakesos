@@ -14,7 +14,7 @@
 import {
   PrismaClient,
   Prisma as PrismaTypes,
-} from './prisma/generated/client';
+} from './prisma/generated';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 
@@ -82,8 +82,8 @@ process.on('SIGINT', cleanup);
 process.on('SIGTERM', cleanup);
 
 // Export Prisma types
-export * from './prisma/generated/client';
-export { Prisma } from './prisma/generated/client';
+export * from './prisma/generated';
+export { Prisma } from './prisma/generated';
 
 // Export connection pool for monitoring (optional)
 export { pgPool };
