@@ -56,13 +56,13 @@ export function MobileHeader({
           <img
             src="/snakesoslogo.png"
             alt="SnakeSOS Logo"
-            className="h-12 w-12 object-contain transition-transform group-hover:scale-105 dark:hidden"
+            className="h-14 w-14 object-contain transition-transform group-hover:scale-105 dark:hidden"
           />
           {/* Dark mode logo */}
           <img
             src="/snakesoslogo_bg.png"
             alt="SnakeSOS Logo"
-            className="hidden h-12 w-12 object-contain transition-transform group-hover:scale-105 dark:block"
+            className="hidden h-14 w-14 object-contain transition-transform group-hover:scale-105 dark:block"
           />
         </a>
 
