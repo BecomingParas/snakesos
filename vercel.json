@@ -8,12 +8,6 @@
     "silent": false,
     "autoJobCancelation": true
   },
-  "functions": {
-    "api/**": {
-      "memory": 1024,
-      "maxDuration": 60
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",
