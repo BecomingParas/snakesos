@@ -56,6 +56,7 @@ interface RefundPaymentInput {
 }
 
 type PayoutWithCitizen = {
+  id: string;
   rescuerId: string;
   settlement?: {
     rescueCharge?: {
