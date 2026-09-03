@@ -13,43 +13,8 @@ import {
   Upload,
   X,
 } from 'lucide-react';
-import { gql } from '@apollo/client';
-import { useMutation } from '@/lib/apollo/hooks';
 import { useMediaUpload } from '@/hooks/useMediaUpload';
 import { Button } from '@/components/ui/button';
-
-const IDENTIFY_SNAKE_MUTATION = gql`
-  mutation IdentifySnake($input: IdentifySnakeInput!) {
-    identifySnake(input: $input) {
-      id
-      imageUrl
-      species {
-        id
-        name
-        scientificName
-        nepaliName
-        localNames
-        venomous
-        dangerLevel
-      }
-      confidence
-      provider
-      model
-      dangerAssessment
-      venomousDetected
-      alternativeMatches {
-        confidence
-        reasoning
-        species {
-          name
-          scientificName
-          venomous
-        }
-      }
-      createdAt
-    }
-  }
-`;
 
 type IdentificationResult = {
   id: string;
@@ -117,9 +82,6 @@ export default function IdentifyPage() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { upload, isUploading, progress } = useMediaUpload();
-  const [identifySnake, { loading: identifying }] = useMutation<{
-    identifySnake: IdentificationResult;
-  }>(IDENTIFY_SNAKE_MUTATION);
 
   function pickFile(file?: File | null) {
     if (!file) return;
@@ -354,13 +316,11 @@ export default function IdentifyPage() {
                   !preview ||
                   state === 'uploading' ||
                   state === 'scanning' ||
-                  identifying ||
                   isUploading
                 }
               >
                 {state === 'uploading' ||
                 state === 'scanning' ||
-                identifying ||
                 isUploading ? (
                   <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
                 ) : (
@@ -496,7 +456,6 @@ export default function IdentifyPage() {
                 <div>
                   {state === 'uploading' ||
                   state === 'scanning' ||
-                  identifying ||
                   isUploading ? (
                     <Loader2 className="mx-auto h-9 w-9 animate-spin text-primary" />
                   ) : (
