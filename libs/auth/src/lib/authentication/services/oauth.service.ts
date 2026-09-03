@@ -57,7 +57,9 @@ export class OAuthService {
         };
       }
 
-      const hasPassword = !!user.password;
+      // Check if user has a credential account with password
+      const credentialAccount = user.accounts.find((acc) => acc.providerId === 'credential');
+      const hasPassword = !!credentialAccount?.password;
       const otherAccounts = user.accounts.filter((acc) => acc.providerId !== provider);
 
       if (!hasPassword && otherAccounts.length === 0) {
