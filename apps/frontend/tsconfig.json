@@ -32,7 +32,19 @@
     ".next/types/**/*.ts",
     "../../node_modules/@types"
   ],
-  "exclude": [
-    "node_modules"
+  "exclude": ["node_modules"],
+  "references": [
+    {
+      "path": "../../libs/backend/modules"
+    },
+    {
+      "path": "../../libs/backend/core"
+    },
+    {
+      "path": "../../libs/database"
+    },
+    {
+      "path": "../../libs/auth"
+    }
   ]
 }
