@@ -60,7 +60,7 @@ const server = createApolloServer(resolvers);
 await server.start();
 
 // Create Next.js request handler
-const handler = startServerAndCreateNextHandler<NextRequest>(server, {
+const handler = startServerAndCreateNextHandler(server, {
   context: async (req) => {
     // Adapt Next.js request to Express-like request/response
     // This allows us to reuse the existing buildContext function
