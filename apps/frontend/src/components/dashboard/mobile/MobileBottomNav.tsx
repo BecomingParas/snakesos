@@ -177,7 +177,6 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
                           ? 'text-primary dark:text-primary'
                           : 'text-muted-foreground dark:text-muted-foreground/80',
                       )}
-                      strokeWidth={active ? 2.5 : 2}
                     />
                   )}
                 </div>
