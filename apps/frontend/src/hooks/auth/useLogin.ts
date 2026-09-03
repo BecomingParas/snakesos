@@ -1,11 +1,10 @@
 /**
- * useLogin Hook - Handles user login with GraphQL
+ * useLogin Hook - Handles user login with Better Auth
  */
 
-import { useMutation } from '@apollo/client/react';
-import { LOGIN_MUTATION } from '@/lib/graphql/mutations';
+import { useState } from 'react';
+import { signIn } from '@/lib/auth/better-auth-client';
 import { useAuthStore } from '@/lib/auth/auth-store';
-import { handleGraphQLError } from '@/lib/graphql';
 
 export interface LoginInput {
   email: string;
@@ -29,50 +28,68 @@ export interface LoginResult {
 }
 
 export function useLogin() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
   const setUser = useAuthStore((state) => state.setUser);
-  
-  const [loginMutation, { loading, error, data }] = useMutation(LOGIN_MUTATION, {
-    onCompleted: (data) => {
-      const responseData = data as { login?: LoginResult } | undefined;
-      if (responseData?.login) {
-        // Store access token
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('auth-token', responseData.login.accessToken);
-        }
-        
-        // Update auth store
-        setUser(responseData.login.user);
-      }
-    },
-  });
 
   const login = async (input: LoginInput): Promise<LoginResult> => {
+    setLoading(true);
+    setError(null);
+
     try {
-      const result = await loginMutation({
-        variables: {
-          input: {
-            email: input.email.trim().toLowerCase(),
-            password: input.password,
-          },
-        },
+      // Use Better Auth's signIn method
+      const result = await signIn.email({
+        email: input.email.trim().toLowerCase(),
+        password: input.password,
       });
 
-      const responseData = result.data as { login?: LoginResult } | undefined;
+      // Better Auth automatically sets session cookies
+      // The result contains user data
+      if (result.data?.user) {
+        // Update auth store
+        setUser({
+          id: result.data.user.id,
+          email: result.data.user.email,
+          name: result.data.user.name,
+          role: result.data.user.role || 'USER',
+          phone: result.data.user.phone,
+          emailVerified: result.data.user.emailVerified || false,
+          createdAt: result.data.user.createdAt,
+          updatedAt: result.data.user.updatedAt,
+        });
 
-      if (!responseData?.login) {
-        throw new Error('Login failed - no data returned');
+        // Return formatted result matching the expected type
+        return {
+          accessToken: result.data.session?.token || '',
+          refreshToken: result.data.session?.token || '',
+          expiresIn: result.data.session?.expiresIn || 604800, // 7 days default
+          user: {
+            id: result.data.user.id,
+            email: result.data.user.email,
+            name: result.data.user.name,
+            role: result.data.user.role || 'USER',
+            phone: result.data.user.phone,
+            emailVerified: result.data.user.emailVerified || false,
+            createdAt: result.data.user.createdAt,
+            updatedAt: result.data.user.updatedAt,
+          },
+        };
       }
 
-      return responseData.login;
+      throw new Error(result.error?.message || 'Login failed');
     } catch (err) {
-      throw handleGraphQLError(err);
+      const error = err instanceof Error ? err : new Error('Login failed');
+      setError(error);
+      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   return {
     login,
     loading,
-    error: error ? handleGraphQLError(error) : null,
-    data: (data as { login?: LoginResult } | undefined)?.login,
+    error,
+    data: null,
   };
 }
