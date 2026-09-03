@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npx prisma generate --config libs/database/prisma.config.ts && npx tsc -b libs/backend/core/tsconfig.json libs/backend/modules/tsconfig.json && npx nx run-many --target=build --projects=frontend --with-deps",
+  "buildCommand": "npx prisma generate --config libs/database/prisma.config.ts && npx nx run-many --target=build --projects=frontend --with-deps",
   "framework": "nextjs",
   "installCommand": "npm install --legacy-peer-deps --include=dev",
   "outputDirectory": "apps/frontend/.next",

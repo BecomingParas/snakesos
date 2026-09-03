@@ -1,9 +1,8 @@
 # Vercel Ignore File
 # Only exclude files that are definitely not needed for frontend build
 
-# Backend (not needed for frontend deployment)
+# Backend standalone app (not needed for frontend deployment)
 apps/backend/
-libs/backend/
 libs/database/prisma/migrations/
 
 # Documentation
