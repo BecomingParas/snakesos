@@ -12,9 +12,9 @@ try {
   const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf8'));
 
   if (packageJson.type !== 'module') {
-    packageJson.type = 'module';
+    packageJson.type = 'commonjs'; // Use CommonJS for compatibility
     await writeFile(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
-    console.log('✓ Updated Prisma Client package.json to use ESM');
+    console.log('✓ Updated Prisma Client package.json to use CommonJS');
   } else {
     console.log('✓ Prisma Client already configured for ESM');
   }

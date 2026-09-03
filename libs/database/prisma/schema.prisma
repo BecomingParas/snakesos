@@ -195,6 +195,7 @@ model Account {
   scope        String?
   idToken      String?   @db.Text
   password     String? // Hashed password for credential accounts (Better Auth requirement)
+  issuer       String? // OAuth issuer (Better Auth 1.7+)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
