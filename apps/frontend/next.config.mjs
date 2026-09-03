@@ -16,7 +16,14 @@ loadEnvConfig(workspaceRoot);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  transpilePackages: ['@snake-rescue/contracts', '@snake-rescue/shared'],
+  transpilePackages: [
+    '@snake-rescue/contracts',
+    '@snake-rescue/shared',
+    '@snake-rescue/auth',
+    '@snake-rescue/core',
+    '@snake-rescue/modules',
+    '@snake-rescue/database',
+  ],
   images: {
     unoptimized: true,
     remotePatterns: [],
@@ -46,6 +53,16 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:
       process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
+  },
+  
+  // Configure webpack to resolve .js imports to .ts files
+  webpack: (config) => {
+    config.resolve.extensionAlias = {
+      '.js': ['.js', '.ts', '.tsx'],
+      '.mjs': ['.mjs', '.mts'],
+      '.cjs': ['.cjs', '.cts'],
+    };
+    return config;
   },
 };
 
