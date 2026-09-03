@@ -10,10 +10,6 @@ export const auth = betterAuth({
 
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
-    // Tell Better Auth about our custom table names (@@map in Prisma schema)
-    // Better Auth expects lowercase singular table names by default
-    // Our schema uses: @@map("users"), @@map("accounts"), @@map("sessions")
-    useSingularTableNames: false, // Use plural table names (users, accounts, sessions)
   }),
   
   emailAndPassword: {
