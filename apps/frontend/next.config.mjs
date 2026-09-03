@@ -55,14 +55,16 @@ const nextConfig = {
       process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
   },
   
-  // Configure webpack to resolve .js imports to .ts files
-  webpack: (config) => {
-    config.resolve.extensionAlias = {
-      '.js': ['.js', '.ts', '.tsx'],
-      '.mjs': ['.mjs', '.mts'],
-      '.cjs': ['.cjs', '.cts'],
-    };
-    return config;
+  // Configure Turbopack to resolve .js imports to .ts files
+  turbopack: {
+    resolveExtensions: [
+      '.js',
+      '.jsx',
+      '.ts',
+      '.tsx',
+      '.mjs',
+      '.cjs',
+    ],
   },
 };
 
