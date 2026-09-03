@@ -4,7 +4,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { User, AuthSession } from './auth-client';
+import type { User } from './auth-client';
 import { getSession, logout as apiLogout } from './auth-client';
 
 interface AuthState {

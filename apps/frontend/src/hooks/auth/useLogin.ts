@@ -46,32 +46,36 @@ export function useLogin() {
       // Better Auth automatically sets session cookies
       // The result contains user data
       if (result.data?.user) {
+        // Type assertion: Better Auth user + custom fields from Prisma schema
+        const user = result.data.user as typeof result.data.user & { role?: string; phone?: string };
+        
         // Update auth store
         setUser({
-          id: result.data.user.id,
-          email: result.data.user.email,
-          name: result.data.user.name,
-          role: result.data.user.role || 'USER',
-          phone: result.data.user.phone,
-          emailVerified: result.data.user.emailVerified || false,
-          createdAt: result.data.user.createdAt,
-          updatedAt: result.data.user.updatedAt,
+          id: user.id,
+          email: user.email || '',
+          name: user.name,
+          role: user.role || 'CITIZEN',
+          phone: user.phone,
+          emailVerified: user.emailVerified || false,
+          createdAt: user.createdAt.toString(),
+          updatedAt: user.updatedAt.toString(),
         });
 
         // Return formatted result matching the expected type
+        // Better Auth returns a token directly in result.data
         return {
-          accessToken: result.data.session?.token || '',
-          refreshToken: result.data.session?.token || '',
-          expiresIn: result.data.session?.expiresIn || 604800, // 7 days default
+          accessToken: result.data.token || '',
+          refreshToken: result.data.token || '',
+          expiresIn: 604800, // 7 days default
           user: {
-            id: result.data.user.id,
-            email: result.data.user.email,
-            name: result.data.user.name,
-            role: result.data.user.role || 'USER',
-            phone: result.data.user.phone,
-            emailVerified: result.data.user.emailVerified || false,
-            createdAt: result.data.user.createdAt,
-            updatedAt: result.data.user.updatedAt,
+            id: user.id,
+            email: user.email || '',
+            name: user.name,
+            role: user.role || 'CITIZEN',
+            phone: user.phone,
+            emailVerified: user.emailVerified || false,
+            createdAt: user.createdAt.toString(),
+            updatedAt: user.updatedAt.toString(),
           },
         };
       }
