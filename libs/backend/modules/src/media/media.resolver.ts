@@ -181,6 +181,12 @@ export const mediaResolvers = {
         asset.mediaType === 'CITIZEN_PROFILE_IMAGE' ||
         asset.mediaType === 'ADMIN_PROFILE_IMAGE'
       ) {
+        // Profile images require authentication
+        const user = context.user;
+        if (!user) {
+          throw new Error('AUTHENTICATION_REQUIRED');
+        }
+        
         await prisma.mediaAsset.updateMany({
           where: {
             ownerId: user.id,
