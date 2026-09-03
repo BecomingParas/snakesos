@@ -20,9 +20,12 @@ const nextConfig = {
     '@snake-rescue/contracts',
     '@snake-rescue/shared',
     '@snake-rescue/auth',
+    '@snake-rescue/database',
+  ],
+  // Mark backend packages as external - they're only used in API routes
+  serverExternalPackages: [
     '@snake-rescue/core',
     '@snake-rescue/modules',
-    '@snake-rescue/database',
   ],
   images: {
     unoptimized: true,
