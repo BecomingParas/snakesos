@@ -1,1 +1,1 @@
-export * from './better-auth.config.js';
+export * from './better-auth.config';

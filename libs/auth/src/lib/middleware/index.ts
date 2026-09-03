@@ -1,2 +1,2 @@
-export * from './csrf.middleware.js';
-export * from './rate-limit.middleware.js';
+export * from './csrf.middleware';
+export * from './rate-limit.middleware';
