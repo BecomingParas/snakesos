@@ -71,15 +71,19 @@ if (process.env.NODE_ENV !== 'production') {
   global.prisma = prisma;
 }
 
-// Graceful shutdown handlers
-const cleanup = async () => {
-  await prisma.$disconnect();
-  await pgPool.end(); // Close connection pool
-};
+// Graceful shutdown handlers (disabled for serverless - Vercel handles this)
+// In serverless environments, connections are automatically cleaned up
+// Running cleanup handlers can cause "Called end on pool more than once" errors
+// during build when Next.js pre-renders pages
 
-process.on('beforeExit', cleanup);
-process.on('SIGINT', cleanup);
-process.on('SIGTERM', cleanup);
+// const cleanup = async () => {
+//   await prisma.$disconnect();
+//   await pgPool.end();
+// };
+
+// process.on('beforeExit', cleanup);
+// process.on('SIGINT', cleanup);
+// process.on('SIGTERM', cleanup);
 
 // Export Prisma types
 export * from './prisma/generated';
