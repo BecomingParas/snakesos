@@ -5038,6 +5038,7 @@ export type UpdateGalleryImageInput = {
 export type UpdateHospitalInput = {
   address?: InputMaybe<Scalars['String']['input']>;
   ambulanceAvailable?: InputMaybe<Scalars['Boolean']['input']>;
+  antivenomStatus?: InputMaybe<AntivenomStatus>;
   bedCapacity?: InputMaybe<Scalars['Int']['input']>;
   bloodBankAvailable?: InputMaybe<Scalars['Boolean']['input']>;
   district?: InputMaybe<Scalars['String']['input']>;
@@ -5053,9 +5054,12 @@ export type UpdateHospitalInput = {
   municipality?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   notes?: InputMaybe<Scalars['String']['input']>;
+  officialTreatmentCenter?: InputMaybe<Scalars['Boolean']['input']>;
   phone?: InputMaybe<Scalars['String']['input']>;
   province?: InputMaybe<Scalars['String']['input']>;
   snakebiteTreatmentAvailable?: InputMaybe<Scalars['Boolean']['input']>;
+  source?: InputMaybe<Scalars['String']['input']>;
+  sourceYear?: InputMaybe<Scalars['String']['input']>;
   specializations?: InputMaybe<Array<Scalars['String']['input']>>;
   status?: InputMaybe<HospitalStatus>;
   treatmentCenterType?: InputMaybe<TreatmentCenterType>;

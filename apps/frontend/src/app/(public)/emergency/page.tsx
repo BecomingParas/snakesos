@@ -166,8 +166,7 @@ export default function EmergencyPage() {
       </div>
 
       <div className="mx-auto max-w-3xl px-5 pt-12 text-center">
-        <span className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/15 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-accent shadow-sm">
-          <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />{' '}
+        <span className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/15 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-black dark:text-white shadow-sm">
           Emergency Request
         </span>
         <h1 className="mt-6 font-display text-5xl lg:text-6xl font-bold">

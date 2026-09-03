@@ -1,13 +1,14 @@
 // ===================================================================
-// PRISMA DATABASE CLIENT WITH DRIVER ADAPTER
+// PRISMA DATABASE CLIENT WITH DRIVER ADAPTER (SERVERLESS OPTIMIZED)
 // ===================================================================
 // Singleton Prisma Client instance using Prisma 7 Driver Adapter
 // for PostgreSQL with proper connection pooling and error handling.
 //
-// Prisma 7 Migration:
-// - Uses @prisma/adapter-pg for PostgreSQL connections
-// - Connection URL configured via environment variable
-// - Singleton pattern for application-wide database access
+// Serverless Optimization:
+// - Uses @prisma/adapter-pg with pg.Pool for connection pooling
+// - Optimized pool settings for Vercel serverless functions
+// - Singleton pattern prevents connection exhaustion
+// - Automatic cleanup on process termination
 // ===================================================================
 
 import {
@@ -15,10 +16,13 @@ import {
   Prisma as PrismaTypes,
 } from './prisma/generated/client.js';
 import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 
 declare global {
   // eslint-disable-next-line no-var
   var prisma: PrismaClient | undefined;
+  // eslint-disable-next-line no-var
+  var pgPool: Pool | undefined;
 }
 
 // Get database URL from environment
@@ -30,9 +34,25 @@ if (!databaseUrl) {
   );
 }
 
-// Create Prisma PostgreSQL adapter directly with connection string
-// This avoids Pool type conflicts between workspace and package node_modules
-const adapter = new PrismaPg(databaseUrl);
+// Create or reuse PostgreSQL connection pool (singleton)
+// Pool settings optimized for serverless environments
+const pgPool =
+  global.pgPool ||
+  new Pool({
+    connectionString: databaseUrl,
+    max: 10, // Maximum pool size (Neon free tier handles this well)
+    idleTimeoutMillis: 30000, // Close idle connections after 30s
+    connectionTimeoutMillis: 5000, // Timeout after 5s if pool is exhausted
+    allowExitOnIdle: false, // Keep pool alive in serverless
+  });
+
+// Store pool globally to prevent multiple instances
+if (process.env.NODE_ENV !== 'production') {
+  global.pgPool = pgPool;
+}
+
+// Create Prisma PostgreSQL adapter with connection pool
+const adapter = new PrismaPg(pgPool);
 
 // Prisma Client Options
 const prismaClientOptions: PrismaTypes.PrismaClientOptions = {
@@ -54,6 +74,7 @@ if (process.env.NODE_ENV !== 'production') {
 // Graceful shutdown handlers
 const cleanup = async () => {
   await prisma.$disconnect();
+  await pgPool.end(); // Close connection pool
 };
 
 process.on('beforeExit', cleanup);
@@ -63,3 +84,6 @@ process.on('SIGTERM', cleanup);
 // Export Prisma types
 export * from './prisma/generated/client.js';
 export { Prisma } from './prisma/generated/client.js';
+
+// Export connection pool for monitoring (optional)
+export { pgPool };

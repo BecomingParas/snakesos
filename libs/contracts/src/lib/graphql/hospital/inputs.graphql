@@ -63,10 +63,16 @@ input UpdateHospitalInput {
   snakebiteTreatmentAvailable: Boolean
   treatmentCenterType: TreatmentCenterType
   
+  antivenomStatus: AntivenomStatus
+  
   ventilatorAvailable: Boolean
   icuAvailable: Boolean
   ambulanceAvailable: Boolean
   bloodBankAvailable: Boolean
+  
+  source: String
+  sourceYear: String
+  officialTreatmentCenter: Boolean
   
   hospitalType: HospitalType
   bedCapacity: Int

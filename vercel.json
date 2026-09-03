@@ -8,6 +8,12 @@
     "silent": false,
     "autoJobCancelation": true
   },
+  "functions": {
+    "apps/frontend/src/app/api/**/*.ts": {
+      "memory": 1024,
+      "maxDuration": 60
+    }
+  },
   "headers": [
     {
       "source": "/(.*)",

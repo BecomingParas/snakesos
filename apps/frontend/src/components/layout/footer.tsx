@@ -1,24 +1,32 @@
-import Link from "next/link";
-import { Mail, MapPin, Phone } from "lucide-react";
-import { cn } from "@/lib/utils";
+import Link from 'next/link';
+import { Mail, MapPin, Phone } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export function Footer() {
   return (
-    <footer className="mt-20 border-t border-border/30 bg-background/40 backdrop-blur-sm">
-      <div className="mx-auto grid max-w-[1400px] gap-10 px-5 py-16 md:grid-cols-2 xl:grid-cols-4">
+    <footer className="mt-12 border-t border-border/30 bg-background/40 backdrop-blur-sm">
+      <div className="mx-auto grid max-w-[1400px] gap-8 px-5 py-10 md:grid-cols-2 xl:grid-cols-4">
         <div>
-          <p className="flex items-center gap-2 font-display text-lg font-bold">
-            <img 
-              src="/logo.jpg" 
-              alt="SnakeSOS Logo" 
-              className="h-12 w-12 object-contain"
-            /> SnakeSOS
+          <div className="flex items-center gap-2">
+            {/* Light mode logo */}
+            <img
+              src="/snakesoslogo.png"
+              alt="SnakeSOS Logo"
+              className="h-16 w-16 sm:h-20 sm:w-20 lg:h-20 lg:w-48 object-contain dark:hidden"
+            />
+            {/* Dark mode logo */}
+            <img
+              src="/snakesoslogo_bg.png"
+              alt="SnakeSOS Logo"
+              className="hidden h-16 w-16 sm:h-20 sm:w-20 lg:h-20 lg:w-48 object-contain dark:block"
+            />
+          </div>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            Protecting human lives and conserving Rupandehi biodiversity through
+            safe, 24/7 emergency snake rescue, local community education, and
+            snakebite first aid.
           </p>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            Protecting human lives and conserving Rupandehi biodiversity through safe, 24/7 emergency
-            snake rescue, local community education, and snakebite first aid.
-          </p>
-          <div className="mt-5 flex gap-2">
+          <div className="mt-3 flex gap-2">
             {['Facebook', 'Instagram', 'Youtube'].map((name, i) => (
               <span
                 key={i}
@@ -32,14 +40,16 @@ export function Footer() {
         </div>
 
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-foreground">Coverage Areas</p>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-foreground">
+            Coverage Areas
+          </p>
+          <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             {[
-              "Butwal Municipality",
-              "Tilottama Municipality",
-              "Siddharthanagar",
-              "Devdaha Municipality",
-              "Rupandehi Surrounding Zones",
+              'Butwal Municipality',
+              'Tilottama Municipality',
+              'Siddharthanagar',
+              'Devdaha Municipality',
+              'Rupandehi Surrounding Zones',
             ].map((a) => (
               <li key={a} className="flex items-center gap-2">
                 <MapPin className="h-3.5 w-3.5 text-primary" /> {a}
@@ -52,17 +62,19 @@ export function Footer() {
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-foreground">
             Useful Information
           </p>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
+          <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
             {[
-              { href: "/rescues", label: "Emergency Rescue" },
-              { href: "/identify", label: "Snake DB & AI" },
-              { href: "/community", label: "First Aid" },
-              { href: "/volunteers", label: "Volunteer" },
-              { href: "/support", label: "Donate" },
-              { href: "/dashboard", label: "Admin Login" },
+              { href: '/rescues', label: 'Emergency Rescue' },
+              { href: '/identify', label: 'Snake DB & AI' },
+              { href: '/community', label: 'First Aid' },
+              { href: '/volunteers', label: 'Volunteer' },
+              { href: '/donate', label: 'Donate' },
             ].map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="transition-colors hover:text-primary">
+                <Link
+                  href={l.href}
+                  className="transition-colors hover:text-primary"
+                >
                   <span className="text-primary">›</span> {l.label}
                 </Link>
               </li>
@@ -74,23 +86,30 @@ export function Footer() {
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-foreground">
             24/7 Hotline Contacts
           </p>
-          <div className="mt-4 space-y-3">
-            {["9812482578", "9807591342"].map((num, i) => (
+          <div className="mt-3 space-y-2">
+            {['9812482578', '9807591342'].map((num, i) => (
               <div
                 key={num}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg border px-4 py-3",
+                  'flex items-center gap-3 rounded-lg border px-4 py-3',
                   i === 0
-                    ? "border-destructive/50 bg-destructive/10"
-                    : "border-border/70 bg-secondary/50",
+                    ? 'border-destructive/50 bg-destructive/10'
+                    : 'border-border/70 bg-secondary/50',
                 )}
               >
-                <Phone className={cn("h-4 w-4", i === 0 ? "text-destructive" : "text-primary")} />
+                <Phone
+                  className={cn(
+                    'h-4 w-4',
+                    i === 0 ? 'text-destructive' : 'text-primary',
+                  )}
+                />
                 <span>
                   <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Emergency {i + 1}
                   </span>
-                  <span className="block font-mono text-sm font-bold">{num}</span>
+                  <span className="block font-mono text-sm font-bold">
+                    {num}
+                  </span>
                 </span>
               </div>
             ))}
@@ -102,7 +121,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-border/30">
-        <div className="mx-auto flex max-w-[1400px] flex-col gap-2 px-5 py-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto flex max-w-[1400px] flex-col gap-2 px-5 py-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 SnakeSOS. All rights reserved. Rupandehi, Nepal.</p>
           <p>24/7 hotline 1166 · demo data only</p>
         </div>

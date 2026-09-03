@@ -102,6 +102,7 @@
     "@apollo/client": "^4.2.10",
     "@apollo/server": "^5.5.1",
     "@as-integrations/express5": "^1.1.2",
+    "@as-integrations/next": "^4.1.0",
     "@google-cloud/vision": "^6.0.0",
     "@googlemaps/markerclusterer": "^2.6.2",
     "@graphql-tools/merge": "^9.2.2",

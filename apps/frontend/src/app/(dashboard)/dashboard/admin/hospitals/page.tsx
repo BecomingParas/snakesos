@@ -69,7 +69,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { useHospitals } from '@/lib/graphql/hooks/hospital.hooks';
+import { useHospitals, useUpdateHospital, useCreateHospital, useDeleteHospital } from '@/lib/graphql/hooks/hospital.hooks';
 import { DashboardPagination } from '@/components/dashboard/dashboard-pagination';
 import {
   DropdownMenu,
@@ -133,6 +133,7 @@ interface HospitalFormState {
   emergency24x7: boolean;
   ventilatorAvailable: boolean;
   officialTreatmentCenter: boolean;
+  antivenomStatus: string;
   source: string;
   notes: string;
 }
@@ -150,6 +151,7 @@ const EMPTY_HOSPITAL_FORM: HospitalFormState = {
   emergency24x7: false,
   ventilatorAvailable: false,
   officialTreatmentCenter: false,
+  antivenomStatus: 'UNKNOWN',
   source: '',
   notes: '',
 };
@@ -211,6 +213,10 @@ export default function HospitalsPage() {
     { search: searchQuery || undefined },
     { first: pageSize, page: currentPage },
   );
+
+  const [updateHospital] = useUpdateHospital();
+  const [createHospital] = useCreateHospital();
+  const [deleteHospital] = useDeleteHospital();
 
   useEffect(() => {
     if (error) toast.error(`Failed to load hospitals: ${error.message}`);
@@ -312,6 +318,7 @@ export default function HospitalsPage() {
       emergency24x7: hospital.emergency24x7 ?? false,
       ventilatorAvailable: hospital.ventilatorAvailable ?? false,
       officialTreatmentCenter: hospital.officialTreatmentCenter,
+      antivenomStatus: hospital.antivenomStatus ?? 'UNKNOWN',
       source: hospital.source ?? '',
       notes: hospital.notes ?? '',
     });
@@ -343,23 +350,45 @@ export default function HospitalsPage() {
 
     setIsSavingHospital(true);
     try {
-      // TODO: wire to the real create/update hospital GraphQL mutation once
-      // the hook is available, e.g.:
-      // if (editingHospital) {
-      //   await updateHospital({ variables: { id: editingHospital.id, input: hospitalForm } });
-      // } else {
-      //   await createHospital({ variables: { input: hospitalForm } });
-      // }
-      toast.success(
-        editingHospital
-          ? 'Hospital updated successfully'
-          : 'Hospital added successfully',
-      );
+      const input = {
+        name: hospitalForm.name,
+        province: hospitalForm.province.toUpperCase(),
+        district: hospitalForm.district,
+        address: hospitalForm.address,
+        latitude: parseFloat(hospitalForm.latitude),
+        longitude: parseFloat(hospitalForm.longitude),
+        phone: hospitalForm.phone || null,
+        emergencyPhone: hospitalForm.emergencyPhone || null,
+        snakebiteTreatmentAvailable: hospitalForm.snakebiteTreatmentAvailable,
+        emergency24x7: hospitalForm.emergency24x7,
+        ventilatorAvailable: hospitalForm.ventilatorAvailable,
+        officialTreatmentCenter: hospitalForm.officialTreatmentCenter,
+        antivenomStatus: hospitalForm.antivenomStatus,
+        source: hospitalForm.source || null,
+        notes: hospitalForm.notes || null,
+      };
+
+      if (editingHospital) {
+        await updateHospital({
+          variables: {
+            id: editingHospital.id,
+            input,
+          },
+        });
+        toast.success('Hospital updated successfully');
+      } else {
+        await createHospital({
+          variables: { input },
+        });
+        toast.success('Hospital added successfully');
+      }
+
       setIsAddDialogOpen(false);
       setHospitalForm(EMPTY_HOSPITAL_FORM);
       setEditingHospital(null);
       await refetch();
     } catch (submitError) {
+      console.error('Error saving hospital:', submitError);
       toast.error(
         submitError instanceof Error
           ? submitError.message
@@ -430,13 +459,15 @@ export default function HospitalsPage() {
     if (!selectedHospital) return;
     setIsDeleting(true);
     try {
-      // TODO: wire to the real delete hospital GraphQL mutation, e.g.:
-      // await deleteHospital({ variables: { id: selectedHospital.id } });
+      await deleteHospital({
+        variables: { id: selectedHospital.id },
+      });
       toast.success('Hospital deleted successfully');
       setIsDeleteDialogOpen(false);
       setSelectedHospital(null);
       await refetch();
     } catch (deleteError) {
+      console.error('Error deleting hospital:', deleteError);
       toast.error(
         deleteError instanceof Error
           ? deleteError.message
@@ -827,6 +858,29 @@ export default function HospitalsPage() {
                     </div>
                   </div>
                   <div className="grid gap-2">
+                    <Label htmlFor="antivenom-status-edit">Antivenom Status</Label>
+                    <Select
+                      value={hospitalForm.antivenomStatus}
+                      onValueChange={(value) =>
+                        setHospitalForm((f) => ({
+                          ...f,
+                          antivenomStatus: value,
+                        }))
+                      }
+                    >
+                      <SelectTrigger id="antivenom-status-edit">
+                        <SelectValue placeholder="Select antivenom status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="AVAILABLE">Available</SelectItem>
+                        <SelectItem value="LOW_STOCK">Low Stock</SelectItem>
+                        <SelectItem value="OUT_OF_STOCK">Out of Stock</SelectItem>
+                        <SelectItem value="UNKNOWN">Unknown</SelectItem>
+                        <SelectItem value="NOT_SUPPORTED">Not Supported</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
                     <Label htmlFor="source">Data Source</Label>
                     <Input
                       id="source"
@@ -890,7 +944,6 @@ export default function HospitalsPage() {
                 <TableHead>Location</TableHead>
                 <TableHead>Snakebite Treatment</TableHead>
                 <TableHead>Antivenom Status</TableHead>
-                <TableHead>Verification</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -899,7 +952,7 @@ export default function HospitalsPage() {
               {!loading && filteredHospitals.length === 0 && (
                 <TableRow>
                   <TableCell
-                    colSpan={7}
+                    colSpan={6}
                     className="text-center text-muted-foreground py-8"
                   >
                     No hospitals match your search or filter.
@@ -955,14 +1008,6 @@ export default function HospitalsPage() {
                   </TableCell>
                   <TableCell>
                     {getAntivenomStatusBadge(hospital.antivenomStatus)}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {getFreshnessIcon(
-                        hospital.antivenomVerificationFreshness,
-                      )}
-                      {getVerificationStatusBadge(hospital.verificationStatus)}
-                    </div>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="text-green-600">

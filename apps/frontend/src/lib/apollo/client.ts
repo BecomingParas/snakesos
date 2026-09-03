@@ -15,7 +15,7 @@ import { createFragmentRegistry } from '@apollo/client/cache';
 // import possibleTypesResult from '@snake-rescue/contracts/src/generated/fragment-matcher';
 
 // Get API URL from environment
-const API_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:4000/graphql';
+const API_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:4200/api/graphql';
 const IS_BROWSER = typeof window !== 'undefined';
 
 /**

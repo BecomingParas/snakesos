@@ -66,6 +66,8 @@ nul
 
 # Environment variables
 .env
+.env.neon
+.env.production
 .env.local
 .env.*.local
 

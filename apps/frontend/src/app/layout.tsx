@@ -8,6 +8,11 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'SnakeSOS - Wildlife Rescue Platform',
   description: 'Butwal Snake Rescue - Saving lives, one call at a time',
+  icons: {
+    icon: '/snakesoslogo.png',
+    shortcut: '/snakesoslogo.png',
+    apple: '/snakesoslogo.png',
+  },
 }
 
 export default function RootLayout({

@@ -63,12 +63,18 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-border/20 bg-background/60 backdrop-blur-2xl shadow-sm">
       <div className="mx-auto flex h-[72px] max-w-[1400px] items-center gap-4 px-2 sm:px-5">
         <Link href="/" className="flex items-center gap-1 group">
+          {/* Light mode logo */}
           <img
             src="/snakesoslogo.png"
             alt="SnakeSOS Logo"
-            className="h-16 w-16 sm:h-20 sm:w-20 lg:h-48 lg:w-48 object-contain transition-transform group-hover:scale-105"
+            className="h-16 w-16 sm:h-20 sm:w-20 lg:h-48 lg:w-48 object-contain transition-transform group-hover:scale-105 dark:hidden"
           />
-         
+          {/* Dark mode logo */}
+          <img
+            src="/snakesoslogo_bg.png"
+            alt="SnakeSOS Logo"
+            className="hidden h-16 w-16 sm:h-20 sm:w-20 lg:h-48 lg:w-48 object-contain transition-transform group-hover:scale-105 dark:block"
+          />
         </Link>
 
         <nav className="mx-auto hidden items-center gap-1 lg:flex">

@@ -5432,6 +5432,7 @@ input UpdateGalleryImageInput {
 input UpdateHospitalInput {
   address: String
   ambulanceAvailable: Boolean
+  antivenomStatus: AntivenomStatus
   bedCapacity: Int
   bloodBankAvailable: Boolean
   district: String
@@ -5447,9 +5448,12 @@ input UpdateHospitalInput {
   municipality: String
   name: String
   notes: String
+  officialTreatmentCenter: Boolean
   phone: String
   province: String
   snakebiteTreatmentAvailable: Boolean
+  source: String
+  sourceYear: String
   specializations: [String!]
   status: HospitalStatus
   treatmentCenterType: TreatmentCenterType

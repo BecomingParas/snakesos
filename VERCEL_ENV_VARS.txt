@@ -1,0 +1,75 @@
+# ===================================================================
+# VERCEL ENVIRONMENT VARIABLES - COPY & PASTE
+# ===================================================================
+# Go to Vercel → Settings → Environment Variables
+# Add each variable below (check "Production" for all)
+# ===================================================================
+
+# ===================================================================
+# DATABASE (FROM YOUR NEON)
+# ===================================================================
+DATABASE_URL=postgresql://neondb_owner:npg_CqJvl7ztb2HY@ep-dawn-river-b3nhrqaf-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+
+DIRECT_URL=postgresql://neondb_owner:npg_CqJvl7ztb2HY@ep-dawn-river-b3nhrqaf.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+
+# ===================================================================
+# AUTHENTICATION (GENERATE SECRETS FIRST!)
+# ===================================================================
+# Run this in Git Bash or WSL to generate:
+# openssl rand -base64 32
+
+BETTER_AUTH_URL=https://YOUR-VERCEL-URL.vercel.app/api/auth
+JWT_SECRET=GENERATE_WITH_OPENSSL_COMMAND
+CSRF_SECRET=GENERATE_WITH_OPENSSL_COMMAND
+CORS_ORIGINS=https://YOUR-VERCEL-URL.vercel.app
+
+# ===================================================================
+# EMAIL (BREVO SMTP - FROM YOUR .ENV)
+# ===================================================================
+SMTP_HOST=smtp-relay.brevo.com
+SMTP_PORT=587
+SMTP_USER=9d5ead001@smtp-brevo.com
+SMTP_PASSWORD=your-brevo-smtp-password
+SMTP_FROM_EMAIL=parasshresthanever@gmail.com
+SMTP_FROM_NAME=SnakeSOS Platform
+
+# ===================================================================
+# STRIPE (TEST MODE - FROM YOUR .ENV)
+# ===================================================================
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+STRIPE_SUCCESS_URL=https://YOUR-VERCEL-URL.vercel.app/payment/success
+STRIPE_CANCEL_URL=https://YOUR-VERCEL-URL.vercel.app/payment/cancelled
+PAYMENT_DEMO_MODE=true
+
+# ===================================================================
+# CLOUDINARY (FROM YOUR .ENV)
+# ===================================================================
+CLOUDINARY_CLOUD_NAME=dwrqifa8x
+CLOUDINARY_API_KEY=519377643889622
+CLOUDINARY_API_SECRET=QmyNLnd-DLfzwd4ah6SxfENfb8I
+
+# ===================================================================
+# FRONTEND (NEXT_PUBLIC_* - EXPOSED TO BROWSER)
+# ===================================================================
+NEXT_PUBLIC_APP_URL=https://YOUR-VERCEL-URL.vercel.app
+NEXT_PUBLIC_GRAPHQL_URL=https://YOUR-VERCEL-URL.vercel.app/api/graphql
+NEXT_PUBLIC_AUTH_URL=https://YOUR-VERCEL-URL.vercel.app/api/auth
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=AIzaSyB81eJ2c9M-F5-IrZNSd6RvoYGsF1IO6AI
+
+# ===================================================================
+# APP METADATA
+# ===================================================================
+NODE_ENV=production
+APP_NAME=SnakeSOS
+
+# ===================================================================
+# STEPS TO ADD IN VERCEL:
+# ===================================================================
+# 1. Generate JWT_SECRET and CSRF_SECRET first (see above)
+# 2. Replace YOUR-VERCEL-URL with your actual URL
+# 3. Go to Vercel → Settings → Environment Variables
+# 4. Add each variable (name=value)
+# 5. Check "Production" for each
+# 6. Click "Save"
+# 7. Redeploy
+# ===================================================================

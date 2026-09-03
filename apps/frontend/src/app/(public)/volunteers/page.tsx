@@ -244,7 +244,7 @@ export default function VolunteersPage() {
         <div className="pointer-events-none absolute left-1/2 top-1/4 h-96 w-96 -translate-x-1/2 rounded-full bg-accent/10 blur-3xl" />
 
         <div className="relative">
-          <span className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/15 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-accent shadow-sm">
+          <span className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/15 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-black dark:text-white shadow-sm">
             <Users className="h-3.5 w-3.5" /> Join our team
           </span>
           <h1 className="mt-6 font-display text-5xl font-bold tracking-tight lg:text-6xl">

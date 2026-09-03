@@ -45,7 +45,9 @@ export function PaymentMethodSelector({
   selectedMethod,
   disabled = false,
 }: PaymentMethodSelectorProps) {
-  const [selected, setSelected] = useState<PaymentMethod | undefined>(selectedMethod);
+  const [selected, setSelected] = useState<PaymentMethod | undefined>(
+    selectedMethod,
+  );
 
   const handleSelect = (method: PaymentMethod) => {
     if (disabled) return;
@@ -55,7 +57,7 @@ export function PaymentMethodSelector({
 
   return (
     <div className="w-full max-w-2xl mx-auto">
-      <h2 className="text-2xl font-semibold text-white mb-6">
+      <h2 className="text-2xl font-semibold text-red-500 mb-6">
         Choose Payment Method
       </h2>
 
@@ -94,7 +96,9 @@ export function PaymentMethodSelector({
             {/* Name and Description */}
             <div className="flex-1 text-left">
               <div className="flex items-center gap-2">
-                <h3 className="text-lg font-medium text-white">{method.name}</h3>
+                <h3 className="text-lg font-medium text-white">
+                  {method.name}
+                </h3>
                 {method.id === 'esewa' && (
                   <div className="w-2 h-2 bg-emerald-500 rounded-full" />
                 )}

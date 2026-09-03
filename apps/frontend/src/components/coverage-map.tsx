@@ -1,7 +1,7 @@
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { MapContainer, TileLayer, Polygon, Marker, Tooltip, useMap } from "react-leaflet";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { coverageZones, type CoverageZone } from "@/lib/coverage-zones";
 
@@ -42,12 +42,26 @@ export default function CoverageMap({
   selected?: string | null;
   onSelect?: (id: string) => void;
 }) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return (
+      <div className="h-full w-full flex items-center justify-center bg-secondary/40 text-sm text-muted-foreground">
+        Loading map...
+      </div>
+    );
+  }
+
   return (
     <MapContainer
       center={[27.62, 83.46]}
       zoom={11}
       scrollWheelZoom={false}
-      className="h-full w-full"
+      className="h-full w-full z-0"
       style={{ background: "transparent" }}
     >
       <TileLayer

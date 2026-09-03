@@ -50,18 +50,20 @@ export function MobileHeader({
   return (
     <header className="sticky top-0 z-50 w-full md:mobile-glass-header border-b border-border/40 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
       <div className="flex h-14 items-center justify-between px-4">
-        {/* Left: Logo + Title */}
+        {/* Left: Logo with theme switching */}
         <a href="/" className="flex items-center gap-2 min-w-0 group">
-          <div className="h-8 w-8 rounded-lg overflow-hidden bg-primary/10 flex items-center justify-center shrink-0">
-            <img
-              src="/logo.jpg"
-              alt="SnakeSOS Logo"
-              className="h-7 w-7 object-contain transition-transform group-hover:scale-105"
-            />
-          </div>
-          <span className="text-sm font-bold truncate">
-            Snake<span className="text-primary">SOS</span>
-          </span>
+          {/* Light mode logo */}
+          <img
+            src="/snakesoslogo.png"
+            alt="SnakeSOS Logo"
+            className="h-10 w-10 object-contain transition-transform group-hover:scale-105 dark:hidden"
+          />
+          {/* Dark mode logo */}
+          <img
+            src="/snakesoslogo_bg.png"
+            alt="SnakeSOS Logo"
+            className="hidden h-10 w-10 object-contain transition-transform group-hover:scale-105 dark:block"
+          />
         </a>
 
         {/* Right: Emergency, notifications, and profile */}

@@ -208,30 +208,33 @@ export function Sidebar({ role }: SidebarProps) {
           {/* Header */}
           <div
             className={cn(
-              'flex items-center border-b border-border/20 p-4',
+              'flex items-center border-b border-border/20 ',
               collapsed && 'justify-center px-2',
             )}
           >
             <Link href="/" className="flex items-center gap-3 group min-w-0">
-              <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 shadow-sm overflow-hidden ring-1 ring-primary/10">
+              {collapsed ? (
+                /* Collapsed: Just snake icon */
                 <img
-                  src="/logo.jpg"
-                  alt="SnakeSOS Logo"
-                  className="h-9 w-9 object-contain transition-transform duration-300 group-hover:scale-110"
+                  src="/logo.png"
+                  alt="SnakeSOS"
+                  className="h-16 w-12 object-cover transition-all duration-300 group-hover:scale-110"
                 />
-              </div>
-              {!collapsed && (
-                <div className="min-w-0 flex-1">
-                  <h2 className="truncate text-sm font-bold text-foreground tracking-tight">
-                    Snake<span className="text-primary">SOS</span>
-                  </h2>
-                  <div className="flex items-center gap-1.5">
-                    <span className={cn('h-1.5 w-1.5 rounded-full', accent)} />
-                    <p className="truncate text-xs text-muted-foreground font-medium">
-                      {config.subtitle}
-                    </p>
-                  </div>
-                </div>
+              ) : (
+                <>
+                  {/* Expanded: Light mode logo */}
+                  <img
+                    src="/snakesoslogo.png"
+                    alt="SnakeSOS Logo"
+                    className="h-12 w-auto sm:h-14 sm:w-auto lg:h-8 lg:w-auto max-w-full object-contain transition-all duration-300 group-hover:scale-110 dark:hidden"
+                  />
+                  {/* Expanded: Dark mode logo */}
+                  <img
+                    src="/snakesoslogo_bg.png"
+                    alt="SnakeSOS Logo"
+                    className="hidden h-12 w-auto sm:h-14 sm:w-auto lg:h-20 lg:w-auto max-w-full object-contain transition-all duration-300 group-hover:scale-110 dark:block"
+                  />
+                </>
               )}
             </Link>
           </div>

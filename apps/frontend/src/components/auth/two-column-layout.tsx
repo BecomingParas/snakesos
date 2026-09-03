@@ -14,95 +14,66 @@ export function TwoColumnAuthLayout({
   subtitle,
 }: TwoColumnAuthLayoutProps) {
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-slate-50 dark:bg-background">
+    <div className="flex min-h-screen w-full bg-background">
       {/* ============================================================
-          LEFT — BRAND PANEL
+          LEFT — BRAND PANEL (Desktop Only)
       ============================================================ */}
-      <aside className="relative hidden w-[45%] overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white lg:flex">
-        {/* Background Pattern */}
-        <div className="pointer-events-none absolute inset-0 opacity-[0.035]">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z' fill='%23ffffff'/%3E%3C/svg%3E")`,
-            }}
-          />
+      <aside className="relative hidden lg:flex lg:w-1/2 xl:w-[45%] overflow-hidden bg-gradient-to-br from-emerald-950 via-slate-900 to-emerald-900">
+        {/* Subtle Grid Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.15) 1px, transparent 0)`,
+            backgroundSize: '40px 40px'
+          }} />
         </div>
 
-        {/* Left Panel Content */}
-        <div className="relative z-10 flex w-full flex-col">
-          {/* Centered Content */}
-          <div className="flex flex-1 items-center justify-center px-12 py-16">
-            <div className="w-full max-w-lg">
-              {/* Logo + Brand */}
-              <Link
-                href="/"
-                className="group mb-10 inline-flex items-center gap-4"
-              >
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center">
-                  <img
-                    src="/logo.jpg"
-                    alt="SnakeSOS Logo"
-                    className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
-                  />
-                </div>
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-blue-500/10" />
 
-                <div>
-                  <h1 className="font-display text-2xl font-bold uppercase tracking-[0.18em]">
-                    Snake<span className="text-green-400">SOS</span>
-                  </h1>
-
-                  <p className="mt-1 text-xs tracking-wide text-slate-400">
-                    Wildlife Rescue Management
-                  </p>
-                </div>
+        {/* Content Container - Centered Vertically */}
+        <div className="relative z-10 flex items-center justify-center w-full p-12 lg:p-16">
+          <div className="max-w-lg space-y-5 text-center">
+            {/* Logo - Centered above heading */}
+            <div className="flex justify-center mb-1">
+              <Link href="/" className="group">
+                <img
+                  src="/snakesoslogo_bg.png"
+                  alt="SnakeSOS Logo"
+                  className="h-32 w-32 sm:h-40 sm:w-40 lg:h-56 lg:w-56 object-contain transition-transform group-hover:scale-105"
+                />
               </Link>
+            </div>
 
-              {/* Main Content */}
-              <div className="max-w-md space-y-5">
-                <div className="h-1 w-12 rounded-full bg-green-400" />
+            {/* Heading & Description */}
+            <div>
+              <h2 className="text-4xl font-bold text-white leading-tight mb-6">
+                Professional Wildlife<br />
+                <span className="text-emerald-400">Rescue Platform</span>
+              </h2>
+              <p className="text-lg text-slate-300 leading-relaxed">
+                Empowering communities with 24/7 emergency response, real-time incident management, and AI-powered snake identification.
+              </p>
+            </div>
 
-                <h2 className="text-4xl font-bold leading-[1.15] tracking-tight">
-                  Welcome Back to{' '}
-                  <span className="text-green-400">SnakeSOS</span>
-                </h2>
-
-                <p className="text-base leading-7 text-slate-300">
-                  Your all-in-one platform for wildlife rescue management,
-                  live incident tracking, and community engagement.
-                </p>
+            {/* Feature Grid */}
+            <div className="grid grid-cols-3 gap-4 mt-10">
+              <div className="rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 p-5 hover:bg-white/15 transition-colors">
+                <div className="text-3xl font-bold text-emerald-400 mb-2">24/7</div>
+                <div className="text-sm text-slate-300">Emergency Response</div>
               </div>
-
-              {/* Feature Highlights */}
-              <div className="mt-10 grid grid-cols-3 gap-4">
-                <div className="rounded-xl border border-border bg-card/50 p-4">
-                  <p className="text-xl font-bold text-primary">24/7</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Rescue Support
-                  </p>
-                </div>
-
-                <div className="rounded-xl border border-border bg-card/50 p-4">
-                  <p className="text-xl font-bold text-primary">Live</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Incident Tracking
-                  </p>
-                </div>
-
-                <div className="rounded-xl border border-border bg-card/50 p-4">
-                  <p className="text-xl font-bold text-primary">Safe</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Wildlife Care
-                  </p>
-                </div>
+              <div className="rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 p-5 hover:bg-white/15 transition-colors">
+                <div className="text-3xl font-bold text-emerald-400 mb-2">AI</div>
+                <div className="text-sm text-slate-300">Snake ID System</div>
+              </div>
+              <div className="rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 p-5 hover:bg-white/15 transition-colors">
+                <div className="text-3xl font-bold text-emerald-400 mb-2">Live</div>
+                <div className="text-sm text-slate-300">Dispatch Tracking</div>
               </div>
             </div>
-          </div>
 
-          {/* Copyright */}
-          <div className="px-12 pb-8">
-            <p className="text-center text-xs text-muted-foreground">
-              © 2024 SnakeSOS. All rights reserved.
+            {/* Footer */}
+            <p className="text-sm text-slate-400 mt-12">
+              © 2026 SnakeSOS. Protecting lives, conserving wildlife.
             </p>
           </div>
         </div>
@@ -111,47 +82,40 @@ export function TwoColumnAuthLayout({
       {/* ============================================================
           RIGHT — FORM PANEL
       ============================================================ */}
-      <main className="flex w-full items-center justify-center overflow-y-auto lg:w-[55%]">
-        <div className="w-full max-w-md px-6 py-10 sm:px-8 lg:max-w-lg lg:px-12">
+      <main className="flex-1 flex items-center justify-center p-6 lg:p-12">
+        <div className="w-full max-w-md space-y-8">
           {/* Mobile Logo */}
-          <div className="mb-8 text-center lg:hidden">
-            <Link
-              href="/"
-              className="mb-4 inline-flex items-center justify-center"
-            >
+          <div className="flex flex-col items-center space-y-4 lg:hidden">
+            <Link href="/" className="group">
               <img
-                src="/logo.jpg"
+                src="/snakesoslogo_bg.png"
                 alt="SnakeSOS Logo"
-                className="h-24 w-24 object-contain"
+                className="h-32 w-32 object-contain transition-transform group-hover:scale-105"
               />
             </Link>
-
-            <h1 className="font-display text-2xl font-bold uppercase tracking-[0.15em]">
-              Snake<span className="text-primary">SOS</span>
-            </h1>
-
-            <p className="mt-1 text-sm text-muted-foreground">
-              Wildlife Rescue Management
-            </p>
           </div>
 
-          {/* Form Card */}
-          <div className="rounded-2xl border border-border bg-card p-6 shadow-xl sm:p-8">
-            {/* Form Heading */}
-            <div className="mb-7 text-center">
-              <h2 className="text-2xl font-bold tracking-tight text-card-foreground">
-                {title}
-              </h2>
+          {/* Form Header */}
+          <div className="text-center space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              {title}
+            </h1>
+            {subtitle && (
+              <p className="text-muted-foreground">
+                {subtitle}
+              </p>
+            )}
+          </div>
 
-              {subtitle && (
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  {subtitle}
-                </p>
-              )}
-            </div>
-
+          {/* Form Container */}
+          <div className="rounded-2xl border border-border bg-card shadow-xl p-8">
             {children}
           </div>
+
+          {/* Additional Info */}
+          <p className="text-center text-sm text-muted-foreground">
+            Protected by industry-standard encryption
+          </p>
         </div>
       </main>
     </div>
