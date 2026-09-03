@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs';
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:4000/api/auth',
+  secret: process.env.BETTER_AUTH_SECRET || process.env.JWT_SECRET || 'dev-secret-change-in-production',
 
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
