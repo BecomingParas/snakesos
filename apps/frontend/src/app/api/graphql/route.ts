@@ -103,26 +103,35 @@ async function getHandler() {
         let session = null;
         
         try {
-          // Create a Request object from the Next.js request for Better Auth
-          const url = new URL(req.url || 'http://localhost/api/graphql');
-          const request = new Request(url, {
-            method: req.method,
-            headers: req.headers instanceof Headers 
-              ? req.headers 
-              : new Headers(Object.entries(req.headers as any)),
-          });
+          // Extract cookies from the request headers
+          const cookieHeader = req.headers.get('cookie');
+          
+          console.log('[GraphQL API] Cookie header:', cookieHeader ? 'present' : 'missing');
+          console.log('[GraphQL API] Authorization header:', req.headers.get('authorization') ? 'present' : 'missing');
+          
+          // Create headers object for Better Auth
+          const headers = new Headers();
+          if (cookieHeader) {
+            headers.set('cookie', cookieHeader);
+          }
+          const authHeader = req.headers.get('authorization');
+          if (authHeader) {
+            headers.set('authorization', authHeader);
+          }
           
           // Get session from Better Auth
-          const betterAuthSession = await auth.api.getSession({ headers: request.headers });
+          const betterAuthSession = await auth.api.getSession({ headers });
           
           if (betterAuthSession?.user && betterAuthSession?.session) {
             user = betterAuthSession.user;
             session = betterAuthSession.session;
-            console.log('[GraphQL API] Authenticated user:', user.email);
+            console.log('[GraphQL API] ✓ Authenticated user:', user.email, '(role:', user.role, ')');
+          } else {
+            console.log('[GraphQL API] ✗ No valid session found');
           }
         } catch (error) {
           // Session validation failed - this is OK, user is just not authenticated
-          console.log('[GraphQL API] No valid session found');
+          console.log('[GraphQL API] Session validation error:', error instanceof Error ? error.message : 'Unknown error');
         }
         
         // Create a mock Express-like request object
