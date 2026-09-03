@@ -76,11 +76,11 @@ export class ListPublicRescuesQuery {
 
     const [rescues, total] = await Promise.all([
       this.rescueRepository.findPublicMany({
-        where,
+        where: where as any,
         skip,
         take: limit,
       }),
-      this.rescueRepository.count(where),
+      this.rescueRepository.count(where as any),
     ]);
 
     return {
