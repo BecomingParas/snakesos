@@ -138,8 +138,12 @@ export async function OPTIONS(request: NextRequest) {
 
 // Export POST handler (GraphQL only uses POST)
 export async function POST(request: NextRequest) {
+  console.log('[GraphQL API] POST request received');
+  
   try {
+    console.log('[GraphQL API] Getting handler...');
     const requestHandler = await getHandler();
+    console.log('[GraphQL API] Handler obtained');
     
     if (!requestHandler) {
       console.error('[GraphQL API] Handler not initialized!');
@@ -158,7 +162,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log('[GraphQL API] Calling handler...');
     const response = await requestHandler(request);
+    console.log('[GraphQL API] Handler completed successfully');
     
     // Add CORS headers to the response
     Object.entries(corsHeaders).forEach(([key, value]) => {
@@ -168,7 +174,9 @@ export async function POST(request: NextRequest) {
     return response;
   } catch (error) {
     console.error('[GraphQL API] Request error:', error);
+    console.error('[GraphQL API] Error message:', error instanceof Error ? error.message : 'Unknown error');
     console.error('[GraphQL API] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    
     return NextResponse.json(
       {
         errors: [
@@ -176,7 +184,7 @@ export async function POST(request: NextRequest) {
             message: error instanceof Error ? error.message : 'Internal server error',
             extensions: {
               code: 'INTERNAL_SERVER_ERROR',
-              details: process.env.NODE_ENV === 'development' ? String(error) : undefined,
+              details: error instanceof Error ? error.message : String(error),
             },
           },
         ],

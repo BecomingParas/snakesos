@@ -1,6 +1,42 @@
-import { readGraphQLFile } from '../../read-graphql';
+// Inline GraphQL schema to avoid runtime file reading issues in serverless environments
+export const directivesTypeDefs = `# ===================================================================
+# SHARED DIRECTIVES
+# ===================================================================
+# Custom directives for authorization, validation, and more
+# ===================================================================
 
-export const directivesTypeDefs = readGraphQLFile(
-  import.meta.url,
-  'directives.graphql'
-);
+"""
+Requires authentication and optionally specific roles
+"""
+directive @auth(
+  """
+  Required user roles to access this field/type
+  """
+  requires: [UserRole!]
+) on FIELD_DEFINITION | OBJECT
+
+"""
+Marks a field as deprecated with migration instructions
+"""
+directive @deprecated(
+  """
+  Reason for deprecation and migration path
+  """
+  reason: String = "No longer supported"
+) on FIELD_DEFINITION | ENUM_VALUE
+
+"""
+Rate limit directive for mutations
+"""
+directive @rateLimit(
+  """
+  Maximum requests per window
+  """
+  limit: Int!
+  
+  """
+  Time window in seconds
+  """
+  window: Int!
+) on FIELD_DEFINITION
+`;

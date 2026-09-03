@@ -66,6 +66,17 @@ const nextConfig = {
       '.cjs',
     ],
   },
+  
+  // Configure webpack to include .graphql files
+  webpack: (config, { isServer }) => {
+    // Add rule for .graphql files
+    config.module.rules.push({
+      test: /\.graphql$/,
+      type: 'asset/source',
+    });
+    
+    return config;
+  },
 };
 
 export default nextConfig;
