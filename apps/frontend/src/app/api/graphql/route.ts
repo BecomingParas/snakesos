@@ -104,23 +104,24 @@ async function getHandler() {
         
         try {
           // Extract cookies from the request headers
-          const cookieHeader = req.headers.get('cookie');
+          const headers = req.headers instanceof Headers ? req.headers : new Headers(Object.entries(req.headers as any));
+          const cookieHeader = headers.get('cookie');
+          const authHeader = headers.get('authorization');
           
           console.log('[GraphQL API] Cookie header:', cookieHeader ? 'present' : 'missing');
-          console.log('[GraphQL API] Authorization header:', req.headers.get('authorization') ? 'present' : 'missing');
+          console.log('[GraphQL API] Authorization header:', authHeader ? 'present' : 'missing');
           
           // Create headers object for Better Auth
-          const headers = new Headers();
+          const betterAuthHeaders = new Headers();
           if (cookieHeader) {
-            headers.set('cookie', cookieHeader);
+            betterAuthHeaders.set('cookie', cookieHeader);
           }
-          const authHeader = req.headers.get('authorization');
           if (authHeader) {
-            headers.set('authorization', authHeader);
+            betterAuthHeaders.set('authorization', authHeader);
           }
           
           // Get session from Better Auth
-          const betterAuthSession = await auth.api.getSession({ headers });
+          const betterAuthSession = await auth.api.getSession({ headers: betterAuthHeaders });
           
           if (betterAuthSession?.user && betterAuthSession?.session) {
             user = betterAuthSession.user;
