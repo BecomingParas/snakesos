@@ -9,7 +9,7 @@
     "autoJobCancelation": true
   },
   "functions": {
-    "apps/frontend/src/app/api/**/*.ts": {
+    "api/**": {
       "memory": 1024,
       "maxDuration": 60
     }
