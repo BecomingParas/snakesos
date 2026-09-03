@@ -94,6 +94,37 @@ async function getHandler() {
         // Adapt Next.js request to Express-like request/response
         // This allows us to reuse the existing buildContext function
         
+        // Import Better Auth
+        const { auth } = await import('@snake-rescue/auth');
+        
+        // Get session from Better Auth using the request
+        // Better Auth will check cookies and bearer tokens
+        let user = null;
+        let session = null;
+        
+        try {
+          // Create a Request object from the Next.js request for Better Auth
+          const url = new URL(req.url || 'http://localhost/api/graphql');
+          const request = new Request(url, {
+            method: req.method,
+            headers: req.headers instanceof Headers 
+              ? req.headers 
+              : new Headers(Object.entries(req.headers as any)),
+          });
+          
+          // Get session from Better Auth
+          const betterAuthSession = await auth.api.getSession({ headers: request.headers });
+          
+          if (betterAuthSession?.user && betterAuthSession?.session) {
+            user = betterAuthSession.user;
+            session = betterAuthSession.session;
+            console.log('[GraphQL API] Authenticated user:', user.email);
+          }
+        } catch (error) {
+          // Session validation failed - this is OK, user is just not authenticated
+          console.log('[GraphQL API] No valid session found');
+        }
+        
         // Create a mock Express-like request object
         const mockReq = {
           headers: req.headers instanceof Headers 
@@ -101,9 +132,8 @@ async function getHandler() {
             : req.headers,
           method: req.method,
           url: req.url,
-          // Better Auth will populate these from cookies
-          user: null,
-          session: null,
+          user,
+          session,
         } as any;
 
         // Create a mock Express-like response object
