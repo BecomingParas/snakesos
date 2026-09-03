@@ -64,16 +64,17 @@ export function useSignup() {
       // Better Auth automatically creates user and may auto-login
       if (result.data?.user) {
         // Return formatted result matching the expected type
+        // Note: Better Auth user doesn't include role by default
         return {
           user: {
             id: result.data.user.id,
             email: result.data.user.email,
             name: result.data.user.name,
-            role: result.data.user.role || 'CITIZEN',
-            phone: result.data.user.phone,
+            role: 'CITIZEN', // Default role for new users
+            phone: (result.data.user as any).phone || undefined,
             emailVerified: result.data.user.emailVerified || false,
-            createdAt: result.data.user.createdAt,
-            updatedAt: result.data.user.updatedAt,
+            createdAt: result.data.user.createdAt.toISOString(),
+            updatedAt: result.data.user.updatedAt.toISOString(),
           },
         };
       }

@@ -46,8 +46,9 @@ export function useLogin() {
       // Better Auth automatically sets session cookies
       // The result contains user data
       if (result.data?.user) {
-        // Type assertion: Better Auth user + custom fields from Prisma schema
-        const user = result.data.user as typeof result.data.user & { role?: string; phone?: string };
+        // Type assertion: Better Auth user doesn't include role/phone by default
+        // but our Prisma schema has these fields
+        const user = result.data.user as any;
         
         // Update auth store
         setUser({
@@ -55,27 +56,26 @@ export function useLogin() {
           email: user.email || '',
           name: user.name,
           role: user.role || 'CITIZEN',
-          phone: user.phone,
+          phone: user.phone || undefined,
           emailVerified: user.emailVerified || false,
-          createdAt: user.createdAt.toString(),
-          updatedAt: user.updatedAt.toString(),
+          createdAt: user.createdAt?.toISOString?.() || new Date().toISOString(),
+          updatedAt: user.updatedAt?.toISOString?.() || new Date().toISOString(),
         });
 
         // Return formatted result matching the expected type
-        // Better Auth returns a token directly in result.data
         return {
-          accessToken: result.data.token || '',
-          refreshToken: result.data.token || '',
-          expiresIn: 604800, // 7 days default
+          accessToken: (result.data as any).session?.token || '',
+          refreshToken: (result.data as any).session?.token || '',
+          expiresIn: (result.data as any).session?.expiresIn || 604800, // 7 days default
           user: {
             id: user.id,
             email: user.email || '',
             name: user.name,
             role: user.role || 'CITIZEN',
-            phone: user.phone,
+            phone: user.phone || undefined,
             emailVerified: user.emailVerified || false,
-            createdAt: user.createdAt.toString(),
-            updatedAt: user.updatedAt.toString(),
+            createdAt: user.createdAt?.toISOString?.() || new Date().toISOString(),
+            updatedAt: user.updatedAt?.toISOString?.() || new Date().toISOString(),
           },
         };
       }
