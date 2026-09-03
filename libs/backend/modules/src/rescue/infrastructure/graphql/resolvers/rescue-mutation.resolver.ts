@@ -44,6 +44,7 @@ function enforcePublicSubmissionLimit(
         'Too many emergency submissions. Please call the hotline.',
       );
     }
+    
     publicSubmissionAttempts.set(key, {
       count: (attempt?.count || 0) + 1,
       resetAt: attempt?.resetAt || now + PUBLIC_SUBMISSION_WINDOW_MS,
