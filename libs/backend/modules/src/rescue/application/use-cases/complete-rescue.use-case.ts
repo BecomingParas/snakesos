@@ -122,7 +122,7 @@ export class CompleteRescueUseCase {
         );
         if (this.financialService) {
           await this.financialService.createForCompletedRescueInTransaction(
-            transaction,
+            transaction as any,
             {
               rescueId: rescue.id,
               rescuerId: input.volunteerId,
