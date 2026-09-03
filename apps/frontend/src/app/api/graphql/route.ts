@@ -33,6 +33,11 @@ import {
   snakeIdentificationResolvers,
 } from '@snake-rescue/modules';
 
+// Log database connection status
+console.log('[GraphQL API] Initializing with DATABASE_URL:', process.env.DATABASE_URL ? 'SET ✓' : 'NOT SET ✗');
+console.log('[GraphQL API] DIRECT_URL:', process.env.DIRECT_URL ? 'SET ✓' : 'NOT SET ✗');
+console.log('[GraphQL API] Node environment:', process.env.NODE_ENV);
+
 // Combine all resolvers (same as backend/src/server.ts)
 const resolvers = [
   authResolvers,
@@ -54,40 +59,51 @@ const resolvers = [
 ];
 
 // Create Apollo Server instance
-const server = createApolloServer(resolvers);
+let server: any;
+let handler: any;
 
-// Start server (required for Apollo Server 4+)
-await server.start();
+try {
+  console.log('[GraphQL API] Creating Apollo Server...');
+  server = createApolloServer(resolvers);
+  
+  console.log('[GraphQL API] Starting Apollo Server...');
+  await server.start();
+  console.log('[GraphQL API] Apollo Server started successfully ✓');
+  
+  // Create Next.js request handler
+  handler = startServerAndCreateNextHandler(server, {
+    context: async (req) => {
+      // Adapt Next.js request to Express-like request/response
+      // This allows us to reuse the existing buildContext function
+      
+      // Create a mock Express-like request object
+      const mockReq = {
+        headers: req.headers instanceof Headers 
+          ? Object.fromEntries(req.headers.entries())
+          : req.headers,
+        method: req.method,
+        url: req.url,
+        // Better Auth will populate these from cookies
+        user: null,
+        session: null,
+      } as any;
 
-// Create Next.js request handler
-const handler = startServerAndCreateNextHandler(server, {
-  context: async (req) => {
-    // Adapt Next.js request to Express-like request/response
-    // This allows us to reuse the existing buildContext function
-    
-    // Create a mock Express-like request object
-    const mockReq = {
-      headers: req.headers instanceof Headers 
-        ? Object.fromEntries(req.headers.entries())
-        : req.headers,
-      method: req.method,
-      url: req.url,
-      // Better Auth will populate these from cookies
-      user: null,
-      session: null,
-    } as any;
+      // Create a mock Express-like response object
+      const mockRes = {
+        setHeader: () => {},
+        status: () => mockRes,
+        json: () => mockRes,
+      } as any;
 
-    // Create a mock Express-like response object
-    const mockRes = {
-      setHeader: () => {},
-      status: () => mockRes,
-      json: () => mockRes,
-    } as any;
-
-    // Build context using existing context builder
-    return await buildContext({ req: mockReq, res: mockRes });
-  },
-});
+      // Build context using existing context builder
+      return await buildContext({ req: mockReq, res: mockRes });
+    },
+  });
+  console.log('[GraphQL API] Request handler created successfully ✓');
+} catch (error) {
+  console.error('[GraphQL API] FATAL ERROR during initialization:', error);
+  throw error;
+}
 
 // CORS headers configuration
 const corsHeaders = {
@@ -105,6 +121,23 @@ export async function OPTIONS(request: NextRequest) {
 // Export POST handler (GraphQL only uses POST)
 export async function POST(request: NextRequest) {
   try {
+    if (!handler) {
+      console.error('[GraphQL API] Handler not initialized!');
+      return NextResponse.json(
+        {
+          errors: [
+            {
+              message: 'GraphQL server is not initialized',
+              extensions: {
+                code: 'SERVER_NOT_INITIALIZED',
+              },
+            },
+          ],
+        },
+        { status: 500, headers: corsHeaders }
+      );
+    }
+
     const response = await handler(request);
     
     // Add CORS headers to the response
@@ -114,14 +147,16 @@ export async function POST(request: NextRequest) {
     
     return response;
   } catch (error) {
-    console.error('[GraphQL API Error]:', error);
+    console.error('[GraphQL API] Request error:', error);
+    console.error('[GraphQL API] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     return NextResponse.json(
       {
         errors: [
           {
-            message: 'Internal server error',
+            message: error instanceof Error ? error.message : 'Internal server error',
             extensions: {
               code: 'INTERNAL_SERVER_ERROR',
+              details: process.env.NODE_ENV === 'development' ? String(error) : undefined,
             },
           },
         ],
