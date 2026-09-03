@@ -67,7 +67,9 @@ const handler = startServerAndCreateNextHandler(server, {
     
     // Create a mock Express-like request object
     const mockReq = {
-      headers: Object.fromEntries(req.headers.entries()),
+      headers: req.headers instanceof Headers 
+        ? Object.fromEntries(req.headers.entries())
+        : req.headers,
       method: req.method,
       url: req.url,
       // Better Auth will populate these from cookies
