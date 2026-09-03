@@ -124,12 +124,7 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
   };
 
   return (
-    <nav
-      className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
-      style={{
-        paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 8px)',
-      }}
-    >
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
       {/* Glassmorphism background with iOS-style blur */}
       <div className="relative">
         {/* Backdrop blur layer */}
@@ -138,8 +133,8 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
         {/* Top border with gradient */}
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent" />
         
-        {/* Content */}
-        <div className="relative flex items-center justify-around px-safe pt-1 pb-safe">
+        {/* Content - Fixed height, no padding bottom */}
+        <div className="relative flex items-center justify-around h-16">
           {items.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);
@@ -149,14 +144,14 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
                 key={item.href}
                 onClick={() => router.push(item.href)}
                 className={cn(
-                  'flex flex-col items-center justify-center py-2 px-3 rounded-xl transition-all duration-200 min-w-[60px]',
+                  'flex flex-col items-center justify-center h-full flex-1 transition-all duration-200',
                   'active:scale-95',
                   item.isEmergency && 'relative',
                 )}
               >
                 {/* Emergency glow effect */}
                 {item.isEmergency && (
-                  <div className="absolute inset-0 bg-destructive/20 dark:bg-destructive/30 rounded-xl blur-sm" />
+                  <div className="absolute inset-0 bg-destructive/20 dark:bg-destructive/30 blur-sm" />
                 )}
                 
                 {/* Icon container with active state */}
@@ -184,7 +179,7 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
                 {/* Label */}
                 <span
                   className={cn(
-                    'text-[11px] font-medium mt-1 transition-colors duration-200',
+                    'text-[10px] font-medium mt-0.5 transition-colors duration-200',
                     item.isEmergency &&
                       'text-destructive dark:text-red-500 font-semibold',
                     active && !item.isEmergency && 'text-primary dark:text-primary',
@@ -196,7 +191,7 @@ export function MobileBottomNav({ role }: MobileBottomNavProps) {
 
                 {/* Active indicator */}
                 {active && !item.isEmergency && (
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full" />
+                  <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full" />
                 )}
               </button>
             );
