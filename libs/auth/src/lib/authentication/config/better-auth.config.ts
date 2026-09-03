@@ -14,7 +14,7 @@ export const auth = betterAuth({
   
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: process.env.NODE_ENV === 'production',
+    requireEmailVerification: false, // Disabled for now - users are pre-verified in seed
     // Use bcrypt instead of scrypt (default) for compatibility with seeded users
     password: {
       hash: async (password: string) => {

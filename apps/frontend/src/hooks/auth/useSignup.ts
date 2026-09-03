@@ -4,7 +4,6 @@
 
 import { useState } from 'react';
 import { signUp } from '@/lib/auth/better-auth-client';
-import { useAuthStore } from '@/lib/auth/auth-store';
 
 export interface SignupInput {
   name: string;
@@ -31,7 +30,6 @@ export interface SignupResult {
 export function useSignup() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const setUser = useAuthStore((state) => state.setUser);
 
   const signup = async (input: SignupInput): Promise<SignupResult> => {
     setLoading(true);
