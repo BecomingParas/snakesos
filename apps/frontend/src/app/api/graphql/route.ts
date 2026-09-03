@@ -89,10 +89,30 @@ const handler = startServerAndCreateNextHandler(server, {
   },
 });
 
+// CORS headers configuration
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*', // In production, replace with your domain
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, apollo-require-preflight',
+  'Access-Control-Allow-Credentials': 'true',
+};
+
+// Handle CORS preflight requests
+export async function OPTIONS(request: NextRequest) {
+  return NextResponse.json({}, { status: 200, headers: corsHeaders });
+}
+
 // Export POST handler (GraphQL only uses POST)
 export async function POST(request: NextRequest) {
   try {
-    return await handler(request);
+    const response = await handler(request);
+    
+    // Add CORS headers to the response
+    Object.entries(corsHeaders).forEach(([key, value]) => {
+      response.headers.set(key, value);
+    });
+    
+    return response;
   } catch (error) {
     console.error('[GraphQL API Error]:', error);
     return NextResponse.json(
@@ -106,7 +126,7 @@ export async function POST(request: NextRequest) {
           },
         ],
       },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }
@@ -119,7 +139,7 @@ export async function GET(request: NextRequest) {
         message: 'GraphQL Playground is disabled in production',
         endpoint: '/api/graphql',
       },
-      { status: 403 }
+      { status: 403, headers: corsHeaders }
     );
   }
 
@@ -129,7 +149,7 @@ export async function GET(request: NextRequest) {
     message: 'GraphQL API is running',
     endpoint: '/api/graphql',
     playground: 'Use Apollo Sandbox: https://studio.apollographql.com/sandbox',
-  });
+  }, { headers: corsHeaders });
 }
 
 // Export runtime configuration for Vercel

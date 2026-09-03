@@ -31,7 +31,7 @@ const nextConfig = {
   devIndicators: {
     buildActivity: false,
   },
-  trailingSlash: true,
+  trailingSlash: false, // Prevent trailing slash redirects for API routes
   
   // Skip specific routes during static generation
   async headers() {
