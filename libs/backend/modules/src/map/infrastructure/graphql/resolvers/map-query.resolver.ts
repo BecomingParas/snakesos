@@ -4,7 +4,7 @@
  */
 
 import type { GraphQLContext } from '@snake-rescue/core';
-import { mapService, type MapBounds, type MapFilters } from '../../../application/map.service.js';
+import { mapService, type MapBounds, type MapFilters } from '../../../application/map.service';
 
 const MAP_MANAGEMENT_ROLES = [
   'ADMIN',

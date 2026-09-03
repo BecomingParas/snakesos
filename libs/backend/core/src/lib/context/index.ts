@@ -1,2 +1,2 @@
-export * from './context.interface.js';
-export * from './context.builder.js';
+export * from './context.interface';
+export * from './context.builder';

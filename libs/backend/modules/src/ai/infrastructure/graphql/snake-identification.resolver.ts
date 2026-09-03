@@ -4,10 +4,10 @@ import {
   classifyConfidence,
   classifySafety,
   resolveSpeciesMatch,
-} from '../../application/snake-identification.service.js';
-import { GoogleCloudVisionSnakeIdentificationProvider } from '../google-cloud-vision.provider.js';
-import { PythonSnakeClassifierProvider } from '../python-ml.provider.js';
-import { VisionAiSnakeIdentificationProvider } from '../vision-ai.provider.js';
+} from '../../application/snake-identification.service';
+import { GoogleCloudVisionSnakeIdentificationProvider } from '../google-cloud-vision.provider';
+import { PythonSnakeClassifierProvider } from '../python-ml.provider';
+import { VisionAiSnakeIdentificationProvider } from '../vision-ai.provider';
 
 // Prefer a dedicated Python model service when configured, then vendor AI, then stub fallback.
 const getProvider = () => {

@@ -1,4 +1,4 @@
-import { auth } from '../authentication/config/better-auth.config.js';
+import { auth } from '../authentication/config/better-auth.config';
 
 export interface AuthContext {
   session: any;

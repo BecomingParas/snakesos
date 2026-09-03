@@ -15,7 +15,7 @@ import type {
   SnakeIdentificationInput,
   SnakeIdentificationProvider,
   SnakeIdentificationProviderResult,
-} from './provider.types.js';
+} from './provider.types';
 
 // Nepali snake species mapping for Google Cloud custom labels
 const NEPALI_SNAKE_SPECIES = {

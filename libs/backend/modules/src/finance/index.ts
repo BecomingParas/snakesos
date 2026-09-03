@@ -1,3 +1,3 @@
-export * from './application/rescue-financial.service.js';
-export * from './application/payout.service.js';
-export * from './domain/financial-calculator.js';
+export * from './application/rescue-financial.service';
+export * from './application/payout.service';
+export * from './domain/financial-calculator';

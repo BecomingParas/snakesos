@@ -1,2 +1,2 @@
-export * from './pagination.dto.js';
-export * from './pagination.helper.js';
+export * from './pagination.dto';
+export * from './pagination.helper';

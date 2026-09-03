@@ -1,4 +1,4 @@
-import { prisma } from '../../src/client.js';
+import { prisma } from '../../src/client';
 
 // Based on Sharma et al. 2021 - Nature Scientific Reports
 // https://www.nature.com/articles/s41598-021-03301-z

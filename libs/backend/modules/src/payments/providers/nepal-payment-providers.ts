@@ -4,7 +4,7 @@ import {
   type PaymentProvider,
   type PaymentProviderRequest,
   type PaymentProviderResponse,
-} from '../payments.types.js';
+} from '../payments.types';
 
 const ESEWA_DEFAULT_URL = 'https://rc-epay.esewa.com.np/api/epay/main/v2/form';
 const KHALTI_DEFAULT_URL = 'https://a.khalti.com/api/v2/epayment/initiate/';

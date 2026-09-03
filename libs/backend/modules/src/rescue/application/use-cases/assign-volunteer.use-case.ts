@@ -9,8 +9,8 @@ import {
   createLogger,
   NotFoundError,
 } from '@snake-rescue/shared';
-import { RescueStatus } from '../../domain/rescue-status-machine.js';
-import type { AssignVolunteerInput } from '../dto/index.js';
+import { RescueStatus } from '../../domain/rescue-status-machine';
+import type { AssignVolunteerInput } from '../dto/index';
 
 const logger = createLogger('AssignVolunteerUseCase');
 

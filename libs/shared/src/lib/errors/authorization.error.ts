@@ -3,7 +3,7 @@
  * Thrown when user lacks permissions
  */
 
-import { AppError } from './app.error.js';
+import { AppError } from './app.error';
 
 export class AuthorizationError extends AppError {
   constructor(

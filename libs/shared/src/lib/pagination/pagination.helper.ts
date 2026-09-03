@@ -2,7 +2,7 @@
  * Pagination Helper Functions
  */
 
-import type { PaginationInput, PaginatedResponse } from './pagination.dto.js';
+import type { PaginationInput, PaginatedResponse } from './pagination.dto';
 
 export class PaginationHelper {
   static readonly DEFAULT_PAGE = 1;

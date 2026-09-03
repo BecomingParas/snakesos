@@ -6,7 +6,7 @@ import {
   createProfileMediaUrl,
   createSecureMediaUrl,
   type MediaType,
-} from './media.service.js';
+} from './media.service';
 
 function requireMediaOwner(context: GraphQLContext) {
   context.requireAuth();

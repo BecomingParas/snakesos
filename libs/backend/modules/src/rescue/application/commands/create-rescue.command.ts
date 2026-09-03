@@ -4,7 +4,7 @@
  */
 
 import { RescueRepository } from '@snake-rescue/database';
-import type { CreateRescueInput } from '../dto/index.js';
+import type { CreateRescueInput } from '../dto/index';
 import { Prisma } from '@snake-rescue/database';
 
 function createReferenceNumber() {

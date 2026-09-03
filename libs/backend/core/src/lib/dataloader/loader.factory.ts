@@ -4,8 +4,8 @@
  */
 
 import type { PrismaClient } from '@snake-rescue/database';
-import { createUserLoader } from './loaders/user.loader.js';
-import { createRescueLoader } from './loaders/rescue.loader.js';
+import { createUserLoader } from './loaders/user.loader';
+import { createRescueLoader } from './loaders/rescue.loader';
 
 export interface DataLoaders {
   userLoader: ReturnType<typeof createUserLoader>;

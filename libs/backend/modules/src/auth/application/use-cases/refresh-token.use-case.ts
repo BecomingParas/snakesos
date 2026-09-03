@@ -6,7 +6,7 @@
 import { auth } from '@snake-rescue/auth';
 import { UserRepository } from '@snake-rescue/database';
 import { AuthenticationError } from '@snake-rescue/shared';
-import type { RefreshTokenResponse } from '../dto/index.js';
+import type { RefreshTokenResponse } from '../dto/index';
 
 export class RefreshTokenUseCase {
   constructor(

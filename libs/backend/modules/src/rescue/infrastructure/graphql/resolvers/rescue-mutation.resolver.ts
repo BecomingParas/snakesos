@@ -5,16 +5,16 @@
 
 import { GraphQLContext } from '@snake-rescue/core';
 import { prisma, RescueRepository } from '@snake-rescue/database';
-import { CreateRescueUseCase } from '../../../application/use-cases/create-rescue.use-case.js';
-import { AssignVolunteerUseCase } from '../../../application/use-cases/assign-volunteer.use-case.js';
-import { AcceptRescueUseCase } from '../../../application/use-cases/accept-rescue.use-case.js';
-import { AcceptFromQueueUseCase } from '../../../application/use-cases/accept-from-queue.use-case.js';
-import { UpdateRescueStatusUseCase } from '../../../application/use-cases/update-status.use-case.js';
-import { CompleteRescueUseCase } from '../../../application/use-cases/complete-rescue.use-case.js';
-import { CancelRescueUseCase } from '../../../application/use-cases/cancel-rescue.use-case.js';
-import { RescueValidator } from '../../validators/rescue.validator.js';
-import { createRescueNotifications } from '../../../../notifications.resolver.js';
-import { RescueFinancialService } from '../../../../finance/application/rescue-financial.service.js';
+import { CreateRescueUseCase } from '../../../application/use-cases/create-rescue.use-case';
+import { AssignVolunteerUseCase } from '../../../application/use-cases/assign-volunteer.use-case';
+import { AcceptRescueUseCase } from '../../../application/use-cases/accept-rescue.use-case';
+import { AcceptFromQueueUseCase } from '../../../application/use-cases/accept-from-queue.use-case';
+import { UpdateRescueStatusUseCase } from '../../../application/use-cases/update-status.use-case';
+import { CompleteRescueUseCase } from '../../../application/use-cases/complete-rescue.use-case';
+import { CancelRescueUseCase } from '../../../application/use-cases/cancel-rescue.use-case';
+import { RescueValidator } from '../../validators/rescue.validator';
+import { createRescueNotifications } from '../../../../notifications.resolver';
+import { RescueFinancialService } from '../../../../finance/application/rescue-financial.service';
 import { BadRequestError } from '@snake-rescue/shared';
 
 const PUBLIC_SUBMISSION_WINDOW_MS = 15 * 60 * 1000;

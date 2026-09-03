@@ -3,7 +3,7 @@
  * Thrown when authentication fails or is missing
  */
 
-import { AppError } from './app.error.js';
+import { AppError } from './app.error';
 
 export class AuthenticationError extends AppError {
   constructor(

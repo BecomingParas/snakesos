@@ -1,6 +1,6 @@
 import { prisma, Prisma } from '@snake-rescue/database';
 import { BadRequestError } from '@snake-rescue/shared';
-import { calculateRescueFinancialSnapshot } from '../domain/financial-calculator.js';
+import { calculateRescueFinancialSnapshot } from '../domain/financial-calculator';
 
 export interface CreateRescueChargeInput {
   rescueId: string;

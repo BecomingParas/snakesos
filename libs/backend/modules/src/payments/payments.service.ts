@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import { createLogger } from '@snake-rescue/shared';
-import { StripeConnectionStatus, StripeConfig } from './payments.types.js';
+import { StripeConnectionStatus, StripeConfig } from './payments.types';
 
 /**
  * PaymentsService

@@ -3,14 +3,14 @@ import type { GraphQLContext } from '@snake-rescue/core';
 import {
   PayoutService,
   type PayoutPaymentMethod,
-} from '../../../../finance/application/payout.service.js';
-import { PaymentIntentService } from '../../../payment-intent.service.js';
-import { createConfiguredPaymentProviderService } from '../../../configured-payment-provider.service.js';
-import { PaymentsService } from '../../../payments.service.js';
+} from '../../../../finance/application/payout.service';
+import { PaymentIntentService } from '../../../payment-intent.service';
+import { createConfiguredPaymentProviderService } from '../../../configured-payment-provider.service';
+import { PaymentsService } from '../../../payments.service';
 import {
   type PaymentProviderName,
   type StripeConnectionStatus,
-} from '../../../payments.types.js';
+} from '../../../payments.types';
 
 interface PaymentIntentInput {
   rescueChargeId?: string;

@@ -5,5 +5,5 @@
  * SnakeSOS geospatial intelligence platform.
  */
 
-export * from './application/map.service.js';
-export * from './infrastructure/graphql/resolvers/map-query.resolver.js';
+export * from './application/map.service';
+export * from './infrastructure/graphql/resolvers/map-query.resolver';

@@ -1,2 +1,2 @@
-export * from './validator.js';
+export * from './validator';
 export { z } from 'zod';

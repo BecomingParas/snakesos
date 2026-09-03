@@ -6,8 +6,8 @@
 // ===================================================================
 
 // Prisma Client
-export * from './client.js';
+export * from './client';
 
 // Repositories
-export * from './repositories/index.js';
-export { prisma as db } from './client.js';
+export * from './repositories/index';
+export { prisma as db } from './client';

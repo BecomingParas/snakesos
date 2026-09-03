@@ -7,7 +7,7 @@ import type { GraphQLContext } from '@snake-rescue/core';
 import {
   HospitalService,
   type HospitalFilters,
-} from '../../../application/hospital.service.js';
+} from '../../../application/hospital.service';
 
 const hospitalService = new HospitalService();
 

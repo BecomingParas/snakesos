@@ -3,10 +3,10 @@
  */
 
 import type { ApolloServerOptions } from '@apollo/server';
-import type { GraphQLContext } from '../context/index.js';
-import { loggingPlugin } from '../plugins/logging.plugin.js';
-import { errorPlugin } from '../plugins/error.plugin.js';
-import { formatError } from './error-formatter.js';
+import type { GraphQLContext } from '../context/index';
+import { loggingPlugin } from '../plugins/logging.plugin';
+import { errorPlugin } from '../plugins/error.plugin';
+import { formatError } from './error-formatter';
 
 export function createApolloConfig(schema: any): ApolloServerOptions<GraphQLContext> {
   const isDevelopment = process.env.NODE_ENV !== 'production';

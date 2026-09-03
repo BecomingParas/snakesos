@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql';
-import { requireAuth, GraphQLContext } from './authenticated.guard.js';
-import { UserRole } from '../roles/index.js';
+import { requireAuth, GraphQLContext } from './authenticated.guard';
+import { UserRole } from '../roles/index';
 
 export function requireOwnerOrRole(
   context: GraphQLContext,

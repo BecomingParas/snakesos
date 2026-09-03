@@ -3,7 +3,7 @@
  * Thrown when an operation conflicts with existing state
  */
 
-import { AppError } from './app.error.js';
+import { AppError } from './app.error';
 
 export class ConflictError extends AppError {
   constructor(

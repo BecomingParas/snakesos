@@ -1,2 +1,2 @@
-export * from './media.service.js';
-export * from './media.resolver.js';
+export * from './media.service';
+export * from './media.resolver';

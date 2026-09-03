@@ -1,2 +1,2 @@
-export * from './logging.plugin.js';
-export * from './error.plugin.js';
+export * from './logging.plugin';
+export * from './error.plugin';

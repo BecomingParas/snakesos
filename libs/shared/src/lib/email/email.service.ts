@@ -5,7 +5,7 @@
 
 import nodemailer from 'nodemailer';
 import type { Transporter } from 'nodemailer';
-import { createLogger } from '../logger/logger.js';
+import { createLogger } from '../logger/logger';
 
 const logger = createLogger('EmailService');
 

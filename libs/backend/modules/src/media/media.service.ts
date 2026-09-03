@@ -4,5 +4,5 @@ export {
   createProfileMediaUrl,
   getCloudinaryResource as createCloudinaryResource,
   validateMediaInput,
-} from './cloudinary.provider.js';
-export type { MediaType } from './cloudinary.provider.js';
+} from './cloudinary.provider';
+export type { MediaType } from './cloudinary.provider';

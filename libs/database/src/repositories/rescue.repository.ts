@@ -8,8 +8,8 @@ import {
   RescueRequest,
   Prisma,
   RescueStatus,
-} from '../prisma/generated/client.js';
-import { BaseRepository } from './base.repository.js';
+} from '../prisma/generated/client';
+import { BaseRepository } from './base.repository';
 
 export class RescueRepository extends BaseRepository<
   RescueRequest,

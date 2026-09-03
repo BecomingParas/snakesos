@@ -1,10 +1,10 @@
-import { PaymentIntentService } from './payment-intent.service.js';
-import { PaymentProviderService } from './payment-provider.service.js';
+import { PaymentIntentService } from './payment-intent.service';
+import { PaymentProviderService } from './payment-provider.service';
 import {
   EsewaPaymentProvider,
   KhaltiPaymentProvider,
-} from './providers/nepal-payment-providers.js';
-import { StripePaymentProvider } from './providers/stripe-payment-provider.js';
+} from './providers/nepal-payment-providers';
+import { StripePaymentProvider } from './providers/stripe-payment-provider';
 
 export function createConfiguredPaymentProviderService(
   paymentIntents = new PaymentIntentService(),

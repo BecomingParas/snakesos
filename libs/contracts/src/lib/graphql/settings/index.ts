@@ -1,4 +1,4 @@
-import { readGraphQLFile } from '../read-graphql.js';
+import { readGraphQLFile } from '../read-graphql';
 
 const readGraphQL = (filename: string) =>
   readGraphQLFile(import.meta.url, filename);

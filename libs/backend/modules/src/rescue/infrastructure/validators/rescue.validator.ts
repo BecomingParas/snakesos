@@ -8,12 +8,12 @@ import {
   CreateRescueInputSchema,
   UpdateRescueStatusInputSchema,
   AssignVolunteerInputSchema,
-} from '../../application/dto/index.js';
+} from '../../application/dto/index';
 import type {
   CreateRescueInput,
   UpdateRescueStatusInput,
   AssignVolunteerInput,
-} from '../../application/dto/index.js';
+} from '../../application/dto/index';
 
 export class RescueValidator {
   static validateCreateRescue(input: unknown): CreateRescueInput {

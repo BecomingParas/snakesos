@@ -5,7 +5,7 @@
 
 import type { GraphQLContext } from '@snake-rescue/core';
 import type { Prisma } from '@snake-rescue/database';
-import { HospitalService } from '../../../application/hospital.service.js';
+import { HospitalService } from '../../../application/hospital.service';
 
 const hospitalService = new HospitalService();
 

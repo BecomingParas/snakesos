@@ -12,22 +12,22 @@
 //
 // ===================================================================
 
-import { sharedTypeDefs } from './shared/index.js';
-import { authTypeDefs } from './auth/index.js';
-import { rescueTypeDefs } from './rescue/index.js';
-import { volunteerTypeDefs } from './volunteer/index.js';
-import { snakeTypeDefs } from './snake/index.js';
-import { aiTypeDefs } from './ai/index.js';
-import { notificationTypeDefs } from './notification/index.js';
-import { cmsTypeDefs } from './cms/index.js';
-import { paymentTypeDefs } from './payment/index.js';
-import { analyticsTypeDefs } from './analytics/index.js';
-import { trainingTypeDefs } from './training/index.js';
-import { contactTypeDefs } from './contact/index.js';
-import { hospitalTypeDefs } from './hospital/index.js';
-import { mapTypeDefs } from './map/index.js';
-import { settingsTypeDefs } from './settings/index.js';
-import { mediaTypeDefs } from './media/index.js';
+import { sharedTypeDefs } from './shared/index';
+import { authTypeDefs } from './auth/index';
+import { rescueTypeDefs } from './rescue/index';
+import { volunteerTypeDefs } from './volunteer/index';
+import { snakeTypeDefs } from './snake/index';
+import { aiTypeDefs } from './ai/index';
+import { notificationTypeDefs } from './notification/index';
+import { cmsTypeDefs } from './cms/index';
+import { paymentTypeDefs } from './payment/index';
+import { analyticsTypeDefs } from './analytics/index';
+import { trainingTypeDefs } from './training/index';
+import { contactTypeDefs } from './contact/index';
+import { hospitalTypeDefs } from './hospital/index';
+import { mapTypeDefs } from './map/index';
+import { settingsTypeDefs } from './settings/index';
+import { mediaTypeDefs } from './media/index';
 
 // Base GraphQL schema with Query, Mutation, Subscription types
 const baseSchema = `
@@ -66,22 +66,22 @@ export const graphqlSchema = [
 ].join('\n\n');
 
 // Export individual modules for selective imports
-export * from './shared/index.js';
-export * from './auth/index.js';
-export * from './rescue/index.js';
-export * from './volunteer/index.js';
-export * from './snake/index.js';
-export * from './ai/index.js';
-export * from './notification/index.js';
-export * from './cms/index.js';
-export * from './payment/index.js';
-export * from './analytics/index.js';
-export * from './training/index.js';
-export * from './contact/index.js';
-export * from './hospital/index.js';
-export * from './map/index.js';
-export * from './settings/index.js';
-export * from './media/index.js';
+export * from './shared/index';
+export * from './auth/index';
+export * from './rescue/index';
+export * from './volunteer/index';
+export * from './snake/index';
+export * from './ai/index';
+export * from './notification/index';
+export * from './cms/index';
+export * from './payment/index';
+export * from './analytics/index';
+export * from './training/index';
+export * from './contact/index';
+export * from './hospital/index';
+export * from './map/index';
+export * from './settings/index';
+export * from './media/index';
 
 // Export combined schema as default
 export default graphqlSchema;

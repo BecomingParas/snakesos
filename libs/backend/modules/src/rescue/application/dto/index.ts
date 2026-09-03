@@ -1,2 +1,2 @@
-export * from './create-rescue.dto.js';
-export * from './update-rescue.dto.js';
+export * from './create-rescue.dto';
+export * from './update-rescue.dto';

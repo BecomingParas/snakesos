@@ -3,11 +3,11 @@
  * Export all email service functionality
  */
 
-export { EmailService, getEmailService } from './email.service.js';
-export type { EmailOptions, EmailConfig } from './email.service.js';
+export { EmailService, getEmailService } from './email.service';
+export type { EmailOptions, EmailConfig } from './email.service';
 
-export { generateBaseTemplate } from './templates/base-template.js';
-export type { BaseTemplateProps } from './templates/base-template.js';
+export { generateBaseTemplate } from './templates/base-template';
+export type { BaseTemplateProps } from './templates/base-template';
 
 export {
   generateWelcomeEmail,
@@ -18,7 +18,7 @@ export {
   generateSecurityAlert,
   generateRescuerApproved,
   generateRescuerRejected,
-} from './templates/auth-templates.js';
+} from './templates/auth-templates';
 
 export type {
   WelcomeEmailProps,
@@ -30,4 +30,4 @@ export type {
   RoleAssignmentProps,
   RescuerApprovedProps,
   RescuerRejectedProps,
-} from './templates/auth-templates.js';
+} from './templates/auth-templates';

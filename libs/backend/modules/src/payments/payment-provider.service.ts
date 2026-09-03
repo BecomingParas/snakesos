@@ -1,10 +1,10 @@
-import { PaymentIntentService } from './payment-intent.service.js';
+import { PaymentIntentService } from './payment-intent.service';
 import { prisma, Prisma } from '@snake-rescue/database';
 import type {
   PaymentProvider,
   PaymentProviderName,
   PaymentProviderRequest,
-} from './payments.types.js';
+} from './payments.types';
 
 export class PaymentProviderService {
   private readonly providers: Map<PaymentProviderName, PaymentProvider>;

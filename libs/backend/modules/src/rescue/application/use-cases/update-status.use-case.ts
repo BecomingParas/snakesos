@@ -8,8 +8,8 @@ import { BadRequestError } from '@snake-rescue/shared';
 import {
   RescueStatusMachine,
   RescueStatus,
-} from '../../domain/rescue-status-machine.js';
-import { RescueFinancialService } from '../../../finance/application/rescue-financial.service.js';
+} from '../../domain/rescue-status-machine';
+import { RescueFinancialService } from '../../../finance/application/rescue-financial.service';
 
 export interface UpdateRescueStatusInput {
   rescueId: string;

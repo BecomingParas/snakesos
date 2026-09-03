@@ -4,7 +4,7 @@
  * Source: EDCD reports 88 snakebite treatment centers nationwide (2078/79)
  */
 
-import { prisma } from '../../src/client.js';
+import { prisma } from '../../src/client';
 
 // Comprehensive list of snakebite treatment centers across Nepal
 // Based on EDCD official list (88 centers) + Provincial Health data

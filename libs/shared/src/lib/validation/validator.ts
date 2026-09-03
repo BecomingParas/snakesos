@@ -4,7 +4,7 @@
  */
 
 import { z, ZodSchema } from 'zod';
-import { ValidationError } from '../errors/index.js';
+import { ValidationError } from '../errors/index';
 
 export class Validator {
   /**

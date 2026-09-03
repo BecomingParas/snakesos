@@ -1,4 +1,4 @@
-import { readGraphQLFile } from '../../read-graphql.js';
+import { readGraphQLFile } from '../../read-graphql';
 
 export const responsesTypeDefs = readGraphQLFile(
   import.meta.url,

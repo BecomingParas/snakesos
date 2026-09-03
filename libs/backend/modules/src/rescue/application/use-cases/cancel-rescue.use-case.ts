@@ -5,7 +5,7 @@
 
 import { RescueRepository } from '@snake-rescue/database';
 import { BadRequestError, AuthorizationError } from '@snake-rescue/shared';
-import { RescueStatusMachine, RescueStatus } from '../../domain/rescue-status-machine.js';
+import { RescueStatusMachine, RescueStatus } from '../../domain/rescue-status-machine';
 
 export interface CancelRescueInput {
   rescueId: string;

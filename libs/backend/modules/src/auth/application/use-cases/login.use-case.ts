@@ -6,7 +6,7 @@
 import { prisma, UserRepository } from '@snake-rescue/database';
 import { AuthenticationError } from '@snake-rescue/shared';
 import bcrypt from 'bcryptjs';
-import type { LoginInput, LoginResponse } from '../dto/index.js';
+import type { LoginInput, LoginResponse } from '../dto/index';
 
 export class LoginUseCase {
   constructor(

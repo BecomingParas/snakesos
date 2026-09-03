@@ -4,9 +4,9 @@
  */
 
 // Infrastructure Layer - GraphQL Resolvers
-export * from './infrastructure/graphql/resolvers/hospital-query.resolver.js';
-export * from './infrastructure/graphql/resolvers/hospital-mutation.resolver.js';
-export * from './infrastructure/graphql/resolvers/hospital-subscription.resolver.js';
+export * from './infrastructure/graphql/resolvers/hospital-query.resolver';
+export * from './infrastructure/graphql/resolvers/hospital-mutation.resolver';
+export * from './infrastructure/graphql/resolvers/hospital-subscription.resolver';
 
 // Application Layer - Services
-export * from './application/hospital.service.js';
+export * from './application/hospital.service';

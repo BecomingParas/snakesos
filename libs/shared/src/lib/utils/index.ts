@@ -1,3 +1,3 @@
-export * from './date.utils.js';
-export * from './string.utils.js';
-export * from './object.utils.js';
+export * from './date.utils';
+export * from './string.utils';
+export * from './object.utils';

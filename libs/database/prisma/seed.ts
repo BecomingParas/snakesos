@@ -7,9 +7,9 @@ import {
   VolunteerStatus,
   PaymentMethod,
   PaymentStatus,
-} from '../src/prisma/generated/client.js';
-import { DangerLevel } from '../src/prisma/generated/client.js';
-import { prisma } from '../src/client.js';
+} from '../src/prisma/generated/client';
+import { DangerLevel } from '../src/prisma/generated/client';
+import { prisma } from '../src/client';
 import bcrypt from 'bcryptjs';
 
 async function main() {

@@ -6,12 +6,12 @@
 import { GraphQLContext } from '@snake-rescue/core';
 import { prisma, RescueRepository } from '@snake-rescue/database';
 import { AuthorizationError } from '@snake-rescue/shared';
-import { GetRescueQuery } from '../../../application/queries/get-rescue.query.js';
-import { ListRescuesQuery } from '../../../application/queries/list-rescues.query.js';
-import { AvailableRescuesQuery } from '../../../application/queries/available-rescues.query.js';
-import { ListPublicRescuesQuery } from '../../../application/queries/list-public-rescues.query.js';
-import { calculateRescuerRankingScore } from '../../../../lib/rescuer-ranking.js';
-import { isEligibleForAssignment } from '../../../../lib/rescuer-eligibility.js';
+import { GetRescueQuery } from '../../../application/queries/get-rescue.query';
+import { ListRescuesQuery } from '../../../application/queries/list-rescues.query';
+import { AvailableRescuesQuery } from '../../../application/queries/available-rescues.query';
+import { ListPublicRescuesQuery } from '../../../application/queries/list-public-rescues.query';
+import { calculateRescuerRankingScore } from '../../../../lib/rescuer-ranking';
+import { isEligibleForAssignment } from '../../../../lib/rescuer-eligibility';
 
 const RESCUE_MANAGEMENT_ROLES = [
   'ADMIN',

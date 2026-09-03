@@ -1,1 +1,1 @@
-export { PaymentsResolver, paymentsResolvers } from './graphql/resolvers/payments.resolver.js';
+export { PaymentsResolver, paymentsResolvers } from './graphql/resolvers/payments.resolver';

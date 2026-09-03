@@ -1,4 +1,4 @@
-import { EmailTemplate } from '../templates/email-templates.js';
+import { EmailTemplate } from '../templates/email-templates';
 
 export class EmailService {
   private templates = new EmailTemplate();

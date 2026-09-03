@@ -1,5 +1,5 @@
 import type { PrismaClient } from '@snake-rescue/database';
-import type { ConfidenceLevel, SafetyLevel } from '../infrastructure/provider.types.js';
+import type { ConfidenceLevel, SafetyLevel } from '../infrastructure/provider.types';
 
 export function classifyConfidence(confidence: number): ConfidenceLevel {
   if (confidence >= 0.85) return 'HIGH_CONFIDENCE';

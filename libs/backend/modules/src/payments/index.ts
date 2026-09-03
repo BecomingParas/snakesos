@@ -4,13 +4,13 @@
  */
 
 // Core Services
-export * from './payments.service.js';
-export * from './payments.types.js';
-export * from './payment-intent.service.js';
-export * from './payment-provider.service.js';
-export * from './configured-payment-provider.service.js';
-export * from './providers/nepal-payment-providers.js';
-export * from './providers/stripe-payment-provider.js';
+export * from './payments.service';
+export * from './payments.types';
+export * from './payment-intent.service';
+export * from './payment-provider.service';
+export * from './configured-payment-provider.service';
+export * from './providers/nepal-payment-providers';
+export * from './providers/stripe-payment-provider';
 
 // Infrastructure Layer - GraphQL Resolvers
-export * from './infrastructure/index.js';
+export * from './infrastructure/index';

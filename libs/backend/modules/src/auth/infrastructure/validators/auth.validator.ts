@@ -4,8 +4,8 @@
  */
 
 import { Validator } from '@snake-rescue/shared';
-import { LoginInputSchema, RegisterInputSchema } from '../../application/dto/index.js';
-import type { LoginInput, RegisterInput } from '../../application/dto/index.js';
+import { LoginInputSchema, RegisterInputSchema } from '../../application/dto/index';
+import type { LoginInput, RegisterInput } from '../../application/dto/index';
 
 export class AuthValidator {
   static validateLogin(input: unknown): LoginInput {

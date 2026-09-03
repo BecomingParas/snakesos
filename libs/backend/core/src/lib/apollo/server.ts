@@ -4,9 +4,9 @@
  */
 
 import { ApolloServer } from '@apollo/server';
-import type { GraphQLContext } from '../context/index.js';
-import { createApolloConfig } from './config.js';
-import { createGraphQLSchema } from './schema.js';
+import type { GraphQLContext } from '../context/index';
+import { createApolloConfig } from './config';
+import { createGraphQLSchema } from './schema';
 import { logger } from '@snake-rescue/shared';
 
 /**

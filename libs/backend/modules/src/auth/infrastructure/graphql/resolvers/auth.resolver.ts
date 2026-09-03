@@ -22,9 +22,9 @@ import {
   VerifyEmailUseCase,
   ResendVerificationUseCase,
   ChangePasswordUseCase,
-} from '../../../application/use-cases/index.js';
-import { AuthValidator } from '../../validators/auth.validator.js';
-import { calculateRescuerRankingScore } from '../../../../lib/rescuer-ranking.js';
+} from '../../../application/use-cases/index';
+import { AuthValidator } from '../../validators/auth.validator';
+import { calculateRescuerRankingScore } from '../../../../lib/rescuer-ranking';
 
 export const authResolvers = {
   Volunteer: {

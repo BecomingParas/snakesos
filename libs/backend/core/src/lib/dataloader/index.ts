@@ -1,3 +1,3 @@
-export * from './loader.factory.js';
-export * from './loaders/user.loader.js';
-export * from './loaders/rescue.loader.js';
+export * from './loader.factory';
+export * from './loaders/user.loader';
+export * from './loaders/rescue.loader';

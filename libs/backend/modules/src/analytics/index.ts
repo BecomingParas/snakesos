@@ -3,4 +3,4 @@
  * Dashboard statistics and analytics
  */
 
-export * from './infrastructure/graphql/resolvers/analytics.resolver.js';
+export * from './infrastructure/graphql/resolvers/analytics.resolver';

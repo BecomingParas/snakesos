@@ -8,7 +8,7 @@ import { BadRequestError } from '@snake-rescue/shared';
 import {
   RescueStatusMachine,
   RescueStatus,
-} from '../../domain/rescue-status-machine.js';
+} from '../../domain/rescue-status-machine';
 
 export interface AcceptRescueInput {
   rescueId: string;

@@ -5,8 +5,8 @@
 
 import { RescueRepository } from '@snake-rescue/database';
 import { createLogger } from '@snake-rescue/shared';
-import { CreateRescueCommand } from '../commands/create-rescue.command.js';
-import type { CreateRescueInput } from '../dto/index.js';
+import { CreateRescueCommand } from '../commands/create-rescue.command';
+import type { CreateRescueInput } from '../dto/index';
 import type { RescueRequest } from '@snake-rescue/database';
 
 const logger = createLogger('CreateRescueUseCase');

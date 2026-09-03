@@ -18,7 +18,7 @@ import {
   ActivityLog as ActivityLogModel,
   Training as TrainingModel,
 } from '@snake-rescue/database';
-import { GraphQLContext } from '../context/index.js';
+import { GraphQLContext } from '../context/index';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;

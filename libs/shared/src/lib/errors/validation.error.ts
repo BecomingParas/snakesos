@@ -3,7 +3,7 @@
  * Thrown when input validation fails
  */
 
-import { AppError } from './app.error.js';
+import { AppError } from './app.error';
 
 export class ValidationError extends AppError {
   constructor(

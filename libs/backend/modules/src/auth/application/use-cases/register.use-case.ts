@@ -5,7 +5,7 @@
 
 import { prisma } from '@snake-rescue/database';
 import { ConflictError, getEmailService, generateVerifyEmail } from '@snake-rescue/shared';
-import type { RegisterInput, RegisterResponse } from '../dto/index.js';
+import type { RegisterInput, RegisterResponse } from '../dto/index';
 import * as bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 

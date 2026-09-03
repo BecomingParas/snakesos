@@ -3,7 +3,7 @@ import type {
   SnakeIdentificationInput,
   SnakeIdentificationProvider,
   SnakeIdentificationProviderResult,
-} from './provider.types.js';
+} from './provider.types';
 
 // ── Response types matching the actual /api/v1/predict endpoint ──────────────
 

@@ -1,7 +1,7 @@
 import { prisma, Prisma } from '@snake-rescue/database';
 import { BadRequestError } from '@snake-rescue/shared';
 
-import type { PaymentProviderName } from './payments.types.js';
+import type { PaymentProviderName } from './payments.types';
 
 export type PaymentIntentTransition =
   | 'REQUIRES_ACTION'

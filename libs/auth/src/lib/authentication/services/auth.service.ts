@@ -1,6 +1,6 @@
-import { auth } from '../config/better-auth.config.js';
+import { auth } from '../config/better-auth.config';
 import { prisma } from '@snake-rescue/database';
-import { EmailService } from './email.service.js';
+import { EmailService } from './email.service';
 import bcrypt from 'bcryptjs';
 
 export class AuthService {

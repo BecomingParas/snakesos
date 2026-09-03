@@ -3,7 +3,7 @@
  * Professional branded templates for all authentication workflows
  */
 
-import { generateBaseTemplate } from './base-template.js';
+import { generateBaseTemplate } from './base-template';
 
 export interface WelcomeEmailProps {
   userName: string;

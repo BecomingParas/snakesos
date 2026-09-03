@@ -5,8 +5,8 @@
 
 import { prisma } from '@snake-rescue/database';
 import { createLogger, AuthenticationError } from '@snake-rescue/shared';
-import type { GraphQLContext, ContextParams } from './context.interface.js';
-import { createDataLoaders } from '../dataloader/loader.factory.js';
+import type { GraphQLContext, ContextParams } from './context.interface';
+import { createDataLoaders } from '../dataloader/loader.factory';
 
 const logger = createLogger('GraphQLContext');
 

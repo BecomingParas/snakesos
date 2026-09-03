@@ -4,9 +4,9 @@
  */
 
 // Application Layer
-export * from './application/dto/index.js';
-export * from './application/use-cases/index.js';
+export * from './application/dto/index';
+export * from './application/use-cases/index';
 
 // Infrastructure Layer
-export * from './infrastructure/validators/auth.validator.js';
-export * from './infrastructure/graphql/resolvers/auth.resolver.js';
+export * from './infrastructure/validators/auth.validator';
+export * from './infrastructure/graphql/resolvers/auth.resolver';

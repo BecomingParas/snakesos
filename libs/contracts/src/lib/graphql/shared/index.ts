@@ -2,11 +2,11 @@
 // SHARED GRAPHQL - EXPORT ALL SHARED TYPES
 // ===================================================================
 
-import { scalarsTypeDefs } from './scalars/index.js';
-import { directivesTypeDefs } from './directives/index.js';
-import { paginationTypeDefs } from './pagination/index.js';
-import { errorsTypeDefs } from './errors/index.js';
-import { responsesTypeDefs } from './responses/index.js';
+import { scalarsTypeDefs } from './scalars/index';
+import { directivesTypeDefs } from './directives/index';
+import { paginationTypeDefs } from './pagination/index';
+import { errorsTypeDefs } from './errors/index';
+import { responsesTypeDefs } from './responses/index';
 
 export { scalarsTypeDefs, directivesTypeDefs, paginationTypeDefs, errorsTypeDefs, responsesTypeDefs };
 

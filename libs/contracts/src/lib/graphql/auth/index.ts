@@ -2,7 +2,7 @@
 // AUTH - MODULE EXPORTS
 // ===================================================================
 
-import { readGraphQLFile } from '../read-graphql.js';
+import { readGraphQLFile } from '../read-graphql';
 
 // Read all GraphQL files
 const readGraphQL = (filename: string) =>

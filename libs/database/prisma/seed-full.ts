@@ -1,12 +1,12 @@
 // Comprehensive seed script for Snake Rescue Platform
 // Populates all tables with substantial test data
 
-import { UserRole, UserStatus, RescueStatus, RescuePriority, VolunteerStatus, PaymentMethod, PaymentStatus, DangerLevel } from '../src/prisma/generated/client.js';
-import { prisma } from '../src/client.js';
+import { UserRole, UserStatus, RescueStatus, RescuePriority, VolunteerStatus, PaymentMethod, PaymentStatus, DangerLevel } from '../src/prisma/generated/client';
+import { prisma } from '../src/client';
 import bcrypt from 'bcryptjs';
 
 // Import sub-seeds
-import { seedHotspots } from './seeds/hotspots.seed.js';
+import { seedHotspots } from './seeds/hotspots.seed';
 
 const hashedPassword = await bcrypt.hash('password123', 10);
 

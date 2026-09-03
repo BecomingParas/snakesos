@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql';
-import { requireAuth, GraphQLContext } from './authenticated.guard.js';
-import { Permission } from '../roles/index.js';
+import { requireAuth, GraphQLContext } from './authenticated.guard';
+import { Permission } from '../roles/index';
 
 export async function requirePermission(
   context: GraphQLContext,

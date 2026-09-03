@@ -2,7 +2,7 @@ import type {
   SnakeIdentificationInput,
   SnakeIdentificationProvider,
   SnakeIdentificationProviderResult,
-} from './provider.types.js';
+} from './provider.types';
 
 const SPECIES_PATTERNS = [
   {

@@ -4,7 +4,7 @@ import {
   type PaymentProvider,
   type PaymentProviderRequest,
   type PaymentProviderResponse,
-} from '../payments.types.js';
+} from '../payments.types';
 
 export class StripePaymentProvider implements PaymentProvider {
   readonly name = 'STRIPE' as const;
