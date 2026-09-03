@@ -1,6 +1,5 @@
 'use client';
 
-import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { NotificationDropdown } from '@/components/dashboard/notification-dropdown';
@@ -49,20 +48,20 @@ export function MobileHeader({
 
   return (
     <header className="sticky top-0 z-50 w-full md:mobile-glass-header border-b border-border/40 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/70">
-      <div className="flex h-20 items-center justify-between px-4">
+      <div className="flex h-20 items-center justify-between ">
         {/* Left: Logo with theme switching - MUCH BIGGER */}
         <a href="/" className="flex items-center gap-2 min-w-0 group">
           {/* Light mode logo */}
           <img
             src="/snakesoslogo.png"
             alt="SnakeSOS Logo"
-            className="h-16 w-16 object-contain transition-transform group-hover:scale-105 dark:hidden"
+            className="h-16 w-48 object-cover transition-transform group-hover:scale-105 dark:hidden"
           />
           {/* Dark mode logo */}
           <img
             src="/snakesoslogo_bg.png"
             alt="SnakeSOS Logo"
-            className="hidden h-16 w-16 object-contain transition-transform group-hover:scale-105 dark:block"
+            className="hidden h-16 w-48 object-cover transition-transform group-hover:scale-105 dark:block"
           />
         </a>
 

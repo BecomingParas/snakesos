@@ -226,7 +226,7 @@ export function Sidebar({ role }: SidebarProps) {
                   <img
                     src="/snakesoslogo.png"
                     alt="SnakeSOS Logo"
-                    className="h-16 w-auto sm:h-16 sm:w-auto lg:h-8 lg:w-auto max-w-full object-contain transition-all duration-300 group-hover:scale-110 dark:hidden"
+                    className="h-16 w-auto sm:h-16 sm:w-auto lg:h-20 lg:w-auto max-w-full object-contain transition-all duration-300 group-hover:scale-110 dark:hidden"
                   />
                   {/* Expanded: Dark mode logo */}
                   <img
