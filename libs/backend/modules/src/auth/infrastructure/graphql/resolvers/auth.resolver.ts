@@ -423,7 +423,7 @@ export const authResolvers = {
       const input = AuthValidator.validateLogin(args.input);
 
       // 2. Execute use case
-      const userRepository = new UserRepository(prisma);
+      const userRepository = new UserRepository(prisma as any);
       const loginUseCase = new LoginUseCase(userRepository);
       const result = await loginUseCase.execute(input);
 
@@ -477,7 +477,7 @@ export const authResolvers = {
       }
 
       // Execute refresh token use case
-      const userRepository = new UserRepository(prisma);
+      const userRepository = new UserRepository(prisma as any);
       const refreshTokenUseCase = new RefreshTokenUseCase(userRepository);
       const result = await refreshTokenUseCase.execute(sessionToken);
 
@@ -543,7 +543,7 @@ export const authResolvers = {
     ) => {
       context.requireAuth();
 
-      const userRepository = new UserRepository(prisma);
+      const userRepository = new UserRepository(prisma as any);
       const authService = new AuthService();
       const changePasswordUseCase = new ChangePasswordUseCase(
         userRepository,
