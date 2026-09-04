@@ -78,3 +78,5 @@ libs/**/*.spec.ts
 libs/**/*.spec.tsx
 libs/**/*.test.ts
 libs/**/*.test.tsx
+
+.vercel

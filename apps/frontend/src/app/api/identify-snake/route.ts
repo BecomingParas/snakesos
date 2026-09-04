@@ -8,8 +8,11 @@ import { NextRequest, NextResponse } from 'next/server';
  * Body: FormData with a "file" field containing the image
  */
 export async function POST(request: NextRequest) {
+  // Fallback to Cloudflare tunnel if env var not set
   const pythonServiceUrl =
-    process.env.PYTHON_ML_SERVICE_URL || 'http://localhost:8000';
+    process.env.PYTHON_ML_SERVICE_URL || 
+    process.env.NEXT_PUBLIC_PYTHON_ML_SERVICE_URL ||
+    'https://investing-galaxy-connection-practitioner.trycloudflare.com';
 
   try {
     const formData = await request.formData();
