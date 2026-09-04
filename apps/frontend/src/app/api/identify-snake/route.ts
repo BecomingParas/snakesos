@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
   const pythonServiceUrl =
     process.env.PYTHON_ML_SERVICE_URL || 
     process.env.NEXT_PUBLIC_PYTHON_ML_SERVICE_URL ||
-    'https://investing-galaxy-connection-practitioner.trycloudflare.com';
+    'https://mario-massage-warehouse-whatever.trycloudflare.com';
 
   try {
     const formData = await request.formData();
