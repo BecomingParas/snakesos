@@ -1,6 +1,12 @@
 # Vercel Ignore File
 # Only exclude files that are definitely not needed for frontend build
 
+# Large directories (Vercel will install fresh)
+node_modules/
+.next/
+dist/
+.nx/
+
 # Backend standalone app (not needed for frontend deployment)
 apps/backend/
 libs/database/prisma/migrations/
@@ -9,6 +15,11 @@ libs/database/prisma/migrations/
 docs/
 *.md
 !README.md
+DEPLOYMENT_*.md
+AI_MODEL_*.md
+VERCEL_*.md
+SNAKE_*.md
+*_DEPLOYMENT.md
 
 # Development tools
 .github/
