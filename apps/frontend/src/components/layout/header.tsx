@@ -67,13 +67,13 @@ export function Header() {
           <img
             src="/snakesoslogo.png"
             alt="SnakeSOS Logo"
-            className="h-16 w-16 sm:h-20 sm:w-20 lg:h-48 lg:w-48 object-contain transition-transform group-hover:scale-105 dark:hidden"
+            className="h-20 w-20 sm:h-20 sm:w-20 lg:h-48 lg:w-48 object-contain transition-transform group-hover:scale-105 dark:hidden"
           />
           {/* Dark mode logo */}
           <img
             src="/snakesoslogo_bg.png"
             alt="SnakeSOS Logo"
-            className="hidden h-16 w-16 sm:h-20 sm:w-20 lg:h-48 lg:w-48 object-contain transition-transform group-hover:scale-105 dark:block"
+            className="hidden h-20 w-20 sm:h-20 sm:w-20 lg:h-48 lg:w-48 object-contain transition-transform group-hover:scale-105 dark:block"
           />
         </Link>
 
