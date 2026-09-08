@@ -1,19 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { v2 as cloudinary } from 'cloudinary';
 
 /**
- * Proxy route that forwards snake images directly to the local Python ML
- * classifier, bypassing the backend's Cloudinary URL download step.
+ * Snake identification endpoint that uploads to Cloudinary then uses
+ * the configured AI provider (Gemini, Python ML, etc.) via GraphQL.
  *
  * POST /api/identify-snake
  * Body: FormData with a "file" field containing the image
  */
-export async function POST(request: NextRequest) {
-  // Fallback to Cloudflare tunnel if env var not set
-  const pythonServiceUrl =
-    process.env.PYTHON_ML_SERVICE_URL || 
-    process.env.NEXT_PUBLIC_PYTHON_ML_SERVICE_URL ||
-    'https://mario-massage-warehouse-whatever.trycloudflare.com';
 
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get('file');
@@ -25,34 +28,154 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Forward the file directly to the Python classifier
-    const proxyFormData = new FormData();
-    proxyFormData.append('file', file);
-
-    const response = await fetch(
-      `${pythonServiceUrl.replace(/\/$/, '')}/api/v1/predict`,
-      {
-        method: 'POST',
-        body: proxyFormData,
-        signal: AbortSignal.timeout(30000),
-      },
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Python classifier error:', response.status, errorText);
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: 'Classification service returned an error', detail: errorText },
-        { status: response.status },
+        { error: `Invalid file type: ${file.type}. Allowed: ${allowedTypes.join(', ')}` },
+        { status: 400 },
       );
     }
 
-    const result = await response.json();
-    return NextResponse.json(result);
+    // Validate file size (10MB max)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      return NextResponse.json(
+        { error: `File too large. Maximum size: ${maxSize / (1024 * 1024)}MB` },
+        { status: 400 },
+      );
+    }
+
+    // Convert blob to buffer
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Upload to Cloudinary
+    const uploadResult = await new Promise<{secure_url: string, public_id: string}>((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: 'snake-identification',
+          resource_type: 'image',
+          transformation: [
+            { width: 1024, height: 1024, crop: 'limit' },
+            { quality: 'auto' },
+          ],
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else if (result) resolve(result);
+          else reject(new Error('Upload failed'));
+        }
+      );
+      uploadStream.end(buffer);
+    });
+
+    console.log('✅ Image uploaded to Cloudinary:', uploadResult.secure_url);
+
+    // Call GraphQL backend to identify snake using configured AI provider
+    const graphqlUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://snakesos.vercel.app'}/api/graphql`;
+    
+    const graphqlResponse = await fetch(graphqlUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Forward auth cookie if present
+        'Cookie': request.headers.get('cookie') || '',
+      },
+      body: JSON.stringify({
+        query: `
+          mutation IdentifySnake($imageUrl: String!) {
+            identifySnake(input: { imageUrl: $imageUrl }) {
+              id
+              species {
+                id
+                name
+                scientificName
+                venomous
+                dangerLevel
+              }
+              confidence
+              dangerAssessment
+              venomousDetected
+              alternativeMatches {
+                species {
+                  name
+                  scientificName
+                  venomous
+                }
+                confidence
+              }
+              provider
+              model
+            }
+          }
+        `,
+        variables: {
+          imageUrl: uploadResult.secure_url,
+        },
+      }),
+    });
+
+    if (!graphqlResponse.ok) {
+      const errorText = await graphqlResponse.text();
+      console.error('GraphQL error:', graphqlResponse.status, errorText);
+      return NextResponse.json(
+        { error: 'AI identification service error', detail: errorText },
+        { status: graphqlResponse.status },
+      );
+    }
+
+    const graphqlResult = await graphqlResponse.json();
+
+    if (graphqlResult.errors) {
+      console.error('GraphQL errors:', graphqlResult.errors);
+      return NextResponse.json(
+        { error: 'AI identification failed', details: graphqlResult.errors },
+        { status: 500 },
+      );
+    }
+
+    const identification = graphqlResult.data?.identifySnake;
+
+    if (!identification) {
+      return NextResponse.json(
+        { error: 'No identification result returned' },
+        { status: 500 },
+      );
+    }
+
+    // Transform to match expected frontend format
+    const response = {
+      success: true,
+      identification: {
+        id: identification.id,
+        imageUrl: uploadResult.secure_url,
+        species: identification.species,
+        confidence: identification.confidence,
+        venomous: identification.venomousDetected,
+        dangerLevel: identification.dangerAssessment,
+        alternativeMatches: identification.alternativeMatches,
+        provider: identification.provider,
+        model: identification.model,
+      },
+    };
+
+    console.log('✅ Snake identified using:', identification.provider, identification.model);
+
+    return NextResponse.json(response);
+
   } catch (error) {
-    console.error('Snake identification proxy error:', error);
+    console.error('Snake identification error:', error);
+    
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: 'Failed to identify snake', message: error.message },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Failed to classify snake image' },
+      { error: 'Failed to identify snake' },
       { status: 500 },
     );
   }
