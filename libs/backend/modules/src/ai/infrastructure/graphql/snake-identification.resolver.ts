@@ -77,10 +77,6 @@ const getProvider = (): SnakeIdentificationProvider => {
   return new VisionAiSnakeIdentificationProvider();
 };
 
-const provider = getProvider();
-const isPythonProvider = provider instanceof PythonSnakeClassifierProvider;
-const isGeminiProvider = provider instanceof GeminiSnakeIdentificationProvider;
-
 export const snakeIdentificationResolvers = {
   Mutation: {
     identifySnake: async (
@@ -99,6 +95,11 @@ export const snakeIdentificationResolvers = {
       }
 
       // Public endpoint - no auth required
+
+      // 🔧 FIX: Get provider fresh on each request (reads latest env vars)
+      const provider = getProvider();
+      const isPythonProvider = provider instanceof PythonSnakeClassifierProvider;
+      const isGeminiProvider = provider instanceof GeminiSnakeIdentificationProvider;
 
       const aiResult = await provider.identify({ imageUrl });
       const topCandidate = aiResult.candidates[0];
