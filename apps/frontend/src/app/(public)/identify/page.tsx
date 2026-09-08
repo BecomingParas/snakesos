@@ -122,63 +122,108 @@ export default function IdentifyPage() {
 
       const mlResult = await response.json();
 
-      // Map the Python classifier response → IdentificationResult shape
-      const dangerAssessment =
-        mlResult.status === 'high_risk'
-          ? 'HIGH_RISK'
-          : mlResult.status === 'low_risk'
-            ? 'LOW_RISK'
-            : 'UNKNOWN';
+      // Handle Gemini direct response format (new) or Python ML format (legacy)
+      let payload: IdentificationResult;
 
-      const species = mlResult.species
-        ? {
-            id: mlResult.species.scientific_name ?? 'unknown',
-            name: mlResult.species.common_name ?? 'Unknown',
-            scientificName: mlResult.species.scientific_name ?? 'Unknown',
+      if (mlResult.success && mlResult.identification) {
+        // ---- New Gemini direct response format ----
+        const id = mlResult.identification;
+        const dangerAssessment =
+          id.species?.dangerLevel === 'HIGH' ? 'HIGH_RISK'
+          : id.species?.dangerLevel === 'LOW' ? 'LOW_RISK'
+          : id.species?.dangerLevel === 'MODERATE' ? 'CAUTION'
+          : id.species?.venomous ? 'HIGH_RISK'
+          : 'UNKNOWN';
+
+        payload = {
+          id: crypto.randomUUID(),
+          imageUrl: id.imageUrl || preview.url,
+          species: id.species ? {
+            id: id.species.scientificName ?? 'unknown',
+            name: id.species.name ?? 'Unknown',
+            scientificName: id.species.scientificName ?? 'Unknown',
             nepaliName: null,
             localNames: [],
-            venomous: mlResult.species.venomous ?? null,
+            venomous: id.species.venomous ?? null,
             dangerLevel: dangerAssessment,
-          }
-        : null;
+          } : null,
+          confidence: id.confidence ?? 0,
+          provider: id.provider ?? 'GEMINI',
+          model: id.model ?? 'gemini-1.5-flash',
+          dangerAssessment,
+          venomousDetected: id.species?.venomous ?? null,
+          alternativeMatches: (id.alternativeMatches ?? []).map(
+            (alt: { species?: { name?: string; scientificName?: string; venomous?: boolean }; confidence?: number }) => ({
+              confidence: alt.confidence ?? 0,
+              reasoning: alt.species?.venomous ? 'Venomous species' : 'Non-venomous species',
+              species: {
+                name: alt.species?.name ?? 'Unknown',
+                scientificName: alt.species?.scientificName ?? 'Unknown',
+                venomous: alt.species?.venomous ?? null,
+              },
+            }),
+          ),
+          createdAt: new Date().toISOString(),
+        };
+      } else {
+        // ---- Legacy Python ML response format ----
+        const dangerAssessment =
+          mlResult.status === 'high_risk'
+            ? 'HIGH_RISK'
+            : mlResult.status === 'low_risk'
+              ? 'LOW_RISK'
+              : 'UNKNOWN';
 
-      const alternativeMatches = (mlResult.top_species ?? [])
-        .filter(
-          (sp: { scientific_name?: string }) =>
-            sp.scientific_name !== mlResult.species?.scientific_name,
-        )
-        .slice(0, 3)
-        .map(
-          (sp: {
-            common_name?: string;
-            scientific_name?: string;
-            confidence?: number;
-            venomous?: boolean;
-          }) => ({
-            confidence: sp.confidence ?? 0,
-            reasoning: sp.venomous
-              ? 'Venomous species'
-              : 'Non-venomous species',
-            species: {
-              name: sp.common_name ?? 'Unknown',
-              scientificName: sp.scientific_name ?? 'Unknown',
-              venomous: sp.venomous ?? null,
-            },
-          }),
-        );
+        const species = mlResult.species
+          ? {
+              id: mlResult.species.scientific_name ?? 'unknown',
+              name: mlResult.species.common_name ?? 'Unknown',
+              scientificName: mlResult.species.scientific_name ?? 'Unknown',
+              nepaliName: null,
+              localNames: [],
+              venomous: mlResult.species.venomous ?? null,
+              dangerLevel: dangerAssessment,
+            }
+          : null;
 
-      const payload: IdentificationResult = {
-        id: mlResult.request_id ?? crypto.randomUUID(),
-        imageUrl: preview.url,
-        species,
-        confidence: mlResult.prediction?.confidence ?? 0,
-        provider: 'LOCAL',
-        model: mlResult.model_version ?? 'python-snake-classifier',
-        dangerAssessment,
-        venomousDetected: mlResult.species?.venomous ?? null,
-        alternativeMatches,
-        createdAt: mlResult.timestamp ?? new Date().toISOString(),
-      };
+        const alternativeMatches = (mlResult.top_species ?? [])
+          .filter(
+            (sp: { scientific_name?: string }) =>
+              sp.scientific_name !== mlResult.species?.scientific_name,
+          )
+          .slice(0, 3)
+          .map(
+            (sp: {
+              common_name?: string;
+              scientific_name?: string;
+              confidence?: number;
+              venomous?: boolean;
+            }) => ({
+              confidence: sp.confidence ?? 0,
+              reasoning: sp.venomous
+                ? 'Venomous species'
+                : 'Non-venomous species',
+              species: {
+                name: sp.common_name ?? 'Unknown',
+                scientificName: sp.scientific_name ?? 'Unknown',
+                venomous: sp.venomous ?? null,
+              },
+            }),
+          );
+
+        payload = {
+          id: mlResult.request_id ?? crypto.randomUUID(),
+          imageUrl: preview.url,
+          species,
+          confidence: mlResult.prediction?.confidence ?? 0,
+          provider: 'LOCAL',
+          model: mlResult.model_version ?? 'python-snake-classifier',
+          dangerAssessment,
+          venomousDetected: mlResult.species?.venomous ?? null,
+          alternativeMatches,
+          createdAt: mlResult.timestamp ?? new Date().toISOString(),
+        };
+      }
 
       setResult(payload);
       setState('done');
