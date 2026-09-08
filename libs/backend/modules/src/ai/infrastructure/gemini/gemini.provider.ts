@@ -14,13 +14,13 @@ import type {
   SnakeIdentificationProvider,
   SnakeIdentificationProviderResult,
   SafetyLevel,
-} from '../provider.types.js';
-import { GeminiClient } from './gemini.client.js';
-import { loadGeminiConfig, isGeminiConfigured } from './gemini.config.js';
+} from '../provider.types';
+import { GeminiClient } from './gemini.client';
+import { loadGeminiConfig, isGeminiConfigured } from './gemini.config';
 import type {
   GeminiSnakeIdentificationResponse,
   RiskLevel,
-} from './gemini.types.js';
+} from './gemini.types';
 
 /**
  * Map Gemini risk levels to provider safety levels

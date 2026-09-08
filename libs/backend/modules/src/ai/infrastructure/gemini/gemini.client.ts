@@ -9,8 +9,8 @@
 import type {
   GeminiSnakeIdentificationResponse,
   GeminiErrorResponse,
-} from './gemini.types.js';
-import type { GeminiConfig } from './gemini.config.js';
+} from './gemini.types';
+import type { GeminiConfig } from './gemini.config';
 
 /**
  * Gemini client for snake identification
