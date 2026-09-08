@@ -18,6 +18,19 @@ cloudinary.config({
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if Cloudinary is configured
+    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+      console.error('Cloudinary not configured:', {
+        cloud_name: !!process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: !!process.env.CLOUDINARY_API_KEY,
+        api_secret: !!process.env.CLOUDINARY_API_SECRET,
+      });
+      return NextResponse.json(
+        { error: 'Image upload service not configured' },
+        { status: 503 },
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get('file');
 
@@ -27,6 +40,8 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
+
+    console.log('Received file:', { type: file.type, size: file.size });
 
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
@@ -166,10 +181,17 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Snake identification error:', error);
+    console.error('Error type:', error?.constructor?.name);
+    console.error('Error message:', error instanceof Error ? error.message : String(error));
+    console.error('Error stack:', error instanceof Error ? error.stack : 'N/A');
     
     if (error instanceof Error) {
       return NextResponse.json(
-        { error: 'Failed to identify snake', message: error.message },
+        { 
+          error: 'Failed to identify snake', 
+          message: error.message,
+          type: error.constructor.name 
+        },
         { status: 500 },
       );
     }
