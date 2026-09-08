@@ -58,13 +58,20 @@ const nextConfig = {
   // Configure Turbopack to resolve .js imports to .ts files
   turbopack: {
     resolveExtensions: [
-      '.js',
-      '.jsx',
       '.ts',
       '.tsx',
+      '.js',
+      '.jsx',
       '.mjs',
       '.cjs',
     ],
+    resolveAlias: {
+      // Map .js imports to .ts files for backend modules
+      './gemini.client.js': './gemini.client.ts',
+      './gemini.config.js': './gemini.config.ts',
+      './gemini.types.js': './gemini.types.ts',
+      './gemini.provider.js': './gemini.provider.ts',
+    },
   },
   
   // Configure webpack to include .graphql files
@@ -74,6 +81,13 @@ const nextConfig = {
       test: /\.graphql$/,
       type: 'asset/source',
     });
+    
+    // Configure module resolution for .js → .ts imports
+    config.resolve.extensionAlias = {
+      '.js': ['.ts', '.tsx', '.js', '.jsx'],
+      '.mjs': ['.mts', '.mjs'],
+      '.cjs': ['.cts', '.cjs'],
+    };
     
     return config;
   },
