@@ -126,6 +126,7 @@ yarn test          # Run tests
 - **Auth:** Better Auth
 - **Database:** Prisma + PostgreSQL
 - **Security:** Helmet, CORS, CSRF protection
+- **AI/ML:** Google Gemini Vision, Python ML, Google Cloud Vision
 
 ### Shared
 - **Monorepo:** Nx
@@ -143,6 +144,8 @@ yarn test          # Run tests
 - ⚡ **[Quick Start](QUICK_START.md)** - Get running fast
 - 🎯 **[Frontend Setup](apps/frontend/SETUP.md)** - Frontend-specific docs
 - 🔐 **[Authentication Guide](AUTH-QUICK-REFERENCE.md)** - Auth implementation
+- 🔮 **[Gemini AI Setup](GEMINI_SNAKE_IDENTIFICATION_GUIDE.md)** - AI snake identification
+- 📋 **[AI Quick Reference](docs/GEMINI_QUICK_REFERENCE.md)** - Quick AI setup guide
 
 ---
 

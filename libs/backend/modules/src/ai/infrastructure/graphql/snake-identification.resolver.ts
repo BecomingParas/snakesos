@@ -8,17 +8,64 @@ import {
 import { GoogleCloudVisionSnakeIdentificationProvider } from '../google-cloud-vision.provider';
 import { PythonSnakeClassifierProvider } from '../python-ml.provider';
 import { VisionAiSnakeIdentificationProvider } from '../vision-ai.provider';
+import { GeminiSnakeIdentificationProvider } from '../gemini/gemini.provider';
+import { isGeminiConfigured } from '../gemini/gemini.config';
+import type { SnakeIdentificationProvider } from '../provider.types';
+import { checkSnakeIdentificationRateLimit } from './rate-limit.helper';
 
-// Prefer a dedicated Python model service when configured, then vendor AI, then stub fallback.
-const getProvider = () => {
+/**
+ * Provider selection logic
+ * Priority order (configurable via AI_PROVIDER env var):
+ * 1. Explicit AI_PROVIDER setting (PYTHON_ML | GEMINI | GOOGLE_CLOUD_VISION)
+ * 2. Python ML if PYTHON_ML_SERVICE_URL is set
+ * 3. Gemini if GEMINI_API_KEY is set
+ * 4. Google Cloud Vision if credentials exist
+ * 5. Stub fallback provider
+ */
+const getProvider = (): SnakeIdentificationProvider => {
+  const explicitProvider = process.env.AI_PROVIDER?.toUpperCase();
   const pythonServiceUrl = process.env.PYTHON_ML_SERVICE_URL || process.env.PYTHON_CLASSIFIER_URL;
   const hasGoogleCredentials =
     process.env.GOOGLE_APPLICATION_CREDENTIALS ||
     process.env.GOOGLE_CLOUD_VISION_CREDENTIALS;
 
+  // Explicit provider selection
+  if (explicitProvider === 'GEMINI') {
+    if (isGeminiConfigured()) {
+      console.log('🔮 Using Google Gemini Vision AI for snake identification (explicit)');
+      return new GeminiSnakeIdentificationProvider();
+    } else {
+      console.warn('⚠️  GEMINI provider requested but not configured. Falling back to next available provider.');
+    }
+  }
+
+  if (explicitProvider === 'PYTHON_ML') {
+    if (pythonServiceUrl) {
+      console.log('🐍 Using Python ML classification service for snake identification (explicit)');
+      return new PythonSnakeClassifierProvider(pythonServiceUrl);
+    } else {
+      console.warn('⚠️  PYTHON_ML provider requested but not configured. Falling back to next available provider.');
+    }
+  }
+
+  if (explicitProvider === 'GOOGLE_CLOUD_VISION') {
+    if (hasGoogleCredentials) {
+      console.log('📷 Using Google Cloud Vision API for snake identification (explicit)');
+      return new GoogleCloudVisionSnakeIdentificationProvider();
+    } else {
+      console.warn('⚠️  GOOGLE_CLOUD_VISION provider requested but not configured. Falling back to next available provider.');
+    }
+  }
+
+  // Auto-detection based on available configuration
   if (pythonServiceUrl) {
     console.log('🐍 Using Python ML classification service for snake identification');
     return new PythonSnakeClassifierProvider(pythonServiceUrl);
+  }
+
+  if (isGeminiConfigured()) {
+    console.log('🔮 Using Google Gemini Vision AI for snake identification');
+    return new GeminiSnakeIdentificationProvider();
   }
 
   if (hasGoogleCredentials) {
@@ -26,12 +73,13 @@ const getProvider = () => {
     return new GoogleCloudVisionSnakeIdentificationProvider();
   }
 
-  console.log('🎲 Using stub provider (configure PYTHON_ML_SERVICE_URL or GOOGLE_APPLICATION_CREDENTIALS for real AI)');
+  console.log('🎲 Using stub provider (configure PYTHON_ML_SERVICE_URL, GEMINI_API_KEY, or GOOGLE_APPLICATION_CREDENTIALS for real AI)');
   return new VisionAiSnakeIdentificationProvider();
 };
 
 const provider = getProvider();
 const isPythonProvider = provider instanceof PythonSnakeClassifierProvider;
+const isGeminiProvider = provider instanceof GeminiSnakeIdentificationProvider;
 
 export const snakeIdentificationResolvers = {
   Mutation: {
@@ -40,6 +88,9 @@ export const snakeIdentificationResolvers = {
       args: { input: { imageUrl: string } },
       context: GraphQLContext,
     ) => {
+      // Apply rate limiting first (before any AI processing)
+      checkSnakeIdentificationRateLimit(context);
+
       const user = context.user;
       const imageUrl = args.input.imageUrl?.trim();
 
@@ -58,9 +109,9 @@ export const snakeIdentificationResolvers = {
       const confidenceValue = Number(topCandidate?.confidence ?? 0);
       const confidenceLevel = classifyConfidence(confidenceValue);
 
-      // When using the Python ML model, trust the model's own safety classification
-      // since it already applies confidence thresholds and venomous detection.
-      // For other providers, compute safety from the matched species record.
+      // Provider-specific safety classification
+      // Python ML and Gemini compute their own safety levels with confidence thresholds
+      // Other providers compute safety from matched species records
       let safetyLevel: string;
       let providerName: string;
       let modelName: string;
@@ -68,11 +119,16 @@ export const snakeIdentificationResolvers = {
       if (isPythonProvider) {
         const pythonProvider = provider as PythonSnakeClassifierProvider;
         safetyLevel = pythonProvider.lastSafetyLevel;
-        providerName = 'LOCAL';
+        providerName = 'PYTHON_ML';
         modelName = pythonProvider.lastModelVersion ?? 'python-snake-classifier';
+      } else if (isGeminiProvider) {
+        const geminiProvider = provider as GeminiSnakeIdentificationProvider;
+        safetyLevel = geminiProvider.lastSafetyLevel;
+        providerName = 'GEMINI';
+        modelName = geminiProvider.lastModelVersion ?? 'gemini-1.5-flash';
       } else {
         safetyLevel = classifySafety(matchedSpecies, confidenceLevel);
-        providerName = 'LOCAL';
+        providerName = 'GOOGLE_CLOUD_VISION';
         modelName = 'vision-ai';
       }
 
