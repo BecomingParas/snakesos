@@ -26,6 +26,7 @@ type IdentificationResult = {
     nepaliName?: string;
     localNames?: string[];
     venomous?: boolean | null;
+    venomousStatus?: string | null;
     dangerLevel?: string | null;
   } | null;
   confidence?: number | null;
@@ -33,6 +34,16 @@ type IdentificationResult = {
   model?: string | null;
   dangerAssessment?: string | null;
   venomousDetected?: boolean | null;
+  imageQuality?: string | null;
+  identificationStatus?: string | null;
+  visualFeatures?: string[];
+  safety?: {
+    riskLevel?: string;
+    handlingAdvice?: string;
+    publicSafetyMessage?: string;
+  };
+  medicalWarning?: string | null;
+  reasoning?: string | null;
   alternativeMatches?: Array<{
     confidence?: number | null;
     reasoning?: string | null;
@@ -106,8 +117,7 @@ export default function IdentifyPage() {
       setState('scanning');
       setError(null);
 
-      // Send the file directly to the Python classifier via our proxy route.
-      // This avoids the backend downloading from Cloudinary (DNS issues).
+      // Send the file directly to the API endpoint
       const formData = new FormData();
       formData.append('file', preview.file);
 
@@ -116,114 +126,123 @@ export default function IdentifyPage() {
         body: formData,
       });
 
-      if (!response.ok) {
-        throw new Error('The AI service did not return a prediction.');
-      }
-
       const mlResult = await response.json();
 
-      // Handle Gemini direct response format (new) or Python ML format (legacy)
-      let payload: IdentificationResult;
+      // Handle error responses from the new API format
+      if (!response.ok || !mlResult.success) {
+        const errorCode = mlResult.error?.code || 'UNKNOWN_ERROR';
+        const errorMessage = mlResult.error?.message || 'Failed to identify snake';
 
-      if (mlResult.success && mlResult.identification) {
-        // ---- New Gemini direct response format ----
-        const id = mlResult.identification;
-        const dangerAssessment =
-          id.species?.dangerLevel === 'HIGH' ? 'HIGH_RISK'
-          : id.species?.dangerLevel === 'LOW' ? 'LOW_RISK'
-          : id.species?.dangerLevel === 'MODERATE' ? 'CAUTION'
-          : id.species?.venomous ? 'HIGH_RISK'
-          : 'UNKNOWN';
+        // Map error codes to user-friendly messages
+        const userMessage = {
+          'AI_RATE_LIMITED': 'Too many requests. Please wait a few minutes and try again.',
+          'AI_SERVICE_NOT_CONFIGURED': 'AI service is temporarily unavailable. Please contact support.',
+          'INVALID_IMAGE': 'Please upload a valid image file.',
+          'INVALID_IMAGE_TYPE': 'Invalid file type. Please upload a JPEG, PNG, or WebP image.',
+          'IMAGE_TOO_LARGE': 'Image is too large. Please use an image under 10MB.',
+          'AI_INVALID_RESPONSE': 'AI service returned an invalid response. Please try again.',
+          'AI_PROVIDER_TIMEOUT': 'AI service took too long to respond. Please try again.',
+          'AI_PROVIDER_RATE_LIMITED': 'AI service is experiencing high demand. Please try again in a few minutes.',
+          'AI_PROVIDER_ERROR': 'AI service error. Please try again or contact support.',
+          'SNAKE_IDENTIFICATION_FAILED': 'Unable to identify the snake. Please try again with a clearer image.',
+        }[errorCode] || errorMessage;
 
-        payload = {
-          id: crypto.randomUUID(),
-          imageUrl: id.imageUrl || preview.url,
-          species: id.species ? {
-            id: id.species.scientificName ?? 'unknown',
-            name: id.species.name ?? 'Unknown',
-            scientificName: id.species.scientificName ?? 'Unknown',
-            nepaliName: null,
-            localNames: [],
-            venomous: id.species.venomous ?? null,
-            dangerLevel: dangerAssessment,
-          } : null,
-          confidence: id.confidence ?? 0,
-          provider: id.provider ?? 'GEMINI',
-          model: id.model ?? 'gemini-1.5-flash',
-          dangerAssessment,
-          venomousDetected: id.species?.venomous ?? null,
-          alternativeMatches: (id.alternativeMatches ?? []).map(
-            (alt: { species?: { name?: string; scientificName?: string; venomous?: boolean }; confidence?: number }) => ({
-              confidence: alt.confidence ?? 0,
-              reasoning: alt.species?.venomous ? 'Venomous species' : 'Non-venomous species',
-              species: {
-                name: alt.species?.name ?? 'Unknown',
-                scientificName: alt.species?.scientificName ?? 'Unknown',
-                venomous: alt.species?.venomous ?? null,
-              },
-            }),
-          ),
-          createdAt: new Date().toISOString(),
+        throw new Error(userMessage);
+      }
+
+      // Handle the new API response format (with backward compatibility for old format)
+      let data;
+      
+      if (mlResult.data) {
+        // NEW API format
+        data = mlResult.data;
+      } else if (mlResult.identification) {
+        // OLD API format (backward compatibility during migration)
+        const oldData = mlResult.identification;
+        data = {
+          imageUrl: oldData.imageUrl,
+          is_snake: oldData.is_snake,
+          image_quality: 'good',
+          identification_status: 'identified',
+          species: oldData.species,
+          confidence: oldData.confidence,
+          visualFeatures: oldData.visualFeatures || [],
+          alternativeMatches: oldData.alternativeMatches || [],
+          safety: {
+            risk_level: oldData.species?.dangerLevel === 'HIGH' || oldData.species?.dangerLevel === 'MODERATE' ? 'high' : 'low',
+            handling_advice: oldData.safetyAdvice || '',
+            public_safety_message: oldData.safetyAdvice || '',
+          },
+          medicalWarning: oldData.firstAid || null,
+          reasoning: oldData.description || null,
         };
       } else {
-        // ---- Legacy Python ML response format ----
-        const dangerAssessment =
-          mlResult.status === 'high_risk'
-            ? 'HIGH_RISK'
-            : mlResult.status === 'low_risk'
-              ? 'LOW_RISK'
-              : 'UNKNOWN';
-
-        const species = mlResult.species
-          ? {
-              id: mlResult.species.scientific_name ?? 'unknown',
-              name: mlResult.species.common_name ?? 'Unknown',
-              scientificName: mlResult.species.scientific_name ?? 'Unknown',
-              nepaliName: null,
-              localNames: [],
-              venomous: mlResult.species.venomous ?? null,
-              dangerLevel: dangerAssessment,
-            }
-          : null;
-
-        const alternativeMatches = (mlResult.top_species ?? [])
-          .filter(
-            (sp: { scientific_name?: string }) =>
-              sp.scientific_name !== mlResult.species?.scientific_name,
-          )
-          .slice(0, 3)
-          .map(
-            (sp: {
-              common_name?: string;
-              scientific_name?: string;
-              confidence?: number;
-              venomous?: boolean;
-            }) => ({
-              confidence: sp.confidence ?? 0,
-              reasoning: sp.venomous
-                ? 'Venomous species'
-                : 'Non-venomous species',
-              species: {
-                name: sp.common_name ?? 'Unknown',
-                scientificName: sp.scientific_name ?? 'Unknown',
-                venomous: sp.venomous ?? null,
-              },
-            }),
-          );
-
-        payload = {
-          id: mlResult.request_id ?? crypto.randomUUID(),
-          imageUrl: preview.url,
-          species,
-          confidence: mlResult.prediction?.confidence ?? 0,
-          provider: 'LOCAL',
-          model: mlResult.model_version ?? 'python-snake-classifier',
-          dangerAssessment,
-          venomousDetected: mlResult.species?.venomous ?? null,
-          alternativeMatches,
-          createdAt: mlResult.timestamp ?? new Date().toISOString(),
-        };
+        throw new Error('Invalid API response format');
       }
+      
+      // Check identification status for specific error states
+      if (data.identification_status === 'insufficient_image') {
+        setError('The image quality is too poor for identification. Please upload a clearer, well-lit photo from a safe distance.');
+        setState('idle');
+        return;
+      }
+
+      if (data.identification_status === 'not_a_snake') {
+        setError('No snake was detected in this image. Please upload a different image.');
+        setState('idle');
+        return;
+      }
+
+      if (!data.is_snake) {
+        setError('No snake detected in the image. Please ensure the snake is clearly visible and try again.');
+        setState('idle');
+        return;
+      }
+
+      // Map the new API response to the expected format
+      const dangerAssessment = 
+        data.safety?.risk_level === 'high' ? 'HIGH_RISK' :
+        data.safety?.risk_level === 'low' ? 'LOW_RISK' :
+        data.safety?.risk_level === 'moderate' ? 'CAUTION' :
+        data.species?.dangerLevel || 'UNKNOWN';
+
+      const payload: IdentificationResult = {
+        id: mlResult.meta?.request_id || crypto.randomUUID(),
+        imageUrl: data.imageUrl || preview.url,
+        species: data.species ? {
+          id: data.species.scientificName ?? 'unknown',
+          name: data.species.name ?? 'Unknown',
+          scientificName: data.species.scientificName ?? 'Unknown',
+          nepaliName: null,
+          localNames: [],
+          venomous: data.species.venomous ?? null,
+          venomousStatus: data.species.venomousStatus || (data.species.venomous === false ? 'non_venomous' : data.species.venomous === true ? 'venomous' : 'unknown'),
+          dangerLevel: dangerAssessment,
+        } : null,
+        confidence: data.confidence ?? 0,
+        provider: 'GEMINI',
+        model: mlResult.meta?.model ?? mlResult.identification?.model ?? 'gemini-3.6-flash',
+        dangerAssessment,
+        venomousDetected: data.species?.venomous ?? null,
+        imageQuality: data.image_quality,
+        identificationStatus: data.identification_status,
+        visualFeatures: data.visualFeatures ?? [],
+        safety: data.safety,
+        medicalWarning: data.medicalWarning,
+        reasoning: data.reasoning,
+        alternativeMatches: (data.alternativeMatches ?? []).map(
+          (alt: { species?: { name?: string; scientificName?: string; venomous?: boolean }; confidence?: number }) => ({
+            confidence: alt.confidence ?? 0,
+            reasoning: alt.species?.venomous ? 'Venomous species' : 'Non-venomous species',
+            species: {
+              name: alt.species?.name ?? 'Unknown',
+              scientificName: alt.species?.scientificName ?? 'Unknown',
+              venomous: alt.species?.venomous ?? null,
+            },
+          }),
+        ),
+        createdAt: new Date().toISOString(),
+      };
 
       setResult(payload);
       setState('done');
@@ -419,6 +438,24 @@ export default function IdentifyPage() {
                         {result.species?.scientificName ||
                           'Not confidently matched'}
                       </p>
+                      {result.species?.venomousStatus && (
+                        <div className="mt-2">
+                          <span
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${
+                              result.species.venomousStatus === 'venomous'
+                                ? 'border-destructive/40 bg-destructive/15 text-destructive'
+                                : result.species.venomousStatus === 'non_venomous'
+                                  ? 'border-success/40 bg-success/15 text-success'
+                                  : 'border-warning/40 bg-warning/15 text-warning'
+                            }`}
+                          >
+                            {result.species.venomousStatus === 'venomous' && '⚠️ VENOMOUS'}
+                            {result.species.venomousStatus === 'non_venomous' && '✓ NON-VENOMOUS'}
+                            {result.species.venomousStatus === 'potentially_venomous' && '⚠️ POTENTIALLY VENOMOUS'}
+                            {result.species.venomousStatus === 'unknown' && '? VENOMOUS STATUS UNKNOWN'}
+                          </span>
+                        </div>
+                      )}
                     </div>
                     <span
                       className={`rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${meta.pill}`}
@@ -443,18 +480,11 @@ export default function IdentifyPage() {
                     </div>
                   </div>
 
-                  <p className="mt-4 text-sm leading-relaxed">{riskText}</p>
-                  <p className="mt-3 text-xs text-muted-foreground">
-                    Provider:{' '}
-                    <span className="font-semibold text-primary">
-                      {result.provider || 'Vision AI'}
-                    </span>
-                    {' · '}
-                    Model:{' '}
-                    <span className="font-semibold text-primary">
-                      {result.model || 'vision-ai'}
-                    </span>
-                  </p>
+                  {result.reasoning && (
+                    <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                      {result.reasoning}
+                    </p>
+                  )}
                 </div>
 
                 {result.alternativeMatches &&
@@ -487,14 +517,57 @@ export default function IdentifyPage() {
                   <p className="flex items-center gap-2 font-semibold text-warning">
                     <AlertTriangle className="h-4 w-4" /> Safety guidance
                   </p>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {result.dangerAssessment === 'HIGH_RISK'
-                      ? 'Do not approach, touch, corner, or attempt to capture the snake. Keep a safe distance and contact a trained snake rescuer.'
-                      : result.dangerAssessment === 'LOW_RISK'
-                        ? 'This snake appears likely non-venomous, but do not handle or capture it. Keep a safe distance and avoid provoking it.'
-                        : 'The image may not provide enough visual information for reliable identification. Keep your distance and contact a trained rescuer if the snake is nearby.'}
-                  </p>
+                  {result.safety?.publicSafetyMessage ? (
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {result.safety.publicSafetyMessage}
+                    </p>
+                  ) : (
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {result.dangerAssessment === 'HIGH_RISK'
+                        ? 'Do not approach, touch, corner, or attempt to capture the snake. Keep a safe distance and contact a trained snake rescuer.'
+                        : result.dangerAssessment === 'LOW_RISK'
+                          ? 'This snake appears likely non-venomous, but do not handle or capture it. Keep a safe distance and avoid provoking it.'
+                          : 'The image may not provide enough visual information for reliable identification. Keep your distance and contact a trained rescuer if the snake is nearby.'}
+                    </p>
+                  )}
+                  {result.medicalWarning && (
+                    <div className="mt-3 rounded-lg border border-destructive/30 bg-destructive/10 p-3">
+                      <p className="text-sm font-semibold text-destructive">
+                        Medical Warning
+                      </p>
+                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                        {result.medicalWarning}
+                      </p>
+                    </div>
+                  )}
                 </div>
+
+                {result.visualFeatures && result.visualFeatures.length > 0 && (
+                  <div className="rounded-2xl border border-border/30 bg-background/60 p-5">
+                    <p className="flex items-center gap-2 font-semibold text-primary">
+                      <CheckCircle2 className="h-4 w-4" /> Visual features detected
+                    </p>
+                    <ul className="mt-3 space-y-1.5 text-sm">
+                      {result.visualFeatures.map((feature, index) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <span className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full bg-primary" />
+                          <span className="text-muted-foreground">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {result.reasoning && (
+                  <div className="rounded-2xl border border-border/30 bg-background/60 p-5">
+                    <p className="flex items-center gap-2 font-semibold text-primary">
+                      <Bot className="h-4 w-4" /> AI reasoning
+                    </p>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {result.reasoning}
+                    </p>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="mt-4 grid min-h-[280px] place-items-center rounded-xl border border-border/70 bg-card/60 p-8 text-center">

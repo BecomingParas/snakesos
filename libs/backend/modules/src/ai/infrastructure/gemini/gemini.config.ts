@@ -20,7 +20,7 @@ export interface GeminiConfig {
  */
 export function loadGeminiConfig(): GeminiConfig {
   const apiKey = process.env.GEMINI_API_KEY;
-  const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+  const model = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
 
   // Fail fast if API key is missing or placeholder
   if (!apiKey || apiKey === 'your_gemini_api_key_here') {

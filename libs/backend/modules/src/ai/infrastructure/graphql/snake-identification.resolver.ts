@@ -126,7 +126,7 @@ export const snakeIdentificationResolvers = {
         const geminiProvider = provider as GeminiSnakeIdentificationProvider;
         safetyLevel = geminiProvider.lastSafetyLevel;
         providerName = 'GEMINI';
-        modelName = geminiProvider.lastModelVersion ?? 'gemini-1.5-flash';
+        modelName = geminiProvider.lastModelVersion ?? 'gemini-3.6-flash';
       } else {
         safetyLevel = classifySafety(matchedSpecies, confidenceLevel);
         providerName = 'GOOGLE_CLOUD_VISION';
