@@ -65,31 +65,54 @@ export async function POST(request: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
+    console.log('📤 Uploading to Cloudinary...');
+
     // Upload to Cloudinary
-    const uploadResult = await new Promise<{secure_url: string, public_id: string}>((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: 'snake-identification',
-          resource_type: 'image',
-          transformation: [
-            { width: 1024, height: 1024, crop: 'limit' },
-            { quality: 'auto' },
-          ],
+    let uploadResult;
+    try {
+      uploadResult = await new Promise<{secure_url: string, public_id: string}>((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: 'snake-identification',
+            resource_type: 'image',
+            transformation: [
+              { width: 1024, height: 1024, crop: 'limit' },
+              { quality: 'auto' },
+            ],
+          },
+          (error, result) => {
+            if (error) {
+              console.error('❌ Cloudinary upload error:', error);
+              reject(error);
+            } else if (result) {
+              resolve(result);
+            } else {
+              reject(new Error('Upload failed - no result'));
+            }
+          }
+        );
+        uploadStream.end(buffer);
+      });
+    } catch (cloudinaryError) {
+      console.error('❌ Cloudinary error:', cloudinaryError);
+      return NextResponse.json(
+        { 
+          error: 'Image upload failed', 
+          detail: cloudinaryError instanceof Error ? cloudinaryError.message : 'Unknown error',
+          step: 'cloudinary_upload'
         },
-        (error, result) => {
-          if (error) reject(error);
-          else if (result) resolve(result);
-          else reject(new Error('Upload failed'));
-        }
+        { status: 500 },
       );
-      uploadStream.end(buffer);
-    });
+    }
 
     console.log('✅ Image uploaded to Cloudinary:', uploadResult.secure_url);
 
     // Call GraphQL backend to identify snake using configured AI provider
     const graphqlUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://snakesos.vercel.app'}/api/graphql`;
     
+    console.log('🔄 Calling GraphQL at:', graphqlUrl);
+    console.log('🔄 With imageUrl:', uploadResult.secure_url);
+
     const graphqlResponse = await fetch(graphqlUrl, {
       method: 'POST',
       headers: {
@@ -131,21 +154,25 @@ export async function POST(request: NextRequest) {
       }),
     });
 
+    console.log('📡 GraphQL response status:', graphqlResponse.status);
+
     if (!graphqlResponse.ok) {
       const errorText = await graphqlResponse.text();
-      console.error('GraphQL error:', graphqlResponse.status, errorText);
+      console.error('❌ GraphQL error:', graphqlResponse.status, errorText);
       return NextResponse.json(
-        { error: 'AI identification service error', detail: errorText },
+        { error: 'AI identification service error', detail: errorText, step: 'graphql_call' },
         { status: graphqlResponse.status },
       );
     }
 
     const graphqlResult = await graphqlResponse.json();
 
+    console.log('📊 GraphQL result:', JSON.stringify(graphqlResult, null, 2));
+
     if (graphqlResult.errors) {
-      console.error('GraphQL errors:', graphqlResult.errors);
+      console.error('❌ GraphQL errors:', graphqlResult.errors);
       return NextResponse.json(
-        { error: 'AI identification failed', details: graphqlResult.errors },
+        { error: 'AI identification failed', details: graphqlResult.errors, step: 'graphql_errors' },
         { status: 500 },
       );
     }
