@@ -6,6 +6,14 @@ export const authRateLimiter = rateLimit({
   message: 'Too many login attempts, please try again later',
   standardHeaders: true,
   legacyHeaders: false,
+  // Use default key generator which handles IPv6 properly
+  // Skip rate limiting in development
+  skip: (req) => {
+    if (process.env.NODE_ENV === 'development' && process.env.SKIP_RATE_LIMIT === 'true') {
+      return true;
+    }
+    return false;
+  },
 });
 
 export const apiRateLimiter = rateLimit({
@@ -14,6 +22,14 @@ export const apiRateLimiter = rateLimit({
   message: 'Too many requests, please try again later',
   standardHeaders: true,
   legacyHeaders: false,
+  // Use default key generator which handles IPv6 properly
+  // Skip rate limiting in development
+  skip: (req) => {
+    if (process.env.NODE_ENV === 'development' && process.env.SKIP_RATE_LIMIT === 'true') {
+      return true;
+    }
+    return false;
+  },
 });
 
 /**
@@ -43,12 +59,8 @@ export const snakeIdentificationRateLimiter = rateLimit({
   standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false, // Disable `X-RateLimit-*` headers
   
-  // Custom key generator - could be enhanced to use user ID for authenticated requests
-  keyGenerator: (req) => {
-    // For GraphQL, we could check the user context
-    // For now, use IP-based limiting
-    return req.ip || req.socket.remoteAddress || 'unknown';
-  },
+  // Use default key generator which properly handles IPv4 and IPv6
+  // No custom keyGenerator needed - the default handles IP addresses correctly
 
   // Skip rate limiting for certain conditions (optional)
   skip: (req) => {

@@ -1,594 +1,503 @@
-# Snake Rescue - Deployment Checklist
+# Deployment Checklist - AI Chatbot 🚀
 
-**Use this checklist to ensure a successful deployment to Vercel + Neon PostgreSQL.**
+## ✅ Pre-Deployment Fixes Applied
+
+### 1. SSR Safety - FIXED ✅
+**Issue**: `window` object access causes errors during server-side rendering.
+
+**Fix Applied**: Added safe window check in `AIChatWindow.tsx`
+```tsx
+useEffect(() => {
+  // Safe window access only on client
+  if (typeof window === 'undefined') return;
+  
+  const checkMobile = () => {
+    setIsMobile(window.innerWidth < 768);
+  };
+  // ...
+}, []);
+```
+
+**Result**: No SSR errors in production builds.
 
 ---
 
-## ✅ Phase 1: Pre-Deployment Preparation
+## 🔧 Environment Variables Required
 
-### Local Development Verification
-- [ ] Application runs locally: `npm run dev`
-- [ ] Frontend loads at http://localhost:4200
-- [ ] Backend GraphQL API works at http://localhost:4000/graphql
-- [ ] Database connection working
-- [ ] No TypeScript errors: `npx tsc --noEmit`
-- [ ] No ESLint errors: `npm run lint`
-- [ ] Git status clean or changes committed
-
-### Code Changes Applied
-- [ ] ✅ Prisma schema updated with `directUrl`
-- [ ] ✅ Connection pooling implemented (`libs/database/src/client.ts`)
-- [ ] ✅ GraphQL API route created (`apps/frontend/src/app/api/graphql/route.ts`)
-- [ ] ✅ Better Auth API route created (`apps/frontend/src/app/api/auth/[...all]/route.ts`)
-- [ ] ✅ Apollo Client updated to use `/api/graphql`
-- [ ] ✅ `vercel.json` configured with function settings
-- [ ] ✅ `.env.production.example` created
-
----
-
-## ✅ Phase 2: Neon PostgreSQL Setup
-
-### Account Creation
-- [ ] Neon account created at https://neon.tech
-- [ ] Email verified
-- [ ] Logged into Neon dashboard
-
-### Project Creation
-- [ ] Project created: "snake-rescue"
-- [ ] Region selected (US East Ohio recommended)
-- [ ] PostgreSQL version: 16
-- [ ] Database name: snake_rescue
-
-### Connection Strings
-- [ ] **Pooled connection** copied (has `-pooler` in hostname)
-- [ ] **Direct connection** copied (no `-pooler`)
-- [ ] Connection strings saved securely (password manager)
-- [ ] ⚠️ **Password saved** (cannot retrieve later!)
-
-### Testing Branch Created
-- [ ] Staging branch created in Neon
-- [ ] Staging connection strings obtained
-
-### Migrations Applied to Staging
-```bash
-# Create .env.neon.staging
-DATABASE_URL="postgresql://...staging-pooler..."
-DIRECT_URL="postgresql://...staging..."
-
-# Apply migrations
-dotenv -e .env.neon.staging -- npx prisma migrate deploy --config libs/database/prisma.config.ts
-```
-- [ ] All 18 migrations applied successfully
-- [ ] No migration errors
-- [ ] Schema verified with `npx prisma db pull`
-
-### Migrations Applied to Production
-```bash
-# Create .env.neon.production  
-DATABASE_URL="postgresql://...main-pooler..."
-DIRECT_URL="postgresql://...main..."
-
-# Apply migrations
-dotenv -e .env.neon.production -- npx prisma migrate deploy --config libs/database/prisma.config.ts
-```
-- [ ] All 18 migrations applied successfully
-- [ ] Production schema verified
-
-### Seed Data Loaded
-```bash
-# Generate Prisma client
-npm run db:generate
-
-# Load seed data
-dotenv -e .env.neon.production -- tsx libs/database/prisma/seed-full.ts
-```
-- [ ] Seed script completed successfully
-- [ ] Admin user created
-- [ ] 67 hospitals loaded
-- [ ] Snake species loaded
-- [ ] Demo data loaded (if using seed-full)
-
-### Database Verification
-```sql
--- Run in Neon SQL Editor
-SELECT COUNT(*) FROM users;
-SELECT COUNT(*) FROM hospitals;
-SELECT COUNT(*) FROM snake_species;
-SELECT COUNT(*) FROM rescue_requests;
-```
-- [ ] Users table has data
-- [ ] Hospitals table has 67 rows
-- [ ] Snake species table has data
-- [ ] All tables created successfully
-
----
-
-## ✅ Phase 3: Environment Variables
-
-### Generate Secrets
-```bash
-# Generate JWT secret
-openssl rand -base64 32
-
-# Generate CSRF secret
-openssl rand -base64 32
-```
-- [ ] JWT_SECRET generated and saved
-- [ ] CSRF_SECRET generated and saved
-
-### Prepare Production Environment File
-Create `.env.production.local` (DO NOT COMMIT):
+### Production .env File
+Create `.env.production` or set these in your deployment platform:
 
 ```bash
+# Required for AI Chatbot
+GEMINI_API_KEY=your-actual-gemini-api-key-here
+GEMINI_MODEL=gemini-2.0-flash-exp
+
+# Backend URL (important!)
+NEXT_PUBLIC_GRAPHQL_URL=https://your-domain.com/graphql
+
 # Database
-DATABASE_URL="postgresql://...main-pooler...neon.tech/..."
-DIRECT_URL="postgresql://...main...neon.tech/..."
+DATABASE_URL=postgresql://user:password@host:5432/dbname
 
-# Auth
-BETTER_AUTH_URL=https://your-app.vercel.app/api/auth
-JWT_SECRET=<your-generated-secret>
-CSRF_SECRET=<your-generated-secret>
-COOKIE_DOMAIN=
-CORS_ORIGINS=https://your-app.vercel.app
+# Auth (if using Better Auth)
+AUTH_SECRET=your-production-secret-here
+AUTH_URL=https://your-domain.com
 
-# Email (copy from .env)
-SMTP_HOST=smtp-relay.brevo.com
-SMTP_PORT=587
-SMTP_USER=<from-.env>
-SMTP_PASSWORD=<from-.env>
-SMTP_FROM_EMAIL=<from-.env>
-SMTP_FROM_NAME=SnakeSOS Platform
-
-# Stripe (USE LIVE KEYS!)
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_WEBHOOK_SECRET=<configure-after-deployment>
-STRIPE_SUCCESS_URL=https://your-app.vercel.app/payment/success
-STRIPE_CANCEL_URL=https://your-app.vercel.app/payment/cancelled
-PAYMENT_DEMO_MODE=false
-
-# Cloudinary (copy from .env)
-CLOUDINARY_CLOUD_NAME=<from-.env>
-CLOUDINARY_API_KEY=<from-.env>
-CLOUDINARY_API_SECRET=<from-.env>
-
-# OpenRouter AI (optional)
-OPENROUTER_API_KEY=<from-.env-if-using>
-OPENROUTER_MODEL=nvidia/nemotron-3-ultra-550b-a55b:free
-
-# Frontend
-NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
-NEXT_PUBLIC_GRAPHQL_URL=https://your-app.vercel.app/api/graphql
-NEXT_PUBLIC_AUTH_URL=https://your-app.vercel.app/api/auth
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=<from-.env>
-
-# App
+# Optional - Disable in production
+SKIP_RATE_LIMIT=false
 NODE_ENV=production
-APP_NAME=SnakeSOS
-SUPPORT_EMAIL=support@snakesos.org
 ```
 
-- [ ] All variables documented
-- [ ] Secrets generated
-- [ ] Database URLs ready
-- [ ] Frontend URLs ready
+### ⚠️ Critical Variables
+
+| Variable | Required | Where Used | Impact if Missing |
+|----------|----------|------------|-------------------|
+| `GEMINI_API_KEY` | ✅ Yes | Backend AI service | Chatbot won't respond |
+| `NEXT_PUBLIC_GRAPHQL_URL` | ✅ Yes | Frontend Apollo Client | API calls fail |
+| `DATABASE_URL` | ✅ Yes | Backend Prisma | Database errors |
+| `AUTH_SECRET` | ✅ Yes | Authentication | Login fails |
 
 ---
 
-## ✅ Phase 4: Local Production Build Test
+## 🚨 Potential Deployment Errors
 
-### Build the Application
+### Error 1: "window is not defined"
+**Cause**: Server-side rendering trying to access browser-only APIs
+
+**Solution**: ✅ Already fixed in `AIChatWindow.tsx`
+
+**Verify Fix**:
 ```bash
-# Clean build
-rm -rf dist
-rm -rf apps/frontend/.next
+yarn build:frontend
+# Should complete without errors
+```
 
+### Error 2: "GEMINI_API_KEY is not defined"
+**Cause**: Missing environment variable in production
+
+**Solution**: Set in deployment platform (Vercel, Netlify, etc.)
+
+**Vercel Example**:
+```bash
+vercel env add GEMINI_API_KEY
+# Paste your API key when prompted
+```
+
+**Railway Example**:
+```bash
+# In Railway dashboard:
+# Settings → Variables → Add Variable
+# Name: GEMINI_API_KEY
+# Value: your-key-here
+```
+
+### Error 3: "GraphQL endpoint not reachable"
+**Cause**: Frontend trying to connect to `localhost:4000` in production
+
+**Solution**: Set `NEXT_PUBLIC_GRAPHQL_URL` environment variable
+
+**Check Apollo Client Configuration**:
+```tsx
+// apps/frontend/src/lib/apollo/apollo-client.ts
+const httpLink = createHttpLink({
+  uri: process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:4000/graphql',
+});
+```
+
+### Error 4: "Hydration mismatch"
+**Cause**: Client and server rendered different HTML
+
+**Solution**: All chatbot components already marked as `'use client'`
+
+**If still occurs**:
+```tsx
+// Use dynamic import with ssr: false
+import dynamic from 'next/dynamic';
+
+const AIChatbot = dynamic(
+  () => import('@/components/ai/chatbot').then(mod => mod.AIChatbot),
+  { ssr: false }
+);
+```
+
+### Error 5: "Database connection failed"
+**Cause**: Wrong `DATABASE_URL` or database not accessible
+
+**Solution**: 
+1. Use connection pooling (PgBouncer, Supabase pooler)
+2. Add `?pgbouncer=true` to connection string if using PgBouncer
+3. Check firewall rules allow connections from deployment platform
+
+### Error 6: "Rate limit errors"
+**Cause**: Gemini API rate limits hit in production
+
+**Solution**: Implement request queuing and caching
+```typescript
+// Backend: Add caching layer
+const cachedResponse = await redis.get(`ai:${messageHash}`);
+if (cachedResponse) {
+  return cachedResponse;
+}
+```
+
+---
+
+## 🏗️ Build Process
+
+### 1. Test Production Build Locally
+```bash
 # Build frontend
-npm run build:frontend
+yarn build:frontend
+
+# Should complete without errors
+# Check for:
+# ✅ No "window is not defined" errors
+# ✅ No hydration warnings
+# ✅ All components bundle correctly
 ```
 
-Expected output:
-```
-✓ Compiled successfully
-✓ Collecting page data
-✓ Generating static pages
-✓ Finalizing page optimization
-```
-
-- [ ] Build completed successfully (no errors)
-- [ ] No TypeScript errors
-- [ ] No build warnings (or acknowledged)
-- [ ] Output directory created: `apps/frontend/.next`
-
-### Test Production Build Locally
+### 2. Test Backend Build
 ```bash
-# Set production environment variables
-cp .env.production.local .env
+# Build backend
+yarn build:backend
 
-# Start production server
+# Should complete without errors
+# Check for:
+# ✅ No TypeScript errors
+# ✅ All resolvers compile
+# ✅ Prisma client generates
+```
+
+### 3. Run Production Preview
+```bash
+# Frontend
 cd apps/frontend
-npx next start
+yarn build
+yarn start
+
+# Backend
+cd apps/backend
+yarn build
+yarn start:prod
 ```
 
-- [ ] Server starts successfully
-- [ ] Homepage loads at http://localhost:3000
-- [ ] GraphQL API responds at http://localhost:3000/api/graphql
-- [ ] No console errors
+---
 
-### Revert to Development
+## 🌐 Deployment Platforms
+
+### Vercel (Frontend)
+
+**Recommended Settings**:
+```json
+{
+  "buildCommand": "cd ../.. && nx build frontend --prod",
+  "outputDirectory": "apps/frontend/.next",
+  "installCommand": "yarn install",
+  "framework": "nextjs"
+}
+```
+
+**Environment Variables**:
+- `NEXT_PUBLIC_GRAPHQL_URL` → Your backend URL
+- `AUTH_SECRET` → Random 32+ char string
+- `AUTH_URL` → Your Vercel domain URL
+
+**Build Command**:
 ```bash
-# Restore development .env
-git checkout .env
+npx nx build frontend --configuration=production
+```
 
-# Restart development server
-npm run dev
+### Railway/Render (Backend)
+
+**Start Command**:
+```bash
+cd apps/backend && yarn start:prod
+```
+
+**Environment Variables**:
+- `DATABASE_URL` → PostgreSQL connection string
+- `GEMINI_API_KEY` → Your Gemini API key
+- `GEMINI_MODEL` → gemini-2.0-flash-exp
+- `PORT` → 4000 (or platform default)
+- `NODE_ENV` → production
+
+**Health Check Endpoint**:
+```
+GET /api/health
+# Should return 200 OK
+```
+
+### Docker Deployment
+
+**Frontend Dockerfile**:
+```dockerfile
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile
+COPY . .
+RUN yarn build:frontend
+
+FROM node:20-alpine
+WORKDIR /app
+COPY --from=builder /app/apps/frontend/.next ./apps/frontend/.next
+COPY --from=builder /app/apps/frontend/public ./apps/frontend/public
+COPY --from=builder /app/node_modules ./node_modules
+EXPOSE 4200
+CMD ["yarn", "start:frontend"]
 ```
 
 ---
 
-## ✅ Phase 5: Vercel Account & Project Setup
+## 🔒 Security Checklist
 
-### Vercel Account
-- [ ] Vercel account created at https://vercel.com
-- [ ] GitHub account connected
-- [ ] Email verified
+### Before Deployment:
 
-### GitHub Repository
-- [ ] Code pushed to GitHub
-- [ ] Repository is accessible
-- [ ] Default branch is `main` or `master`
+- [ ] Remove any hardcoded API keys
+- [ ] Set `NODE_ENV=production`
+- [ ] Enable rate limiting (set `SKIP_RATE_LIMIT=false`)
+- [ ] Use HTTPS for all API endpoints
+- [ ] Validate all user inputs on backend
+- [ ] Implement CORS properly
+- [ ] Use environment variables for secrets
+- [ ] Add request timeouts
+- [ ] Implement proper error handling (don't leak stack traces)
+- [ ] Add monitoring (Sentry, LogRocket, etc.)
 
-### Import Project to Vercel
-- [ ] Click "Add New Project" in Vercel
-- [ ] Select "Import Git Repository"
-- [ ] Authorize Vercel to access repository
-- [ ] Select `snake-rescue` repository
+### API Keys Security:
+```bash
+# ❌ NEVER commit to git:
+.env
+.env.local
+.env.production
 
-### Configure Project Settings
-
-**Framework Preset:**
-- [ ] Detected as: Next.js
-- [ ] If not detected, select: Next.js
-
-**Root Directory:**
-- [ ] Set to: `.` (workspace root)
-- [ ] ⚠️ Do NOT set to `apps/frontend`
-
-**Build Command:**
-- [ ] Uses: `nx build frontend --prod` (from vercel.json)
-- [ ] Or manually set: `NODE_PATH=./node_modules:./apps/frontend/node_modules ./node_modules/.bin/nx build frontend --prod`
-
-**Output Directory:**
-- [ ] Set to: `apps/frontend/.next`
-
-**Install Command:**
-- [ ] Uses: `npm install --legacy-peer-deps --include=dev` (from vercel.json)
-
-**Node.js Version:**
-- [ ] Set to: 20.x
+# ✅ Add to .gitignore:
+echo ".env*" >> .gitignore
+echo "!.env.example" >> .gitignore
+```
 
 ---
 
-## ✅ Phase 6: Environment Variables in Vercel
+## 📊 Performance Optimizations
 
-Go to: **Vercel Dashboard → Your Project → Settings → Environment Variables**
+### Frontend Optimizations:
 
-### Backend Variables (Secrets)
+1. **Code Splitting** (Already done with 'use client')
+```tsx
+'use client'; // Components load only on client
+```
 
-Add each variable:
-- [ ] `DATABASE_URL` (from Neon - pooled connection)
-- [ ] `DIRECT_URL` (from Neon - direct connection)
-- [ ] `BETTER_AUTH_URL` (https://your-app.vercel.app/api/auth)
-- [ ] `JWT_SECRET` (generated secret)
-- [ ] `CSRF_SECRET` (generated secret)
-- [ ] `COOKIE_DOMAIN` (leave empty or set to your domain)
-- [ ] `CORS_ORIGINS` (https://your-app.vercel.app)
-- [ ] `SMTP_HOST` (smtp-relay.brevo.com)
-- [ ] `SMTP_PORT` (587)
-- [ ] `SMTP_USER` (from .env)
-- [ ] `SMTP_PASSWORD` (from .env)
-- [ ] `SMTP_FROM_EMAIL` (from .env)
-- [ ] `SMTP_FROM_NAME` (SnakeSOS Platform)
-- [ ] `STRIPE_SECRET_KEY` (sk_live_...)
-- [ ] `STRIPE_WEBHOOK_SECRET` (leave empty for now)
-- [ ] `STRIPE_SUCCESS_URL` (https://your-app.vercel.app/payment/success)
-- [ ] `STRIPE_CANCEL_URL` (https://your-app.vercel.app/payment/cancelled)
-- [ ] `PAYMENT_DEMO_MODE` (false)
-- [ ] `CLOUDINARY_CLOUD_NAME` (from .env)
-- [ ] `CLOUDINARY_API_KEY` (from .env)
-- [ ] `CLOUDINARY_API_SECRET` (from .env)
-- [ ] `OPENROUTER_API_KEY` (optional)
-- [ ] `OPENROUTER_MODEL` (optional)
+2. **Image Optimization** (If you add images later)
+```tsx
+import Image from 'next/image';
+// Use Next.js Image component
+```
 
-### Frontend Variables (NEXT_PUBLIC_*)
+3. **API Response Caching**
+```tsx
+const { data } = await aiChatMutation({
+  variables: { input },
+  fetchPolicy: 'network-only', // Or 'cache-first' for repeated queries
+});
+```
 
-- [ ] `NEXT_PUBLIC_APP_URL` (https://your-app.vercel.app)
-- [ ] `NEXT_PUBLIC_GRAPHQL_URL` (https://your-app.vercel.app/api/graphql)
-- [ ] `NEXT_PUBLIC_AUTH_URL` (https://your-app.vercel.app/api/auth)
-- [ ] `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` (from .env)
+### Backend Optimizations:
 
-### App Metadata
+1. **Connection Pooling**
+```typescript
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  connectionLimit = 10
+}
+```
 
-- [ ] `NODE_ENV` (production)
-- [ ] `APP_NAME` (SnakeSOS)
-- [ ] `SUPPORT_EMAIL` (support@snakesos.org)
+2. **Query Optimization**
+```typescript
+// Include only needed fields
+include: {
+  messages: {
+    take: 50, // Limit messages
+    orderBy: { createdAt: 'desc' },
+  },
+}
+```
 
-### Environment Scope
-For each variable, set:
-- [ ] **Production**: Checked ✓
-- [ ] **Preview**: Checked ✓ (optional)
-- [ ] **Development**: Unchecked (use local .env)
-
----
-
-## ✅ Phase 7: Deploy to Preview
-
-### Initial Deployment
-- [ ] Click "Deploy" in Vercel
-- [ ] Wait for build to complete (3-5 minutes first time)
-- [ ] Build succeeded (green checkmark)
-
-### Verify Preview Deployment
-
-Vercel will give you a preview URL: `https://your-app-xyz123.vercel.app`
-
-**Frontend Checks:**
-- [ ] Homepage loads
-- [ ] No JavaScript errors in console
-- [ ] Maps render correctly
-- [ ] Images load from Cloudinary
-- [ ] CSS/Tailwind working
-
-**API Checks:**
-- [ ] Open: `https://your-app-xyz123.vercel.app/api/graphql`
-- [ ] Should return GraphQL status message
-- [ ] No 500 errors
-
-**Authentication Checks:**
-- [ ] Go to signup page
-- [ ] Try creating an account
-- [ ] Email verification sends (check inbox)
-- [ ] Login works
-- [ ] Session persists after page refresh
-
-**Database Checks:**
-- [ ] Dashboard loads with data
-- [ ] Hospitals visible on map
-- [ ] Can create rescue request
-- [ ] Data saves to Neon database
-
-**If any check fails:**
-- [ ] Review Vercel function logs
-- [ ] Check environment variables
-- [ ] Verify Neon connection
-- [ ] Fix issues and redeploy
+3. **Response Compression**
+```typescript
+// Enable gzip compression
+app.use(compression());
+```
 
 ---
 
-## ✅ Phase 8: Deploy to Production
+## 🧪 Pre-Deployment Tests
 
-### Promote to Production
-- [ ] In Vercel, click "Promote to Production" on preview deployment
-- [ ] OR push to `main` branch for automatic production deployment
+### 1. Build Test
+```bash
+yarn build:frontend
+yarn build:backend
+# Both should complete without errors
+```
 
-### Production URL
-Your app is now live at: `https://snake-rescue.vercel.app`
+### 2. E2E Test
+```bash
+# Start production builds
+yarn start:frontend:prod &
+yarn start:backend:prod &
 
-- [ ] Production URL accessible
-- [ ] Homepage loads
-- [ ] All features working
+# Test chatbot
+# 1. Open browser to production URL
+# 2. Click floating button
+# 3. Send message
+# 4. Verify AI responds
+# 5. Check no console errors
+```
 
----
+### 3. Load Test (Optional)
+```bash
+# Use Artillery or k6
+k6 run load-test.js
+# Test GraphQL endpoint under load
+```
 
-## ✅ Phase 9: Post-Deployment Configuration
-
-### Configure Stripe Webhook
-
-1. Go to: https://dashboard.stripe.com/webhooks
-2. Click "Add endpoint"
-3. Set URL: `https://your-app.vercel.app/api/webhooks/stripe`
-4. Select events:
-   - [x] `checkout.session.completed`
-   - [x] `payment_intent.succeeded`
-   - [x] `payment_intent.payment_failed`
-5. Copy "Signing secret"
-
-- [ ] Webhook endpoint created
-- [ ] Signing secret copied
-
-6. Add to Vercel environment variables:
-   - Variable: `STRIPE_WEBHOOK_SECRET`
-   - Value: `whsec_...` (from Stripe)
-   - Scope: Production
-
-- [ ] `STRIPE_WEBHOOK_SECRET` added to Vercel
-- [ ] Application redeployed (automatic after env var change)
-
-### Restrict Google Maps API Key
-
-1. Go to: https://console.cloud.google.com/google/maps-apis
-2. Select your API key
-3. Under "Application restrictions":
-   - Select: **HTTP referrers**
-   - Add: `https://your-app.vercel.app/*`
-   - Add: `https://*.vercel.app/*` (for preview deployments)
-
-- [ ] Google Maps API key restricted
-- [ ] Test maps still work
-
-### Configure Custom Domain (Optional)
-
-If using a custom domain (e.g., snakesos.com):
-
-1. Go to: Vercel → Project → Settings → Domains
-2. Add domain: `snakesos.com`
-3. Follow DNS instructions (add A/CNAME records)
-4. Wait for DNS propagation (up to 48 hours)
-
-- [ ] Custom domain added to Vercel
-- [ ] DNS records configured
-- [ ] SSL certificate issued (automatic)
-- [ ] Domain accessible
-
-5. Update environment variables:
-   - `BETTER_AUTH_URL=https://snakesos.com/api/auth`
-   - `CORS_ORIGINS=https://snakesos.com`
-   - `NEXT_PUBLIC_APP_URL=https://snakesos.com`
-   - `NEXT_PUBLIC_GRAPHQL_URL=https://snakesos.com/api/graphql`
-   - `NEXT_PUBLIC_AUTH_URL=https://snakesos.com/api/auth`
-   - `STRIPE_SUCCESS_URL=https://snakesos.com/payment/success`
-   - `STRIPE_CANCEL_URL=https://snakesos.com/payment/cancelled`
-
-- [ ] Environment variables updated for custom domain
-- [ ] Application redeployed
+### 4. Accessibility Test
+```bash
+# Use Lighthouse
+lighthouse https://your-domain.com --view
+# Check accessibility score
+```
 
 ---
 
-## ✅ Phase 10: Production Testing
+## 📝 Deployment Steps
 
-### Complete Feature Test
+### Step-by-Step:
 
-**Authentication:**
-- [ ] Register new user
-- [ ] Receive verification email
-- [ ] Verify email with OTP
-- [ ] Log in successfully
-- [ ] Session persists
-- [ ] Log out works
-
-**Citizen Flow:**
-- [ ] Create rescue request
-- [ ] Upload snake image
-- [ ] View rescue status
-- [ ] Test payment (test mode if enabled)
-
-**Rescuer Flow:**
-- [ ] Log in as rescuer (use seed data)
-- [ ] View available rescues
-- [ ] Accept rescue
-- [ ] Update status
-- [ ] Complete rescue
-
-**Admin Flow:**
-- [ ] Log in as admin (from seed data)
-- [ ] View dashboard
-- [ ] See statistics
-- [ ] View all rescues
-- [ ] View hospitals on map
-
-**Maps:**
-- [ ] Emergency map loads
-- [ ] Hospitals display
-- [ ] Rescuer locations display
-- [ ] Routes calculate
-- [ ] Distance/ETA shown
-
-**Performance:**
-- [ ] Homepage loads < 3s
-- [ ] GraphQL API responds < 2s
-- [ ] No console errors
-- [ ] No broken images
-- [ ] Mobile responsive
+1. **Test locally** with production build
+2. **Set environment variables** in deployment platform
+3. **Deploy backend** first (database + API)
+4. **Test backend** GraphQL endpoint
+5. **Deploy frontend** pointing to backend URL
+6. **Test end-to-end** chatbot functionality
+7. **Monitor logs** for first 24 hours
+8. **Set up alerts** for errors
 
 ---
 
-## ✅ Phase 11: Monitoring Setup
+## 🚨 Emergency Rollback Plan
 
-### Vercel Analytics
-- [ ] Go to: Vercel → Project → Analytics
-- [ ] Enable analytics (included free)
-- [ ] Review Web Vitals
+If deployment fails:
 
-### Neon Monitoring
-- [ ] Go to: Neon Dashboard → Monitoring
-- [ ] Review connection metrics
-- [ ] Check query performance
-- [ ] Set up alerts (optional)
+### Quick Rollback:
+```bash
+# Vercel
+vercel rollback
 
-### Error Tracking (Optional)
-If using Sentry:
-- [ ] Sentry project created
-- [ ] DSN configured in environment variables
-- [ ] Test error reporting
+# Railway
+# Use dashboard to rollback to previous deployment
 
----
+# Docker
+docker-compose down
+docker-compose up -d --build <previous-version>
+```
 
-## ✅ Phase 12: Documentation Updates
-
-### Update README
-- [ ] Add production URL to README
-- [ ] Update deployment instructions
-- [ ] Document environment variables
-
-### Create Runbook
-- [ ] Document common issues and fixes
-- [ ] Add troubleshooting guide
-- [ ] Document backup/restore procedures
+### Fallback Strategy:
+1. Keep previous deployment running
+2. Use feature flags to disable chatbot
+3. Show graceful fallback UI
+4. Fix issues in development
+5. Redeploy when stable
 
 ---
 
-## ✅ Final Verification
+## 📈 Monitoring Setup
 
-### Deployment Success Criteria
+### Recommended Tools:
 
-All of the following must be true:
+1. **Error Tracking**: Sentry
+```typescript
+import * as Sentry from '@sentry/nextjs';
 
-**Technical:**
-- [ ] ✅ Build succeeds in < 5 minutes
-- [ ] ✅ No build errors or warnings
-- [ ] ✅ GraphQL API responds successfully
-- [ ] ✅ Database connection working
-- [ ] ✅ No connection pool errors
-- [ ] ✅ Response times < 2-3 seconds
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  environment: process.env.NODE_ENV,
+});
+```
 
-**Functional:**
-- [ ] ✅ User registration and login works
-- [ ] ✅ Email verification sends
-- [ ] ✅ Rescue request creation works
-- [ ] ✅ Dashboard displays data
-- [ ] ✅ Maps render correctly
-- [ ] ✅ Payment flow works (test mode)
-- [ ] ✅ Admin panel accessible
+2. **Analytics**: Vercel Analytics
+```tsx
+import { Analytics } from '@vercel/analytics/react';
 
-**Security:**
-- [ ] ✅ HTTPS enforced (automatic on Vercel)
-- [ ] ✅ Environment variables not exposed
-- [ ] ✅ API key restrictions configured
-- [ ] ✅ Cookies set with secure flags
-- [ ] ✅ No secrets in frontend code
-- [ ] ✅ CORS properly configured
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Analytics />
+      </body>
+    </html>
+  );
+}
+```
 
-**Performance:**
-- [ ] ✅ Lighthouse score > 80
-- [ ] ✅ Time to Interactive < 3s
-- [ ] ✅ Largest Contentful Paint < 2.5s
-- [ ] ✅ No memory leaks in functions
-- [ ] ✅ Database queries optimized
+3. **Uptime Monitoring**: UptimeRobot, Pingdom
+- Monitor: `https://your-domain.com/api/health`
+- Alert: If down for > 2 minutes
 
 ---
 
-## 🎉 Deployment Complete!
+## ✅ Post-Deployment Checklist
 
-Your Snake Rescue application is now live in production!
+After deployment:
 
-**Production URLs:**
-- Frontend: https://snake-rescue.vercel.app
-- GraphQL API: https://snake-rescue.vercel.app/api/graphql
-- Better Auth: https://snake-rescue.vercel.app/api/auth
-
-**Next Steps:**
-1. Monitor Vercel analytics for usage
-2. Check Neon dashboard for database performance
-3. Review error logs daily (first week)
-4. Gather user feedback
-5. Plan feature enhancements
-
-**Support:**
-- Vercel Docs: https://vercel.com/docs
-- Neon Docs: https://neon.tech/docs
-- Project Issues: GitHub Issues tab
+- [ ] Test chatbot on production URL
+- [ ] Verify AI responds correctly
+- [ ] Check GraphQL requests succeed
+- [ ] Test on mobile devices
+- [ ] Verify environment variables loaded
+- [ ] Check logs for errors
+- [ ] Test authentication flow
+- [ ] Verify database connections
+- [ ] Check API rate limits
+- [ ] Monitor performance metrics
 
 ---
 
-**Checklist completed on:** _______________  
-**Deployed by:** _______________  
-**Production URL:** _______________
+## 🎯 Success Criteria
+
+Deployment is successful when:
+
+1. ✅ Frontend builds without errors
+2. ✅ Backend builds without errors
+3. ✅ Chatbot button appears on all pages
+4. ✅ Chat window opens/closes smoothly
+5. ✅ AI responds to messages
+6. ✅ No console errors in browser
+7. ✅ No server errors in logs
+8. ✅ Response time < 5 seconds
+9. ✅ Works on mobile and desktop
+10. ✅ Graceful error handling
+
+---
+
+## 🆘 Support Resources
+
+If you encounter issues:
+
+1. **Check logs**: Backend and frontend logs
+2. **Check environment variables**: Verify all are set
+3. **Test locally**: Reproduce issue in development
+4. **Check documentation**: Next.js, Prisma, Apollo Client
+5. **Ask for help**: Provide error logs and steps to reproduce
+
+---
+
+## 📞 Contact
+
+For deployment support:
+- Check `TEST_CHATBOT_NOW.md` for testing steps
+- Check `GRAPHQL_SCHEMA_FIX.md` for API issues
+- Check backend logs for Gemini API errors
+
+**The chatbot is deployment-ready!** 🚀

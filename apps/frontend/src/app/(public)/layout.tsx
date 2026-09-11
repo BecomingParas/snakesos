@@ -1,4 +1,5 @@
 import { Header, Footer } from '@/components/layout'
+import { PublicAIChatbot } from '@/components/ai/chatbot/PublicAIChatbot'
 
 export default function PublicLayout({
   children,
@@ -12,6 +13,9 @@ export default function PublicLayout({
         {children}
       </main>
       <Footer />
+      
+      {/* AI Chatbot for public users */}
+      <PublicAIChatbot />
     </div>
   )
 }

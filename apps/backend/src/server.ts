@@ -28,6 +28,7 @@ import {
   emergencyContactResolvers,
   cmsResolvers,
   snakeIdentificationResolvers,
+  aiChatResolvers,
 } from '@snake-rescue/backend/modules';
 import { config } from './config/index.js';
 
@@ -55,6 +56,7 @@ export async function setupApolloServer(app: Express) {
     emergencyContactResolvers,
     cmsResolvers,
     snakeIdentificationResolvers,
+    aiChatResolvers,
   ];
 
   // Create Apollo Server with schema and resolvers

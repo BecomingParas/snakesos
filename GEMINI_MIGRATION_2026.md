@@ -186,7 +186,7 @@ Implemented in-memory rate limiter:
 1. **Update Environment Variables**
    Go to Vercel Project Settings → Environment Variables:
    
-   - `GEMINI_API_KEY` = `<set-in-environment>`
+   - `GEMINI_API_KEY` = `your_actual_gemini_api_key_here` ⚠️ **KEEP SECURE**
    - `GEMINI_MODEL` = `gemini-3.6-flash` ⚠️ **UPDATE THIS**
    - `GEMINI_TIMEOUT_MS` = `30000` (optional)
 

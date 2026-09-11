@@ -10,6 +10,7 @@ import { MobileHeader } from '@/components/dashboard/mobile/MobileHeader';
 import { MobileBottomNav } from '@/components/dashboard/mobile/MobileBottomNav';
 import { MobileDrawer } from '@/components/dashboard/mobile/MobileDrawer';
 import { DesktopTopNav } from '@/components/dashboard/DesktopTopNav';
+import { AIChatbot } from '@/components/ai/chatbot';
 import { toast } from 'sonner';
 
 /**
@@ -150,6 +151,15 @@ export function DashboardLayoutClient({
 
           {/* Mobile Bottom Navigation */}
           <MobileBottomNav role={user.role} />
+
+          {/* AI Chatbot - Available everywhere */}
+          <AIChatbot
+            userContext={{
+              id: user.id,
+              name: user.name || undefined,
+              role: user.role.toLowerCase().replace('_', '-'),
+            }}
+          />
         </div>
       ) : (
         /* DESKTOP LAYOUT */
@@ -172,6 +182,15 @@ export function DashboardLayoutClient({
             {/* Page Content */}
             <div className="h-[calc(100vh-4rem)] overflow-auto">{children}</div>
           </main>
+
+          {/* AI Chatbot - Available everywhere */}
+          <AIChatbot
+            userContext={{
+              id: user.id,
+              name: user.name || undefined,
+              role: user.role.toLowerCase().replace('_', '-'),
+            }}
+          />
         </div>
       )}
     </SidebarContext.Provider>

@@ -2,6 +2,8 @@
 // AI - MODULE EXPORTS
 // ===================================================================
 
+import { aiChatTypeDefs } from '../ai-chat/index';
+
 
 
 export const aiEnums = `# ===================================================================
@@ -426,6 +428,7 @@ export const aiTypeDefs = [
   aiMutations,
   aiSubscriptions,
   aiFragments,
+  aiChatTypeDefs,
 ].join('\n\n');
 
 // Export operations for code generation

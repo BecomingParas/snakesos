@@ -23,13 +23,13 @@ datasource db {
 // ===================================================================
 
 model User {
-  id       String     @id @default(uuid())
-  email    String     @unique
-  name     String
-  phone    String?
-  role     UserRole   @default(CITIZEN)
-  status   UserStatus @default(ACTIVE)
-  avatar   String?
+  id     String     @id @default(uuid())
+  email  String     @unique
+  name   String
+  phone  String?
+  role   UserRole   @default(CITIZEN)
+  status UserStatus @default(ACTIVE)
+  avatar String?
 
   // OAuth Integration
   googleId    String? @unique
@@ -80,6 +80,10 @@ model User {
 
   // RBAC Relations
   userRoles UserRoleAssignment[]
+
+  // AI Relations
+  aiConversations AiConversation[]
+  aiAuditLogs     AiAuditLog[]
 
   @@index([email])
   @@index([role])
@@ -1929,4 +1933,201 @@ enum TreatmentCenterType {
   TEACHING
   PRIMARY_HEALTH_CENTER
   OTHER
+}
+
+// ===================================================================
+// AI KNOWLEDGE BASE & RAG SYSTEM
+// ===================================================================
+// Retrieval-Augmented Generation (RAG) system for storing and
+// retrieving domain knowledge, documentation, and safety information.
+// Uses pgvector for semantic search with embeddings.
+// ===================================================================
+
+model KnowledgeDocument {
+  id String @id @default(uuid())
+
+  // Content
+  title       String
+  description String? @db.Text
+  content     String  @db.Text
+
+  // Source & Categorization
+  source    String // "SNAKESOS_DOCS", "SAFETY_GUIDELINES", "RESEARCH_PAPER", "MANUAL"
+  sourceUrl String?
+  category  String // "SAFETY", "SNAKE_INFO", "RESCUE_SOP", "ADMIN_DOCS", "PUBLIC_FAQ"
+  tags      String[]
+
+  // Versioning
+  version  String  @default("1.0")
+  isLatest Boolean @default(true)
+
+  // Visibility & Access Control
+  visibility String  @default("PUBLIC") // PUBLIC, RESCUER, ADMIN, SUPER_ADMIN
+  isActive   Boolean @default(true)
+
+  // Metadata
+  language String  @default("en")
+  author   String?
+  metadata Json? // Additional flexible metadata
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  chunks KnowledgeChunk[]
+
+  @@index([category, visibility])
+  @@index([isActive, isLatest])
+  @@index([source])
+  @@map("knowledge_documents")
+}
+
+model KnowledgeChunk {
+  id String @id @default(uuid())
+
+  // Document Reference
+  documentId String
+  document   KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  // Chunk Content
+  content    String @db.Text
+  chunkIndex Int // Order within document
+  tokenCount Int? // Approximate token count
+
+  // Vector Embedding (using pgvector)
+  embedding Unsupported("vector(768)")? // Gemini embedding dimension (768 for optimal performance)
+
+  // Metadata
+  metadata Json? // Chunk-specific metadata like headers, context
+
+  createdAt DateTime @default(now())
+
+  @@unique([documentId, chunkIndex])
+  @@index([documentId])
+  @@map("knowledge_chunks")
+}
+
+// ===================================================================
+// AI CONVERSATIONS & CHAT HISTORY
+// ===================================================================
+// Stores AI agent conversations for context, analytics, and audit.
+// Supports authenticated users and anonymous public interactions.
+// ===================================================================
+
+model AiConversation {
+  id String @id @default(uuid())
+
+  // User (nullable for public/anonymous conversations)
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Context & Role
+  context String  @default("PUBLIC") // PUBLIC, RESCUER, ADMIN, SUPER_ADMIN
+  role    String? // User's role at conversation start
+
+  // Conversation Metadata
+  title    String? // Auto-generated or user-provided title
+  language String  @default("en")
+  isActive Boolean @default(true)
+  metadata Json? // Additional context like location, rescue request ID
+
+  // Session Information
+  sessionId String?
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  closedAt  DateTime?
+
+  // Relations
+  messages  AiMessage[]
+  auditLogs AiAuditLog[]
+
+  @@index([userId])
+  @@index([context, isActive])
+  @@index([createdAt])
+  @@map("ai_conversations")
+}
+
+model AiMessage {
+  id String @id @default(uuid())
+
+  // Conversation Reference
+  conversationId String
+  conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  // Message Content
+  role    String // "user", "assistant", "system", "tool"
+  content String @db.Text
+
+  // Tool Execution (for function calling)
+  toolName      String?
+  toolArguments Json? // Sanitized tool arguments
+  toolResult    Json? // Sanitized tool result
+  toolSuccess   Boolean?
+  toolError     String?
+
+  // Metadata
+  metadata     Json? // Additional context like confidence, sources
+  tokenCount   Int? // Approximate token count
+  responseTime Int? // Milliseconds (for assistant messages)
+
+  createdAt DateTime @default(now())
+
+  @@index([conversationId, createdAt])
+  @@index([role])
+  @@map("ai_messages")
+}
+
+// ===================================================================
+// AI AUDIT LOG
+// ===================================================================
+// Comprehensive audit trail of all AI operations including tool
+// executions, data access, and operational actions.
+// ===================================================================
+
+model AiAuditLog {
+  id String @id @default(uuid())
+
+  // User & Conversation
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  conversationId String?
+  conversation   AiConversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  // Action Details
+  actionType String // "TOOL_EXECUTION", "KNOWLEDGE_RETRIEVAL", "SNAKE_IDENTIFICATION", "RESCUE_QUERY"
+  toolName   String? // Tool/function name if applicable
+
+  // Arguments & Results (sanitized - no secrets, limited PII)
+  arguments Json? // Sanitized input arguments
+  result    Json? // Sanitized result summary
+
+  // Execution Status
+  success   Boolean
+  error     String? @db.Text
+  errorCode String?
+
+  // Performance
+  executionTimeMs Int?
+
+  // Context
+  userRole    String? // User's role at execution time
+  permissions String[] // Permissions checked
+  authorized  Boolean  @default(true)
+
+  // Request Metadata
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([conversationId])
+  @@index([actionType, success])
+  @@index([toolName])
+  @@index([createdAt])
+  @@map("ai_audit_logs")
 }

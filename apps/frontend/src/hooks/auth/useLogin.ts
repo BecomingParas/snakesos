@@ -1,10 +1,30 @@
 /**
- * useLogin Hook - Handles user login with Better Auth
+ * useLogin Hook - Handles user login with GraphQL
  */
 
 import { useState } from 'react';
-import { signIn } from '@/lib/auth/better-auth-client';
+import { useMutation } from '@apollo/client/react';
+import { gql } from '@apollo/client';
 import { useAuthStore } from '@/lib/auth/auth-store';
+
+const LOGIN_MUTATION = gql`
+  mutation Login($input: LoginInput!) {
+    login(input: $input) {
+      user {
+        id
+        email
+        name
+        role
+        phone
+        emailVerified
+        createdAt
+        updatedAt
+      }
+      accessToken
+      refreshToken
+    }
+  }
+`;
 
 export interface LoginInput {
   email: string;
@@ -32,57 +52,66 @@ export function useLogin() {
   const [error, setError] = useState<Error | null>(null);
   const setUser = useAuthStore((state) => state.setUser);
 
+  const [loginMutation] = useMutation(LOGIN_MUTATION);
+
   const login = async (input: LoginInput): Promise<LoginResult> => {
     setLoading(true);
     setError(null);
 
     try {
-      // Use Better Auth's signIn method
-      const result = await signIn.email({
-        email: input.email.trim().toLowerCase(),
-        password: input.password,
+      const { data } = await loginMutation({
+        variables: {
+          input: {
+            email: input.email.trim().toLowerCase(),
+            password: input.password,
+          },
+        },
       });
 
-      // Better Auth automatically sets session cookies
-      // The result contains user data
-      if (result.data?.user) {
-        // Type assertion: Better Auth user doesn't include role/phone by default
-        // but our Prisma schema has these fields
-        const user = result.data.user as any;
-        
+      if (data?.login) {
+        const { user, accessToken, refreshToken } = data.login;
+
+        // Store tokens in localStorage
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('auth-token', accessToken);
+          localStorage.setItem('accessToken', accessToken);
+          localStorage.setItem('refreshToken', refreshToken);
+        }
+
         // Update auth store
         setUser({
           id: user.id,
-          email: user.email || '',
+          email: user.email,
           name: user.name,
-          role: user.role || 'CITIZEN',
+          role: user.role,
           phone: user.phone || undefined,
-          emailVerified: user.emailVerified || false,
-          createdAt: user.createdAt?.toISOString?.() || new Date().toISOString(),
-          updatedAt: user.updatedAt?.toISOString?.() || new Date().toISOString(),
+          emailVerified: user.emailVerified,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
         });
 
-        // Return formatted result matching the expected type
+        // Return formatted result
         return {
-          accessToken: (result.data as any).session?.token || '',
-          refreshToken: (result.data as any).session?.token || '',
-          expiresIn: (result.data as any).session?.expiresIn || 604800, // 7 days default
+          accessToken,
+          refreshToken,
+          expiresIn: 604800, // 7 days
           user: {
             id: user.id,
-            email: user.email || '',
+            email: user.email,
             name: user.name,
-            role: user.role || 'CITIZEN',
+            role: user.role,
             phone: user.phone || undefined,
-            emailVerified: user.emailVerified || false,
-            createdAt: user.createdAt?.toISOString?.() || new Date().toISOString(),
-            updatedAt: user.updatedAt?.toISOString?.() || new Date().toISOString(),
+            emailVerified: user.emailVerified,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
           },
         };
       }
 
-      throw new Error(result.error?.message || 'Login failed');
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Login failed');
+      throw new Error('Login failed');
+    } catch (err: any) {
+      const errorMessage = err.graphQLErrors?.[0]?.message || err.message || 'Login failed';
+      const error = new Error(errorMessage);
       setError(error);
       throw error;
     } finally {
