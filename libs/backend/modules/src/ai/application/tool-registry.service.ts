@@ -40,11 +40,11 @@ export class ToolRegistryService implements ToolRegistry {
     }
 
     this.tools.set(tool.definition.name, tool);
-    logger.info('Tool registered', {
+    logger.info({
       name: tool.definition.name,
       category: tool.definition.category,
       readOnly: tool.definition.isReadOnly,
-    });
+    }, 'Tool registered');
   }
 
   /**
@@ -140,10 +140,10 @@ export class ToolRegistryService implements ToolRegistry {
 
       return result;
     } catch (error: any) {
-      logger.error('Tool execution error', {
+      logger.error({
         tool: toolName,
         error: error.message,
-      });
+      }, 'Tool execution error');
 
       return {
         success: false,
@@ -189,10 +189,10 @@ export class ToolRegistryService implements ToolRegistry {
       });
     } catch (error: any) {
       // Don't fail tool execution if audit fails
-      logger.error('Failed to audit tool execution', {
+      logger.error({
         tool: toolName,
         error: error.message,
-      });
+      }, 'Failed to audit tool execution');
     }
   }
 

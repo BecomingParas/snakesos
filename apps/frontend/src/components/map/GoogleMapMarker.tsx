@@ -1,114 +1,39 @@
 /**
  * GoogleMapMarker Component
- * Renders a marker on Google Maps with custom icon and info window
+ * Renders a native Google Maps marker without relying on the external wrapper
+ * package that crashes during Next.js prerender.
  */
 
 'use client';
 
-import { useState, CSSProperties, useEffect } from 'react';
-import { Marker, InfoWindow, useGoogleMap } from '@react-google-maps/api';
-
-// Declare google as a global to access Google Maps API types
-declare const google: any;
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { createRoot } from 'react-dom/client';
+import { useGoogleMap } from './GoogleMapWrapper';
 
 export interface GoogleMapMarkerProps {
-  /**
-   * Unique identifier for the marker
-   */
   id: string;
-
-  /**
-   * Position of the marker
-   */
   position: google.maps.LatLngLiteral;
-
-  /**
-   * Marker title (shown on hover)
-   */
   title?: string;
-
-  /**
-   * Marker icon
-   */
   icon?: string | google.maps.Icon | google.maps.Symbol;
-
-  /**
-   * Click handler
-   */
   onClick?: (markerId: string, event: google.maps.MapMouseEvent) => void;
-
-  /**
-   * Double-click handler
-   */
   onDoubleClick?: (markerId: string, event: google.maps.MapMouseEvent) => void;
-
-  /**
-   * Mouse over handler
-   */
   onMouseOver?: (markerId: string) => void;
-
-  /**
-   * Mouse out handler
-   */
   onMouseOut?: (markerId: string) => void;
-
-  /**
-   * Drag end handler
-   */
   onDragEnd?: (
     markerId: string,
     newPosition: google.maps.LatLngLiteral,
   ) => void;
-
-  /**
-   * Info window content
-   */
   infoWindowContent?: React.ReactNode;
-
-  /**
-   * Whether info window is initially open
-   */
   infoWindowOpen?: boolean;
-
-  /**
-   * Z-index of the marker
-   */
   zIndex?: number;
-
-  /**
-   * Whether marker is draggable
-   */
   draggable?: boolean;
-
-  /**
-   * Marker animation
-   */
   animation?: google.maps.Animation;
-
-  /**
-   * Marker opacity (0-1)
-   */
   opacity?: number;
-
-  /**
-   * Marker cursor
-   */
   cursor?: string;
-
-  /**
-   * Marker label
-   */
   label?: string | google.maps.MarkerLabel;
-
-  /**
-   * Custom styles for info window content
-   */
   infoWindowStyle?: CSSProperties;
 }
 
-/**
- * GoogleMapMarker - Renders a marker on Google Maps
- */
 export function GoogleMapMarker({
   id,
   position,
@@ -129,62 +54,99 @@ export function GoogleMapMarker({
   label,
   infoWindowStyle,
 }: GoogleMapMarkerProps) {
-  const map = useGoogleMap();
+  const { map, isReady } = useGoogleMap();
+  const markerRef = useRef<google.maps.Marker | null>(null);
+  const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
   const [showInfoWindow, setShowInfoWindow] = useState(
     initialInfoWindowOpen || !!infoWindowContent,
   );
 
-  // Safety check: only render if Google Maps API and map instance are available
-  if (typeof window === 'undefined' || !window.google?.maps || !map) {
-    return null;
-  }
+  useEffect(() => {
+    if (!map || !isReady || typeof window === 'undefined' || !window.google?.maps) {
+      return undefined;
+    }
 
-  const handleClick = (e: google.maps.MapMouseEvent) => {
-    setShowInfoWindow(true);
-    onClick?.(id, e);
-  };
+    const marker = new google.maps.Marker({
+      position,
+      map,
+      title,
+      icon: icon as google.maps.Icon | string | google.maps.Symbol | undefined,
+      draggable,
+      zIndex,
+      animation,
+      opacity,
+      cursor,
+      label,
+    });
 
-  const handleDoubleClick = (e: google.maps.MapMouseEvent) => {
-    onDoubleClick?.(id, e);
-  };
+    markerRef.current = marker;
 
-  const handleDragEnd = (e: google.maps.MapMouseEvent) => {
-    const newPosition = {
-      lat: e.latLng?.lat() ?? position.lat,
-      lng: e.latLng?.lng() ?? position.lng,
+    const handleClick = (event: google.maps.MapMouseEvent) => {
+      setShowInfoWindow(true);
+      onClick?.(id, event);
     };
-    onDragEnd?.(id, newPosition);
-  };
 
-  // Wrap marker rendering with error suppression
-  return (
-    <>
-      <Marker
-        position={position}
-        title={title}
-        icon={icon}
-        onClick={handleClick}
-        onDblClick={handleDoubleClick}
-        onMouseOver={() => onMouseOver?.(id)}
-        onMouseOut={() => onMouseOut?.(id)}
-        onDragEnd={handleDragEnd}
-        zIndex={zIndex}
-        draggable={draggable}
-        animation={animation}
-        opacity={opacity}
-        cursor={cursor}
-        label={label}
-      />
-      {showInfoWindow && infoWindowContent && (
-        <InfoWindow
-          position={position}
-          onCloseClick={() => setShowInfoWindow(false)}
-        >
-          <div style={infoWindowStyle}>{infoWindowContent}</div>
-        </InfoWindow>
-      )}
-    </>
-  );
+    const handleDblClick = (event: google.maps.MapMouseEvent) => {
+      onDoubleClick?.(id, event);
+    };
+
+    const handleMouseOver = () => onMouseOver?.(id);
+    const handleMouseOut = () => onMouseOut?.(id);
+    const handleDragEnd = (event: google.maps.MapMouseEvent) => {
+      const nextPosition = {
+        lat: event.latLng?.lat() ?? position.lat,
+        lng: event.latLng?.lng() ?? position.lng,
+      };
+      onDragEnd?.(id, nextPosition);
+    };
+
+    marker.addListener('click', handleClick);
+    marker.addListener('dblclick', handleDblClick);
+    marker.addListener('mouseover', handleMouseOver);
+    marker.addListener('mouseout', handleMouseOut);
+    marker.addListener('dragend', handleDragEnd);
+
+    if (infoWindowContent) {
+      const container = document.createElement('div');
+      const root = createRoot(container);
+      root.render(<div style={infoWindowStyle}>{infoWindowContent}</div>);
+
+      const infoWindow = new google.maps.InfoWindow({ content: container });
+      infoWindowRef.current = infoWindow;
+
+      marker.addListener('click', () => {
+        infoWindow.open({ anchor: marker, map });
+      });
+
+      if (showInfoWindow) {
+        infoWindow.open({ anchor: marker, map });
+      }
+    }
+
+    return () => {
+      google.maps.event.clearInstanceListeners(marker);
+      if (infoWindowRef.current) {
+        infoWindowRef.current.close();
+        infoWindowRef.current = null;
+      }
+      marker.setMap(null);
+      markerRef.current = null;
+    };
+  }, [animation, cursor, draggable, icon, id, infoWindowContent, infoWindowStyle, isReady, label, map, onClick, onDoubleClick, onDragEnd, onMouseOut, onMouseOver, opacity, position, title, zIndex]);
+
+  useEffect(() => {
+    if (!infoWindowRef.current || !markerRef.current) return;
+    if (showInfoWindow) {
+      infoWindowRef.current.open({
+        anchor: markerRef.current,
+        map: markerRef.current.getMap(),
+      });
+    } else {
+      infoWindowRef.current.close();
+    }
+  }, [showInfoWindow]);
+
+  return null;
 }
 
 export default GoogleMapMarker;

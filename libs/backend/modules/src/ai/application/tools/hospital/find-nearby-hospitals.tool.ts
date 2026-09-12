@@ -153,7 +153,7 @@ export class FindNearbyHospitalsTool extends BaseTool<
           },
         };
       })
-      .filter((h): h is HospitalResult => h !== null)
+      .filter((h): h is NonNullable<typeof h> => h !== null)
       .sort((a, b) => {
         // Prioritize hospitals with available antivenom
         if (a.antivenomStatus === 'AVAILABLE' && b.antivenomStatus !== 'AVAILABLE') {

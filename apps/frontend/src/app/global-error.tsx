@@ -1,27 +1,31 @@
-'use client'
+'use client';
 
-/**
- * Global Error Boundary
- * 
- * This component catches errors that occur anywhere in the application.
- * It must be completely self-contained and NOT import any application providers.
- */
 export default function GlobalError({
   error,
   reset,
 }: {
-  error: Error & { digest?: string }
-  reset: () => void
+  error: Error & { digest?: string };
+  reset: () => void;
 }) {
   return (
-    <html>
+    <html lang="en">
       <body>
-        <div style={{ padding: '2rem', textAlign: 'center' }}>
-          <h2>Something went wrong!</h2>
-          <p>{error.message}</p>
-          <button onClick={() => reset()}>Try again</button>
-        </div>
+        <main className="flex min-h-screen items-center justify-center bg-background px-6">
+          <div className="max-w-md rounded-xl border border-border bg-card p-8 text-center shadow-sm">
+            <h2 className="text-xl font-semibold text-foreground">Something went wrong</h2>
+            <p className="mt-3 text-sm text-muted-foreground">
+              {error.message || 'An unexpected error occurred while rendering this app.'}
+            </p>
+            <button
+              type="button"
+              onClick={() => reset()}
+              className="mt-5 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+            >
+              Try again
+            </button>
+          </div>
+        </main>
       </body>
     </html>
-  )
+  );
 }

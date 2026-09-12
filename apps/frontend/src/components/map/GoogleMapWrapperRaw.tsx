@@ -29,7 +29,7 @@ export const GoogleMapContext = createContext<{
 export const useGoogleMapRaw = () => {
   const context = useContext(GoogleMapContext);
   if (!context) {
-    throw new Error('useGoogleMapRaw must be used inside GoogleMapWrapperRaw');
+    return { map: null, isReady: false };
   }
   return context;
 };

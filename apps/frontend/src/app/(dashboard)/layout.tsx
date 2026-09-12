@@ -1,4 +1,5 @@
 import { DashboardLayoutClient } from '@/components/dashboard/dashboard-layout-client'
+import { Providers } from '@/components/providers/providers'
 
 // Force all dashboard routes to be dynamically rendered, not statically generated
 export const dynamic = 'force-dynamic'
@@ -15,5 +16,9 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  return <DashboardLayoutClient>{children}</DashboardLayoutClient>
+  return (
+    <Providers>
+      <DashboardLayoutClient>{children}</DashboardLayoutClient>
+    </Providers>
+  )
 }

@@ -19,7 +19,8 @@
                                                   "{options.outputPath}"
                                               ],
                                   "options":  {
-                                                  "outputPath":  "apps/frontend/.next"
+                                                  "outputPath":  "apps/frontend/.next",
+                                                  "webpack":  true
                                               }
                               },
                     "export":  {

@@ -84,7 +84,7 @@ export class KnowledgeIngestionService {
     const chunkOptions = { ...this.defaultChunkingOptions, ...options };
 
     try {
-      logger.info('Ingesting document', { title: input.title, category: input.category });
+      logger.info({ title: input.title, category: input.category }, 'Ingesting document');
 
       // 1. Normalize text
       const normalizedContent = this.normalizeText(input.content);
@@ -134,7 +134,7 @@ export class KnowledgeIngestionService {
             embedding = result.embedding;
             embeddingsGenerated = true;
           } catch (error: any) {
-            logger.warn(`Failed to generate embedding for chunk ${i}`, { error: error.message });
+            logger.warn({ error: error.message }, `Failed to generate embedding for chunk ${i}`);
           }
         }
 
@@ -154,12 +154,12 @@ export class KnowledgeIngestionService {
         });
       }
 
-      logger.info('Document ingestion complete', {
+      logger.info({
         documentId: document.id,
         chunks: chunks.length,
         tokens: totalTokens,
         embeddings: embeddingsGenerated,
-      });
+      }, 'Document ingestion complete');
 
       return {
         documentId: document.id,
@@ -168,7 +168,7 @@ export class KnowledgeIngestionService {
         embeddingsGenerated,
       };
     } catch (error: any) {
-      logger.error('Document ingestion failed', { error: error.message });
+      logger.error({ error: error.message }, 'Document ingestion failed');
       throw new Error(`Failed to ingest document: ${error.message}`);
     }
   }
@@ -248,16 +248,16 @@ export class KnowledgeIngestionService {
    */
   async deleteDocument(documentId: string): Promise<void> {
     try {
-      logger.info('Deleting document', { documentId });
+      logger.info({ documentId }, 'Deleting document');
 
       await prisma.knowledgeDocument.delete({
         where: { id: documentId },
         // Cascades to chunks automatically
       });
 
-      logger.info('Document deleted', { documentId });
+      logger.info({ documentId }, 'Document deleted');
     } catch (error: any) {
-      logger.error('Failed to delete document', { error: error.message });
+      logger.error({ error: error.message }, 'Failed to delete document');
       throw new Error(`Failed to delete document: ${error.message}`);
     }
   }
@@ -274,6 +274,6 @@ export class KnowledgeIngestionService {
       data: { isActive },
     });
 
-    logger.info('Document status updated', { documentId, isActive });
+    logger.info({ documentId, isActive }, 'Document status updated');
   }
 }

@@ -7,15 +7,22 @@ export type MessageRole = 'user' | 'assistant' | 'system';
 
 export type ToolStatus = 'pending' | 'running' | 'success' | 'error';
 
+export interface UserContext {
+  id?: string;
+  name?: string;
+  role: string;
+}
+
 export interface Message {
   id: string;
   role: MessageRole;
   content: string;
-  timestamp: Date;
+  timestamp: Date | string;
+  imageUrl?: string;
   toolsUsed?: string[];
   toolStatus?: ToolStatus;
   toolProgress?: string;
-  blocks?: AIBlock[];
+  blocks?: StructuredBlock[];
   error?: string;
 }
 
@@ -31,6 +38,11 @@ export type AIBlockType =
   | 'chart'
   | 'map'
   | 'confirmation';
+
+export interface StructuredBlock {
+  type: 'snake-card' | 'rescuer-card' | 'alert' | 'action-buttons';
+  data: any;
+}
 
 export interface BaseAIBlock {
   id: string;

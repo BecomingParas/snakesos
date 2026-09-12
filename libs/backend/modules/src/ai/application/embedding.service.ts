@@ -19,7 +19,7 @@
  * ```
  */
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, TaskType } from '@google/generative-ai';
 import { loadGeminiConfig } from '../infrastructure/gemini/gemini.config';
 import { createLogger } from '@snake-rescue/shared';
 
@@ -103,8 +103,8 @@ export class EmbeddingService {
       });
 
       const result = await model.embedContent({
-        content: { parts: [{ text }] },
-        taskType: 'RETRIEVAL_DOCUMENT', // Optimized for document retrieval
+        content: { role: 'user', parts: [{ text }] },
+        taskType: TaskType.RETRIEVAL_DOCUMENT, // Optimized for document retrieval
       });
 
       const embedding = result.embedding.values;
@@ -121,7 +121,7 @@ export class EmbeddingService {
         model: this.embeddingModel,
       };
     } catch (error: any) {
-      logger.error('Failed to generate embedding', { error: error.message });
+      logger.error({ error: error.message }, 'Failed to generate embedding');
       throw new Error(`Embedding generation failed: ${error.message}`);
     }
   }
@@ -163,7 +163,7 @@ export class EmbeddingService {
         count: embeddings.length,
       };
     } catch (error: any) {
-      logger.error('Failed to generate batch embeddings', { error: error.message });
+      logger.error({ error: error.message }, 'Failed to generate batch embeddings');
       throw new Error(`Batch embedding generation failed: ${error.message}`);
     }
   }
@@ -185,8 +185,8 @@ export class EmbeddingService {
       });
 
       const result = await model.embedContent({
-        content: { parts: [{ text: query }] },
-        taskType: 'RETRIEVAL_QUERY', // Optimized for query retrieval
+        content: { role: 'user', parts: [{ text: query }] },
+        taskType: TaskType.RETRIEVAL_QUERY, // Optimized for query retrieval
       });
 
       const embedding = result.embedding.values;
@@ -203,7 +203,7 @@ export class EmbeddingService {
         model: this.embeddingModel,
       };
     } catch (error: any) {
-      logger.error('Failed to generate query embedding', { error: error.message });
+      logger.error({ error: error.message }, 'Failed to generate query embedding');
       throw new Error(`Query embedding generation failed: ${error.message}`);
     }
   }

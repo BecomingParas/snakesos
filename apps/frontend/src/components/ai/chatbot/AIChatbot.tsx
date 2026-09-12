@@ -24,6 +24,26 @@ const AI_CHAT_MUTATION = gql`
   }
 `;
 
+interface AIChatMutationData {
+  aiChat: {
+    conversationId: string;
+    messageId: string;
+    response: string;
+    toolsUsed: string[];
+    responseTime: number;
+  };
+}
+
+interface AIChatMutationVariables {
+  input: {
+    message: string;
+    conversationId?: string;
+    context: {
+      metadata: Record<string, unknown>;
+    };
+  };
+}
+
 interface AIChatbotProps {
   userContext?: UserContext;
 }
@@ -32,7 +52,14 @@ export function AIChatbot({ userContext }: AIChatbotProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversationId, setConversationId] = useState<string | undefined>();
-  const [aiChatMutation, { loading }] = useMutation(AI_CHAT_MUTATION);
+  const [aiChatMutation, { loading }] = useMutation<
+    AIChatMutationData,
+    AIChatMutationVariables
+  >(AI_CHAT_MUTATION);
+  const context =
+    userContext?.role === 'rescuer' || userContext?.role === 'admin'
+      ? userContext.role
+      : 'public';
 
   const handleSendMessage = async (content: string, imageFile?: File) => {
     // Create user message
@@ -95,7 +122,8 @@ export function AIChatbot({ userContext }: AIChatbotProps) {
       }
 
       // Parse AI response
-      const aiResponse = data?.aiChat?.response || 'Sorry, I could not generate a response.';
+      const aiResponse =
+        data?.aiChat?.response || 'Sorry, I could not generate a response.';
 
       // Create assistant message
       const assistantMessage: Message = {
@@ -153,16 +181,12 @@ export function AIChatbot({ userContext }: AIChatbotProps) {
         {isOpen && (
           <AIChatWindow onClose={() => setIsOpen(false)}>
             {/* Header */}
-            <AIChatHeader
-              userContext={userContext}
-              onClear={handleClearChat}
-              onClose={() => setIsOpen(false)}
-            />
+            <AIChatHeader context={context} onClose={() => setIsOpen(false)} />
 
             {/* Messages or Welcome */}
             {messages.length === 0 ? (
               <AIWelcome
-                userContext={userContext}
+                context={context}
                 onSuggestionClick={handleSuggestionClick}
               />
             ) : (

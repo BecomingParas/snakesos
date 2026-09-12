@@ -187,7 +187,7 @@ export class FindNearestRescuerTool extends BaseTool<
   /**
    * Sanitize rescuer data for public display
    */
-  protected sanitizeForAudit(data: any): any {
+  protected override sanitizeForAudit(data: any): any {
     // Don't expose full phone numbers in audit logs
     if (Array.isArray(data)) {
       return data.map((rescuer) => ({

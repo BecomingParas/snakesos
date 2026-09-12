@@ -83,7 +83,7 @@ export class KnowledgeRetrievalService {
     } = options;
 
     try {
-      logger.info('Searching knowledge base', { query, topK, category, visibility });
+      logger.info({ query, topK, category, visibility }, 'Searching knowledge base');
 
       // Determine search method
       const vectorAvailable = false; // TODO: Check if pgvector is enabled
@@ -102,11 +102,11 @@ export class KnowledgeRetrievalService {
         searchMethod = 'fulltext';
       }
 
-      logger.info('Search complete', {
+      logger.info({
         query,
         found: results.length,
         method: searchMethod,
-      });
+      }, 'Search complete');
 
       return {
         results,
@@ -115,7 +115,7 @@ export class KnowledgeRetrievalService {
         query,
       };
     } catch (error: any) {
-      logger.error('Search failed', { error: error.message });
+      logger.error({ error: error.message }, 'Search failed');
       throw new Error(`Knowledge search failed: ${error.message}`);
     }
   }

@@ -97,7 +97,7 @@ export const aiChatResolvers = {
       const toolContext: ToolContext = {
         userId: context.user?.id,
         userRole: context.user?.role || 'PUBLIC',
-        permissions: context.permissions || [],
+        permissions: [],
         sessionId: context.session?.id,
       };
 
@@ -144,7 +144,7 @@ export const aiChatResolvers = {
       const toolContext: ToolContext = {
         userId: context.user?.id,
         userRole: context.user?.role || 'PUBLIC',
-        permissions: context.permissions || [],
+        permissions: [],
         sessionId: context.session?.id,
         ipAddress: context.req.ip,
         conversationId,
@@ -169,11 +169,11 @@ export const aiChatResolvers = {
           systemPrompt,
         });
 
-        logger.info('Chat completed', {
+        logger.info({
           conversationId: response.conversationId,
           toolsUsed: response.toolsUsed.length,
           userId: context.user?.id,
-        });
+        }, 'Chat completed');
 
         return {
           conversationId: response.conversationId,
@@ -185,7 +185,7 @@ export const aiChatResolvers = {
           confirmationRequest: null,
         };
       } catch (error: any) {
-        logger.error('Chat failed', { error: error.message });
+        logger.error({ error: error.message }, 'Chat failed');
         throw new Error(`Chat failed: ${error.message}`);
       }
     },
@@ -231,7 +231,7 @@ export const aiChatResolvers = {
       const toolContext: ToolContext = {
         userId: context.user.id,
         userRole: context.user.role,
-        permissions: context.permissions || [],
+        permissions: [],
         sessionId: context.session?.id,
         ipAddress: context.req.ip,
         conversationId,

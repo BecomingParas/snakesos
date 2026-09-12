@@ -54,11 +54,11 @@ export abstract class BaseTool<TInput = any, TOutput = any>
 
       // Check authorization
       if (!this.isAuthorized(context)) {
-        logger.warn('Unauthorized tool execution attempt', {
+        logger.warn({
           tool: this.definition.name,
           userId: context.userId,
           userRole: context.userRole,
-        });
+        }, 'Unauthorized tool execution attempt');
 
         return {
           success: false,
@@ -68,19 +68,19 @@ export abstract class BaseTool<TInput = any, TOutput = any>
       }
 
       // Execute tool
-      logger.info('Executing tool', {
+      logger.info({
         tool: this.definition.name,
         userId: context.userId,
         category: this.definition.category,
-      });
+      }, 'Executing tool');
 
       const result = await this.executeImpl(input, context);
       const executionTime = Date.now() - startTime;
 
-      logger.info('Tool execution successful', {
+      logger.info({
         tool: this.definition.name,
         executionTime,
-      });
+      }, 'Tool execution successful');
 
       return {
         success: true,
@@ -94,11 +94,11 @@ export abstract class BaseTool<TInput = any, TOutput = any>
     } catch (error: any) {
       const executionTime = Date.now() - startTime;
 
-      logger.error('Tool execution failed', {
+      logger.error({
         tool: this.definition.name,
         error: error.message,
         executionTime,
-      });
+      }, 'Tool execution failed');
 
       return {
         success: false,

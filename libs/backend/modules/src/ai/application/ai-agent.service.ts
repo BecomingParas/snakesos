@@ -1,12 +1,12 @@
 /**
  * AI Agent Service
- * 
+ *
  * Orchestrates AI interactions using Gemini with function calling.
  * Manages conversations, tool execution, and context awareness.
- * 
+ *
  * Architecture:
  * User → AI Agent → Gemini (reasoning) → Tools → Application Services
- * 
+ *
  * Key Features:
  * - Role-based tool access
  * - Conversation management
@@ -15,7 +15,7 @@
  * - Audit logging
  */
 
-import { GoogleGenerativeAI, FunctionDeclarationSchemaType } from '@google/generative-ai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { loadGeminiConfig } from '../infrastructure/gemini/gemini.config';
 import { ToolRegistryService } from './tool-registry.service';
 import { ToolContext } from './types/tool.types';
@@ -65,7 +65,7 @@ export class AIAgentService {
 
   constructor(
     toolRegistry: ToolRegistryService,
-    retrievalService?: KnowledgeRetrievalService
+    retrievalService?: KnowledgeRetrievalService,
   ) {
     const config = loadGeminiConfig();
     this.genAI = new GoogleGenerativeAI(config.apiKey);
@@ -82,11 +82,14 @@ export class AIAgentService {
     const { message, conversationId, context, systemPrompt } = request;
 
     try {
-      logger.info('Processing chat request', {
-        conversationId,
-        userId: context.userId,
-        userRole: context.userRole,
-      });
+      logger.info(
+        {
+          conversationId,
+          userId: context.userId,
+          userRole: context.userRole,
+        },
+        'Processing chat request',
+      );
 
       // Get or create conversation
       const conversation = conversationId
@@ -128,7 +131,7 @@ export class AIAgentService {
         const toolResults: any[] = [];
 
         for (const call of functionCalls) {
-          logger.info('Executing tool', { tool: call.name });
+          logger.info({ tool: call.name }, 'Executing tool');
 
           const toolResult = await this.toolRegistry.executeTool({
             toolName: call.name,
@@ -146,12 +149,12 @@ export class AIAgentService {
 
         // Send tool results back to model
         const followUpResult = await chat.sendMessage([
-          {
-            functionResponses: toolResults.map((tr) => ({
+          ...toolResults.map((tr) => ({
+            functionResponse: {
               name: tr.name,
               response: tr.response,
-            })),
-          },
+            },
+          })),
         ]);
 
         finalResponse = followUpResult.response.text();
@@ -164,16 +167,19 @@ export class AIAgentService {
       const assistantMessage = await this.saveAssistantMessage(
         conversation.id,
         finalResponse,
-        toolsUsed
+        toolsUsed,
       );
 
       const responseTime = Date.now() - startTime;
 
-      logger.info('Chat request completed', {
-        conversationId: conversation.id,
-        toolsUsed: toolsUsed.length,
-        responseTime,
-      });
+      logger.info(
+        {
+          conversationId: conversation.id,
+          toolsUsed: toolsUsed.length,
+          responseTime,
+        },
+        'Chat request completed',
+      );
 
       return {
         conversationId: conversation.id,
@@ -186,7 +192,7 @@ export class AIAgentService {
         },
       };
     } catch (error: any) {
-      logger.error('Chat request failed', { error: error.message });
+      logger.error({ error: error.message }, 'Chat request failed');
       throw new Error(`AI chat failed: ${error.message}`);
     }
   }
@@ -318,7 +324,7 @@ You are assisting an ADMIN. They have access to:
   private async saveAssistantMessage(
     conversationId: string,
     content: string,
-    toolsUsed: string[]
+    toolsUsed: string[],
   ) {
     return prisma.aiMessage.create({
       data: {

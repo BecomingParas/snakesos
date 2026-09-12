@@ -11,10 +11,7 @@
 // - Automatic cleanup on process termination
 // ===================================================================
 
-import {
-  PrismaClient,
-  Prisma as PrismaTypes,
-} from './prisma/generated';
+import { PrismaClient, Prisma as PrismaTypes } from './prisma/generated';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 

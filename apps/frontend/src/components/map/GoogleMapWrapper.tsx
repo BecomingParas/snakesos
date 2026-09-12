@@ -1,12 +1,20 @@
 /**
  * GoogleMapWrapper Component
- * Provides a reusable Google Maps container with consistent configuration
+ * Provides a reusable Google Maps container with consistent configuration.
+ * This intentionally avoids the external @react-google-maps/api wrapper because
+ * its React context implementation crashes during Next.js static prerender.
  */
 
 'use client';
 
-import { useState, ReactNode } from 'react';
-import { GoogleMap } from '@react-google-maps/api';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import { useGoogleMapsApi } from '@/lib/map/google-maps-loader';
 import {
   GoogleMapsDevDiagnostics,
@@ -14,6 +22,21 @@ import {
   GoogleMapsLoadingState,
   GoogleMapsMissingKeyState,
 } from './GoogleMapsStatus';
+
+export interface GoogleMapContextValue {
+  map: google.maps.Map | null;
+  isReady: boolean;
+}
+
+export const GoogleMapContext = createContext<GoogleMapContextValue | null>(null);
+
+export function useGoogleMap(): GoogleMapContextValue {
+  const context = useContext(GoogleMapContext);
+  if (!context) {
+    return { map: null, isReady: false };
+  }
+  return context;
+}
 
 export interface GoogleMapWrapperProps {
   center?: google.maps.LatLngLiteral;
@@ -71,12 +94,56 @@ export function GoogleMapWrapper({
   onLoadError,
   className = '',
 }: GoogleMapWrapperProps) {
+  const mapRef = useRef<HTMLDivElement | null>(null);
+  const mapInstanceRef = useRef<google.maps.Map | null>(null);
   const [isMapReady, setIsMapReady] = useState(false);
   const { isLoaded, error, retry, apiKeyConfigured } = useGoogleMapsApi();
   const containerStyle = {
     ...DEFAULT_MAP_STYLE,
     ...mapContainerStyle,
   };
+
+  useEffect(() => {
+    if (!isLoaded || !mapRef.current || !window.google?.maps || mapInstanceRef.current) {
+      return undefined;
+    }
+
+    const map = new window.google.maps.Map(mapRef.current, {
+      ...DEFAULT_MAP_OPTIONS,
+      ...mapOptions,
+      center,
+      zoom,
+    });
+
+    mapInstanceRef.current = map;
+    setIsMapReady(true);
+
+    const handleClick = (event: google.maps.MapMouseEvent) => onClick?.(event);
+    const handleDblClick = (event: google.maps.MapMouseEvent) => onDblClick?.(event);
+    const handleBoundsChanged = () => onBoundsChanged?.();
+    const handleZoomChanged = () => onZoomChanged?.();
+    const handleCenterChanged = () => onCenterChanged?.();
+    const handleIdle = () => onIdle?.();
+
+    map.addListener('click', handleClick);
+    map.addListener('dblclick', handleDblClick);
+    map.addListener('bounds_changed', handleBoundsChanged);
+    map.addListener('zoom_changed', handleZoomChanged);
+    map.addListener('center_changed', handleCenterChanged);
+    map.addListener('idle', handleIdle);
+
+    return () => {
+      google.maps.event.clearInstanceListeners(map);
+      mapInstanceRef.current = null;
+      setIsMapReady(false);
+    };
+  }, [center, isLoaded, mapOptions, onBoundsChanged, onCenterChanged, onClick, onDblClick, onIdle, onZoomChanged, zoom]);
+
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+    mapInstanceRef.current.setCenter(center);
+    mapInstanceRef.current.setZoom(zoom);
+  }, [center, zoom]);
 
   if (!apiKeyConfigured) {
     return (
@@ -104,26 +171,22 @@ export function GoogleMapWrapper({
 
   return (
     <div className={`relative ${className}`} style={containerStyle}>
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={center}
-        zoom={zoom}
-        options={{
-          ...DEFAULT_MAP_OPTIONS,
-          ...mapOptions,
-          center,
-          zoom,
+      <div
+        ref={mapRef}
+        style={{
+          width: '100%',
+          height: '100%',
+          minHeight: containerStyle.minHeight ?? '400px',
+          display: 'block',
         }}
-        onClick={onClick}
-        onDblClick={onDblClick}
-        onBoundsChanged={onBoundsChanged}
-        onZoomChanged={onZoomChanged}
-        onCenterChanged={onCenterChanged}
-        onIdle={onIdle}
-        onLoad={() => setIsMapReady(true)}
-      >
-        {isMapReady && children}
-      </GoogleMap>
+      />
+      {isMapReady && (
+        <GoogleMapContext.Provider
+          value={{ map: mapInstanceRef.current, isReady: isMapReady }}
+        >
+          {children}
+        </GoogleMapContext.Provider>
+      )}
       <GoogleMapsDevDiagnostics mapInitialized={isMapReady} />
     </div>
   );

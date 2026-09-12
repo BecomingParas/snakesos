@@ -6,6 +6,8 @@ export const metadata = {
   description: 'Thank you for your generous donation',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default function DonationSuccessPage() {
   return (
     <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>

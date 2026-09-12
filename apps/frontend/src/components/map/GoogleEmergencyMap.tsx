@@ -7,7 +7,6 @@
 'use client';
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { GoogleMap, Marker, Polyline } from '@react-google-maps/api';
 import { AlertTriangle } from 'lucide-react';
 import { calculateDistance } from '@/lib/map/distance';
 import { isValidCoordinate } from '@/lib/map/coordinates';
@@ -16,6 +15,8 @@ import {
   GoogleMapsLoadErrorState,
   GoogleMapsMissingKeyState,
 } from './GoogleMapsStatus';
+import { GoogleMapWrapper } from './GoogleMapWrapper';
+import { GoogleMapMarker } from './GoogleMapMarker';
 import type { HospitalLocation, IncidentLocation } from './map.types';
 import type { Route as RouteData } from '@/lib/map/routing.types';
 
@@ -319,13 +320,11 @@ export function GoogleEmergencyMap({
           </div>
         </div>
       ) : (
-        <GoogleMap
-          mapContainerStyle={mapContainerStyle}
+        <GoogleMapWrapper
           center={mapCenter}
           zoom={zoom}
-          onLoad={onLoad}
-          onUnmount={onUnmount}
-          options={{
+          mapContainerStyle={mapContainerStyle}
+          mapOptions={{
             restriction: {
               latLngBounds: NEPAL_BOUNDS,
               strictBounds: false,
@@ -335,11 +334,13 @@ export function GoogleEmergencyMap({
             fullscreenControl: true,
             zoomControl: true,
           }}
+          onLoadError={console.error}
         >
           {/* Incident Marker */}
           {incident &&
             isValidCoordinate(incident.latitude, incident.longitude) && (
-              <Marker
+              <GoogleMapMarker
+                id={incident.id}
                 position={{ lat: incident.latitude, lng: incident.longitude }}
                 icon={getIncidentIcon(incident.priority)}
                 onClick={() => {
@@ -356,8 +357,9 @@ export function GoogleEmergencyMap({
                 return null;
 
               return (
-                <Marker
+                <GoogleMapMarker
                   key={`rescuer-${rescuer.id}`}
+                  id={rescuer.id}
                   position={{ lat: rescuer.latitude, lng: rescuer.longitude }}
                   icon={getRescuerIcon(rescuer.status)}
                   onClick={() => {
@@ -381,8 +383,9 @@ export function GoogleEmergencyMap({
               }
 
               return (
-                <Marker
+                <GoogleMapMarker
                   key={`hospital-${hospital.id}`}
+                  id={hospital.id}
                   position={{ lat: hospital.latitude, lng: hospital.longitude }}
                   icon={getHospitalIcon(hospital)}
                   onClick={() => {
@@ -392,22 +395,7 @@ export function GoogleEmergencyMap({
                 />
               );
             })}
-
-          {/* Route Polyline */}
-          {showRoute && route && (route as any).geometry && (
-            <Polyline
-              path={(route as any).geometry.map((point: number[]) => ({
-                lat: point[0],
-                lng: point[1],
-              }))}
-              options={{
-                strokeColor: emergencyMode ? '#dc2626' : '#2563eb',
-                strokeWeight: 4,
-                strokeOpacity: 0.8,
-              }}
-            />
-          )}
-        </GoogleMap>
+        </GoogleMapWrapper>
       )}
 
       {/* Emergency Mode Indicator */}

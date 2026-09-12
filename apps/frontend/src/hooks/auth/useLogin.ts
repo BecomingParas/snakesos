@@ -47,12 +47,23 @@ export interface LoginResult {
   };
 }
 
+interface LoginMutationData {
+  login: LoginResult;
+}
+
+interface LoginMutationVariables {
+  input: LoginInput;
+}
+
 export function useLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const setUser = useAuthStore((state) => state.setUser);
 
-  const [loginMutation] = useMutation(LOGIN_MUTATION);
+  const [loginMutation] = useMutation<
+    LoginMutationData,
+    LoginMutationVariables
+  >(LOGIN_MUTATION);
 
   const login = async (input: LoginInput): Promise<LoginResult> => {
     setLoading(true);
@@ -110,7 +121,8 @@ export function useLogin() {
 
       throw new Error('Login failed');
     } catch (err: any) {
-      const errorMessage = err.graphQLErrors?.[0]?.message || err.message || 'Login failed';
+      const errorMessage =
+        err.graphQLErrors?.[0]?.message || err.message || 'Login failed';
       const error = new Error(errorMessage);
       setError(error);
       throw error;

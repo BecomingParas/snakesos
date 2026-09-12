@@ -17,13 +17,10 @@ export function AIChatWindow({ children, onClose }: AIChatWindowProps) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // Safe window access only on client
-    if (typeof window === 'undefined') return;
-    
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -48,9 +45,7 @@ export function AIChatWindow({ children, onClose }: AIChatWindowProps) {
             : { scale: 0.9, opacity: 0, y: 20 }
         }
         animate={
-          isMobile
-            ? { y: 0, opacity: 1 }
-            : { scale: 1, opacity: 1, y: 0 }
+          isMobile ? { y: 0, opacity: 1 } : { scale: 1, opacity: 1, y: 0 }
         }
         exit={
           isMobile

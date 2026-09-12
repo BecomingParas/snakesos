@@ -1,9 +1,8 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
-import '../styles.css'
 import { Providers } from '@/components/providers/providers'
+import '../styles.css'
 
-const inter = Inter({ subsets: ['latin'] })
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'SnakeSOS - Wildlife Rescue Platform',
@@ -33,7 +32,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
     </html>

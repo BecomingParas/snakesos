@@ -1,6 +1,6 @@
 /**
  * AI Chat Component
- * 
+ *
  * Main chat interface for interacting with SnakeSOS AI agent.
  * Supports text messages, tool execution, and structured responses.
  */
@@ -76,6 +76,35 @@ interface AIChatProps {
   onConversationChange?: (conversationId: string) => void;
 }
 
+interface AIChatMutationData {
+  aiChat: {
+    conversationId: string;
+    messageId: string;
+    response: string;
+    toolsUsed: string[];
+    responseTime: number;
+    requiresConfirmation?: boolean | null;
+    confirmationRequest?: {
+      toolName: string;
+      action: string;
+      description: string;
+      arguments: Record<string, any>;
+      risks: string[];
+      reversible: boolean;
+    } | null;
+  };
+}
+
+interface AIChatMutationVariables {
+  input: {
+    message: string;
+    conversationId?: string;
+    context?: {
+      location: { latitude: number; longitude: number };
+    };
+  };
+}
+
 /**
  * AI Chat Component
  */
@@ -88,13 +117,17 @@ export function AIChat({
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [conversationId, setConversationId] = useState<string | undefined>(
-    initialConversationId
+    initialConversationId,
   );
-  const [pendingConfirmation, setPendingConfirmation] = useState<Message | null>(null);
+  const [pendingConfirmation, setPendingConfirmation] =
+    useState<Message | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   // GraphQL mutation
-  const [sendMessage, { loading, error }] = useMutation(AI_CHAT_MUTATION, {
+  const [sendMessage, { loading, error }] = useMutation<
+    AIChatMutationData,
+    AIChatMutationVariables
+  >(AI_CHAT_MUTATION, {
     onCompleted: (data) => {
       const response = data.aiChat;
 
@@ -251,10 +284,14 @@ export function AIChat({
         <MessageSquare className="h-5 w-5 text-primary" />
         <h3 className="font-semibold">SnakeSOS AI Assistant</h3>
         {context === 'rescuer' && (
-          <span className="ml-auto text-xs text-muted-foreground">Rescuer Mode</span>
+          <span className="ml-auto text-xs text-muted-foreground">
+            Rescuer Mode
+          </span>
         )}
         {context === 'admin' && (
-          <span className="ml-auto text-xs text-muted-foreground">Admin Mode</span>
+          <span className="ml-auto text-xs text-muted-foreground">
+            Admin Mode
+          </span>
         )}
       </div>
 
@@ -265,7 +302,8 @@ export function AIChat({
             <div className="text-center py-12 text-muted-foreground">
               <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p className="text-sm">
-                Ask me anything about snake safety, rescue procedures, or emergency assistance.
+                Ask me anything about snake safety, rescue procedures, or
+                emergency assistance.
               </p>
               <div className="mt-4 text-xs space-y-1">
                 <p>• "What should I do if I see a snake?"</p>

@@ -88,6 +88,11 @@ const nextConfig = {
       '.mjs': ['.mts', '.mjs'],
       '.cjs': ['.cts', '.cjs'],
     };
+
+    config.resolve.alias['@snake-rescue/database$'] = path.resolve(
+      workspaceRoot,
+      'libs/database/src/index.ts',
+    );
     
     return config;
   },

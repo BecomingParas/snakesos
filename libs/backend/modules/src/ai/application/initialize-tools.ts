@@ -33,13 +33,13 @@ export function initializeTools(): ToolRegistryService {
     // Hospital Tools
     registry.register(new FindNearbyHospitalsTool());
 
-    logger.info('All AI tools registered successfully', {
+    logger.info({
       totalTools: registry.getAllTools().length,
-    });
+    }, 'All AI tools registered successfully');
 
     return registry;
   } catch (error: any) {
-    logger.error('Failed to initialize tools', { error: error.message });
+    logger.error({ error: error.message }, 'Failed to initialize tools');
     throw error;
   }
 }
