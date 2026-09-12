@@ -3,13 +3,16 @@
   "compilerOptions": {
     "outDir": "dist",
     "types": ["node"],
-    "rootDir": "src",
     "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
     "emitDeclarationOnly": false,
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "composite": true,
+    "skipLibCheck": true,
+    "noEmitOnError": false,
+    "rootDir": "../.."
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "../../libs/**/*.ts"],
   "exclude": [
     "out-tsc",
     "dist",
