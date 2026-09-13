@@ -12,6 +12,11 @@ import {
   Sparkles,
   Upload,
   X,
+  MapPin,
+  Phone,
+  Clock,
+  Navigation,
+  Activity,
 } from 'lucide-react';
 import { useMediaUpload } from '@/hooks/useMediaUpload';
 import { Button } from '@/components/ui/button';
@@ -54,6 +59,23 @@ type IdentificationResult = {
     } | null;
   }>;
   createdAt?: string;
+  nearestHospital?: {
+    name: string;
+    address: string;
+    phone?: string;
+    emergencyPhone?: string;
+    distance?: number;
+    antivenomStatus: string;
+    snakebiteTreatmentAvailable: boolean;
+  };
+  nearestRescuer?: {
+    name: string;
+    contact: string;
+    experience: string;
+    distance?: number;
+    rating?: number;
+    totalRescues?: number;
+  };
 };
 
 function classifyDisplayLabel(dangerAssessment?: string | null) {
@@ -117,9 +139,35 @@ export default function IdentifyPage() {
       setState('scanning');
       setError(null);
 
+      // Get user's location
+      let userLocation: { lat: number; lng: number } | null = null;
+      if ('geolocation' in navigator) {
+        try {
+          const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              timeout: 5000,
+              enableHighAccuracy: false,
+            });
+          });
+          userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+        } catch (geoError) {
+          console.warn('Could not get location:', geoError);
+          // Continue without location - still identify the snake
+        }
+      }
+
       // Send the file directly to the API endpoint
       const formData = new FormData();
       formData.append('file', preview.file);
+      
+      // Add location if available
+      if (userLocation) {
+        formData.append('lat', userLocation.lat.toString());
+        formData.append('lng', userLocation.lng.toString());
+      }
 
       const response = await fetch('/api/identify-snake', {
         method: 'POST',
@@ -221,7 +269,7 @@ export default function IdentifyPage() {
         } : null,
         confidence: data.confidence ?? 0,
         provider: 'GEMINI',
-        model: mlResult.meta?.model ?? mlResult.identification?.model ?? 'gemini-3.6-flash',
+        model: mlResult.meta?.model ?? mlResult.identification?.model ?? 'gemini-1.5-flash',
         dangerAssessment,
         venomousDetected: data.species?.venomous ?? null,
         imageQuality: data.image_quality,
@@ -242,6 +290,8 @@ export default function IdentifyPage() {
           }),
         ),
         createdAt: new Date().toISOString(),
+        nearestHospital: data.nearestHospital,
+        nearestRescuer: data.nearestRescuer,
       };
 
       setResult(payload);
@@ -568,6 +618,157 @@ export default function IdentifyPage() {
                     </p>
                   </div>
                 )}
+
+                {/* Nearest Hospital & Rescuer Cards */}
+                <div className="space-y-4">
+                  {result.nearestHospital && (
+                    <div className="rounded-2xl border border-primary/40 bg-gradient-to-br from-primary/5 to-accent/5 backdrop-blur-sm shadow-lg p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="flex items-center gap-2 text-lg font-bold text-primary">
+                          <Activity className="h-5 w-5" />
+                          Nearest Hospital
+                        </h3>
+                        {result.nearestHospital.distance && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">
+                            <Navigation className="h-3 w-3" />
+                            {result.nearestHospital.distance.toFixed(1)} km away
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div>
+                          <p className="font-semibold text-lg">{result.nearestHospital.name}</p>
+                          <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-1">
+                            <MapPin className="h-3.5 w-3.5" />
+                            {result.nearestHospital.address}
+                          </p>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2">
+                          {result.nearestHospital.snakebiteTreatmentAvailable && (
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-success/40 bg-success/15 px-3 py-1 text-xs font-semibold text-success">
+                              <CheckCircle2 className="h-3 w-3" />
+                              Snakebite Treatment Available
+                            </span>
+                          )}
+                          <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${
+                            result.nearestHospital.antivenomStatus === 'AVAILABLE' 
+                              ? 'border-success/40 bg-success/15 text-success'
+                              : result.nearestHospital.antivenomStatus === 'LOW_STOCK'
+                              ? 'border-warning/40 bg-warning/15 text-warning'
+                              : 'border-destructive/40 bg-destructive/15 text-destructive'
+                          }`}>
+                            {result.nearestHospital.antivenomStatus === 'AVAILABLE' && '✓ Antivenom Available'}
+                            {result.nearestHospital.antivenomStatus === 'LOW_STOCK' && '⚠️ Low Antivenom Stock'}
+                            {result.nearestHospital.antivenomStatus === 'OUT_OF_STOCK' && '✗ No Antivenom'}
+                            {result.nearestHospital.antivenomStatus === 'UNKNOWN' && '? Antivenom Status Unknown'}
+                          </span>
+                        </div>
+
+                        <div className="flex gap-3 pt-2">
+                          {result.nearestHospital.emergencyPhone && (
+                            <a 
+                              href={`tel:${result.nearestHospital.emergencyPhone}`}
+                              className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-destructive px-4 py-2.5 text-sm font-semibold text-destructive-foreground hover:bg-destructive/90 transition-colors"
+                            >
+                              <Phone className="h-4 w-4" />
+                              Emergency: {result.nearestHospital.emergencyPhone}
+                            </a>
+                          )}
+                          {!result.nearestHospital.emergencyPhone && result.nearestHospital.phone && (
+                            <a 
+                              href={`tel:${result.nearestHospital.phone}`}
+                              className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+                            >
+                              <Phone className="h-4 w-4" />
+                              Call: {result.nearestHospital.phone}
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {result.nearestRescuer && (
+                    <div className="rounded-2xl border border-accent/40 bg-gradient-to-br from-accent/5 to-primary/5 backdrop-blur-sm shadow-lg p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="flex items-center gap-2 text-lg font-bold text-accent">
+                          <ShieldCheck className="h-5 w-5" />
+                          Nearest Snake Rescuer
+                        </h3>
+                        {result.nearestRescuer.distance && (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-accent">
+                            <Navigation className="h-3 w-3" />
+                            {result.nearestRescuer.distance.toFixed(1)} km away
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div>
+                          <p className="font-semibold text-lg">{result.nearestRescuer.name}</p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {result.nearestRescuer.experience} Rescuer
+                          </p>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2">
+                          {result.nearestRescuer.totalRescues !== undefined && (
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/15 px-3 py-1 text-xs font-semibold text-accent">
+                              <CheckCircle2 className="h-3 w-3" />
+                              {result.nearestRescuer.totalRescues} Rescues Completed
+                            </span>
+                          )}
+                          {result.nearestRescuer.rating && (
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-warning/40 bg-warning/15 px-3 py-1 text-xs font-semibold text-warning">
+                              ⭐ {result.nearestRescuer.rating.toFixed(1)} Rating
+                            </span>
+                          )}
+                        </div>
+
+                        <a 
+                          href={`tel:${result.nearestRescuer.contact}`}
+                          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition-colors"
+                        >
+                          <Phone className="h-4 w-4" />
+                          Call Rescuer: {result.nearestRescuer.contact}
+                        </a>
+                        
+                        <p className="text-xs text-muted-foreground italic">
+                          💡 Tip: Do not approach the snake. Keep a safe distance and let the trained rescuer handle it.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Emergency Hotline Card - Always Show */}
+                  <div className="rounded-2xl border border-destructive/40 bg-gradient-to-br from-destructive/10 to-warning/5 backdrop-blur-sm shadow-lg p-6">
+                    <h3 className="flex items-center gap-2 text-lg font-bold text-destructive mb-4">
+                      <Clock className="h-5 w-5 animate-pulse" />
+                      24/7 Emergency Hotline
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Snake emergency? Our trained rescuers are available round the clock.
+                    </p>
+                    <div className="space-y-2">
+                      <a 
+                        href="tel:9812482578"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-destructive px-4 py-3 text-sm font-semibold text-destructive-foreground hover:bg-destructive/90 transition-colors"
+                      >
+                        <Phone className="h-4 w-4" />
+                        Emergency Line 1: 9812482578
+                      </a>
+                      <a 
+                        href="tel:9807591342"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-destructive px-4 py-3 text-sm font-semibold text-destructive-foreground hover:bg-destructive/90 transition-colors"
+                      >
+                        <Phone className="h-4 w-4" />
+                        Emergency Line 2: 9807591342
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="mt-4 grid min-h-[280px] place-items-center rounded-xl border border-border/70 bg-card/60 p-8 text-center">

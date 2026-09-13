@@ -3,6 +3,9 @@ import { v2 as cloudinary } from 'cloudinary';
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { GeminiSnakeIdentificationSchema } from '@/lib/gemini/snake-identification-schema';
 import { buildSnakeIdentificationPrompt } from '@/lib/gemini/prompts';
+import { PrismaClient } from '@snake-rescue/database';
+
+const prisma = new PrismaClient();
 
 /**
  * Snake identification endpoint - calls Gemini with structured outputs
@@ -388,7 +391,108 @@ export async function POST(request: NextRequest) {
       processing_time_ms: processingTime
     });
 
-    // ---- Step 7: Return result ----
+    // ---- Step 7: Fetch nearest hospital and rescuer (if location provided) ----
+    const lat = formData.get('lat');
+    const lng = formData.get('lng');
+    let nearestHospital = null;
+    let nearestRescuer = null;
+
+    if (lat && lng) {
+      const latitude = parseFloat(lat.toString());
+      const longitude = parseFloat(lng.toString());
+
+      if (!isNaN(latitude) && !isNaN(longitude)) {
+        try {
+          // Find nearest hospital
+          const hospitals = await prisma.hospital.findMany({
+            where: {
+              status: 'ACTIVE',
+              snakebiteTreatmentAvailable: true,
+            },
+            select: {
+              id: true,
+              name: true,
+              address: true,
+              phone: true,
+              emergencyPhone: true,
+              latitude: true,
+              longitude: true,
+              antivenomStatus: true,
+              snakebiteTreatmentAvailable: true,
+            },
+          });
+
+          const hospitalsWithDistance = hospitals.map((hospital) => ({
+            ...hospital,
+            distance: calculateDistance(latitude, longitude, hospital.latitude, hospital.longitude),
+          }));
+
+          if (hospitalsWithDistance.length > 0) {
+            const nearest = hospitalsWithDistance.sort((a, b) => a.distance - b.distance)[0];
+            nearestHospital = {
+              name: nearest.name,
+              address: nearest.address,
+              phone: nearest.phone || undefined,
+              emergencyPhone: nearest.emergencyPhone || undefined,
+              distance: nearest.distance,
+              antivenomStatus: nearest.antivenomStatus,
+              snakebiteTreatmentAvailable: nearest.snakebiteTreatmentAvailable,
+            };
+          }
+
+          // Find nearest rescuer
+          const rescuers = await prisma.volunteer.findMany({
+            where: {
+              status: 'VERIFIED',
+              isAvailableNow: true,
+              currentLat: { not: null },
+              currentLng: { not: null },
+            },
+            select: {
+              id: true,
+              name: true,
+              contact: true,
+              experience: true,
+              currentLat: true,
+              currentLng: true,
+              rating: true,
+              totalRescues: true,
+            },
+          });
+
+          const rescuersWithDistance = rescuers
+            .filter((r) => r.currentLat && r.currentLng)
+            .map((rescuer) => ({
+              ...rescuer,
+              distance: calculateDistance(latitude, longitude, rescuer.currentLat!, rescuer.currentLng!),
+            }));
+
+          if (rescuersWithDistance.length > 0) {
+            const nearest = rescuersWithDistance.sort((a, b) => a.distance - b.distance)[0];
+            nearestRescuer = {
+              name: nearest.name,
+              contact: nearest.contact,
+              experience: nearest.experience,
+              distance: nearest.distance,
+              rating: nearest.rating || undefined,
+              totalRescues: nearest.totalRescues,
+            };
+          }
+
+          console.log(`[${requestId}] 📍 Location services:`, {
+            nearestHospital: nearestHospital?.name,
+            hospitalDistance: nearestHospital?.distance,
+            nearestRescuer: nearestRescuer?.name,
+            rescuerDistance: nearestRescuer?.distance,
+          });
+        } catch (locationError) {
+          console.warn(`[${requestId}] ⚠️ Failed to fetch location data:`, locationError);
+          // Continue without location data
+        }
+      }
+    }
+
+    // ---- Step 8: Return result ----
     return NextResponse.json({
       success: true,
       data: {
@@ -416,6 +520,8 @@ export async function POST(request: NextRequest) {
         safety: identification.safety,
         medicalWarning: identification.medical_warning,
         reasoning: identification.reasoning_summary,
+        nearestHospital,
+        nearestRescuer,
       },
       meta: {
         model: modelName,
@@ -516,4 +622,32 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
+}
+
+
+/**
+ * Calculate distance between two coordinates using Haversine formula
+ * Returns distance in kilometers
+ */
+function calculateDistance(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number {
+  const R = 6371; // Earth's radius in km
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function toRad(degrees: number): number {
+  return degrees * (Math.PI / 180);
 }
