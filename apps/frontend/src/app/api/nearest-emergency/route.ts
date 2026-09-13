@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@snake-rescue/database';
-
-const prisma = new PrismaClient();
+import { prisma } from '@snake-rescue/database';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

@@ -3,9 +3,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { GeminiSnakeIdentificationSchema } from '@/lib/gemini/snake-identification-schema';
 import { buildSnakeIdentificationPrompt } from '@/lib/gemini/prompts';
-import { PrismaClient } from '@snake-rescue/database';
-
-const prisma = new PrismaClient();
+import { prisma } from '@snake-rescue/database';
 
 /**
  * Snake identification endpoint - calls Gemini with structured outputs
