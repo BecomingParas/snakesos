@@ -143,6 +143,7 @@ export default function IdentifyPage() {
       let userLocation: { lat: number; lng: number } | null = null;
       if ('geolocation' in navigator) {
         try {
+          console.log('[Identify] Requesting user location...');
           const position = await new Promise<GeolocationPosition>((resolve, reject) => {
             navigator.geolocation.getCurrentPosition(resolve, reject, {
               timeout: 5000,
@@ -153,10 +154,13 @@ export default function IdentifyPage() {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           };
+          console.log('[Identify] User location obtained:', userLocation);
         } catch (geoError) {
-          console.warn('Could not get location:', geoError);
+          console.warn('[Identify] Could not get location:', geoError);
           // Continue without location - still identify the snake
         }
+      } else {
+        console.warn('[Identify] Geolocation not supported');
       }
 
       // Send the file directly to the API endpoint
@@ -175,6 +179,14 @@ export default function IdentifyPage() {
       });
 
       const mlResult = await response.json();
+
+      console.log('[Identify] API Response:', {
+        success: mlResult.success,
+        hasHospital: !!mlResult.data?.nearestHospital,
+        hasRescuer: !!mlResult.data?.nearestRescuer,
+        hospital: mlResult.data?.nearestHospital,
+        rescuer: mlResult.data?.nearestRescuer,
+      });
 
       // Handle error responses from the new API format
       if (!response.ok || !mlResult.success) {
@@ -621,6 +633,15 @@ export default function IdentifyPage() {
 
                 {/* Nearest Hospital & Rescuer Cards */}
                 <div className="space-y-4">
+                  {/* Debug info - remove this after testing */}
+                  {process.env.NODE_ENV === 'development' && (
+                    <div className="rounded-lg border border-blue-500 bg-blue-50 p-3 text-xs">
+                      <p><strong>Debug:</strong></p>
+                      <p>Has Hospital Data: {result.nearestHospital ? 'Yes' : 'No'}</p>
+                      <p>Has Rescuer Data: {result.nearestRescuer ? 'Yes' : 'No'}</p>
+                    </div>
+                  )}
+                  
                   {result.nearestHospital && (
                     <div className="rounded-2xl border border-primary/40 bg-gradient-to-br from-primary/5 to-accent/5 backdrop-blur-sm shadow-lg p-6">
                       <div className="flex items-center justify-between mb-4">
@@ -739,6 +760,27 @@ export default function IdentifyPage() {
                           💡 Tip: Do not approach the snake. Keep a safe distance and let the trained rescuer handle it.
                         </p>
                       </div>
+                    </div>
+                  )}
+
+                  {/* Show message if no hospital/rescuer data but location was provided */}
+                  {!result.nearestHospital && !result.nearestRescuer && (
+                    <div className="rounded-2xl border border-warning/40 bg-warning/10 p-6">
+                      <h3 className="flex items-center gap-2 text-lg font-bold text-warning mb-3">
+                        <MapPin className="h-5 w-5" />
+                        Location Services
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        We couldn't find nearby hospitals or rescuers. This may be because:
+                      </p>
+                      <ul className="mt-2 text-sm text-muted-foreground space-y-1 ml-4">
+                        <li>• Location permission was not granted</li>
+                        <li>• No hospitals/rescuers are currently registered in our database</li>
+                        <li>• Service is not yet available in your area</li>
+                      </ul>
+                      <p className="mt-3 text-sm font-semibold">
+                        Please call the emergency hotlines below for immediate assistance.
+                      </p>
                     </div>
                   )}
 
