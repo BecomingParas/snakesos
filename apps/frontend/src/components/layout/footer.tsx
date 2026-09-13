@@ -12,13 +12,13 @@ export function Footer() {
             <img
               src="/snakesoslogo.png"
               alt="SnakeSOS Logo"
-              className="h-16 w-16 sm:h-20 sm:w-20 lg:h-20 lg:w-48 object-contain dark:hidden"
+              className="h-16 w-48 sm:h-20 sm:w-20 lg:h-20 lg:w-48 object-contain dark:hidden"
             />
             {/* Dark mode logo */}
             <img
               src="/snakesoslogo_bg.png"
               alt="SnakeSOS Logo"
-              className="hidden h-16 w-16 sm:h-20 sm:w-20 lg:h-20 lg:w-48 object-contain dark:block"
+              className="hidden h-16 w-48 sm:h-20 sm:w-20 lg:h-20 lg:w-48 object-contain dark:block"
             />
           </div>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
