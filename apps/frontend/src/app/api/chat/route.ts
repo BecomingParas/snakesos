@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { prisma } from '@snake-rescue/database';
 
 /**
- * AI Chat endpoint - calls Gemini for conversational responses
- * Uses gemini-1.5-flash with conversation history support
+ * AI Chat endpoint with RAG (Retrieval-Augmented Generation)
+ * Uses Gemini + Knowledge Base for accurate snake safety information
  *
  * POST /api/chat
  * Body: { message: string, conversationHistory?: Array<{role: string, content: string}> }
@@ -42,6 +43,64 @@ function getClientIp(request: NextRequest): string {
   if (forwarded) return forwarded.split(',')[0].trim();
   if (realIp) return realIp;
   return 'unknown';
+}
+
+/**
+ * Search knowledge base for relevant information
+ * Uses full-text search on knowledge chunks
+ */
+async function searchKnowledgeBase(query: string): Promise<{
+  results: Array<{
+    content: string;
+    score: number;
+    documentTitle: string;
+  }>;
+}> {
+  try {
+    // Convert query to tsquery format
+    const searchTerms = query
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((word) => word.length > 2)
+      .join(' & ');
+
+    if (!searchTerms) {
+      return { results: [] };
+    }
+
+    // Search knowledge base (limit to top 3 most relevant chunks)
+    const results = await prisma.$queryRawUnsafe<Array<{
+      content: string;
+      document_title: string;
+      rank: number;
+    }>>(
+      `
+      SELECT 
+        c.content,
+        d.title as document_title,
+        ts_rank(c.search_vector, to_tsquery('english', $1)) as rank
+      FROM knowledge_chunks c
+      INNER JOIN knowledge_documents d ON c."documentId" = d.id
+      WHERE c.search_vector @@ to_tsquery('english', $1)
+        AND d."isActive" = true
+        AND d.visibility = 'PUBLIC'
+      ORDER BY rank DESC
+      LIMIT 3
+      `,
+      searchTerms
+    );
+
+    return {
+      results: results.map((r) => ({
+        content: r.content,
+        score: Math.min(r.rank, 1.0),
+        documentTitle: r.document_title,
+      })),
+    };
+  } catch (error) {
+    console.error('Knowledge search error:', error);
+    return { results: [] };
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -117,6 +176,23 @@ export async function POST(request: NextRequest) {
       historyLength: conversationHistory.length,
     });
 
+    // ---- Search knowledge base for relevant context ----
+    let contextFromKnowledge = '';
+    try {
+      const knowledge = await searchKnowledgeBase(message);
+      if (knowledge.results.length > 0) {
+        contextFromKnowledge = '\n\nRelevant safety information from knowledge base:\n' +
+          knowledge.results
+            .map((r, i) => `${i + 1}. ${r.content}`)
+            .join('\n\n');
+        
+        console.log(`[${requestId}] 📚 Found ${knowledge.results.length} relevant knowledge chunks`);
+      }
+    } catch (error) {
+      console.warn(`[${requestId}] ⚠️ Knowledge search failed:`, error);
+      // Continue without knowledge base context
+    }
+
     // ---- Initialize Gemini ----
     const genAI = new GoogleGenerativeAI(geminiKey);
     const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
@@ -137,6 +213,8 @@ CRITICAL SAFETY RULES:
 - Emphasize keeping distance and calling professional rescuers
 - Never claim visual identification is certain without high confidence
 - Do not provide medical diagnoses - recommend professional medical evaluation
+
+${contextFromKnowledge ? `\nYou have access to verified knowledge from the SnakeSOS knowledge base. Use this information to provide accurate responses. Always prioritize safety information from the knowledge base over general knowledge.` : ''}
 
 Be helpful, empathetic, and safety-conscious. Keep responses concise and clear.
 Lives may depend on your guidance.`,
@@ -168,9 +246,15 @@ Lives may depend on your guidance.`,
 
     let result;
     try {
-      console.log(`[${requestId}] 🔮 Calling Gemini API...`);
+      console.log(`[${requestId}] 🔮 Calling Gemini API with RAG context...`);
+      
+      // Add knowledge context to the message if available
+      const enhancedMessage = contextFromKnowledge
+        ? `${message}${contextFromKnowledge}`
+        : message;
+      
       result = await Promise.race([
-        chat.sendMessage(message),
+        chat.sendMessage(enhancedMessage),
         new Promise((_, reject) => 
           setTimeout(() => reject(new Error('Gemini request timeout')), timeout)
         )
