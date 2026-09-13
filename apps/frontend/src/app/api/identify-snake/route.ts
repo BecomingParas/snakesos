@@ -400,51 +400,71 @@ export async function POST(request: NextRequest) {
       const longitude = parseFloat(lng.toString());
 
       if (!isNaN(latitude) && !isNaN(longitude)) {
+        console.log(`[${requestId}] 📍 Location provided:`, { latitude, longitude });
+        
         try {
-          // Find nearest hospital
+          // Find nearest hospital - query all active hospitals first
+          console.log(`[${requestId}] 🏥 Querying hospitals...`);
           const hospitals = await prisma.hospital.findMany({
             where: {
               status: 'ACTIVE',
-              snakebiteTreatmentAvailable: true,
+              // Optional filter - only if snakebite treatment is tracked
+              ...(await prisma.hospital.findFirst({ 
+                where: { snakebiteTreatmentAvailable: true } 
+              }) ? { snakebiteTreatmentAvailable: true } : {}),
             },
             select: {
               id: true,
               name: true,
               address: true,
+              municipality: true,
+              district: true,
               phone: true,
               emergencyPhone: true,
               latitude: true,
               longitude: true,
               antivenomStatus: true,
               snakebiteTreatmentAvailable: true,
+              emergency24x7: true,
             },
+            take: 50, // Limit to avoid memory issues
           });
 
-          const hospitalsWithDistance = hospitals.map((hospital) => ({
-            ...hospital,
-            distance: calculateDistance(latitude, longitude, hospital.latitude, hospital.longitude),
-          }));
+          console.log(`[${requestId}] 🏥 Found ${hospitals.length} hospitals`);
 
-          if (hospitalsWithDistance.length > 0) {
-            const nearest = hospitalsWithDistance.sort((a, b) => a.distance - b.distance)[0];
+          if (hospitals.length > 0) {
+            const hospitalsWithDistance = hospitals.map((hospital) => ({
+              ...hospital,
+              distance: calculateDistance(latitude, longitude, hospital.latitude, hospital.longitude),
+            }));
+
+            // Sort by distance, prioritize those with antivenom
+            const sorted = hospitalsWithDistance.sort((a, b) => {
+              // Prioritize available antivenom
+              if (a.antivenomStatus === 'AVAILABLE' && b.antivenomStatus !== 'AVAILABLE') return -1;
+              if (b.antivenomStatus === 'AVAILABLE' && a.antivenomStatus !== 'AVAILABLE') return 1;
+              return a.distance - b.distance;
+            });
+
+            const nearest = sorted[0];
             nearestHospital = {
               name: nearest.name,
-              address: nearest.address,
+              address: `${nearest.address}, ${nearest.municipality || nearest.district}`,
               phone: nearest.phone || undefined,
               emergencyPhone: nearest.emergencyPhone || undefined,
               distance: nearest.distance,
               antivenomStatus: nearest.antivenomStatus,
               snakebiteTreatmentAvailable: nearest.snakebiteTreatmentAvailable,
             };
+            console.log(`[${requestId}] ✓ Nearest hospital: ${nearest.name} (${nearest.distance.toFixed(1)} km)`);
           }
 
           // Find nearest rescuer
+          console.log(`[${requestId}] 🦸 Querying rescuers...`);
           const rescuers = await prisma.volunteer.findMany({
             where: {
-              status: 'VERIFIED',
-              isAvailableNow: true,
-              currentLat: { not: null },
-              currentLng: { not: null },
+              status: { in: ['VERIFIED', 'APPROVED'] },
+              // Get all rescuers, not just currently available
             },
             select: {
               id: true,
@@ -455,18 +475,37 @@ export async function POST(request: NextRequest) {
               currentLng: true,
               rating: true,
               totalRescues: true,
+              municipality: true,
+              isAvailableNow: true,
             },
+            take: 50,
           });
 
+          console.log(`[${requestId}] 🦸 Found ${rescuers.length} rescuers`);
+
+          // Use rescuer's base location (municipality) if current location not available
           const rescuersWithDistance = rescuers
-            .filter((r) => r.currentLat && r.currentLng)
-            .map((rescuer) => ({
-              ...rescuer,
-              distance: calculateDistance(latitude, longitude, rescuer.currentLat!, rescuer.currentLng!),
-            }));
+            .map((rescuer) => {
+              // Use current location if available, otherwise skip
+              if (!rescuer.currentLat || !rescuer.currentLng) {
+                return null;
+              }
+              return {
+                ...rescuer,
+                distance: calculateDistance(latitude, longitude, rescuer.currentLat!, rescuer.currentLng!),
+              };
+            })
+            .filter((r): r is NonNullable<typeof r> => r !== null);
 
           if (rescuersWithDistance.length > 0) {
-            const nearest = rescuersWithDistance.sort((a, b) => a.distance - b.distance)[0];
+            // Sort: prioritize available, then by distance
+            const sorted = rescuersWithDistance.sort((a, b) => {
+              if (a.isAvailableNow && !b.isAvailableNow) return -1;
+              if (!a.isAvailableNow && b.isAvailableNow) return 1;
+              return a.distance - b.distance;
+            });
+
+            const nearest = sorted[0];
             nearestRescuer = {
               name: nearest.name,
               contact: nearest.contact,
@@ -475,6 +514,9 @@ export async function POST(request: NextRequest) {
               rating: nearest.rating || undefined,
               totalRescues: nearest.totalRescues,
             };
+            console.log(`[${requestId}] ✓ Nearest rescuer: ${nearest.name} (${nearest.distance.toFixed(1)} km)`);
+          } else {
+            console.log(`[${requestId}] ⚠️ No rescuers with location data`);
           }
 
           console.log(`[${requestId}] 📍 Location services:`, {
