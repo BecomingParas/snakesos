@@ -48,44 +48,76 @@ export function AIChatbot({ userContext }: AIChatbotProps) {
     setLoading(true);
 
     try {
-      // Build conversation history for context
-      const conversationHistory = messages.map(msg => ({
-        role: msg.role,
-        content: msg.content,
-      }));
+      // If image is present, send as FormData; otherwise send as JSON
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append('message', content);
+        formData.append('image', imageFile);
 
-      // Call chat API route with RAG
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: content,
-          conversationHistory,
-        }),
-      });
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          body: formData,
+        });
 
-      const result = await response.json();
+        const result = await response.json();
 
-      if (!response.ok || !result.success) {
-        throw new Error(result.error?.message || 'Chat request failed');
+        if (!response.ok || !result.success) {
+          throw new Error(result.error?.message || 'Chat request failed');
+        }
+
+        // Save conversation ID
+        if (result.data?.conversationId) {
+          setConversationId(result.data.conversationId);
+        }
+
+        // Create assistant message
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: result.data.response,
+          timestamp: new Date().toISOString(),
+        };
+
+        setMessages((prev) => [...prev, assistantMessage]);
+      } else {
+        // Text-only message with conversation history
+        const conversationHistory = messages.map(msg => ({
+          role: msg.role,
+          content: msg.content,
+        }));
+
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: content,
+            conversationHistory,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.error?.message || 'Chat request failed');
+        }
+
+        // Save conversation ID
+        if (result.data?.conversationId) {
+          setConversationId(result.data.conversationId);
+        }
+
+        // Create assistant message
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: result.data.response,
+          timestamp: new Date().toISOString(),
+        };
+
+        setMessages((prev) => [...prev, assistantMessage]);
       }
-
-      // Save conversation ID
-      if (result.data?.conversationId) {
-        setConversationId(result.data.conversationId);
-      }
-
-      // Create assistant message
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: result.data.response,
-        timestamp: new Date().toISOString(),
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error('AI Chat Error:', error);
 
