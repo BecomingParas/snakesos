@@ -481,6 +481,78 @@ export default function IdentifyPage() {
                 {error}
               </div>
             )}
+
+            {/* Safety Tips - Always Visible */}
+            <div className="mt-6 rounded-2xl border border-warning/30 bg-gradient-to-br from-warning/5 to-orange/5 p-5">
+              <h3 className="flex items-center gap-2 font-semibold text-warning">
+                <AlertTriangle className="h-4 w-4" />
+                Safety First
+              </h3>
+              <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <span className="mt-0.5 text-warning">•</span>
+                  <span>Maintain a safe distance of at least 6 feet from the snake</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-0.5 text-warning">•</span>
+                  <span>Do not attempt to catch, kill, or provoke the snake</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-0.5 text-warning">•</span>
+                  <span>Keep children and pets away from the area</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-0.5 text-warning">•</span>
+                  <span>Call a professional rescuer immediately if needed</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* How It Works */}
+            {!result && (
+              <div className="mt-6 rounded-2xl border border-primary/20 bg-primary/5 p-5">
+                <h3 className="flex items-center gap-2 font-semibold text-primary">
+                  <Sparkles className="h-4 w-4" />
+                  How It Works
+                </h3>
+                <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <span className="mt-0.5 text-primary">1.</span>
+                    <span>Upload a clear photo of the snake from a safe distance</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-0.5 text-primary">2.</span>
+                    <span>Our AI analyzes the image to identify the species</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-0.5 text-primary">3.</span>
+                    <span>Get instant safety guidance and risk assessment</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-0.5 text-primary">4.</span>
+                    <span>View nearest hospital and rescuer contacts</span>
+                  </li>
+                </ul>
+              </div>
+            )}
+
+            {/* Quick Stats - Show when results are displayed */}
+            {result && (
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                <div className="rounded-xl border border-accent/30 bg-accent/5 p-4 text-center">
+                  <div className="text-2xl font-bold text-primary">{confidencePercent}%</div>
+                  <div className="text-xs text-muted-foreground">AI Confidence</div>
+                </div>
+                <div className="rounded-xl border border-accent/30 bg-accent/5 p-4 text-center">
+                  <div className="text-2xl font-bold text-primary">
+                    {result.species?.venomous ? '⚠️' : '✓'}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {result.species?.venomous ? 'Venomous' : 'Non-Venomous'}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div>
