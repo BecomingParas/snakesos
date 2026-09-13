@@ -155,25 +155,54 @@ export async function POST(request: NextRequest) {
     }
 
     // ---- Parse request body ----
-    const body = await request.json();
-    const { message, conversationHistory = [] } = body;
+    const contentType = request.headers.get('content-type') || '';
+    let message = '';
+    let imageData: { mimeType: string; data: string } | null = null;
 
-    if (!message || typeof message !== 'string') {
-      return NextResponse.json(
-        { 
-          success: false,
-          error: {
-            code: 'INVALID_MESSAGE',
-            message: 'Message is required and must be a string.',
+    // Handle both JSON (text) and FormData (image upload)
+    if (contentType.includes('multipart/form-data')) {
+      // Image upload
+      const formData = await request.formData();
+      message = (formData.get('message') as string) || 'What snake is this?';
+      const file = formData.get('image');
+
+      if (file && file instanceof Blob) {
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+        const base64Image = buffer.toString('base64');
+
+        imageData = {
+          mimeType: file.type || 'image/jpeg',
+          data: base64Image,
+        };
+
+        console.log(`[${requestId}] 📸 Image received:`, {
+          type: file.type,
+          size: file.size,
+        });
+      }
+    } else {
+      // Text message
+      const body = await request.json();
+      message = body.message;
+      
+      if (!message || typeof message !== 'string') {
+        return NextResponse.json(
+          { 
+            success: false,
+            error: {
+              code: 'INVALID_MESSAGE',
+              message: 'Message is required and must be a string.',
+            },
           },
-        },
-        { status: 400 },
-      );
+          { status: 400 },
+        );
+      }
     }
 
     console.log(`[${requestId}] 💬 Chat request:`, {
       messageLength: message.length,
-      historyLength: conversationHistory.length,
+      hasImage: !!imageData,
     });
 
     // ---- Search knowledge base for relevant context ----
@@ -197,9 +226,7 @@ export async function POST(request: NextRequest) {
     const genAI = new GoogleGenerativeAI(geminiKey);
     const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
     
-    const model = genAI.getGenerativeModel({
-      model: modelName,
-      systemInstruction: `You are SnakeSOS AI, an intelligent assistant for the SnakeSOS snake rescue and safety platform in Nepal.
+    const systemInstruction = `You are SnakeSOS AI, an intelligent assistant for the SnakeSOS snake rescue and safety platform in Nepal.
 
 Your primary goals:
 1. Provide accurate, safety-first information about snakes and snake encounters
@@ -214,27 +241,33 @@ CRITICAL SAFETY RULES:
 - Never claim visual identification is certain without high confidence
 - Do not provide medical diagnoses - recommend professional medical evaluation
 
+${imageData ? `\nWhen analyzing snake images:
+- Identify visible physical characteristics (color, pattern, head shape, body structure)
+- Assess venomous vs non-venomous likelihood based on features
+- Provide safety guidance based on the identified species
+- Recommend keeping distance and contacting professional rescuers
+- If uncertain, err on the side of caution and treat as potentially venomous` : ''}
+
 ${contextFromKnowledge ? `\nYou have access to verified knowledge from the SnakeSOS knowledge base. Use this information to provide accurate responses. Always prioritize safety information from the knowledge base over general knowledge.` : ''}
 
 Be helpful, empathetic, and safety-conscious. Keep responses concise and clear.
-Lives may depend on your guidance.`,
+Lives may depend on your guidance.`;
+    
+    const model = genAI.getGenerativeModel({
+      model: modelName,
+      systemInstruction,
       generationConfig: {
-        temperature: 0.7,
+        temperature: imageData ? 0.2 : 0.7, // Lower temperature for image analysis
         topK: 40,
         topP: 0.95,
         maxOutputTokens: 1024,
       },
     });
 
-    // ---- Convert conversation history to Gemini format ----
-    const history = conversationHistory
-      .slice(-10) // Keep last 10 messages for context
-      .map((msg: any) => ({
-        role: msg.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: msg.content }],
-      }));
+    // ---- Convert conversation history to Gemini format (only for text chats) ----
+    const history = imageData ? [] : []; // Skip history for image analysis to keep it focused
 
-    // ---- Start chat with history ----
+    // ---- Start chat ----
     const chat = model.startChat({
       history: history,
     });
@@ -246,15 +279,29 @@ Lives may depend on your guidance.`,
 
     let result;
     try {
-      console.log(`[${requestId}] 🔮 Calling Gemini API with RAG context...`);
+      console.log(`[${requestId}] 🔮 Calling Gemini API${imageData ? ' with image' : ' with RAG context'}...`);
       
-      // Add knowledge context to the message if available
-      const enhancedMessage = contextFromKnowledge
+      // Prepare message content
+      const messageParts: any[] = [];
+      
+      // Add text
+      const enhancedMessage = contextFromKnowledge && !imageData
         ? `${message}${contextFromKnowledge}`
         : message;
+      messageParts.push({ text: enhancedMessage });
+      
+      // Add image if present
+      if (imageData) {
+        messageParts.push({
+          inlineData: {
+            mimeType: imageData.mimeType,
+            data: imageData.data,
+          },
+        });
+      }
       
       result = await Promise.race([
-        chat.sendMessage(enhancedMessage),
+        chat.sendMessage(messageParts),
         new Promise((_, reject) => 
           setTimeout(() => reject(new Error('Gemini request timeout')), timeout)
         )
