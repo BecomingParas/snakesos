@@ -6,7 +6,7 @@ import { buildSnakeIdentificationPrompt } from '@/lib/gemini/prompts';
 
 /**
  * Snake identification endpoint - calls Gemini with structured outputs
- * Uses gemini-3.6-flash with proper error handling and rate limiting
+ * Uses gemini-1.5-flash with proper error handling and rate limiting
  *
  * POST /api/identify-snake
  * Body: FormData with a "file" field containing the image
@@ -188,7 +188,7 @@ export async function POST(request: NextRequest) {
     console.log(`[${requestId}] 🔧 ENV CHECK:`, {
       hasGeminiKey: !!geminiKey,
       geminiKeyPrefix: geminiKey ? geminiKey.substring(0, 8) + '...' : 'MISSING',
-      model: process.env.GEMINI_MODEL || 'gemini-3.6-flash (default)',
+      model: process.env.GEMINI_MODEL || 'gemini-1.5-flash (default)',
       hasCloudName: !!cloudName,
       hasCloudKey: !!cloudKey,
       hasCloudSecret: !!cloudSecret,
@@ -299,7 +299,7 @@ export async function POST(request: NextRequest) {
     // ---- Step 5: Call Gemini with structured output ----
     console.log(`[${requestId}] 🔮 Calling Gemini API...`);
     const genAI = new GoogleGenerativeAI(geminiKey);
-    const modelName = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
+    const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
     
     const model = genAI.getGenerativeModel({
       model: modelName,
