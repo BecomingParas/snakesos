@@ -423,8 +423,23 @@ export async function POST(request: NextRequest) {
     // ---- Step 7: Fetch nearest hospital and rescuer (if location provided) ----
     const lat = formData.get('lat');
     const lng = formData.get('lng');
-    let nearestHospital = null;
-    let nearestRescuer = null;
+    let nearestHospital: {
+      name: string;
+      address: string;
+      phone?: string;
+      emergencyPhone?: string;
+      distance: number;
+      antivenomStatus: string;
+      snakebiteTreatmentAvailable: boolean;
+    } | null = null;
+    let nearestRescuer: {
+      name: string;
+      contact: string;
+      experience: string;
+      distance: number;
+      rating?: number;
+      totalRescues: number;
+    } | null = null;
 
     if (lat && lng) {
       const latitude = parseFloat(lat.toString());
