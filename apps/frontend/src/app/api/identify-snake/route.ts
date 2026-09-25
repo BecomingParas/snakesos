@@ -665,12 +665,13 @@ export async function POST(request: NextRequest) {
           error: {
             code: 'AI_PROVIDER_ERROR',
             message: 'AI model configuration error. Please contact support.',
-            details: process.env.NODE_ENV === 'development' ? message : undefined,
+            details: message, // Show actual error in response
           },
           meta: {
             request_id: requestId,
             processing_time_ms: processingTime,
-            model: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
+            model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+            errorMessage: message, // Debug info
           }
         },
         { status: 502 },
@@ -701,11 +702,13 @@ export async function POST(request: NextRequest) {
         error: {
           code: 'SNAKE_IDENTIFICATION_FAILED',
           message: 'Failed to identify snake. Please try again.',
+          details: message, // Show actual error
         },
         meta: {
           request_id: requestId,
           processing_time_ms: processingTime,
-          error_type: errorName
+          error_type: errorName,
+          error_message: message, // Debug info
         }
       },
       { status: 500 },
