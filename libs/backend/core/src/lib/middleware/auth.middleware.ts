@@ -16,17 +16,29 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
   try {
     // Extract token from Authorization header
     const authHeader = req.headers.authorization;
+    
+    console.log('[AUTH_MIDDLEWARE] Auth header:', authHeader ? 'Present' : 'Missing');
+    
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.log('[AUTH_MIDDLEWARE] No Bearer token found');
       return next();
     }
 
     const token = authHeader.replace('Bearer ', '');
+    console.log('[AUTH_MIDDLEWARE] Extracted token:', token.substring(0, 20) + '...');
     
     // Find session in database with user
     const session = await prisma.session.findUnique({
       where: { token },
       include: { user: true }
     });
+
+    console.log('[AUTH_MIDDLEWARE] Session found:', !!session);
+    if (session) {
+      console.log('[AUTH_MIDDLEWARE] Session expires at:', session.expiresAt);
+      console.log('[AUTH_MIDDLEWARE] Current time:', new Date());
+      console.log('[AUTH_MIDDLEWARE] Session expired:', new Date() >= session.expiresAt);
+    }
 
     // Validate session exists and hasn't expired
     if (session && new Date() < session.expiresAt) {
@@ -52,6 +64,12 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
         updatedAt: session.user.updatedAt,
       };
       
+      console.log('[AUTH_MIDDLEWARE] User authenticated successfully:', {
+        userId: session.user.id,
+        email: session.user.email,
+        role: session.user.role,
+      });
+      
       logger.debug({
         msg: 'User authenticated',
         userId: session.user.id,
@@ -60,11 +78,15 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
       });
     } else if (session) {
       // Session expired - delete it
+      console.log('[AUTH_MIDDLEWARE] Session expired, deleting it');
       await prisma.session.delete({ where: { id: session.id } });
       logger.debug('Session expired and deleted');
+    } else {
+      console.log('[AUTH_MIDDLEWARE] No valid session found for token');
     }
   } catch (error) {
     // Session invalid or error - continue without auth
+    console.log('[AUTH_MIDDLEWARE] Error during session validation:', error);
     logger.debug({ msg: 'Session validation error', error });
   }
 
