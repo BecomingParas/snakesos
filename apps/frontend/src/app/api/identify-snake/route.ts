@@ -300,7 +300,17 @@ export async function POST(request: NextRequest) {
     // ---- Step 5: Call Gemini with structured output ----
     console.log(`[${requestId}] 🔮 Calling Gemini API...`);
     const genAI = new GoogleGenerativeAI(geminiKey);
-    const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+    
+    // Force correct model name (gemini-3.6-flash doesn't exist)
+    let modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+    
+    // Fix common mistakes
+    if (modelName === 'gemini-3.6-flash' || modelName.includes('3.6')) {
+      console.warn(`[${requestId}] ⚠️ Invalid model ${modelName}, using gemini-1.5-flash instead`);
+      modelName = 'gemini-1.5-flash';
+    }
+    
+    console.log(`[${requestId}] 📝 Using model: ${modelName}`);
     
     const model = genAI.getGenerativeModel({
       model: modelName,
@@ -612,16 +622,19 @@ export async function POST(request: NextRequest) {
     }
 
     if (message.includes('404') || message.includes('not found') || message.includes('model')) {
+      console.error(`[${requestId}] ❌ Model error:`, message);
       return NextResponse.json(
         {
           success: false,
           error: {
             code: 'AI_PROVIDER_ERROR',
             message: 'AI model configuration error. Please contact support.',
+            details: process.env.NODE_ENV === 'development' ? message : undefined,
           },
           meta: {
             request_id: requestId,
-            processing_time_ms: processingTime
+            processing_time_ms: processingTime,
+            model: process.env.GEMINI_MODEL || 'gemini-1.5-flash',
           }
         },
         { status: 502 },
