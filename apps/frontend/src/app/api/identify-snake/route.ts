@@ -188,7 +188,8 @@ export async function POST(request: NextRequest) {
 
     console.log(`[${requestId}] 🔧 ENV CHECK:`, {
       hasGeminiKey: !!geminiKey,
-      geminiKeyPrefix: geminiKey ? geminiKey.substring(0, 8) + '...' : 'MISSING',
+      geminiKeyPrefix: geminiKey ? geminiKey.substring(0, 10) + '...' : 'MISSING',
+      geminiKeyLength: geminiKey?.length || 0,
       model: process.env.GEMINI_MODEL || 'gemini-1.5-flash (default)',
       hasCloudName: !!cloudName,
       hasCloudKey: !!cloudKey,
@@ -299,6 +300,23 @@ export async function POST(request: NextRequest) {
 
     // ---- Step 5: Call Gemini with structured output ----
     console.log(`[${requestId}] 🔮 Calling Gemini API...`);
+    
+    // Validate API key format
+    if (!geminiKey.startsWith('AIza') && !geminiKey.startsWith('AQ.')) {
+      console.error(`[${requestId}] ❌ Invalid API key format. Must start with 'AIza' or 'AQ.'`);
+      return NextResponse.json(
+        { 
+          success: false,
+          error: {
+            code: 'AI_SERVICE_NOT_CONFIGURED',
+            message: 'AI API key format is invalid. Please contact support.',
+          },
+          meta: { request_id: requestId }
+        },
+        { status: 503 },
+      );
+    }
+    
     const genAI = new GoogleGenerativeAI(geminiKey);
     
     // Force correct model name (gemini-3.6-flash doesn't exist)
@@ -344,6 +362,15 @@ export async function POST(request: NextRequest) {
           setTimeout(() => reject(new Error('Gemini request timeout')), timeout)
         )
       ]);
+    } catch (geminiError: any) {
+      console.error(`[${requestId}] ❌ Gemini API Error:`, {
+        name: geminiError?.name,
+        message: geminiError?.message,
+        status: geminiError?.status,
+        statusText: geminiError?.statusText,
+        details: geminiError?.details || geminiError?.error,
+      });
+      throw geminiError;
     } finally {
       clearTimeout(timeoutId);
     }
