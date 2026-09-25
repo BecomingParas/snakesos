@@ -139,3 +139,16 @@ export function getApolloClient() {
   }
   return apolloClient;
 }
+
+/**
+ * Reset Apollo Client - forces cache clear and recreates client
+ * Call this after login/logout to ensure fresh auth state
+ */
+export function resetApolloClient() {
+  if (apolloClient) {
+    apolloClient.clearStore().catch((error) => {
+      console.error('Error clearing Apollo cache:', error);
+    });
+  }
+  apolloClient = null;
+}
