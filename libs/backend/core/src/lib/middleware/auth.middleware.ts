@@ -25,7 +25,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
     }
 
     const token = authHeader.replace('Bearer ', '');
-    console.log('[AUTH_MIDDLEWARE] Extracted token:', token.substring(0, 20) + '...');
+    console.log('[AUTH_MIDDLEWARE] Extracted token:', token);
     
     // Find session in database with user
     const session = await prisma.session.findUnique({
@@ -33,11 +33,27 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
       include: { user: true }
     });
 
-    console.log('[AUTH_MIDDLEWARE] Session found:', !!session);
+    console.log('[AUTH_MIDDLEWARE] Session found in database:', !!session);
     if (session) {
+      console.log('[AUTH_MIDDLEWARE] Session user ID:', session.userId);
       console.log('[AUTH_MIDDLEWARE] Session expires at:', session.expiresAt);
       console.log('[AUTH_MIDDLEWARE] Current time:', new Date());
       console.log('[AUTH_MIDDLEWARE] Session expired:', new Date() >= session.expiresAt);
+      console.log('[AUTH_MIDDLEWARE] User email:', session.user?.email);
+    } else {
+      console.log('[AUTH_MIDDLEWARE] Token not found in database. Checking all sessions for this user...');
+      // Try to find any sessions to debug
+      const userIdFromToken = token.split('_')[0];
+      const allUserSessions = await prisma.session.findMany({
+        where: { userId: userIdFromToken },
+        orderBy: { createdAt: 'desc' },
+        take: 5
+      });
+      console.log('[AUTH_MIDDLEWARE] User has', allUserSessions.length, 'sessions in database');
+      if (allUserSessions.length > 0) {
+        console.log('[AUTH_MIDDLEWARE] Latest session token:', allUserSessions[0].token.substring(0, 30) + '...');
+        console.log('[AUTH_MIDDLEWARE] Received token:', token.substring(0, 30) + '...');
+      }
     }
 
     // Validate session exists and hasn't expired
