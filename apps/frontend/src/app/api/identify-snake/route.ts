@@ -319,14 +319,8 @@ export async function POST(request: NextRequest) {
     
     const genAI = new GoogleGenerativeAI(geminiKey);
     
-    // Force correct model name (gemini-3.6-flash doesn't exist)
-    let modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
-    
-    // Fix common mistakes
-    if (modelName === 'gemini-3.6-flash' || modelName.includes('3.6')) {
-      console.warn(`[${requestId}] ⚠️ Invalid model ${modelName}, using gemini-1.5-flash instead`);
-      modelName = 'gemini-1.5-flash';
-    }
+    // Use configured model (gemini-3.6-flash is valid!)
+    const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
     
     console.log(`[${requestId}] 📝 Using model: ${modelName}`);
     
