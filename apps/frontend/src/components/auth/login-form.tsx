@@ -41,6 +41,8 @@ export function LoginForm() {
         password: data.password,
       })
       
+      console.log('[LoginForm] Login successful, token:', result.accessToken.substring(0, 20) + '...');
+      
       // Check if email is verified
       if (!result.user.emailVerified) {
         toast.warning('Email not verified', {
@@ -67,6 +69,11 @@ export function LoginForm() {
       }
       
       const dashboardPath = roleMap[result.user.role] || 'citizen'
+      
+      // Small delay to ensure localStorage is written and Apollo can pick it up
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
+      console.log('[LoginForm] Redirecting to:', `/dashboard/${dashboardPath}`)
       router.push(`/dashboard/${dashboardPath}`)
     } catch (error: any) {
       if (error.field) {

@@ -6,7 +6,6 @@ import { useState } from 'react';
 import { useMutation } from '@apollo/client/react';
 import { gql } from '@apollo/client';
 import { useAuthStore } from '@/lib/auth/auth-store';
-import { resetApolloClient } from '@/lib/apollo';
 
 const LOGIN_MUTATION = gql`
   mutation Login($input: LoginInput!) {
@@ -83,15 +82,14 @@ export function useLogin() {
       if (data?.login) {
         const { user, accessToken, refreshToken } = data.login;
 
-        // Store tokens in localStorage
+        // Store tokens in localStorage FIRST
         if (typeof window !== 'undefined') {
           localStorage.setItem('auth-token', accessToken);
           localStorage.setItem('accessToken', accessToken);
           localStorage.setItem('refreshToken', refreshToken);
+          
+          console.log('[useLogin] Token stored in localStorage:', accessToken.substring(0, 20) + '...');
         }
-
-        // Reset Apollo Client to pick up new auth token
-        resetApolloClient();
 
         // Update auth store
         setUser({

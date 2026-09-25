@@ -75,6 +75,8 @@ function createAuthLink() {
     // Get auth token from localStorage or cookies
     const token = IS_BROWSER ? localStorage.getItem('auth-token') : null;
 
+    console.log('[Apollo AuthLink] Operation:', operation.operationName, 'Token:', token ? token.substring(0, 20) + '...' : 'None');
+
     // Add authorization header if token exists
     if (token) {
       operation.setContext(({ headers = {} }) => ({
