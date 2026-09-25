@@ -51,7 +51,20 @@ export const authResolvers = {
      * Get current user with volunteer profile
      */
     me: async (_parent: any, _args: any, context: GraphQLContext) => {
+      console.log('[GetMe] Query called');
+      console.log('[GetMe] context.user:', context.user ? 'Present' : 'Missing');
+      console.log('[GetMe] context.session:', context.session ? 'Present' : 'Missing');
+      console.log('[GetMe] Authorization header:', context.req.headers.authorization ? 'Present' : 'Missing');
+      
+      if (context.user) {
+        console.log('[GetMe] User ID:', context.user.id);
+        console.log('[GetMe] User email:', context.user.email);
+      }
+      
       context.requireAuth();
+      
+      console.log('[GetMe] Auth check passed, fetching user from DB');
+      
       // Fetch user with volunteerProfile included
       const user = await prisma.user.findUnique({
         where: { id: context.user.id },
@@ -60,6 +73,8 @@ export const authResolvers = {
         },
       });
 
+      console.log('[GetMe] User fetched from DB:', user ? 'Found' : 'Not found');
+      
       return user;
     },
 
