@@ -1,9 +1,9 @@
 /**
  * GraphQL API Route (Vercel Serverless)
- * 
+ *
  * This file converts the Express + Apollo Server backend
  * to a Next.js API route compatible with Vercel serverless functions.
- * 
+ *
  * Architecture:
  * - Uses @as-integrations/next for Next.js integration
  * - Maintains existing resolvers and schema
@@ -34,8 +34,14 @@ import {
 } from '@snake-rescue/modules';
 
 // Log database connection status
-console.log('[GraphQL API] Initializing with DATABASE_URL:', process.env.DATABASE_URL ? 'SET ✓' : 'NOT SET ✗');
-console.log('[GraphQL API] DIRECT_URL:', process.env.DIRECT_URL ? 'SET ✓' : 'NOT SET ✗');
+console.log(
+  '[GraphQL API] Initializing with DATABASE_URL:',
+  process.env.DATABASE_URL ? 'SET ✓' : 'NOT SET ✗',
+);
+console.log(
+  '[GraphQL API] DIRECT_URL:',
+  process.env.DIRECT_URL ? 'SET ✓' : 'NOT SET ✗',
+);
 console.log('[GraphQL API] Node environment:', process.env.NODE_ENV);
 
 // Combine all resolvers (same as backend/src/server.ts)
@@ -110,7 +116,10 @@ async function getLegacySessionFromBearerToken(authHeader: string | null) {
       },
     };
   } catch (error) {
-    console.log('[GraphQL API] Legacy session lookup failed:', error instanceof Error ? error.message : 'Unknown error');
+    console.log(
+      '[GraphQL API] Legacy session lookup failed:',
+      error instanceof Error ? error.message : 'Unknown error',
+    );
     return null;
   }
 }
@@ -125,14 +134,17 @@ async function getHandler() {
       try {
         console.log('[GraphQL API] Creating Apollo Server...');
         const server = createApolloServer(resolvers);
-        
+
         console.log('[GraphQL API] Starting Apollo Server...');
         await server.start();
         console.log('[GraphQL API] Apollo Server started successfully ✓');
-        
+
         return server;
       } catch (error) {
-        console.error('[GraphQL API] FATAL ERROR during initialization:', error);
+        console.error(
+          '[GraphQL API] FATAL ERROR during initialization:',
+          error,
+        );
         serverPromise = null; // Reset on error to allow retry
         throw error;
       }
@@ -146,31 +158,46 @@ async function getHandler() {
       context: async (req) => {
         // Adapt Next.js request to Express-like request/response
         // This allows us to reuse the existing buildContext function
-        
+
         // Import Better Auth
         const { auth } = await import('@snake-rescue/auth');
-        
+
         // Get session from Better Auth using the request
         // Better Auth will check cookies and bearer tokens
         let user: any = null;
         let session: any = null;
-        
+
         try {
           // Extract cookies from the request headers
-          const headers = req.headers instanceof Headers ? req.headers : new Headers(Object.entries(req.headers as any));
+          const headers =
+            req.headers instanceof Headers
+              ? req.headers
+              : new Headers(Object.entries(req.headers as any));
           const cookieHeader = headers.get('cookie');
           const authHeader = headers.get('authorization');
-          
-          console.log('[GraphQL API] Cookie header:', cookieHeader ? 'present' : 'missing');
-          console.log('[GraphQL API] Authorization header:', authHeader ? 'present' : 'missing');
 
-          const legacySession = await getLegacySessionFromBearerToken(authHeader);
+          console.log(
+            '[GraphQL API] Cookie header:',
+            cookieHeader ? 'present' : 'missing',
+          );
+          console.log(
+            '[GraphQL API] Authorization header:',
+            authHeader ? 'present' : 'missing',
+          );
+
+          const legacySession =
+            await getLegacySessionFromBearerToken(authHeader);
           if (legacySession) {
             const legacyUser = legacySession.user;
             const legacySessionData = legacySession.session;
             user = legacyUser;
             session = legacySessionData;
-            console.log('[GraphQL API] ✓ Authenticated via legacy bearer session:', legacyUser.email, 'role:', legacyUser.role);
+            console.log(
+              '[GraphQL API] ✓ Authenticated via legacy bearer session:',
+              legacyUser.email,
+              'role:',
+              legacyUser.role,
+            );
           } else {
             // Create headers object for Better Auth
             const betterAuthHeaders = new Headers();
@@ -180,41 +207,53 @@ async function getHandler() {
             if (authHeader) {
               betterAuthHeaders.set('authorization', authHeader);
             }
-            
+
             // Get session from Better Auth
-            const betterAuthSession = await auth.api.getSession({ headers: betterAuthHeaders });
-            
+            const betterAuthSession = await auth.api.getSession({
+              headers: betterAuthHeaders,
+            });
+
             if (betterAuthSession?.user && betterAuthSession?.session) {
               const betterAuthUser = betterAuthSession.user;
               const betterAuthSessionData = betterAuthSession.session;
               user = betterAuthUser;
               session = betterAuthSessionData;
-              
+
               // Enrich user with full database record to get custom fields like role
               try {
                 const { prisma } = await import('@snake-rescue/database');
                 const dbUser = await prisma.user.findUnique({
                   where: { id: betterAuthUser.id },
-                  select: { 
-                    id: true, 
-                    email: true, 
-                    name: true, 
-                    role: true, 
+                  select: {
+                    id: true,
+                    email: true,
+                    name: true,
+                    role: true,
                     emailVerified: true,
                     phone: true,
                     avatar: true,
-                    status: true
-                  }
+                    status: true,
+                  },
                 });
                 if (dbUser) {
                   // Merge Better Auth user with database user, preferring database values
                   user = { ...betterAuthUser, ...dbUser };
-                  console.log('[GraphQL API] ✓ Authenticated user via Better Auth:', betterAuthUser.email, 'role:', user.role);
+                  console.log(
+                    '[GraphQL API] ✓ Authenticated user via Better Auth:',
+                    betterAuthUser.email,
+                    'role:',
+                    user.role,
+                  );
                 } else {
-                  console.log('[GraphQL API] ⚠ User session valid but user not found in database');
+                  console.log(
+                    '[GraphQL API] ⚠ User session valid but user not found in database',
+                  );
                 }
               } catch (dbError) {
-                console.error('[GraphQL API] Error enriching user from database:', dbError);
+                console.error(
+                  '[GraphQL API] Error enriching user from database:',
+                  dbError,
+                );
                 // Continue with Better Auth user data even if DB lookup fails
               }
             } else {
@@ -223,14 +262,18 @@ async function getHandler() {
           }
         } catch (error) {
           // Session validation failed - this is OK, user is just not authenticated
-          console.log('[GraphQL API] Session validation error:', error instanceof Error ? error.message : 'Unknown error');
+          console.log(
+            '[GraphQL API] Session validation error:',
+            error instanceof Error ? error.message : 'Unknown error',
+          );
         }
-        
+
         // Create a mock Express-like request object
         const mockReq = {
-          headers: req.headers instanceof Headers 
-            ? Object.fromEntries(req.headers.entries())
-            : req.headers,
+          headers:
+            req.headers instanceof Headers
+              ? Object.fromEntries(req.headers.entries())
+              : req.headers,
           method: req.method,
           url: req.url,
           user,
@@ -258,7 +301,8 @@ async function getHandler() {
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*', // In production, replace with your domain
   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization, apollo-require-preflight',
+  'Access-Control-Allow-Headers':
+    'Content-Type, Authorization, apollo-require-preflight',
   'Access-Control-Allow-Credentials': 'true',
 };
 
@@ -270,12 +314,12 @@ export async function OPTIONS(request: NextRequest) {
 // Export POST handler (GraphQL only uses POST)
 export async function POST(request: NextRequest) {
   console.log('[GraphQL API] POST request received');
-  
+
   try {
     console.log('[GraphQL API] Getting handler...');
     const requestHandler = await getHandler();
     console.log('[GraphQL API] Handler obtained');
-    
+
     if (!requestHandler) {
       console.error('[GraphQL API] Handler not initialized!');
       return NextResponse.json(
@@ -289,30 +333,37 @@ export async function POST(request: NextRequest) {
             },
           ],
         },
-        { status: 500, headers: corsHeaders }
+        { status: 500, headers: corsHeaders },
       );
     }
 
     console.log('[GraphQL API] Calling handler...');
     const response = await requestHandler(request);
     console.log('[GraphQL API] Handler completed successfully');
-    
+
     // Add CORS headers to the response
     Object.entries(corsHeaders).forEach(([key, value]) => {
       response.headers.set(key, value);
     });
-    
+
     return response;
   } catch (error) {
     console.error('[GraphQL API] Request error:', error);
-    console.error('[GraphQL API] Error message:', error instanceof Error ? error.message : 'Unknown error');
-    console.error('[GraphQL API] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-    
+    console.error(
+      '[GraphQL API] Error message:',
+      error instanceof Error ? error.message : 'Unknown error',
+    );
+    console.error(
+      '[GraphQL API] Error stack:',
+      error instanceof Error ? error.stack : 'No stack trace',
+    );
+
     return NextResponse.json(
       {
         errors: [
           {
-            message: error instanceof Error ? error.message : 'Internal server error',
+            message:
+              error instanceof Error ? error.message : 'Internal server error',
             extensions: {
               code: 'INTERNAL_SERVER_ERROR',
               details: error instanceof Error ? error.message : String(error),
@@ -320,7 +371,7 @@ export async function POST(request: NextRequest) {
           },
         ],
       },
-      { status: 500, headers: corsHeaders }
+      { status: 500, headers: corsHeaders },
     );
   }
 }
@@ -333,17 +384,21 @@ export async function GET(request: NextRequest) {
         message: 'GraphQL Playground is disabled in production',
         endpoint: '/api/graphql',
       },
-      { status: 403, headers: corsHeaders }
+      { status: 403, headers: corsHeaders },
     );
   }
 
   // In development, Apollo Server 4 has built-in playground
   // accessible via Apollo Sandbox or GraphQL Playground browser extension
-  return NextResponse.json({
-    message: 'GraphQL API is running',
-    endpoint: '/api/graphql',
-    playground: 'Use Apollo Sandbox: https://studio.apollographql.com/sandbox',
-  }, { headers: corsHeaders });
+  return NextResponse.json(
+    {
+      message: 'GraphQL API is running',
+      endpoint: '/api/graphql',
+      playground:
+        'Use Apollo Sandbox: https://studio.apollographql.com/sandbox',
+    },
+    { headers: corsHeaders },
+  );
 }
 
 // Export runtime configuration for Vercel
