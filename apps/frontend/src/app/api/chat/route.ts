@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { prisma } from '@snake-rescue/database';
+
+async function getPrisma() {
+  const { prisma } = await import('@snake-rescue/database');
+  return prisma;
+}
 
 /**
  * AI Chat endpoint with RAG (Retrieval-Augmented Generation)
@@ -56,6 +60,8 @@ async function searchKnowledgeBase(query: string): Promise<{
     documentTitle: string;
   }>;
 }> {
+  const prisma = await getPrisma();
+
   try {
     // Convert query to tsquery format
     const searchTerms = query

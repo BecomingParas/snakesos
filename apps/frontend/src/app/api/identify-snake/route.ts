@@ -3,7 +3,11 @@ import { v2 as cloudinary } from 'cloudinary';
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { GeminiSnakeIdentificationSchema } from '@/lib/gemini/snake-identification-schema';
 import { buildSnakeIdentificationPrompt } from '@/lib/gemini/prompts';
-import { prisma } from '@snake-rescue/database';
+
+async function getPrisma() {
+  const { prisma } = await import('@snake-rescue/database');
+  return prisma;
+}
 
 const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash';
 const GEMINI_MODEL_FALLBACKS = [
@@ -49,8 +53,20 @@ function getGeminiModelCandidates(): string[] {
   return [...new Set(candidates.filter(Boolean))];
 }
 
-function isRetryableGeminiError(error: any): boolean {
-  const message = error?.message || '';
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === 'string') {
+    return error;
+  }
+
+  return String(error);
+}
+
+function isRetryableGeminiError(error: unknown): boolean {
+  const message = getErrorMessage(error);
   return (
     message.includes('404') ||
     message.includes('503') ||
@@ -86,7 +102,7 @@ cloudinary.config({
  * Gemini response schema for structured output
  * This ensures Gemini returns properly formatted JSON
  */
-const GEMINI_RESPONSE_SCHEMA: any = {
+const GEMINI_RESPONSE_SCHEMA = {
   type: SchemaType.OBJECT,
   properties: {
     is_snake: { type: SchemaType.BOOLEAN },
@@ -224,6 +240,8 @@ function getClientIp(request: NextRequest): string {
 export async function POST(request: NextRequest) {
   const requestId = Math.random().toString(36).substring(7);
   const startTime = Date.now();
+  let resolvedModelName = resolveGeminiModelName();
+  const prisma = await getPrisma();
 
   try {
     // ---- Rate Limiting ----
@@ -266,7 +284,7 @@ export async function POST(request: NextRequest) {
       process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
     const cloudKey = process.env.CLOUDINARY_API_KEY;
     const cloudSecret = process.env.CLOUDINARY_API_SECRET;
-    const resolvedModelName = resolveGeminiModelName();
+    resolvedModelName = resolveGeminiModelName();
 
     console.log(`[${requestId}] 🔧 ENV CHECK:`, {
       hasGeminiKey: !!geminiKey,
@@ -423,8 +441,8 @@ export async function POST(request: NextRequest) {
 
     // Set timeout for Gemini request
     const timeout = parseInt(process.env.GEMINI_TIMEOUT_MS || '30000', 10);
-    let result: any;
-    let lastError: any;
+    let result: { response: { text: () => string } } | undefined;
+    let lastError: unknown;
     let activeModelName = modelCandidates[0];
 
     for (const modelName of modelCandidates) {
@@ -463,16 +481,38 @@ export async function POST(request: NextRequest) {
         activeModelName = modelName;
         clearTimeout(timeoutId);
         break;
-      } catch (geminiError: any) {
+      } catch (geminiError: unknown) {
         lastError = geminiError;
         clearTimeout(timeoutId);
 
+        const errorName =
+          geminiError instanceof Error ? geminiError.name : 'GeminiError';
+        const errorMessage = getErrorMessage(geminiError);
+        const errorStatus =
+          geminiError &&
+          typeof geminiError === 'object' &&
+          'status' in geminiError
+            ? String((geminiError as { status?: unknown }).status)
+            : undefined;
+        const errorStatusText =
+          geminiError &&
+          typeof geminiError === 'object' &&
+          'statusText' in geminiError
+            ? String((geminiError as { statusText?: unknown }).statusText)
+            : undefined;
+        const errorDetails =
+          geminiError &&
+          typeof geminiError === 'object' &&
+          'details' in geminiError
+            ? (geminiError as { details?: unknown }).details
+            : undefined;
+
         console.error(`[${requestId}] ❌ Gemini API Error for ${modelName}:`, {
-          name: geminiError?.name,
-          message: geminiError?.message,
-          status: geminiError?.status,
-          statusText: geminiError?.statusText,
-          details: geminiError?.details || geminiError?.error,
+          name: errorName,
+          message: errorMessage,
+          status: errorStatus,
+          statusText: errorStatusText,
+          details: errorDetails,
         });
 
         if (!isRetryableGeminiError(geminiError)) {
@@ -678,8 +718,11 @@ export async function POST(request: NextRequest) {
           // Use rescuer's base location (municipality) if current location not available
           const rescuersWithDistance = rescuers
             .map((rescuer) => {
+              const currentLat = rescuer.currentLat;
+              const currentLng = rescuer.currentLng;
+
               // Use current location if available, otherwise skip
-              if (!rescuer.currentLat || !rescuer.currentLng) {
+              if (currentLat == null || currentLng == null) {
                 return null;
               }
               return {
@@ -687,8 +730,8 @@ export async function POST(request: NextRequest) {
                 distance: calculateDistance(
                   latitude,
                   longitude,
-                  rescuer.currentLat!,
-                  rescuer.currentLng!,
+                  currentLat,
+                  currentLng,
                 ),
               };
             })

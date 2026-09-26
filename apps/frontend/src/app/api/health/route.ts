@@ -4,12 +4,12 @@
  */
 
 import { NextResponse } from 'next/server';
-import { prisma } from '@snake-rescue/database';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 export async function GET() {
+  const { prisma } = await import('@snake-rescue/database');
   const checks: Record<string, any> = {
     timestamp: new Date().toISOString(),
     env: {

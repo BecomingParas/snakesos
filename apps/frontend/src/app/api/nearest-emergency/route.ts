@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@snake-rescue/database';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -10,6 +9,8 @@ export const dynamic = 'force-dynamic';
  * Query params: lat, lng
  */
 export async function GET(request: NextRequest) {
+  const { prisma } = await import('@snake-rescue/database');
+
   try {
     const { searchParams } = new URL(request.url);
     const lat = parseFloat(searchParams.get('lat') || '');
