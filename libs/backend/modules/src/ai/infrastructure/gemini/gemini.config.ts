@@ -1,6 +1,6 @@
 /**
  * Google Gemini API Configuration
- * 
+ *
  * SECURITY NOTES:
  * - API key MUST be server-side only
  * - Never expose GEMINI_API_KEY to frontend
@@ -34,7 +34,7 @@ function normalizeGeminiModel(model?: string): string {
 
   if (RETIRED_GEMINI_MODELS.has(sanitized)) {
     console.warn(
-      `⚠️ GEMINI_MODEL "${sanitized}" is retired or unsupported. Falling back to "${DEFAULT_GEMINI_MODEL}".`
+      `⚠️ GEMINI_MODEL "${sanitized}" is retired or unsupported. Falling back to "${DEFAULT_GEMINI_MODEL}".`,
     );
     return DEFAULT_GEMINI_MODEL;
   }
@@ -54,11 +54,11 @@ export function loadGeminiConfig(): GeminiConfig {
   if (!apiKey || apiKey === 'your_gemini_api_key_here') {
     if (process.env.NODE_ENV === 'production') {
       throw new Error(
-        'GEMINI_API_KEY is not configured. Get your key from https://aistudio.google.com/app/apikey'
+        'GEMINI_API_KEY is not configured. Get your key from https://aistudio.google.com/app/apikey',
       );
     }
     console.warn(
-      '⚠️  GEMINI_API_KEY not configured. Gemini provider will not function.'
+      '⚠️  GEMINI_API_KEY not configured. Gemini provider will not function.',
     );
   }
 
