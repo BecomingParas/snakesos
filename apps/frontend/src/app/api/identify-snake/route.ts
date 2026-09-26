@@ -6,6 +6,12 @@ import { buildSnakeIdentificationPrompt } from '@/lib/gemini/prompts';
 import { prisma } from '@snake-rescue/database';
 
 const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash';
+const GEMINI_MODEL_FALLBACKS = [
+  'gemini-3.8-flash',
+  'gemini-2.5-flash',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash',
+];
 const RETIRED_GEMINI_MODELS = new Set([
   'gemini-1.5-flash',
   'gemini-1.5-flash-8b',
@@ -31,6 +37,28 @@ function resolveGeminiModelName(): string {
   }
 
   return configured;
+}
+
+function getGeminiModelCandidates(): string[] {
+  const configured = resolveGeminiModelName();
+  const candidates = [configured, DEFAULT_GEMINI_MODEL, ...GEMINI_MODEL_FALLBACKS];
+  return [...new Set(candidates.filter(Boolean))];
+}
+
+function isRetryableGeminiError(error: any): boolean {
+  const message = error?.message || '';
+  return (
+    message.includes('404') ||
+    message.includes('503') ||
+    message.includes('429') ||
+    message.includes('quota') ||
+    message.includes('rate limit') ||
+    message.includes('high demand') ||
+    message.includes('not found') ||
+    message.includes('model') ||
+    message.includes('timeout') ||
+    message.includes('ETIMEDOUT')
+  );
 }
 
 /**
@@ -234,6 +262,7 @@ export async function POST(request: NextRequest) {
       process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
     const cloudKey = process.env.CLOUDINARY_API_KEY;
     const cloudSecret = process.env.CLOUDINARY_API_SECRET;
+    const resolvedModelName = resolveGeminiModelName();
 
     console.log(`[${requestId}] 🔧 ENV CHECK:`, {
       hasGeminiKey: !!geminiKey,
@@ -241,7 +270,8 @@ export async function POST(request: NextRequest) {
         ? geminiKey.substring(0, 10) + '...'
         : 'MISSING',
       geminiKeyLength: geminiKey?.length || 0,
-      model: process.env.GEMINI_MODEL || 'gemini-1.5-flash (default)',
+      model: resolvedModelName,
+      configuredModel: process.env.GEMINI_MODEL || 'not set',
       hasCloudName: !!cloudName,
       hasCloudKey: !!cloudKey,
       hasCloudSecret: !!cloudSecret,
@@ -379,57 +409,80 @@ export async function POST(request: NextRequest) {
     }
 
     const genAI = new GoogleGenerativeAI(geminiKey);
+    const modelCandidates = getGeminiModelCandidates();
 
-    const modelName = resolveGeminiModelName();
-
-    console.log(`[${requestId}] 📝 Using model: ${modelName}`);
-
-    const model = genAI.getGenerativeModel({
-      model: modelName,
-      generationConfig: {
-        responseMimeType: 'application/json',
-        responseSchema: GEMINI_RESPONSE_SCHEMA,
-        temperature: 0.2, // Lower temperature for more consistent outputs
-      },
-    });
+    console.log(
+      `[${requestId}] 🧭 Gemini model candidates: ${modelCandidates.join(', ')}`,
+    );
 
     const prompt = buildSnakeIdentificationPrompt();
 
     // Set timeout for Gemini request
     const timeout = parseInt(process.env.GEMINI_TIMEOUT_MS || '30000', 10);
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    let result: any;
+    let lastError: any;
+    let activeModelName = modelCandidates[0];
 
-    let result;
-    try {
-      result = await Promise.race([
-        model.generateContent([
-          { text: prompt },
-          {
-            inlineData: {
-              mimeType: file.type || 'image/jpeg',
-              data: base64Image,
-            },
+    for (const modelName of modelCandidates) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      try {
+        console.log(`[${requestId}] 📝 Trying model: ${modelName}`);
+        const model = genAI.getGenerativeModel({
+          model: modelName,
+          generationConfig: {
+            responseMimeType: 'application/json',
+            responseSchema: GEMINI_RESPONSE_SCHEMA,
+            temperature: 0.2,
           },
-        ]),
-        new Promise((_, reject) =>
-          setTimeout(
-            () => reject(new Error('Gemini request timeout')),
-            timeout,
+        });
+
+        result = await Promise.race([
+          model.generateContent([
+            { text: prompt },
+            {
+              inlineData: {
+                mimeType: file.type || 'image/jpeg',
+                data: base64Image,
+              },
+            },
+          ]),
+          new Promise((_, reject) =>
+            setTimeout(
+              () => reject(new Error('Gemini request timeout')),
+              timeout,
+            ),
           ),
-        ),
-      ]);
-    } catch (geminiError: any) {
-      console.error(`[${requestId}] ❌ Gemini API Error:`, {
-        name: geminiError?.name,
-        message: geminiError?.message,
-        status: geminiError?.status,
-        statusText: geminiError?.statusText,
-        details: geminiError?.details || geminiError?.error,
-      });
-      throw geminiError;
-    } finally {
-      clearTimeout(timeoutId);
+        ]);
+
+        activeModelName = modelName;
+        clearTimeout(timeoutId);
+        break;
+      } catch (geminiError: any) {
+        lastError = geminiError;
+        clearTimeout(timeoutId);
+
+        console.error(`[${requestId}] ❌ Gemini API Error for ${modelName}:`, {
+          name: geminiError?.name,
+          message: geminiError?.message,
+          status: geminiError?.status,
+          statusText: geminiError?.statusText,
+          details: geminiError?.details || geminiError?.error,
+        });
+
+        if (!isRetryableGeminiError(geminiError)) {
+          break;
+        }
+
+        console.warn(
+          `[${requestId}] ⚠️ ${modelName} failed; trying next Gemini fallback model...`,
+        );
+      }
+    }
+
+    if (!result) {
+      throw lastError || new Error('Gemini model fallback failed');
     }
 
     const responseText = result.response.text();
@@ -713,7 +766,7 @@ export async function POST(request: NextRequest) {
         nearestRescuer,
       },
       meta: {
-        model: modelName,
+        model: activeModelName,
         processing_time_ms: processingTime,
         request_id: requestId,
       },
@@ -745,8 +798,10 @@ export async function POST(request: NextRequest) {
 
     if (
       message.includes('429') ||
+      message.includes('503') ||
       message.includes('rate limit') ||
-      message.includes('quota')
+      message.includes('quota') ||
+      message.includes('high demand')
     ) {
       return NextResponse.json(
         {
@@ -759,9 +814,11 @@ export async function POST(request: NextRequest) {
           meta: {
             request_id: requestId,
             processing_time_ms: processingTime,
+            model: resolvedModelName,
+            errorMessage: message,
           },
         },
-        { status: 429 },
+        { status: 503 },
       );
     }
 
@@ -782,7 +839,8 @@ export async function POST(request: NextRequest) {
           meta: {
             request_id: requestId,
             processing_time_ms: processingTime,
-            model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+            model: resolvedModelName,
+            configuredModel: process.env.GEMINI_MODEL || 'not set',
             errorMessage: message, // Debug info
           },
         },
