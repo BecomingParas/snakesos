@@ -144,12 +144,14 @@ export default function IdentifyPage() {
       if ('geolocation' in navigator) {
         try {
           console.log('[Identify] Requesting user location...');
-          const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, {
-              timeout: 5000,
-              enableHighAccuracy: false,
-            });
-          });
+          const position = await new Promise<GeolocationPosition>(
+            (resolve, reject) => {
+              navigator.geolocation.getCurrentPosition(resolve, reject, {
+                timeout: 5000,
+                enableHighAccuracy: false,
+              });
+            },
+          );
           userLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
@@ -166,7 +168,7 @@ export default function IdentifyPage() {
       // Send the file directly to the API endpoint
       const formData = new FormData();
       formData.append('file', preview.file);
-      
+
       // Add location if available
       if (userLocation) {
         formData.append('lat', userLocation.lat.toString());
@@ -178,10 +180,27 @@ export default function IdentifyPage() {
         body: formData,
       });
 
-      const mlResult = await response.json();
+      const responseText = await response.text();
+      let mlResult: any = {};
+
+      if (responseText) {
+        try {
+          mlResult = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error(
+            '[Identify] Failed to parse API JSON response:',
+            parseError,
+            responseText,
+          );
+          throw new Error(
+            'AI service returned an invalid response. Please try again in a few minutes.',
+          );
+        }
+      }
 
       console.log('[Identify] API Response:', {
         success: mlResult.success,
+        status: response.status,
         hasHospital: !!mlResult.data?.nearestHospital,
         hasRescuer: !!mlResult.data?.nearestRescuer,
         hospital: mlResult.data?.nearestHospital,
@@ -191,28 +210,39 @@ export default function IdentifyPage() {
       // Handle error responses from the new API format
       if (!response.ok || !mlResult.success) {
         const errorCode = mlResult.error?.code || 'UNKNOWN_ERROR';
-        const errorMessage = mlResult.error?.message || 'Failed to identify snake';
+        const errorMessage =
+          mlResult.error?.message || 'Failed to identify snake';
 
         // Map error codes to user-friendly messages
-        const userMessage = {
-          'AI_RATE_LIMITED': 'Too many requests. Please wait a few minutes and try again.',
-          'AI_SERVICE_NOT_CONFIGURED': 'AI service is temporarily unavailable. Please contact support.',
-          'INVALID_IMAGE': 'Please upload a valid image file.',
-          'INVALID_IMAGE_TYPE': 'Invalid file type. Please upload a JPEG, PNG, or WebP image.',
-          'IMAGE_TOO_LARGE': 'Image is too large. Please use an image under 10MB.',
-          'AI_INVALID_RESPONSE': 'AI service returned an invalid response. Please try again.',
-          'AI_PROVIDER_TIMEOUT': 'AI service took too long to respond. Please try again.',
-          'AI_PROVIDER_RATE_LIMITED': 'AI service is experiencing high demand. Please try again in a few minutes.',
-          'AI_PROVIDER_ERROR': 'AI service error. Please try again or contact support.',
-          'SNAKE_IDENTIFICATION_FAILED': 'Unable to identify the snake. Please try again with a clearer image.',
-        }[errorCode] || errorMessage;
+        const userMessage =
+          {
+            AI_RATE_LIMITED:
+              'Too many requests. Please wait a few minutes and try again.',
+            AI_SERVICE_NOT_CONFIGURED:
+              'AI service is temporarily unavailable. Please contact support.',
+            INVALID_IMAGE: 'Please upload a valid image file.',
+            INVALID_IMAGE_TYPE:
+              'Invalid file type. Please upload a JPEG, PNG, or WebP image.',
+            IMAGE_TOO_LARGE:
+              'Image is too large. Please use an image under 10MB.',
+            AI_INVALID_RESPONSE:
+              'AI service returned an invalid response. Please try again.',
+            AI_PROVIDER_TIMEOUT:
+              'AI service took too long to respond. Please try again.',
+            AI_PROVIDER_RATE_LIMITED:
+              'AI service is experiencing high demand. Please try again in a few minutes.',
+            AI_PROVIDER_ERROR:
+              'AI service error. Please try again or contact support.',
+            SNAKE_IDENTIFICATION_FAILED:
+              'Unable to identify the snake. Please try again with a clearer image.',
+          }[errorCode] || errorMessage;
 
         throw new Error(userMessage);
       }
 
       // Handle the new API response format (with backward compatibility for old format)
       let data;
-      
+
       if (mlResult.data) {
         // NEW API format
         data = mlResult.data;
@@ -229,7 +259,11 @@ export default function IdentifyPage() {
           visualFeatures: oldData.visualFeatures || [],
           alternativeMatches: oldData.alternativeMatches || [],
           safety: {
-            risk_level: oldData.species?.dangerLevel === 'HIGH' || oldData.species?.dangerLevel === 'MODERATE' ? 'high' : 'low',
+            risk_level:
+              oldData.species?.dangerLevel === 'HIGH' ||
+              oldData.species?.dangerLevel === 'MODERATE'
+                ? 'high'
+                : 'low',
             handling_advice: oldData.safetyAdvice || '',
             public_safety_message: oldData.safetyAdvice || '',
           },
@@ -239,49 +273,69 @@ export default function IdentifyPage() {
       } else {
         throw new Error('Invalid API response format');
       }
-      
+
       // Check identification status for specific error states
       if (data.identification_status === 'insufficient_image') {
-        setError('The image quality is too poor for identification. Please upload a clearer, well-lit photo from a safe distance.');
+        setError(
+          'The image quality is too poor for identification. Please upload a clearer, well-lit photo from a safe distance.',
+        );
         setState('idle');
         return;
       }
 
       if (data.identification_status === 'not_a_snake') {
-        setError('No snake was detected in this image. Please upload a different image.');
+        setError(
+          'No snake was detected in this image. Please upload a different image.',
+        );
         setState('idle');
         return;
       }
 
       if (!data.is_snake) {
-        setError('No snake detected in the image. Please ensure the snake is clearly visible and try again.');
+        setError(
+          'No snake detected in the image. Please ensure the snake is clearly visible and try again.',
+        );
         setState('idle');
         return;
       }
 
       // Map the new API response to the expected format
-      const dangerAssessment = 
-        data.safety?.risk_level === 'high' ? 'HIGH_RISK' :
-        data.safety?.risk_level === 'low' ? 'LOW_RISK' :
-        data.safety?.risk_level === 'moderate' ? 'CAUTION' :
-        data.species?.dangerLevel || 'UNKNOWN';
+      const dangerAssessment =
+        data.safety?.risk_level === 'high'
+          ? 'HIGH_RISK'
+          : data.safety?.risk_level === 'low'
+            ? 'LOW_RISK'
+            : data.safety?.risk_level === 'moderate'
+              ? 'CAUTION'
+              : data.species?.dangerLevel || 'UNKNOWN';
 
       const payload: IdentificationResult = {
         id: mlResult.meta?.request_id || crypto.randomUUID(),
         imageUrl: data.imageUrl || preview.url,
-        species: data.species ? {
-          id: data.species.scientificName ?? 'unknown',
-          name: data.species.name ?? 'Unknown',
-          scientificName: data.species.scientificName ?? 'Unknown',
-          nepaliName: null,
-          localNames: [],
-          venomous: data.species.venomous ?? null,
-          venomousStatus: data.species.venomousStatus || (data.species.venomous === false ? 'non_venomous' : data.species.venomous === true ? 'venomous' : 'unknown'),
-          dangerLevel: dangerAssessment,
-        } : null,
+        species: data.species
+          ? {
+              id: data.species.scientificName ?? 'unknown',
+              name: data.species.name ?? 'Unknown',
+              scientificName: data.species.scientificName ?? 'Unknown',
+              nepaliName: null,
+              localNames: [],
+              venomous: data.species.venomous ?? null,
+              venomousStatus:
+                data.species.venomousStatus ||
+                (data.species.venomous === false
+                  ? 'non_venomous'
+                  : data.species.venomous === true
+                    ? 'venomous'
+                    : 'unknown'),
+              dangerLevel: dangerAssessment,
+            }
+          : null,
         confidence: data.confidence ?? 0,
         provider: 'GEMINI',
-        model: mlResult.meta?.model ?? mlResult.identification?.model ?? 'gemini-1.5-flash',
+        model:
+          mlResult.meta?.model ??
+          mlResult.identification?.model ??
+          'gemini-1.5-flash',
         dangerAssessment,
         venomousDetected: data.species?.venomous ?? null,
         imageQuality: data.image_quality,
@@ -291,9 +345,18 @@ export default function IdentifyPage() {
         medicalWarning: data.medicalWarning,
         reasoning: data.reasoning,
         alternativeMatches: (data.alternativeMatches ?? []).map(
-          (alt: { species?: { name?: string; scientificName?: string; venomous?: boolean }; confidence?: number }) => ({
+          (alt: {
+            species?: {
+              name?: string;
+              scientificName?: string;
+              venomous?: boolean;
+            };
+            confidence?: number;
+          }) => ({
             confidence: alt.confidence ?? 0,
-            reasoning: alt.species?.venomous ? 'Venomous species' : 'Non-venomous species',
+            reasoning: alt.species?.venomous
+              ? 'Venomous species'
+              : 'Non-venomous species',
             species: {
               name: alt.species?.name ?? 'Unknown',
               scientificName: alt.species?.scientificName ?? 'Unknown',
@@ -491,11 +554,15 @@ export default function IdentifyPage() {
               <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <span className="mt-0.5 text-warning">•</span>
-                  <span>Maintain a safe distance of at least 6 feet from the snake</span>
+                  <span>
+                    Maintain a safe distance of at least 6 feet from the snake
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-0.5 text-warning">•</span>
-                  <span>Do not attempt to catch, kill, or provoke the snake</span>
+                  <span>
+                    Do not attempt to catch, kill, or provoke the snake
+                  </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="mt-0.5 text-warning">•</span>
@@ -518,11 +585,15 @@ export default function IdentifyPage() {
                 <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-start gap-2">
                     <span className="mt-0.5 text-primary">1.</span>
-                    <span>Upload a clear photo of the snake from a safe distance</span>
+                    <span>
+                      Upload a clear photo of the snake from a safe distance
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="mt-0.5 text-primary">2.</span>
-                    <span>Our AI analyzes the image to identify the species</span>
+                    <span>
+                      Our AI analyzes the image to identify the species
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="mt-0.5 text-primary">3.</span>
@@ -540,8 +611,12 @@ export default function IdentifyPage() {
             {result && (
               <div className="mt-6 grid grid-cols-2 gap-3">
                 <div className="rounded-xl border border-accent/30 bg-accent/5 p-4 text-center">
-                  <div className="text-2xl font-bold text-primary">{confidencePercent}%</div>
-                  <div className="text-xs text-muted-foreground">AI Confidence</div>
+                  <div className="text-2xl font-bold text-primary">
+                    {confidencePercent}%
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    AI Confidence
+                  </div>
                 </div>
                 <div className="rounded-xl border border-accent/30 bg-accent/5 p-4 text-center">
                   <div className="text-2xl font-bold text-primary">
@@ -578,15 +653,21 @@ export default function IdentifyPage() {
                             className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${
                               result.species.venomousStatus === 'venomous'
                                 ? 'border-destructive/40 bg-destructive/15 text-destructive'
-                                : result.species.venomousStatus === 'non_venomous'
+                                : result.species.venomousStatus ===
+                                    'non_venomous'
                                   ? 'border-success/40 bg-success/15 text-success'
                                   : 'border-warning/40 bg-warning/15 text-warning'
                             }`}
                           >
-                            {result.species.venomousStatus === 'venomous' && '⚠️ VENOMOUS'}
-                            {result.species.venomousStatus === 'non_venomous' && '✓ NON-VENOMOUS'}
-                            {result.species.venomousStatus === 'potentially_venomous' && '⚠️ POTENTIALLY VENOMOUS'}
-                            {result.species.venomousStatus === 'unknown' && '? VENOMOUS STATUS UNKNOWN'}
+                            {result.species.venomousStatus === 'venomous' &&
+                              '⚠️ VENOMOUS'}
+                            {result.species.venomousStatus === 'non_venomous' &&
+                              '✓ NON-VENOMOUS'}
+                            {result.species.venomousStatus ===
+                              'potentially_venomous' &&
+                              '⚠️ POTENTIALLY VENOMOUS'}
+                            {result.species.venomousStatus === 'unknown' &&
+                              '? VENOMOUS STATUS UNKNOWN'}
                           </span>
                         </div>
                       )}
@@ -679,13 +760,16 @@ export default function IdentifyPage() {
                 {result.visualFeatures && result.visualFeatures.length > 0 && (
                   <div className="rounded-2xl border border-border/30 bg-background/60 p-5">
                     <p className="flex items-center gap-2 font-semibold text-primary">
-                      <CheckCircle2 className="h-4 w-4" /> Visual features detected
+                      <CheckCircle2 className="h-4 w-4" /> Visual features
+                      detected
                     </p>
                     <ul className="mt-3 space-y-1.5 text-sm">
                       {result.visualFeatures.map((feature, index) => (
                         <li key={index} className="flex items-start gap-2">
                           <span className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full bg-primary" />
-                          <span className="text-muted-foreground">{feature}</span>
+                          <span className="text-muted-foreground">
+                            {feature}
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -708,12 +792,19 @@ export default function IdentifyPage() {
                   {/* Debug info - remove this after testing */}
                   {process.env.NODE_ENV === 'development' && (
                     <div className="rounded-lg border border-blue-500 bg-blue-50 p-3 text-xs">
-                      <p><strong>Debug:</strong></p>
-                      <p>Has Hospital Data: {result.nearestHospital ? 'Yes' : 'No'}</p>
-                      <p>Has Rescuer Data: {result.nearestRescuer ? 'Yes' : 'No'}</p>
+                      <p>
+                        <strong>Debug:</strong>
+                      </p>
+                      <p>
+                        Has Hospital Data:{' '}
+                        {result.nearestHospital ? 'Yes' : 'No'}
+                      </p>
+                      <p>
+                        Has Rescuer Data: {result.nearestRescuer ? 'Yes' : 'No'}
+                      </p>
                     </div>
                   )}
-                  
+
                   {result.nearestHospital && (
                     <div className="rounded-2xl border border-primary/40 bg-gradient-to-br from-primary/5 to-accent/5 backdrop-blur-sm shadow-lg p-6">
                       <div className="flex items-center justify-between mb-4">
@@ -728,10 +819,12 @@ export default function IdentifyPage() {
                           </span>
                         )}
                       </div>
-                      
+
                       <div className="space-y-3">
                         <div>
-                          <p className="font-semibold text-lg">{result.nearestHospital.name}</p>
+                          <p className="font-semibold text-lg">
+                            {result.nearestHospital.name}
+                          </p>
                           <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-1">
                             <MapPin className="h-3.5 w-3.5" />
                             {result.nearestHospital.address}
@@ -739,29 +832,38 @@ export default function IdentifyPage() {
                         </div>
 
                         <div className="flex flex-wrap gap-2">
-                          {result.nearestHospital.snakebiteTreatmentAvailable && (
+                          {result.nearestHospital
+                            .snakebiteTreatmentAvailable && (
                             <span className="inline-flex items-center gap-1.5 rounded-full border border-success/40 bg-success/15 px-3 py-1 text-xs font-semibold text-success">
                               <CheckCircle2 className="h-3 w-3" />
                               Snakebite Treatment Available
                             </span>
                           )}
-                          <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${
-                            result.nearestHospital.antivenomStatus === 'AVAILABLE' 
-                              ? 'border-success/40 bg-success/15 text-success'
-                              : result.nearestHospital.antivenomStatus === 'LOW_STOCK'
-                              ? 'border-warning/40 bg-warning/15 text-warning'
-                              : 'border-destructive/40 bg-destructive/15 text-destructive'
-                          }`}>
-                            {result.nearestHospital.antivenomStatus === 'AVAILABLE' && '✓ Antivenom Available'}
-                            {result.nearestHospital.antivenomStatus === 'LOW_STOCK' && '⚠️ Low Antivenom Stock'}
-                            {result.nearestHospital.antivenomStatus === 'OUT_OF_STOCK' && '✗ No Antivenom'}
-                            {result.nearestHospital.antivenomStatus === 'UNKNOWN' && '? Antivenom Status Unknown'}
+                          <span
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${
+                              result.nearestHospital.antivenomStatus ===
+                              'AVAILABLE'
+                                ? 'border-success/40 bg-success/15 text-success'
+                                : result.nearestHospital.antivenomStatus ===
+                                    'LOW_STOCK'
+                                  ? 'border-warning/40 bg-warning/15 text-warning'
+                                  : 'border-destructive/40 bg-destructive/15 text-destructive'
+                            }`}
+                          >
+                            {result.nearestHospital.antivenomStatus ===
+                              'AVAILABLE' && '✓ Antivenom Available'}
+                            {result.nearestHospital.antivenomStatus ===
+                              'LOW_STOCK' && '⚠️ Low Antivenom Stock'}
+                            {result.nearestHospital.antivenomStatus ===
+                              'OUT_OF_STOCK' && '✗ No Antivenom'}
+                            {result.nearestHospital.antivenomStatus ===
+                              'UNKNOWN' && '? Antivenom Status Unknown'}
                           </span>
                         </div>
 
                         <div className="flex gap-3 pt-2">
                           {result.nearestHospital.emergencyPhone && (
-                            <a 
+                            <a
                               href={`tel:${result.nearestHospital.emergencyPhone}`}
                               className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-destructive px-4 py-2.5 text-sm font-semibold text-destructive-foreground hover:bg-destructive/90 transition-colors"
                             >
@@ -769,15 +871,16 @@ export default function IdentifyPage() {
                               Emergency: {result.nearestHospital.emergencyPhone}
                             </a>
                           )}
-                          {!result.nearestHospital.emergencyPhone && result.nearestHospital.phone && (
-                            <a 
-                              href={`tel:${result.nearestHospital.phone}`}
-                              className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
-                            >
-                              <Phone className="h-4 w-4" />
-                              Call: {result.nearestHospital.phone}
-                            </a>
-                          )}
+                          {!result.nearestHospital.emergencyPhone &&
+                            result.nearestHospital.phone && (
+                              <a
+                                href={`tel:${result.nearestHospital.phone}`}
+                                className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+                              >
+                                <Phone className="h-4 w-4" />
+                                Call: {result.nearestHospital.phone}
+                              </a>
+                            )}
                         </div>
                       </div>
                     </div>
@@ -797,10 +900,12 @@ export default function IdentifyPage() {
                           </span>
                         )}
                       </div>
-                      
+
                       <div className="space-y-3">
                         <div>
-                          <p className="font-semibold text-lg">{result.nearestRescuer.name}</p>
+                          <p className="font-semibold text-lg">
+                            {result.nearestRescuer.name}
+                          </p>
                           <p className="text-sm text-muted-foreground mt-1">
                             {result.nearestRescuer.experience} Rescuer
                           </p>
@@ -810,26 +915,29 @@ export default function IdentifyPage() {
                           {result.nearestRescuer.totalRescues !== undefined && (
                             <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent/15 px-3 py-1 text-xs font-semibold text-accent">
                               <CheckCircle2 className="h-3 w-3" />
-                              {result.nearestRescuer.totalRescues} Rescues Completed
+                              {result.nearestRescuer.totalRescues} Rescues
+                              Completed
                             </span>
                           )}
                           {result.nearestRescuer.rating && (
                             <span className="inline-flex items-center gap-1.5 rounded-full border border-warning/40 bg-warning/15 px-3 py-1 text-xs font-semibold text-warning">
-                              ⭐ {result.nearestRescuer.rating.toFixed(1)} Rating
+                              ⭐ {result.nearestRescuer.rating.toFixed(1)}{' '}
+                              Rating
                             </span>
                           )}
                         </div>
 
-                        <a 
+                        <a
                           href={`tel:${result.nearestRescuer.contact}`}
                           className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition-colors"
                         >
                           <Phone className="h-4 w-4" />
                           Call Rescuer: {result.nearestRescuer.contact}
                         </a>
-                        
+
                         <p className="text-xs text-muted-foreground italic">
-                          💡 Tip: Do not approach the snake. Keep a safe distance and let the trained rescuer handle it.
+                          💡 Tip: Do not approach the snake. Keep a safe
+                          distance and let the trained rescuer handle it.
                         </p>
                       </div>
                     </div>
@@ -843,15 +951,20 @@ export default function IdentifyPage() {
                         Location Services
                       </h3>
                       <p className="text-sm text-muted-foreground">
-                        We couldn't find nearby hospitals or rescuers. This may be because:
+                        We couldn't find nearby hospitals or rescuers. This may
+                        be because:
                       </p>
                       <ul className="mt-2 text-sm text-muted-foreground space-y-1 ml-4">
                         <li>• Location permission was not granted</li>
-                        <li>• No hospitals/rescuers are currently registered in our database</li>
+                        <li>
+                          • No hospitals/rescuers are currently registered in
+                          our database
+                        </li>
                         <li>• Service is not yet available in your area</li>
                       </ul>
                       <p className="mt-3 text-sm font-semibold">
-                        Please call the emergency hotlines below for immediate assistance.
+                        Please call the emergency hotlines below for immediate
+                        assistance.
                       </p>
                     </div>
                   )}
@@ -863,17 +976,18 @@ export default function IdentifyPage() {
                       24/7 Emergency Hotline
                     </h3>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Snake emergency? Our trained rescuers are available round the clock.
+                      Snake emergency? Our trained rescuers are available round
+                      the clock.
                     </p>
                     <div className="space-y-2">
-                      <a 
+                      <a
                         href="tel:9812482578"
                         className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-destructive px-4 py-3 text-sm font-semibold text-destructive-foreground hover:bg-destructive/90 transition-colors"
                       >
                         <Phone className="h-4 w-4" />
                         Emergency Line 1: 9812482578
                       </a>
-                      <a 
+                      <a
                         href="tel:9807591342"
                         className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-destructive px-4 py-3 text-sm font-semibold text-destructive-foreground hover:bg-destructive/90 transition-colors"
                       >
