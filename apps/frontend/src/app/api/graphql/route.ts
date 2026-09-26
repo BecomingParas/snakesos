@@ -62,6 +62,59 @@ const resolvers = [
 let serverPromise: Promise<any> | null = null;
 let handler: any = null;
 
+async function getLegacySessionFromBearerToken(authHeader: string | null) {
+  if (!authHeader || !authHeader.toLowerCase().startsWith('bearer ')) {
+    return null;
+  }
+
+  const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+  if (!token) {
+    return null;
+  }
+
+  try {
+    const { prisma } = await import('@snake-rescue/database');
+    const session = await prisma.session.findUnique({
+      where: { token },
+      include: { user: true },
+    });
+
+    if (!session) {
+      return null;
+    }
+
+    if (new Date() >= session.expiresAt) {
+      await prisma.session.delete({ where: { id: session.id } });
+      return null;
+    }
+
+    return {
+      user: {
+        id: session.user.id,
+        email: session.user.email,
+        name: session.user.name,
+        role: session.user.role,
+        phone: session.user.phone,
+        avatar: session.user.avatar,
+        emailVerified: session.user.emailVerified,
+        createdAt: session.user.createdAt,
+        updatedAt: session.user.updatedAt,
+      },
+      session: {
+        id: session.id,
+        userId: session.userId,
+        token: session.token,
+        expiresAt: session.expiresAt,
+        ipAddress: session.ipAddress,
+        userAgent: session.userAgent,
+      },
+    };
+  } catch (error) {
+    console.log('[GraphQL API] Legacy session lookup failed:', error instanceof Error ? error.message : 'Unknown error');
+    return null;
+  }
+}
+
 async function getHandler() {
   if (handler) {
     return handler;
@@ -99,8 +152,8 @@ async function getHandler() {
         
         // Get session from Better Auth using the request
         // Better Auth will check cookies and bearer tokens
-        let user = null;
-        let session = null;
+        let user: any = null;
+        let session: any = null;
         
         try {
           // Extract cookies from the request headers
@@ -110,52 +163,63 @@ async function getHandler() {
           
           console.log('[GraphQL API] Cookie header:', cookieHeader ? 'present' : 'missing');
           console.log('[GraphQL API] Authorization header:', authHeader ? 'present' : 'missing');
-          
-          // Create headers object for Better Auth
-          const betterAuthHeaders = new Headers();
-          if (cookieHeader) {
-            betterAuthHeaders.set('cookie', cookieHeader);
-          }
-          if (authHeader) {
-            betterAuthHeaders.set('authorization', authHeader);
-          }
-          
-          // Get session from Better Auth
-          const betterAuthSession = await auth.api.getSession({ headers: betterAuthHeaders });
-          
-          if (betterAuthSession?.user && betterAuthSession?.session) {
-            user = betterAuthSession.user;
-            session = betterAuthSession.session;
-            
-            // Enrich user with full database record to get custom fields like role
-            try {
-              const { prisma } = await import('@snake-rescue/database');
-              const dbUser = await prisma.user.findUnique({
-                where: { id: user.id },
-                select: { 
-                  id: true, 
-                  email: true, 
-                  name: true, 
-                  role: true, 
-                  emailVerified: true,
-                  phone: true,
-                  avatar: true,
-                  status: true
-                }
-              });
-              if (dbUser) {
-                // Merge Better Auth user with database user, preferring database values
-                user = { ...user, ...dbUser };
-                console.log('[GraphQL API] ✓ Authenticated user:', user.email, 'role:', user.role);
-              } else {
-                console.log('[GraphQL API] ⚠ User session valid but user not found in database');
-              }
-            } catch (dbError) {
-              console.error('[GraphQL API] Error enriching user from database:', dbError);
-              // Continue with Better Auth user data even if DB lookup fails
-            }
+
+          const legacySession = await getLegacySessionFromBearerToken(authHeader);
+          if (legacySession) {
+            const legacyUser = legacySession.user;
+            const legacySessionData = legacySession.session;
+            user = legacyUser;
+            session = legacySessionData;
+            console.log('[GraphQL API] ✓ Authenticated via legacy bearer session:', legacyUser.email, 'role:', legacyUser.role);
           } else {
-            console.log('[GraphQL API] ✗ No valid session found');
+            // Create headers object for Better Auth
+            const betterAuthHeaders = new Headers();
+            if (cookieHeader) {
+              betterAuthHeaders.set('cookie', cookieHeader);
+            }
+            if (authHeader) {
+              betterAuthHeaders.set('authorization', authHeader);
+            }
+            
+            // Get session from Better Auth
+            const betterAuthSession = await auth.api.getSession({ headers: betterAuthHeaders });
+            
+            if (betterAuthSession?.user && betterAuthSession?.session) {
+              const betterAuthUser = betterAuthSession.user;
+              const betterAuthSessionData = betterAuthSession.session;
+              user = betterAuthUser;
+              session = betterAuthSessionData;
+              
+              // Enrich user with full database record to get custom fields like role
+              try {
+                const { prisma } = await import('@snake-rescue/database');
+                const dbUser = await prisma.user.findUnique({
+                  where: { id: betterAuthUser.id },
+                  select: { 
+                    id: true, 
+                    email: true, 
+                    name: true, 
+                    role: true, 
+                    emailVerified: true,
+                    phone: true,
+                    avatar: true,
+                    status: true
+                  }
+                });
+                if (dbUser) {
+                  // Merge Better Auth user with database user, preferring database values
+                  user = { ...betterAuthUser, ...dbUser };
+                  console.log('[GraphQL API] ✓ Authenticated user via Better Auth:', betterAuthUser.email, 'role:', user.role);
+                } else {
+                  console.log('[GraphQL API] ⚠ User session valid but user not found in database');
+                }
+              } catch (dbError) {
+                console.error('[GraphQL API] Error enriching user from database:', dbError);
+                // Continue with Better Auth user data even if DB lookup fails
+              }
+            } else {
+              console.log('[GraphQL API] ✗ No valid session found');
+            }
           }
         } catch (error) {
           // Session validation failed - this is OK, user is just not authenticated
@@ -175,7 +239,7 @@ async function getHandler() {
 
         // Create a mock Express-like response object
         const mockRes = {
-          setHeader: () => {},
+          setHeader: (..._args: unknown[]) => undefined,
           status: () => mockRes,
           json: () => mockRes,
         } as any;
