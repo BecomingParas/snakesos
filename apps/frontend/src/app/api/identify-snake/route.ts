@@ -41,7 +41,11 @@ function resolveGeminiModelName(): string {
 
 function getGeminiModelCandidates(): string[] {
   const configured = resolveGeminiModelName();
-  const candidates = [configured, DEFAULT_GEMINI_MODEL, ...GEMINI_MODEL_FALLBACKS];
+  const candidates = [
+    configured,
+    DEFAULT_GEMINI_MODEL,
+    ...GEMINI_MODEL_FALLBACKS,
+  ];
   return [...new Set(candidates.filter(Boolean))];
 }
 
