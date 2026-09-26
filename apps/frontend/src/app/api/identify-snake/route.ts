@@ -5,9 +5,37 @@ import { GeminiSnakeIdentificationSchema } from '@/lib/gemini/snake-identificati
 import { buildSnakeIdentificationPrompt } from '@/lib/gemini/prompts';
 import { prisma } from '@snake-rescue/database';
 
+const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash';
+const RETIRED_GEMINI_MODELS = new Set([
+  'gemini-1.5-flash',
+  'gemini-1.5-flash-8b',
+  'gemini-1.5-pro',
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-exp',
+  'gemini-2.5-flash',
+  'gemini-3.6-flash',
+]);
+
+function resolveGeminiModelName(): string {
+  const configured = (process.env.GEMINI_MODEL || '').trim();
+
+  if (!configured) {
+    return DEFAULT_GEMINI_MODEL;
+  }
+
+  if (RETIRED_GEMINI_MODELS.has(configured)) {
+    console.warn(
+      `⚠️ GEMINI_MODEL "${configured}" is retired or unsupported. Falling back to "${DEFAULT_GEMINI_MODEL}".`
+    );
+    return DEFAULT_GEMINI_MODEL;
+  }
+
+  return configured;
+}
+
 /**
  * Snake identification endpoint - calls Gemini with structured outputs
- * Uses gemini-1.5-flash with proper error handling and rate limiting
+ * Uses a supported Gemini model with proper error handling and rate limiting
  *
  * POST /api/identify-snake
  * Body: FormData with a "file" field containing the image
@@ -318,10 +346,9 @@ export async function POST(request: NextRequest) {
     }
     
     const genAI = new GoogleGenerativeAI(geminiKey);
-    
-    // Use configured model (gemini-3.6-flash is valid!)
-    const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-    
+
+    const modelName = resolveGeminiModelName();
+
     console.log(`[${requestId}] 📝 Using model: ${modelName}`);
     
     const model = genAI.getGenerativeModel({

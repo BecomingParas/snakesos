@@ -14,13 +14,41 @@ export interface GeminiConfig {
   maxRetries: number;
 }
 
+const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash';
+const RETIRED_GEMINI_MODELS = new Set([
+  'gemini-1.5-flash',
+  'gemini-1.5-flash-8b',
+  'gemini-1.5-pro',
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-exp',
+  'gemini-2.5-flash',
+  'gemini-3.6-flash',
+]);
+
+function normalizeGeminiModel(model?: string): string {
+  const sanitized = (model || '').trim();
+
+  if (!sanitized) {
+    return DEFAULT_GEMINI_MODEL;
+  }
+
+  if (RETIRED_GEMINI_MODELS.has(sanitized)) {
+    console.warn(
+      `⚠️ GEMINI_MODEL "${sanitized}" is retired or unsupported. Falling back to "${DEFAULT_GEMINI_MODEL}".`
+    );
+    return DEFAULT_GEMINI_MODEL;
+  }
+
+  return sanitized;
+}
+
 /**
  * Load Gemini configuration from environment
  * Fails fast if required variables are missing in production
  */
 export function loadGeminiConfig(): GeminiConfig {
   const apiKey = process.env.GEMINI_API_KEY;
-  const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+  const model = normalizeGeminiModel(process.env.GEMINI_MODEL);
 
   // Fail fast if API key is missing or placeholder
   if (!apiKey || apiKey === 'your_gemini_api_key_here') {
