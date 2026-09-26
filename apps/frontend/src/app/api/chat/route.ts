@@ -1,6 +1,78 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash';
+const GEMINI_MODEL_FALLBACKS = [
+  'gemini-3.8-flash',
+  'gemini-2.5-flash',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash',
+];
+const RETIRED_GEMINI_MODELS = new Set([
+  'gemini-1.5-flash',
+  'gemini-1.5-flash-8b',
+  'gemini-1.5-pro',
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-exp',
+  'gemini-2.5-flash',
+  'gemini-3.6-flash',
+]);
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === 'string') {
+    return error;
+  }
+
+  return String(error);
+}
+
+function resolveGeminiModelName(): string {
+  const configured = (process.env.GEMINI_MODEL || '').trim();
+
+  if (!configured) {
+    return DEFAULT_GEMINI_MODEL;
+  }
+
+  if (RETIRED_GEMINI_MODELS.has(configured)) {
+    console.warn(
+      `⚠️ GEMINI_MODEL "${configured}" is retired or unsupported. Falling back to "${DEFAULT_GEMINI_MODEL}".`,
+    );
+    return DEFAULT_GEMINI_MODEL;
+  }
+
+  return configured;
+}
+
+function getGeminiModelCandidates(): string[] {
+  const configured = resolveGeminiModelName();
+  const candidates = [
+    configured,
+    DEFAULT_GEMINI_MODEL,
+    ...GEMINI_MODEL_FALLBACKS,
+  ];
+  return [...new Set(candidates.filter(Boolean))];
+}
+
+function isRetryableGeminiError(error: unknown): boolean {
+  const message = getErrorMessage(error);
+  return (
+    message.includes('404') ||
+    message.includes('503') ||
+    message.includes('429') ||
+    message.includes('quota') ||
+    message.includes('rate limit') ||
+    message.includes('high demand') ||
+    message.includes('not found') ||
+    message.includes('model') ||
+    message.includes('timeout') ||
+    message.includes('ETIMEDOUT')
+  );
+}
+
 async function getPrisma() {
   const { prisma } = await import('@snake-rescue/database');
   return prisma;
@@ -19,13 +91,20 @@ async function getPrisma() {
  */
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
-function checkRateLimit(ip: string): { allowed: boolean; remaining: number; resetTime: number } {
+function checkRateLimit(ip: string): {
+  allowed: boolean;
+  remaining: number;
+  resetTime: number;
+} {
   const now = Date.now();
   const limit = parseInt(process.env.CHAT_RATE_LIMIT_MAX || '50', 10);
-  const window = parseInt(process.env.CHAT_RATE_LIMIT_WINDOW_MS || '900000', 10); // 15 minutes
+  const window = parseInt(
+    process.env.CHAT_RATE_LIMIT_WINDOW_MS || '900000',
+    10,
+  ); // 15 minutes
 
   const record = rateLimitMap.get(ip);
-  
+
   if (!record || now > record.resetTime) {
     const resetTime = now + window;
     rateLimitMap.set(ip, { count: 1, resetTime });
@@ -37,13 +116,17 @@ function checkRateLimit(ip: string): { allowed: boolean; remaining: number; rese
   }
 
   record.count++;
-  return { allowed: true, remaining: limit - record.count, resetTime: record.resetTime };
+  return {
+    allowed: true,
+    remaining: limit - record.count,
+    resetTime: record.resetTime,
+  };
 }
 
 function getClientIp(request: NextRequest): string {
   const forwarded = request.headers.get('x-forwarded-for');
   const realIp = request.headers.get('x-real-ip');
-  
+
   if (forwarded) return forwarded.split(',')[0].trim();
   if (realIp) return realIp;
   return 'unknown';
@@ -75,11 +158,13 @@ async function searchKnowledgeBase(query: string): Promise<{
     }
 
     // Search knowledge base (limit to top 3 most relevant chunks)
-    const results = await prisma.$queryRawUnsafe<Array<{
-      content: string;
-      document_title: string;
-      rank: number;
-    }>>(
+    const results = await prisma.$queryRawUnsafe<
+      Array<{
+        content: string;
+        document_title: string;
+        rank: number;
+      }>
+    >(
       `
       SELECT 
         c.content,
@@ -93,7 +178,7 @@ async function searchKnowledgeBase(query: string): Promise<{
       ORDER BY rank DESC
       LIMIT 3
       `,
-      searchTerms
+      searchTerms,
     );
 
     return {
@@ -118,7 +203,7 @@ export async function POST(request: NextRequest) {
     if (process.env.SKIP_RATE_LIMIT !== 'true') {
       const clientIp = getClientIp(request);
       const rateLimit = checkRateLimit(clientIp);
-      
+
       if (!rateLimit.allowed) {
         const retryAfter = Math.ceil((rateLimit.resetTime - Date.now()) / 1000);
         return NextResponse.json(
@@ -129,12 +214,12 @@ export async function POST(request: NextRequest) {
               message: 'Too many chat requests. Please try again later.',
             },
           },
-          { 
+          {
             status: 429,
             headers: {
               'Retry-After': retryAfter.toString(),
-            }
-          }
+            },
+          },
         );
       }
     }
@@ -149,7 +234,7 @@ export async function POST(request: NextRequest) {
 
     if (!geminiKey) {
       return NextResponse.json(
-        { 
+        {
           success: false,
           error: {
             code: 'AI_SERVICE_NOT_CONFIGURED',
@@ -191,10 +276,10 @@ export async function POST(request: NextRequest) {
       // Text message
       const body = await request.json();
       message = body.message;
-      
+
       if (!message || typeof message !== 'string') {
         return NextResponse.json(
-          { 
+          {
             success: false,
             error: {
               code: 'INVALID_MESSAGE',
@@ -216,12 +301,15 @@ export async function POST(request: NextRequest) {
     try {
       const knowledge = await searchKnowledgeBase(message);
       if (knowledge.results.length > 0) {
-        contextFromKnowledge = '\n\nRelevant safety information from knowledge base:\n' +
+        contextFromKnowledge =
+          '\n\nRelevant safety information from knowledge base:\n' +
           knowledge.results
             .map((r, i) => `${i + 1}. ${r.content}`)
             .join('\n\n');
-        
-        console.log(`[${requestId}] 📚 Found ${knowledge.results.length} relevant knowledge chunks`);
+
+        console.log(
+          `[${requestId}] 📚 Found ${knowledge.results.length} relevant knowledge chunks`,
+        );
       }
     } catch (error) {
       console.warn(`[${requestId}] ⚠️ Knowledge search failed:`, error);
@@ -230,8 +318,7 @@ export async function POST(request: NextRequest) {
 
     // ---- Initialize Gemini ----
     const genAI = new GoogleGenerativeAI(geminiKey);
-    const modelName = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
-    
+    const modelCandidates = getGeminiModelCandidates();
     const systemInstruction = `You are SnakeSOS AI, an intelligent assistant for the SnakeSOS snake rescue and safety platform in Nepal.
 
 Your primary goals:
@@ -247,73 +334,100 @@ CRITICAL SAFETY RULES:
 - Never claim visual identification is certain without high confidence
 - Do not provide medical diagnoses - recommend professional medical evaluation
 
-${imageData ? `\nWhen analyzing snake images:
+${
+  imageData
+    ? `\nWhen analyzing snake images:
 - Identify visible physical characteristics (color, pattern, head shape, body structure)
 - Assess venomous vs non-venomous likelihood based on features
 - Provide safety guidance based on the identified species
 - Recommend keeping distance and contacting professional rescuers
-- If uncertain, err on the side of caution and treat as potentially venomous` : ''}
+- If uncertain, err on the side of caution and treat as potentially venomous`
+    : ''
+}
 
 ${contextFromKnowledge ? `\nYou have access to verified knowledge from the SnakeSOS knowledge base. Use this information to provide accurate responses. Always prioritize safety information from the knowledge base over general knowledge.` : ''}
 
 Be helpful, empathetic, and safety-conscious. Keep responses concise and clear.
 Lives may depend on your guidance.`;
-    
-    const model = genAI.getGenerativeModel({
-      model: modelName,
-      systemInstruction,
-      generationConfig: {
-        temperature: imageData ? 0.2 : 0.7, // Lower temperature for image analysis
-        topK: 40,
-        topP: 0.95,
-        maxOutputTokens: 1024,
-      },
-    });
 
-    // ---- Convert conversation history to Gemini format (only for text chats) ----
-    const history = imageData ? [] : []; // Skip history for image analysis to keep it focused
-
-    // ---- Start chat ----
-    const chat = model.startChat({
-      history: history,
-    });
-
-    // ---- Send message with timeout ----
     const timeout = parseInt(process.env.GEMINI_TIMEOUT_MS || '30000', 10);
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    let result: { response: { text: () => string } } | undefined;
+    let lastError: unknown;
+    let activeModelName = modelCandidates[0];
 
-    let result;
-    try {
-      console.log(`[${requestId}] 🔮 Calling Gemini API${imageData ? ' with image' : ' with RAG context'}...`);
-      
-      // Prepare message content
-      const messageParts: any[] = [];
-      
-      // Add text
-      const enhancedMessage = contextFromKnowledge && !imageData
-        ? `${message}${contextFromKnowledge}`
-        : message;
-      messageParts.push({ text: enhancedMessage });
-      
-      // Add image if present
-      if (imageData) {
-        messageParts.push({
-          inlineData: {
-            mimeType: imageData.mimeType,
-            data: imageData.data,
+    for (const modelName of modelCandidates) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      try {
+        console.log(`[${requestId}] 🔮 Trying Gemini model: ${modelName}...`);
+        const model = genAI.getGenerativeModel({
+          model: modelName,
+          systemInstruction,
+          generationConfig: {
+            temperature: imageData ? 0.2 : 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 1024,
           },
         });
+
+        const history = imageData ? [] : [];
+        const chat = model.startChat({ history });
+
+        const messageParts: Array<
+          { text: string } | { inlineData: { mimeType: string; data: string } }
+        > = [];
+        const enhancedMessage =
+          contextFromKnowledge && !imageData
+            ? `${message}${contextFromKnowledge}`
+            : message;
+        messageParts.push({ text: enhancedMessage });
+
+        if (imageData) {
+          messageParts.push({
+            inlineData: {
+              mimeType: imageData.mimeType,
+              data: imageData.data,
+            },
+          });
+        }
+
+        result = (await Promise.race([
+          chat.sendMessage(messageParts),
+          new Promise((_, reject) =>
+            setTimeout(
+              () => reject(new Error('Gemini request timeout')),
+              timeout,
+            ),
+          ),
+        ])) as { response: { text: () => string } };
+
+        activeModelName = modelName;
+        clearTimeout(timeoutId);
+        break;
+      } catch (error) {
+        lastError = error;
+        clearTimeout(timeoutId);
+
+        const errorMessage = getErrorMessage(error);
+        console.error(
+          `[${requestId}] ❌ Gemini model failed for ${modelName}:`,
+          errorMessage,
+        );
+
+        if (!isRetryableGeminiError(error)) {
+          break;
+        }
+
+        console.warn(
+          `[${requestId}] ⚠️ ${modelName} failed; trying next Gemini fallback model...`,
+        );
       }
-      
-      result = await Promise.race([
-        chat.sendMessage(messageParts),
-        new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Gemini request timeout')), timeout)
-        )
-      ]);
-    } finally {
-      clearTimeout(timeoutId);
+    }
+
+    if (!result) {
+      throw lastError || new Error('Gemini model fallback failed');
     }
 
     const responseText = result.response.text();
@@ -322,6 +436,7 @@ Lives may depend on your guidance.`;
     console.log(`[${requestId}] ✅ Chat completed:`, {
       responseLength: responseText.length,
       processing_time_ms: processingTime,
+      model: activeModelName,
     });
 
     // ---- Return response ----
@@ -329,19 +444,17 @@ Lives may depend on your guidance.`;
       success: true,
       data: {
         response: responseText,
-        conversationId: requestId, // Use request ID as conversation ID
+        conversationId: requestId,
       },
       meta: {
-        model: modelName,
+        model: activeModelName,
         processing_time_ms: processingTime,
         request_id: requestId,
       },
     });
-
   } catch (error) {
-    const processingTime = Date.now() - startTime;
     console.error(`[${requestId}] ❌ Chat error:`, error);
-    
+
     const message = error instanceof Error ? error.message : String(error);
 
     // Handle specific error types
@@ -358,22 +471,29 @@ Lives may depend on your guidance.`;
       );
     }
 
-    if (message.includes('429') || message.includes('rate limit') || message.includes('quota')) {
+    if (
+      message.includes('429') ||
+      message.includes('503') ||
+      message.includes('rate limit') ||
+      message.includes('quota') ||
+      message.includes('high demand')
+    ) {
       return NextResponse.json(
         {
           success: false,
           error: {
             code: 'AI_RATE_LIMITED',
-            message: 'AI service is temporarily unavailable. Please try again in a few minutes.',
+            message:
+              'AI service is temporarily unavailable. Please try again in a few minutes.',
           },
         },
-        { status: 429 },
+        { status: 503 },
       );
     }
 
     // Generic error
     return NextResponse.json(
-      { 
+      {
         success: false,
         error: {
           code: 'CHAT_FAILED',
