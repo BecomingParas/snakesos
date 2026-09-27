@@ -11,25 +11,26 @@ export function createConfiguredPaymentProviderService(
   paymentIntents = new PaymentIntentService(),
 ): PaymentProviderService {
   const providers = [];
-  const isDevelopment = process.env.NODE_ENV !== 'production';
 
   if (process.env.STRIPE_SECRET_KEY)
     providers.push(new StripePaymentProvider());
 
-  // Use real eSewa if configured, otherwise use demo in development
+  // Use real eSewa if configured, otherwise use demo provider
   if (process.env.ESEWA_PRODUCT_CODE && process.env.ESEWA_SECRET_KEY) {
     providers.push(new EsewaPaymentProvider());
-  } else if (isDevelopment) {
+    console.log('[Payment] Using real eSewa provider');
+  } else {
     providers.push(new DemoPaymentProvider('ESEWA'));
-    console.log('[Payment] Using demo eSewa provider (development mode)');
+    console.log('[Payment] Using demo eSewa provider (no credentials configured)');
   }
 
-  // Use real Khalti if configured, otherwise use demo in development
+  // Use real Khalti if configured, otherwise use demo provider
   if (process.env.KHALTI_SECRET_KEY) {
     providers.push(new KhaltiPaymentProvider());
-  } else if (isDevelopment) {
+    console.log('[Payment] Using real Khalti provider');
+  } else {
     providers.push(new DemoPaymentProvider('KHALTI'));
-    console.log('[Payment] Using demo Khalti provider (development mode)');
+    console.log('[Payment] Using demo Khalti provider (no credentials configured)');
   }
 
   return new PaymentProviderService(paymentIntents, providers);
