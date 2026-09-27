@@ -11,6 +11,7 @@ export * from './payment-provider.service';
 export * from './configured-payment-provider.service';
 export * from './providers/nepal-payment-providers';
 export * from './providers/stripe-payment-provider';
+export * from './providers/demo-payment-provider';
 
 // Infrastructure Layer - GraphQL Resolvers
 export * from './infrastructure/index';

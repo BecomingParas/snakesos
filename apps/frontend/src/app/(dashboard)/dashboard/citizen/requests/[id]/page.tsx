@@ -336,6 +336,36 @@ export default function RequestTrackingPage({ params }: PageProps) {
     }
 
     setProcessingPayment(true);
+
+    // Demo mode: Simulate payment completion without external gateway
+    if (paymentMethod === 'esewa' || paymentMethod === 'khalti') {
+      // Simulate processing delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      
+      try {
+        const result = await startPayment({
+          variables: {
+            input: {
+              paymentIntentId: paymentIntent.id,
+              amount: requestedAmount.toFixed(2),
+              returnUrl: `${window.location.origin}/dashboard/citizen/requests/${id}?payment=complete&session_id=demo_${Date.now()}`,
+            },
+          },
+        });
+        
+        // Refetch to get updated status
+        await Promise.all([refetch(), refetchPaymentIntent()]);
+        setProcessingPayment(false);
+        toast.success(`Demo payment completed via ${paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'}!`);
+        return;
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Payment failed');
+        setProcessingPayment(false);
+        return;
+      }
+    }
+
+    // Stripe flow (with external redirect)
     const checkoutWindow = window.open('', '_blank');
     if (!checkoutWindow) {
       toast.error('Please allow pop-ups to open the Stripe payment page');

@@ -519,6 +519,58 @@ export const paymentsResolvers = {
         },
         context.user.id,
       );
+
+      // If checkoutUrl is undefined, it means we're in demo mode
+      // Auto-confirm the payment for demo providers (eSewa/Khalti in development)
+      if (!result.checkoutUrl && result.metadata?.isDemoMode) {
+        const confirmedResult = await createConfiguredPaymentProviderService(
+          paymentIntents,
+        ).confirmPayment(
+          updatedIntent!.id,
+          result.providerReference,
+          context.user.id,
+        );
+
+        // Complete the rescue if this is a rescue payment
+        if (updatedIntent!.rescueChargeId) {
+          const rescueCharge = await prisma.rescueCharge.findUnique({
+            where: { id: updatedIntent!.rescueChargeId },
+            select: { rescueId: true },
+          });
+          if (rescueCharge) {
+            const rescue = await prisma.rescueRequest.findUnique({
+              where: { id: rescueCharge.rescueId },
+              select: { id: true, status: true },
+            });
+            if (rescue && rescue.status !== 'COMPLETED') {
+              await prisma.rescueRequest.update({
+                where: { id: rescue.id },
+                data: {
+                  status: 'COMPLETED',
+                  completedAt: new Date(),
+                  outcome: 'RESCUED_RELOCATED',
+                },
+              });
+              await prisma.rescueTimeline.create({
+                data: {
+                  rescueId: rescue.id,
+                  event: 'RESCUE_COMPLETED',
+                  description: `Rescue completed after demo payment via ${result.metadata.provider}`,
+                  userId: context.user.id,
+                  metadata: { demo: true, provider: result.metadata.provider },
+                },
+              });
+            }
+          }
+        }
+
+        return {
+          paymentIntent: confirmedResult.intent,
+          providerReference: result.providerReference,
+          checkoutUrl: null,
+        };
+      }
+
       return {
         paymentIntent: result.intent,
         providerReference: result.providerReference,
