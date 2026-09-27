@@ -99,7 +99,9 @@ export class RescueFinancialService {
     await transaction.paymentIntent.create({
       data: {
         rescueChargeId: rescueCharge.id,
-        provider: 'STRIPE',
+        // Use ESEWA as default for Nepal-based rescues
+        // Will work with both real eSewa provider (if configured) or demo provider
+        provider: 'ESEWA',
         amount: grossAmount,
         currency: policy.currency,
         idempotencyKey: `rescue-payment:${input.rescueId}`,
@@ -138,7 +140,8 @@ export class RescueFinancialService {
         where: { rescueChargeId: existing.id },
         create: {
           rescueChargeId: existing.id,
-          provider: 'STRIPE',
+          // Use ESEWA as default for Nepal-based rescues
+          provider: 'ESEWA',
           amount: existing.grossAmount,
           currency: existing.currency,
           idempotencyKey: `rescue-payment:${input.rescueId}`,
@@ -246,7 +249,8 @@ export class RescueFinancialService {
           where: { rescueChargeId: rescueCharge.id },
           create: {
             rescueChargeId: rescueCharge.id,
-            provider: 'STRIPE',
+            // Use ESEWA as default for Nepal-based rescues
+            provider: 'ESEWA',
             amount: grossAmount,
             currency: policy.currency,
             idempotencyKey: `rescue-payment:${input.rescueId}`,
