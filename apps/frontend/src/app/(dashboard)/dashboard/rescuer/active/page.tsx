@@ -75,13 +75,12 @@ export default function ActiveRescuePage() {
   const [showCompleteForm, setShowCompleteForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Fetch active rescue with longer polling interval to reduce reloads
+  // Fetch active rescue (no polling - rescuer can manually refresh)
   const { data, loading, refetch } = useMyAssignedRescuesQuery({
     variables: {
       filter: { statuses: ['ACCEPTED', 'IN_PROGRESS'] },
     },
     fetchPolicy: 'cache-and-network',
-    pollInterval: 10000, // Poll every 10 seconds (reduced from 5s to minimize reloads)
   });
 
   // Progress mutation
@@ -316,17 +315,43 @@ export default function ActiveRescuePage() {
         {/* Payment handoff */}
         <Card className="p-6">
           <h2 className="text-xl font-semibold mb-2">Payment</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             The citizen can pay the rescue charge from their request page after
             you start the rescue. Cash payments should be collected directly and
             reported to an administrator for reconciliation.
           </p>
-          <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm">
-            {paymentLoading
-              ? 'Checking citizen payment status...'
-              : paymentComplete
-                ? `Payment received: ${paymentData?.assignedRescuePaymentIntent?.currency} ${Number(paymentData?.assignedRescuePaymentIntent?.amount || 0).toLocaleString()}. You can complete this rescue.`
-                : 'Waiting for citizen payment before completion.'}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm">
+              {paymentLoading
+                ? 'Checking citizen payment status...'
+                : paymentComplete
+                  ? `Payment received: ${paymentData?.assignedRescuePaymentIntent?.currency} ${Number(paymentData?.assignedRescuePaymentIntent?.amount || 0).toLocaleString()}. You can complete this rescue.`
+                  : 'Waiting for citizen payment before completion.'}
+            </div>
+            {!paymentComplete && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => refetch()}
+                disabled={paymentLoading}
+                className="shrink-0"
+              >
+                <svg
+                  className="h-4 w-4 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+                Refresh
+              </Button>
+            )}
           </div>
         </Card>
 
