@@ -130,7 +130,7 @@ export function HospitalMapWithData({
       radiusKm,
       antivenomRequired,
       limit,
-      skip: isRequestingLocation, // Skip query while getting location
+      skip: isRequestingLocation || (!userLocation && useUserLocation), // Skip query while getting location OR if we need user location but don't have it yet
     }
   );
 
@@ -184,35 +184,51 @@ export function HospitalMapWithData({
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          Failed to load hospital data: {queryError.message}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => refetch()}
-            className="mt-2 ml-2"
-          >
-            Retry
-          </Button>
+          <div className="space-y-2">
+            <p>Failed to load hospital data: {queryError.message}</p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+            >
+              Retry
+            </Button>
+          </div>
         </AlertDescription>
       </Alert>
     );
   }
 
-  if (locationError && useUserLocation) {
+  if (locationError && useUserLocation && !userLocation) {
     return (
       <Alert>
         <MapPin className="h-4 w-4" />
         <AlertDescription>
           <div className="space-y-2">
             <p>Location access: {locationError}</p>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRequestLocation}
-              disabled={isRequestingLocation}
-            >
-              {isRequestingLocation ? 'Requesting...' : 'Allow Location Access'}
-            </Button>
+            <p className="text-sm text-muted-foreground">
+              The map needs your location to show nearby hospitals. Please allow location access or the map will use a default location.
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRequestLocation}
+                disabled={isRequestingLocation}
+              >
+                {isRequestingLocation ? 'Requesting...' : 'Allow Location Access'}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setLocationError(null);
+                  setUserLocation({ latitude: defaultCenter[0], longitude: defaultCenter[1] });
+                }}
+              >
+                Use Default Location
+              </Button>
+            </div>
           </div>
         </AlertDescription>
       </Alert>
