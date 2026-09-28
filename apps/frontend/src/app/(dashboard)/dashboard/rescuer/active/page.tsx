@@ -81,6 +81,7 @@ export default function ActiveRescuePage() {
       filter: { statuses: ['ACCEPTED', 'IN_PROGRESS'] },
     },
     fetchPolicy: 'cache-and-network',
+    pollInterval: 5000, // Poll every 5 seconds to detect payment completion
   });
 
   // Progress mutation
@@ -196,10 +197,11 @@ export default function ActiveRescuePage() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
         <div className="mx-auto max-w-2xl">
           <Card className="p-12 text-center">
-            <AlertTriangle className="mx-auto h-12 w-12 text-yellow-500 mb-4" />
-            <h2 className="text-2xl font-bold mb-2">No Active Rescue</h2>
+            <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Rescue Completed!</h2>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              You don't have any active rescues at the moment.
+              The citizen has completed the payment. This rescue is now complete.
+              Great job! 🎉
             </p>
             <Button onClick={() => router.push('/dashboard/rescuer')}>
               Back to Dashboard
