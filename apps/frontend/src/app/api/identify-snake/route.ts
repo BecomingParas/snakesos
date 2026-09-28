@@ -124,23 +124,26 @@ const GEMINI_RESPONSE_SCHEMA = {
     is_snake: { type: SchemaType.BOOLEAN },
     image_quality: {
       type: SchemaType.STRING,
-      enum: ['excellent', 'good', 'fair', 'poor'],
+      format: 'enum' as const,
+      enum: ['excellent', 'good', 'fair', 'poor'] as string[],
     },
     identification_status: {
       type: SchemaType.STRING,
+      format: 'enum' as const,
       enum: [
         'identified',
         'probable',
         'uncertain',
         'not_a_snake',
         'insufficient_image',
-      ],
+      ] as string[],
     },
     common_name: { type: SchemaType.STRING, nullable: true },
     scientific_name: { type: SchemaType.STRING, nullable: true },
     venomous_status: {
       type: SchemaType.STRING,
-      enum: ['venomous', 'non_venomous', 'potentially_venomous', 'unknown'],
+      format: 'enum' as const,
+      enum: ['venomous', 'non_venomous', 'potentially_venomous', 'unknown'] as string[],
     },
     confidence: { type: SchemaType.NUMBER },
     visual_evidence: {
@@ -156,7 +159,7 @@ const GEMINI_RESPONSE_SCHEMA = {
           scientific_name: { type: SchemaType.STRING, nullable: true },
           confidence: { type: SchemaType.NUMBER },
         },
-        required: ['common_name', 'confidence'],
+        required: ['common_name', 'confidence'] as string[],
       },
     },
     geographic_context: {
@@ -172,12 +175,13 @@ const GEMINI_RESPONSE_SCHEMA = {
       properties: {
         risk_level: {
           type: SchemaType.STRING,
-          enum: ['low', 'moderate', 'high', 'unknown'],
+          format: 'enum' as const,
+          enum: ['low', 'moderate', 'high', 'unknown'] as string[],
         },
         handling_advice: { type: SchemaType.STRING },
         public_safety_message: { type: SchemaType.STRING },
       },
-      required: ['risk_level', 'handling_advice', 'public_safety_message'],
+      required: ['risk_level', 'handling_advice', 'public_safety_message'] as string[],
     },
     medical_warning: { type: SchemaType.STRING, nullable: true },
     reasoning_summary: { type: SchemaType.STRING },
@@ -191,8 +195,8 @@ const GEMINI_RESPONSE_SCHEMA = {
     'visual_evidence',
     'safety',
     'reasoning_summary',
-  ],
-} as const;
+  ] as string[],
+};
 
 /**
  * Simple in-memory rate limiter
@@ -486,7 +490,7 @@ export async function POST(request: NextRequest) {
               },
             },
           ]),
-          new Promise((_, reject) =>
+          new Promise<never>((_, reject) =>
             setTimeout(
               () => reject(new Error('Gemini request timeout')),
               timeout,
