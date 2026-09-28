@@ -14,6 +14,8 @@ import {
   FileText,
   Loader2,
   ArrowLeft,
+  XCircle,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -30,11 +32,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
 import {
   useMyAssignedRescuesQuery,
   useCompleteRescueMutation,
   useUpdateRescueProgressMutation,
+  useCancelRescueMutation,
 } from '@/lib/graphql/hooks/rescue.hooks';
 import { useHospitals } from '@/lib/graphql/hooks/hospital.hooks';
 import { toast } from 'sonner';
@@ -74,6 +87,8 @@ export default function ActiveRescuePage() {
   const router = useRouter();
   const [showCompleteForm, setShowCompleteForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
 
   // Fetch active rescue (no polling - rescuer can manually refresh)
   const { data, loading, refetch } = useMyAssignedRescuesQuery({
@@ -105,6 +120,18 @@ export default function ActiveRescuePage() {
     },
     onError: (error) => {
       toast.error(`Failed to complete: ${error.message}`);
+    },
+  });
+
+  // Cancel mutation
+  const [cancelRescue, { loading: cancelling }] = useCancelRescueMutation({
+    onCompleted: () => {
+      toast.success('Rescue request cancelled');
+      setCancelDialogOpen(false);
+      router.push('/dashboard/rescuer');
+    },
+    onError: (error) => {
+      toast.error(`Failed to cancel: ${error.message}`);
     },
   });
 
@@ -179,6 +206,17 @@ export default function ActiveRescuePage() {
             : undefined,
           hospitalNotes: victimWentToHospital ? hospitalNotes : undefined,
         },
+      },
+    });
+  };
+
+  const handleCancel = async () => {
+    if (!activeRescue) return;
+
+    await cancelRescue({
+      variables: {
+        rescueId: activeRescue.id,
+        reason: cancelReason || 'Cancelled by rescuer',
       },
     });
   };
@@ -268,6 +306,35 @@ export default function ActiveRescuePage() {
                 </div>
               </div>
             )}
+
+            {activeRescue.snakeImages &&
+              activeRescue.snakeImages.length > 0 && (
+                <div className="flex items-start gap-3">
+                  <ImageIcon className="h-5 w-5 text-gray-500 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="font-medium mb-2">Snake Images</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {activeRescue.snakeImages.map(
+                        (image: string, index: number) => (
+                          <a
+                            key={index}
+                            href={image}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="relative aspect-video rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 hover:opacity-80 transition-opacity"
+                          >
+                            <img
+                              src={image}
+                              alt={`Snake ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          </a>
+                        ),
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
 
             {activeRescue.user && (
               <div className="flex items-start gap-3">
@@ -377,6 +444,15 @@ export default function ActiveRescuePage() {
               >
                 <CheckCircle className="mr-2 h-4 w-4" />
                 Complete Rescue
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => setCancelDialogOpen(true)}
+                disabled={updating || completing}
+                className="col-span-2"
+              >
+                <XCircle className="mr-2 h-4 w-4" />
+                Cancel Request
               </Button>
             </div>
           </Card>
@@ -574,6 +650,64 @@ export default function ActiveRescuePage() {
             </div>
           </Card>
         )}
+
+        {/* Cancel Dialog */}
+        <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <div className="flex items-start gap-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-destructive/10 text-destructive">
+                  <XCircle className="h-5 w-5" />
+                </span>
+                <div>
+                  <AlertDialogTitle>Cancel rescue request?</AlertDialogTitle>
+                  <AlertDialogDescription className="mt-1">
+                    You are about to cancel rescue request{' '}
+                    <strong className="text-foreground">
+                      {activeRescue.referenceNumber}
+                    </strong>
+                    . This action cannot be undone.
+                  </AlertDialogDescription>
+                </div>
+              </div>
+            </AlertDialogHeader>
+            <div>
+              <Label htmlFor="cancel-reason">
+                Reason for cancellation (optional)
+              </Label>
+              <Textarea
+                id="cancel-reason"
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="E.g., Unable to locate, Snake already gone, False alarm..."
+                rows={3}
+                className="mt-2"
+              />
+            </div>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={cancelling}>
+                Keep Request
+              </AlertDialogCancel>
+              <AlertDialogAction
+                disabled={cancelling}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={handleCancel}
+              >
+                {cancelling ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Cancelling...
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="mr-2 h-4 w-4" />
+                    Cancel Request
+                  </>
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
