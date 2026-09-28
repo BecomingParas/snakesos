@@ -600,15 +600,15 @@ export default function AdminRescueDetailPage({ params }: PageProps) {
           if (!open) setDeleteConfirmation('');
         }}
       >
-        <AlertDialogContent className="border-red-400/50 bg-red-700 text-white shadow-2xl">
+        <AlertDialogContent>
           <AlertDialogHeader>
             <div className="flex items-start gap-3">
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-red-500/10 text-red-600 dark:text-red-400">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-destructive/10 text-destructive">
                 <AlertTriangle className="h-5 w-5" />
               </span>
               <div>
                 <AlertDialogTitle>Delete rescue request?</AlertDialogTitle>
-                <AlertDialogDescription className="mt-1 text-red-100/80">
+                <AlertDialogDescription className="mt-1">
                   You selected{' '}
                   <strong className="text-foreground">
                     {rescue.referenceNumber || 'this request'}
@@ -618,8 +618,8 @@ export default function AdminRescueDetailPage({ params }: PageProps) {
               </div>
             </div>
           </AlertDialogHeader>
-          <div className="rounded-lg border border-red-200/30 bg-red-800/50 p-3">
-            <p className="text-sm text-red-100">
+          <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-3">
+            <p className="text-sm text-muted-foreground">
               This action cannot be undone. Type <strong>DELETE</strong> to
               continue.
             </p>
@@ -628,16 +628,16 @@ export default function AdminRescueDetailPage({ params }: PageProps) {
               onChange={(event) => setDeleteConfirmation(event.target.value)}
               placeholder="Type DELETE"
               aria-label="Type DELETE to confirm deletion"
-              className="mt-3 border-red-200/40 bg-red-900/70 text-white placeholder:text-red-100/60"
+              className="mt-3"
             />
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-red-200/40 bg-transparent text-red-50 hover:bg-red-900">
+            <AlertDialogCancel>
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               disabled={deleteConfirmation !== 'DELETE' || deleting}
-              className="bg-red-500 text-white hover:bg-red-400 disabled:pointer-events-none disabled:opacity-50"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={async () => {
                 try {
                   await deleteRescue({ variables: { id } });
