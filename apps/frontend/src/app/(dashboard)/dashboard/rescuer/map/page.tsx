@@ -10,7 +10,7 @@ import { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useUserLocation } from '@/hooks/useUserLocation';
 import { useMyAssignedRescuesQuery } from '@/lib/graphql/hooks/rescue.hooks';
-import { useNearbyHospitals } from '@/lib/graphql/hooks/hospital.hooks';
+import { useHospitals } from '@/lib/graphql/hooks/hospital.hooks';
 import {
   Navigation,
   Phone,
@@ -83,20 +83,15 @@ export default function RescuerMapPage() {
   const rescues =
     data?.myAssignedRescues?.edges?.map((edge) => edge.node) || [];
 
-  // Fetch nearby hospitals for reference during rescues
-  const { data: hospitalsData } = useNearbyHospitals(
-    location?.latitude,
-    location?.longitude,
-    {
-      radiusKm: 50,
-      antivenomRequired: false,
-      limit: 20,
-      skip: !location,
-    },
+  // Fetch hospitals like admin dashboard does (no location required)
+  const { data: hospitalsData } = useHospitals(
+    { status: 'ACTIVE', snakebiteTreatmentAvailable: true },
+    { first: 50 }
   );
 
   const nearbyHospitals = useMemo(() => {
-    const hospitals = (hospitalsData as any)?.nearbyHospitals || [];
+    const hospitals = (hospitalsData as any)?.hospitals?.edges?.map((edge: any) => edge.node) || [];
+    // Filter to only hospitals with valid coordinates
     return hospitals.filter((h: any) => hasValidCoords(h.latitude, h.longitude));
   }, [hospitalsData]);
 
