@@ -201,9 +201,9 @@ export function HospitalMapWithData({
     );
   }, [data, snakebiteTreatmentOnly]);
 
-  // Map to expected format
+  // Map to expected format and limit to specified number
   const hospitals = useMemo(() => {
-    return hospitalsFromQuery.map((h: any) => {
+    const mapped = hospitalsFromQuery.map((h: any) => {
       // Use backend-provided freshness or calculate if not available
       let freshness: 'FRESH' | 'STALE' | 'VERY_OLD' | 'NEVER' = h.antivenomVerificationFreshness || 'NEVER';
       
@@ -247,7 +247,21 @@ export function HospitalMapWithData({
         ) : undefined,
       };
     });
-  }, [hospitalsFromQuery, userLocation]);
+
+    // Sort by distance if user location is available, then limit to specified number
+    if (userLocation) {
+      return mapped
+        .sort((a, b) => {
+          if (a.distance === undefined) return 1;
+          if (b.distance === undefined) return -1;
+          return a.distance - b.distance;
+        })
+        .slice(0, limit);
+    }
+    
+    // If no user location, just limit to specified number
+    return mapped.slice(0, limit);
+  }, [hospitalsFromQuery, userLocation, limit]);
 
   const loading = isRequestingLocation || queryLoading;
 

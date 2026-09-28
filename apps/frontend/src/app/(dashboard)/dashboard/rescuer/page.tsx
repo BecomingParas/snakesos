@@ -134,10 +134,10 @@ export default function RescuerDashboard() {
       fetchPolicy: 'cache-and-network',
     });
 
-  // Fetch hospitals like admin dashboard does
+  // Fetch hospitals like admin dashboard does (limit to 50 nearest)
   const { data: hospitalsData } = useHospitals(
     { status: 'ACTIVE' },
-    { first: 100 }
+    { first: 50 }
   );
 
   // Helper function to check valid coordinates

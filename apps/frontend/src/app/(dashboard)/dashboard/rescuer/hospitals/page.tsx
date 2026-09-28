@@ -113,6 +113,7 @@ export default function RescuerHospitalsPage() {
             radiusKm={50}
             snakebiteTreatmentOnly
             zoom={11}
+            limit={50}
           />
         </div>
       </Card>
