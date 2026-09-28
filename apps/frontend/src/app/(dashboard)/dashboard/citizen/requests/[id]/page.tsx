@@ -353,10 +353,23 @@ export default function RequestTrackingPage({ params }: PageProps) {
           },
         });
         
+        // Wait a bit for the backend to finalize everything
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        
         // Refetch to get updated status
         await Promise.all([refetch(), refetchPaymentIntent()]);
         setProcessingPayment(false);
-        toast.success(`Demo payment completed via ${paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'}!`);
+        
+        // Check if payment actually succeeded
+        if (result.data?.startPayment?.paymentIntent?.status === 'SUCCEEDED') {
+          toast.success(`Demo payment completed via ${paymentMethod === 'esewa' ? 'eSewa' : 'Khalti'}!`);
+        } else {
+          toast.success('Payment processed, refreshing status...');
+          // Refetch again after a moment
+          setTimeout(async () => {
+            await Promise.all([refetch(), refetchPaymentIntent()]);
+          }, 1000);
+        }
         return;
       } catch (error) {
         toast.error(error instanceof Error ? error.message : 'Payment failed');
