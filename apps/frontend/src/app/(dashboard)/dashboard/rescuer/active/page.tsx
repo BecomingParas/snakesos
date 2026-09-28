@@ -75,13 +75,13 @@ export default function ActiveRescuePage() {
   const [showCompleteForm, setShowCompleteForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Fetch active rescue
+  // Fetch active rescue with longer polling interval to reduce reloads
   const { data, loading, refetch } = useMyAssignedRescuesQuery({
     variables: {
       filter: { statuses: ['ACCEPTED', 'IN_PROGRESS'] },
     },
     fetchPolicy: 'cache-and-network',
-    pollInterval: 5000, // Poll every 5 seconds to detect payment completion
+    pollInterval: 10000, // Poll every 10 seconds (reduced from 5s to minimize reloads)
   });
 
   // Progress mutation
@@ -325,7 +325,7 @@ export default function ActiveRescuePage() {
             {paymentLoading
               ? 'Checking citizen payment status...'
               : paymentComplete
-                ? 'Payment received. You can complete this rescue.'
+                ? `Payment received: ${paymentData?.assignedRescuePaymentIntent?.currency} ${Number(paymentData?.assignedRescuePaymentIntent?.amount || 0).toLocaleString()}. You can complete this rescue.`
                 : 'Waiting for citizen payment before completion.'}
           </div>
         </Card>
