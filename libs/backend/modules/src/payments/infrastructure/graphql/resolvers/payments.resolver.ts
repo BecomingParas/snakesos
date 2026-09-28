@@ -531,36 +531,24 @@ export const paymentsResolvers = {
           context.user.id,
         );
 
-        // Complete the rescue if this is a rescue payment
+        // DO NOT auto-complete the rescue
+        // The rescuer should manually complete it after seeing payment is done
+        // Just create a timeline event for payment completion
         if (updatedIntent!.rescueChargeId) {
           const rescueCharge = await prisma.rescueCharge.findUnique({
             where: { id: updatedIntent!.rescueChargeId },
             select: { rescueId: true },
           });
           if (rescueCharge) {
-            const rescue = await prisma.rescueRequest.findUnique({
-              where: { id: rescueCharge.rescueId },
-              select: { id: true, status: true },
+            await prisma.rescueTimeline.create({
+              data: {
+                rescueId: rescueCharge.rescueId,
+                event: 'PAYMENT_RECEIVED',
+                description: `Payment received via ${result.metadata.provider} (demo mode)`,
+                userId: context.user.id,
+                metadata: { demo: true, provider: result.metadata.provider, amount: updatedIntent!.amount.toString() },
+              },
             });
-            if (rescue && rescue.status !== 'COMPLETED') {
-              await prisma.rescueRequest.update({
-                where: { id: rescue.id },
-                data: {
-                  status: 'COMPLETED',
-                  completedAt: new Date(),
-                  outcome: 'RESCUED_RELOCATED',
-                },
-              });
-              await prisma.rescueTimeline.create({
-                data: {
-                  rescueId: rescue.id,
-                  event: 'RESCUE_COMPLETED',
-                  description: `Rescue completed after demo payment via ${result.metadata.provider}`,
-                  userId: context.user.id,
-                  metadata: { demo: true, provider: result.metadata.provider },
-                },
-              });
-            }
           }
         }
 
