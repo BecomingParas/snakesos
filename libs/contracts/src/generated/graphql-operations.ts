@@ -1337,6 +1337,23 @@ export type HospitalLocationInput = {
   radiusKm?: InputMaybe<Scalars['Float']['input']>;
 };
 
+export type HospitalRecommendation = {
+  __typename?: 'HospitalRecommendation';
+  address?: Maybe<Scalars['String']['output']>;
+  antivenomStatus: Scalars['String']['output'];
+  distance: Scalars['Float']['output'];
+  distanceFormatted: Scalars['String']['output'];
+  emergency24x7: Scalars['Boolean']['output'];
+  emergencyPhone?: Maybe<Scalars['String']['output']>;
+  estimatedTravelTime?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  latitude: Scalars['Float']['output'];
+  longitude: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
+  phone?: Maybe<Scalars['String']['output']>;
+  verificationFreshness?: Maybe<Scalars['String']['output']>;
+};
+
 export type HospitalReport = {
   __typename?: 'HospitalReport';
   createdAt: Scalars['DateTime']['output'];
@@ -3111,7 +3128,7 @@ export type Query = {
   myTrainings: TrainingConnection;
   /** Get my volunteer profile */
   myVolunteerProfile?: Maybe<Volunteer>;
-  nearbyHospitals: Array<NearestFacility>;
+  nearbyHospitals: Array<HospitalRecommendation>;
   /**
    * Find nearby rescuers within radius
    * Returns available or all rescuers based on filter
@@ -3124,7 +3141,7 @@ export type Query = {
    * Considers: distance, travel time, antivenom status, capabilities
    */
   nearbyTreatmentCenters: Array<TreatmentCenterMapPoint>;
-  nearestSnakebiteFacilities: Array<NearestFacility>;
+  nearestSnakebiteFacilities: Array<HospitalRecommendation>;
   nearestVerifiedAntivenomFacility?: Maybe<NearestFacility>;
   /** Get new contact messages count */
   newContactMessagesCount: Scalars['Int']['output'];
@@ -3149,7 +3166,7 @@ export type Query = {
    * Uses routing to calculate real travel time, not just distance
    */
   rankTreatmentCenters: Array<RankedTreatmentCenter>;
-  recommendedHospitals: Array<NearestFacility>;
+  recommendedHospitals: Array<HospitalRecommendation>;
   /** Get rescue analytics */
   rescueAnalytics: RescueAnalytics;
   /** Get rescue request by ID */

@@ -23,7 +23,6 @@ SNAKE_*.md
 
 # Development tools
 .github/
-.husky/
 .vscode/
 .claude/
 .windsurf/

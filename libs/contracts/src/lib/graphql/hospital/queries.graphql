@@ -23,7 +23,7 @@ extend type Query {
     radiusKm: Float
     antivenomRequired: Boolean
     limit: Int
-  ): [NearestFacility!]!
+  ): [HospitalRecommendation!]!
   
   # Find nearest snakebite facilities (alias for nearbyHospitals with treatment filter)
   nearestSnakebiteFacilities(
@@ -31,14 +31,14 @@ extend type Query {
     longitude: Float!
     radiusKm: Float
     limit: Int
-  ): [NearestFacility!]!
+  ): [HospitalRecommendation!]!
   
   # Get recommended hospitals based on emergency type
   recommendedHospitals(
     latitude: Float!
     longitude: Float!
     hasBite: Boolean
-  ): [NearestFacility!]!
+  ): [HospitalRecommendation!]!
   
   # Find nearest facility with verified antivenom
   nearestVerifiedAntivenomFacility(

@@ -156,12 +156,29 @@ type HospitalEdge {
   cursor: String!
 }
 
-# Nearest facilities response
+# Nearest facilities response (nested hospital object)
 type NearestFacility {
   hospital: Hospital!
   distance: Float!
   travelTimeEstimate: String!
   recommendationReason: String
+}
+
+# Hospital recommendation response (flat structure for nearby queries)
+type HospitalRecommendation {
+  id: ID!
+  name: String!
+  address: String
+  phone: String
+  emergencyPhone: String
+  latitude: Float!
+  longitude: Float!
+  distance: Float!
+  distanceFormatted: String!
+  antivenomStatus: String!
+  emergency24x7: Boolean!
+  estimatedTravelTime: String
+  verificationFreshness: String
 }
 
 # Hospital statistics

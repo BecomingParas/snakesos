@@ -1534,6 +1534,22 @@ input HospitalLocationInput {
   radiusKm: Float
 }
 
+type HospitalRecommendation {
+  address: String
+  antivenomStatus: String!
+  distance: Float!
+  distanceFormatted: String!
+  emergency24x7: Boolean!
+  emergencyPhone: String
+  estimatedTravelTime: String
+  id: ID!
+  latitude: Float!
+  longitude: Float!
+  name: String!
+  phone: String
+  verificationFreshness: String
+}
+
 type HospitalReport {
   createdAt: DateTime!
   description: String!
@@ -3560,7 +3576,7 @@ type Query {
     limit: Int
     longitude: Float!
     radiusKm: Float
-  ): [NearestFacility!]!
+  ): [HospitalRecommendation!]!
 
   """
   Find nearby rescuers within radius
@@ -3594,7 +3610,7 @@ type Query {
     limit: Int
     longitude: Float!
     radiusKm: Float
-  ): [NearestFacility!]!
+  ): [HospitalRecommendation!]!
   nearestVerifiedAntivenomFacility(
     latitude: Float!
     longitude: Float!
@@ -3662,7 +3678,7 @@ type Query {
     hasBite: Boolean
     latitude: Float!
     longitude: Float!
-  ): [NearestFacility!]!
+  ): [HospitalRecommendation!]!
 
   """
   Get rescue analytics

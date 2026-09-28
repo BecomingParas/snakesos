@@ -18,7 +18,7 @@ import {
   ActivityLog as ActivityLogModel,
   Training as TrainingModel,
 } from '@snake-rescue/database';
-import { GraphQLContext } from '../context/index';
+import { GraphQLContext } from '../context/index.js';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
@@ -1352,6 +1352,23 @@ export type HospitalLocationInput = {
   latitude: Scalars['Float']['input'];
   longitude: Scalars['Float']['input'];
   radiusKm?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type HospitalRecommendation = {
+  __typename?: 'HospitalRecommendation';
+  address?: Maybe<Scalars['String']['output']>;
+  antivenomStatus: Scalars['String']['output'];
+  distance: Scalars['Float']['output'];
+  distanceFormatted: Scalars['String']['output'];
+  emergency24x7: Scalars['Boolean']['output'];
+  emergencyPhone?: Maybe<Scalars['String']['output']>;
+  estimatedTravelTime?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  latitude: Scalars['Float']['output'];
+  longitude: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
+  phone?: Maybe<Scalars['String']['output']>;
+  verificationFreshness?: Maybe<Scalars['String']['output']>;
 };
 
 export type HospitalReport = {
@@ -3128,7 +3145,7 @@ export type Query = {
   myTrainings: TrainingConnection;
   /** Get my volunteer profile */
   myVolunteerProfile?: Maybe<Volunteer>;
-  nearbyHospitals: Array<NearestFacility>;
+  nearbyHospitals: Array<HospitalRecommendation>;
   /**
    * Find nearby rescuers within radius
    * Returns available or all rescuers based on filter
@@ -3141,7 +3158,7 @@ export type Query = {
    * Considers: distance, travel time, antivenom status, capabilities
    */
   nearbyTreatmentCenters: Array<TreatmentCenterMapPoint>;
-  nearestSnakebiteFacilities: Array<NearestFacility>;
+  nearestSnakebiteFacilities: Array<HospitalRecommendation>;
   nearestVerifiedAntivenomFacility?: Maybe<NearestFacility>;
   /** Get new contact messages count */
   newContactMessagesCount: Scalars['Int']['output'];
@@ -3166,7 +3183,7 @@ export type Query = {
    * Uses routing to calculate real travel time, not just distance
    */
   rankTreatmentCenters: Array<RankedTreatmentCenter>;
-  recommendedHospitals: Array<NearestFacility>;
+  recommendedHospitals: Array<HospitalRecommendation>;
   /** Get rescue analytics */
   rescueAnalytics: RescueAnalytics;
   /** Get rescue request by ID */
@@ -6113,6 +6130,7 @@ export type ResolversTypes = ResolversObject<{
   HospitalEdge: ResolverTypeWrapper<HospitalEdge>;
   HospitalFilterInput: HospitalFilterInput;
   HospitalLocationInput: HospitalLocationInput;
+  HospitalRecommendation: ResolverTypeWrapper<HospitalRecommendation>;
   HospitalReport: ResolverTypeWrapper<HospitalReport>;
   HospitalReportStatus: HospitalReportStatus;
   HospitalReportType: HospitalReportType;
@@ -6676,6 +6694,7 @@ export type ResolversParentTypes = ResolversObject<{
   HospitalEdge: HospitalEdge;
   HospitalFilterInput: HospitalFilterInput;
   HospitalLocationInput: HospitalLocationInput;
+  HospitalRecommendation: HospitalRecommendation;
   HospitalReport: HospitalReport;
   HospitalSortInput: HospitalSortInput;
   HospitalStatistics: HospitalStatistics;
@@ -8244,6 +8263,42 @@ export type HospitalEdgeResolvers<
 > = ResolversObject<{
   cursor?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   node?: Resolver<ResolversTypes['Hospital'], ParentType, ContextType>;
+}>;
+
+export type HospitalRecommendationResolvers<
+  ContextType = GraphQLContext,
+  ParentType extends
+    ResolversParentTypes['HospitalRecommendation'] = ResolversParentTypes['HospitalRecommendation'],
+> = ResolversObject<{
+  address?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  antivenomStatus?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  distance?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  distanceFormatted?: Resolver<
+    ResolversTypes['String'],
+    ParentType,
+    ContextType
+  >;
+  emergency24x7?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  emergencyPhone?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  estimatedTravelTime?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  latitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  longitude?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  verificationFreshness?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
 }>;
 
 export type HospitalReportResolvers<
@@ -10349,7 +10404,7 @@ export type QueryResolvers<
     ContextType
   >;
   nearbyHospitals?: Resolver<
-    Array<ResolversTypes['NearestFacility']>,
+    Array<ResolversTypes['HospitalRecommendation']>,
     ParentType,
     ContextType,
     RequireFields<QueryNearbyHospitalsArgs, 'latitude' | 'longitude'>
@@ -10376,7 +10431,7 @@ export type QueryResolvers<
     RequireFields<QueryNearbyTreatmentCentersArgs, 'latitude' | 'longitude'>
   >;
   nearestSnakebiteFacilities?: Resolver<
-    Array<ResolversTypes['NearestFacility']>,
+    Array<ResolversTypes['HospitalRecommendation']>,
     ParentType,
     ContextType,
     RequireFields<QueryNearestSnakebiteFacilitiesArgs, 'latitude' | 'longitude'>
@@ -10461,7 +10516,7 @@ export type QueryResolvers<
     RequireFields<QueryRankTreatmentCentersArgs, 'latitude' | 'longitude'>
   >;
   recommendedHospitals?: Resolver<
-    Array<ResolversTypes['NearestFacility']>,
+    Array<ResolversTypes['HospitalRecommendation']>,
     ParentType,
     ContextType,
     RequireFields<QueryRecommendedHospitalsArgs, 'latitude' | 'longitude'>
@@ -13057,6 +13112,7 @@ export type Resolvers<ContextType = GraphQLContext> = ResolversObject<{
   Hospital?: HospitalResolvers<ContextType>;
   HospitalConnection?: HospitalConnectionResolvers<ContextType>;
   HospitalEdge?: HospitalEdgeResolvers<ContextType>;
+  HospitalRecommendation?: HospitalRecommendationResolvers<ContextType>;
   HospitalReport?: HospitalReportResolvers<ContextType>;
   HospitalStatistics?: HospitalStatisticsResolvers<ContextType>;
   HospitalVerification?: HospitalVerificationResolvers<ContextType>;
