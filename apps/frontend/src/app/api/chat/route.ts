@@ -1,19 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const DEFAULT_GEMINI_MODEL = 'gemini-2.0-flash-exp';
-const GEMINI_MODEL_FALLBACKS = [
-  'gemini-2.0-flash-exp',
-];
+/**
+ * Gemini model configuration
+ * 
+ * IMPORTANT: Keep this in sync with libs/backend/modules/src/ai/infrastructure/gemini/gemini.config.ts
+ * 
+ * Current supported models (as of 2026):
+ * - Gemini 3.x: gemini-3.8-flash, gemini-3.7-flash, gemini-3.6-flash, gemini-3.5-flash
+ * - Gemini 2.5: gemini-2.5-flash, gemini-2.5-flash-lite, gemini-2.5-pro
+ * 
+ * Retired models (shut down):
+ * - All gemini-1.5-* variants
+ * - All gemini-2.0-* variants
+ * 
+ * @see https://ai.google.dev/gemini-api/docs/models
+ */
+const DEFAULT_GEMINI_MODEL = 'gemini-3.5-flash';
+const FALLBACK_GEMINI_MODEL = 'gemini-2.5-flash'; // Fallback if default fails
 const RETIRED_GEMINI_MODELS = new Set([
   'gemini-1.5-flash',
   'gemini-1.5-flash-8b',
   'gemini-1.5-flash-002',
   'gemini-1.5-pro',
   'gemini-2.0-flash',
-  'gemini-2.5-flash',
-  'gemini-3.6-flash',
-  'gemini-3.8-flash',
+  'gemini-2.0-flash-exp',
+  'gemini-2.0-flash-lite',
 ]);
 
 function getErrorMessage(error: unknown): string {
@@ -32,12 +44,16 @@ function resolveGeminiModelName(): string {
   const configured = (process.env.GEMINI_MODEL || '').trim();
 
   if (!configured) {
+    console.info(`ℹ️ No GEMINI_MODEL configured, using default: ${DEFAULT_GEMINI_MODEL}`);
     return DEFAULT_GEMINI_MODEL;
   }
 
   if (RETIRED_GEMINI_MODELS.has(configured)) {
     console.warn(
-      `⚠️ GEMINI_MODEL "${configured}" is retired or unsupported. Falling back to "${DEFAULT_GEMINI_MODEL}".`,
+      `⚠️ GEMINI_MODEL "${configured}" is retired/shut down. Falling back to "${DEFAULT_GEMINI_MODEL}".`
+    );
+    console.warn(
+      `   Update your GEMINI_MODEL environment variable. See https://ai.google.dev/gemini-api/docs/models`
     );
     return DEFAULT_GEMINI_MODEL;
   }
@@ -47,12 +63,10 @@ function resolveGeminiModelName(): string {
 
 function getGeminiModelCandidates(): string[] {
   const configured = resolveGeminiModelName();
-  const candidates = [
-    configured,
-    DEFAULT_GEMINI_MODEL,
-    ...GEMINI_MODEL_FALLBACKS,
-  ];
-  return [...new Set(candidates.filter(Boolean))];
+  // Try configured model first, then fallback
+  return [configured, FALLBACK_GEMINI_MODEL].filter(
+    (m, i, arr) => arr.indexOf(m) === i // dedupe
+  );
 }
 
 function isRetryableGeminiError(error: unknown): boolean {
@@ -227,7 +241,7 @@ export async function POST(request: NextRequest) {
 
     console.log(`[${requestId}] 🔧 Chat API - ENV CHECK:`, {
       hasGeminiKey: !!geminiKey,
-      model: process.env.GEMINI_MODEL || 'gemini-1.5-flash (default)',
+      model: process.env.GEMINI_MODEL || `${DEFAULT_GEMINI_MODEL} (default)`,
     });
 
     if (!geminiKey) {
