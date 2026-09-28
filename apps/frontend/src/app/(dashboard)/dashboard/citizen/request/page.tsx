@@ -417,12 +417,13 @@ export default function RequestRescuePage() {
             name: formData.name.trim(),
             phone,
             email: formData.email || undefined,
-            municipality: formData.municipality,
+            municipality: formData.municipality || 'GPS Location',
             ward:
               typeof wardValue === 'number' && Number.isFinite(wardValue)
                 ? wardValue
                 : undefined,
-            address: formData.address,
+            // If GPS is available but address is empty, use a default value
+            address: formData.address.trim() || (formData.lat !== null ? `GPS: ${formData.lat.toFixed(6)}, ${formData.lng?.toFixed(6)}` : ''),
             landmark: formData.landmark || undefined,
             lat: formData.lat ?? undefined,
             lng: formData.lng ?? undefined,
