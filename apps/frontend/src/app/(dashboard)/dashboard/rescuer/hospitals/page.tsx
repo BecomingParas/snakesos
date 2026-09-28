@@ -107,7 +107,7 @@ export default function RescuerHospitalsPage() {
             </div>
           </div>
         </div>
-        <div className="h-105 w-full sm:h-130">
+        <div className="h-[420px] w-full sm:h-[520px]">
           <HospitalMapWithData
             useUserLocation
             radiusKm={50}

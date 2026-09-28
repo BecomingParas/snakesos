@@ -170,30 +170,48 @@ export function HospitalMapWithData({
 
   // Map to expected format
   const hospitals = useMemo(() => {
-    return hospitalsFromQuery.map((h: any) => ({
-      id: h.id,
-      name: h.name,
-      latitude: h.latitude,
-      longitude: h.longitude,
-      address: h.address,
-      municipality: h.municipality,
-      district: h.district,
-      phone: h.phone,
-      emergencyPhone: h.emergencyPhone,
-      snakebiteTreatmentAvailable: h.snakebiteTreatmentAvailable || false,
-      antivenomStatus: h.antivenomStatus || 'UNKNOWN',
-      antivenomLastVerifiedAt: h.antivenomLastVerifiedAt,
-      antivenomVerificationFreshness: h.antivenomVerificationFreshness || 'NEVER',
-      emergencyAvailable: h.emergencyAvailable || false,
-      emergency24x7: h.emergency24x7 || false,
-      ventilatorAvailable: h.ventilatorAvailable || false,
-      distance: userLocation ? calculateDistance(
-        userLocation.latitude,
-        userLocation.longitude,
-        h.latitude,
-        h.longitude
-      ) : undefined,
-    }));
+    return hospitalsFromQuery.map((h: any) => {
+      // Calculate freshness from lastAntivenomVerification
+      let freshness: 'FRESH' | 'STALE' | 'VERY_OLD' | 'NEVER' = 'NEVER';
+      if (h.lastAntivenomVerification) {
+        const verifiedDate = new Date(h.lastAntivenomVerification);
+        const now = new Date();
+        const hoursDiff = (now.getTime() - verifiedDate.getTime()) / (1000 * 60 * 60);
+        
+        if (hoursDiff < 24) {
+          freshness = 'FRESH';
+        } else if (hoursDiff < 168) { // 7 days
+          freshness = 'STALE';
+        } else {
+          freshness = 'VERY_OLD';
+        }
+      }
+
+      return {
+        id: h.id,
+        name: h.name,
+        latitude: h.latitude,
+        longitude: h.longitude,
+        address: h.address,
+        municipality: h.municipality,
+        district: h.district,
+        phone: h.phone,
+        emergencyPhone: h.emergencyPhone,
+        snakebiteTreatmentAvailable: h.snakebiteTreatmentAvailable || false,
+        antivenomStatus: h.antivenomStatus || 'UNKNOWN',
+        antivenomLastVerifiedAt: h.lastAntivenomVerification,
+        antivenomVerificationFreshness: freshness,
+        emergencyAvailable: h.emergencyAvailable || false,
+        emergency24x7: h.emergency24x7 || false,
+        ventilatorAvailable: h.ventilatorAvailable || false,
+        distance: userLocation ? calculateDistance(
+          userLocation.latitude,
+          userLocation.longitude,
+          h.latitude,
+          h.longitude
+        ) : undefined,
+      };
+    });
   }, [hospitalsFromQuery, userLocation]);
 
   const loading = isRequestingLocation || queryLoading;

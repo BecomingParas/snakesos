@@ -42,7 +42,28 @@ import {
   useUpdateVolunteerProfileMutation,
 } from '@/lib/graphql/hooks/volunteer.hooks';
 import { useMyProfileQuery } from '@/lib/graphql/hooks/user.hooks';
+import { useHospitals } from '@/lib/graphql/hooks/hospital.hooks';
 import { toast } from 'sonner';
+import dynamic from 'next/dynamic';
+
+// Dynamic import for map component to avoid SSR issues
+const RescueMap = dynamic(
+  () =>
+    import('@/components/map/GoogleRescueMap').then((mod) => ({
+      default: mod.GoogleRescueMap,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-full flex items-center justify-center bg-muted rounded-lg">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading map...</p>
+        </div>
+      </div>
+    ),
+  },
+);
 
 /**
  * Rescuer Dashboard
@@ -113,6 +134,28 @@ export default function RescuerDashboard() {
       fetchPolicy: 'cache-and-network',
     });
 
+  // Fetch hospitals like admin dashboard does
+  const { data: hospitalsData } = useHospitals(
+    { status: 'ACTIVE' },
+    { first: 100 }
+  );
+
+  // Helper function to check valid coordinates
+  const hasValidCoords = (
+    lat: number | null | undefined,
+    lng: number | null | undefined,
+  ) => {
+    return (
+      typeof lat === 'number' &&
+      typeof lng === 'number' &&
+      !(lat === 0 && lng === 0) &&
+      lat >= -90 &&
+      lat <= 90 &&
+      lng >= -180 &&
+      lng <= 180
+    );
+  };
+
   // Accept rescue mutation
   const [acceptRescue] = useAcceptRescueMutation({
     onCompleted: () => {
@@ -133,6 +176,16 @@ export default function RescuerDashboard() {
   );
   const pendingAssignments = allRescues.filter((r) => r.status === 'ASSIGNED');
   const openAlertsCount = openAlertsData?.availableRescues?.totalCount || 0;
+
+  // Extract hospitals from GraphQL - filter to valid coordinates and snakebite treatment
+  const hospitals = (hospitalsData as any)?.hospitals?.edges?.map((edge: any) => edge.node) || [];
+  const nearbyHospitals = hospitals.filter((h: any) => 
+    hasValidCoords(h.latitude, h.longitude) &&
+    h.snakebiteTreatmentAvailable
+  );
+
+  // Prepare rescues for map (only those with valid coordinates)
+  const plottableRescues = allRescues.filter((r) => hasValidCoords(r.lat, r.lng));
 
   useEffect(() => {
     if (profile?.isAvailableNow !== undefined) {
@@ -362,6 +415,57 @@ export default function RescuerDashboard() {
             </div>
           </Card>
         </div>
+
+        {/* Live Map Section - Show assigned rescues and nearby hospitals */}
+        {isOperationallyEligible && (
+          <Card className="p-6">
+            <div className="mb-4">
+              <h2 className="text-xl font-semibold">Live Field Map</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Your assigned rescues and nearby hospitals with snakebite treatment
+              </p>
+            </div>
+            <div className="h-[450px] w-full rounded-lg overflow-hidden border border-border">
+              <RescueMap
+                rescues={plottableRescues.map((r) => ({
+                  ...r,
+                  lat: r.lat as number,
+                  lng: r.lng as number,
+                }))}
+                hospitals={nearbyHospitals.map((h: any) => ({
+                  id: h.id,
+                  name: h.name,
+                  latitude: h.latitude as number,
+                  longitude: h.longitude as number,
+                  address: h.address,
+                  municipality: h.municipality,
+                  district: h.district,
+                  phone: h.phone,
+                  emergencyPhone: h.emergencyPhone,
+                  antivenomStatus: h.antivenomStatus,
+                  emergency24x7: h.emergency24x7,
+                  snakebiteTreatmentAvailable: h.snakebiteTreatmentAvailable,
+                  ventilatorAvailable: h.ventilatorAvailable,
+                }))}
+                center={[27.7172, 85.324]}
+                zoom={11}
+                showRoutes={false}
+                showPriorityFilters={false}
+                enableRescuerView={true}
+              />
+            </div>
+            <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-primary" />
+                <span>{plottableRescues.length} Assigned Rescues</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-success" />
+                <span>{nearbyHospitals.length} Snakebite Treatment Centers</span>
+              </div>
+            </div>
+          </Card>
+        )}
 
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Active Rescue */}
