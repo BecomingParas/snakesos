@@ -257,11 +257,14 @@ export default function RequestRescuePage() {
       case 1:
         return formData.requestType !== null;
       case 2:
-        return !!(
-          formData.municipality &&
-          formData.address &&
-          (formData.lat !== null || formData.locationMethod === 'MANUAL')
-        );
+        // Location step: Either GPS coordinates OR manual address is required
+        // If GPS is available, address fields are optional
+        if (formData.lat !== null && formData.lng !== null) {
+          return true; // GPS provided, can proceed
+        }
+        // If no GPS, require manual address entry
+        return !!(formData.municipality && formData.address);
+
       case 3:
         // Snake details are optional at this step (backend GraphQL schema)
         return true;
