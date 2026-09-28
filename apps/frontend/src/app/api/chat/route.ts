@@ -1,21 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash';
+const DEFAULT_GEMINI_MODEL = 'gemini-2.0-flash-exp';
 const GEMINI_MODEL_FALLBACKS = [
-  'gemini-3.8-flash',
-  'gemini-2.5-flash',
-  'gemini-2.0-flash',
-  'gemini-1.5-flash',
+  'gemini-2.0-flash-exp',
+  'gemini-1.5-flash-002',
 ];
 const RETIRED_GEMINI_MODELS = new Set([
   'gemini-1.5-flash',
   'gemini-1.5-flash-8b',
   'gemini-1.5-pro',
-  'gemini-2.0-flash',
-  'gemini-2.0-flash-exp',
   'gemini-2.5-flash',
   'gemini-3.6-flash',
+  'gemini-3.8-flash',
 ]);
 
 function getErrorMessage(error: unknown): string {
