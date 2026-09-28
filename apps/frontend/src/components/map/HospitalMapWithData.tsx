@@ -143,7 +143,7 @@ export function HospitalMapWithData({
     }
   }, [useUserLocation]);
 
-  // Fetch all hospitals with snakebite treatment (like admin dashboard)
+  // Fetch all hospitals (without snakebite filter due to backend error)
   const {
     data,
     loading: queryLoading,
@@ -152,19 +152,21 @@ export function HospitalMapWithData({
   } = useHospitals(
     { 
       status: 'ACTIVE',
-      snakebiteTreatmentAvailable: snakebiteTreatmentOnly ? true : undefined,
+      // Note: snakebiteTreatmentAvailable filter causes backend error, filtering client-side instead
     },
     { first: limit || 100 }
   );
 
   const hospitalsFromQuery = useMemo(() => {
     const hospitalsData = (data as any)?.hospitals?.edges?.map((edge: any) => edge.node) || [];
+    // Filter client-side for snakebite treatment and valid coordinates
     return hospitalsData.filter((h: any) => 
       h.latitude !== null && 
       h.longitude !== null &&
-      !(h.latitude === 0 && h.longitude === 0)
+      !(h.latitude === 0 && h.longitude === 0) &&
+      (!snakebiteTreatmentOnly || h.snakebiteTreatmentAvailable)
     );
-  }, [data]);
+  }, [data, snakebiteTreatmentOnly]);
 
   // Map to expected format
   const hospitals = useMemo(() => {

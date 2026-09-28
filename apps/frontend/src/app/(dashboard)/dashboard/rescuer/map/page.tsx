@@ -84,15 +84,19 @@ export default function RescuerMapPage() {
     data?.myAssignedRescues?.edges?.map((edge) => edge.node) || [];
 
   // Fetch hospitals like admin dashboard does (no location required)
+  // Note: filtering client-side because snakebiteTreatmentAvailable filter causes backend errors
   const { data: hospitalsData } = useHospitals(
-    { status: 'ACTIVE', snakebiteTreatmentAvailable: true },
-    { first: 50 }
+    { status: 'ACTIVE' },
+    { first: 100 }
   );
 
   const nearbyHospitals = useMemo(() => {
     const hospitals = (hospitalsData as any)?.hospitals?.edges?.map((edge: any) => edge.node) || [];
-    // Filter to only hospitals with valid coordinates
-    return hospitals.filter((h: any) => hasValidCoords(h.latitude, h.longitude));
+    // Filter to only hospitals with valid coordinates and snakebite treatment
+    return hospitals.filter((h: any) => 
+      hasValidCoords(h.latitude, h.longitude) &&
+      h.snakebiteTreatmentAvailable
+    );
   }, [hospitalsData]);
 
   // Define rescue type for better type safety
