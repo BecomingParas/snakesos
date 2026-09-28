@@ -121,6 +121,9 @@ export class HospitalService {
     const where: Prisma.HospitalWhereInput = {
       status: 'ACTIVE',
       snakebiteTreatmentAvailable: true,
+      // Only include hospitals with valid coordinates
+      latitude: { not: null },
+      longitude: { not: null },
       ...(antivenomRequired && { antivenomStatus: 'AVAILABLE' }),
     };
 
@@ -141,14 +144,15 @@ export class HospitalService {
       },
     });
 
-    // Calculate distances and filter
+    // Calculate distances and filter - skip hospitals with invalid coordinates
     const hospitalsWithDistance = hospitals
+      .filter((hospital) => hospital.latitude !== null && hospital.longitude !== null)
       .map((hospital) => {
         const distance = this.calculateDistance(
           latitude,
           longitude,
-          hospital.latitude,
-          hospital.longitude
+          hospital.latitude!,
+          hospital.longitude!
         );
 
         return {
@@ -157,8 +161,8 @@ export class HospitalService {
           address: hospital.address,
           phone: hospital.phone ?? undefined,
           emergencyPhone: hospital.emergencyPhone ?? undefined,
-          latitude: hospital.latitude,
-          longitude: hospital.longitude,
+          latitude: hospital.latitude!,
+          longitude: hospital.longitude!,
           antivenomStatus: hospital.antivenomStatus,
           emergency24x7: hospital.emergency24x7,
           distance,
