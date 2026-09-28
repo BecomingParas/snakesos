@@ -726,7 +726,7 @@ extend type Mutation {
   """
   Delete rescue request (soft delete, admin only)
   """
-  deleteRescueRequest(id: ID!): SuccessResponse! @auth(requires: [SUPER_ADMIN])
+  deleteRescueRequest(id: ID!): SuccessResponse! @auth(requires: [SUPER_ADMIN, ADMIN])
 }
 
 type PublicRescueReportResult {

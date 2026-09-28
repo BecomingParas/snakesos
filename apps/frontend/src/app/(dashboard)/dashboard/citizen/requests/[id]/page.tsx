@@ -33,6 +33,7 @@ import {
   useStartPayment,
 } from '@/lib/graphql/hooks/finance.hooks';
 import { useRateVolunteerMutation } from '@/lib/graphql/hooks/volunteer.hooks';
+import { LeafletLocationMap } from '@/components/map/LeafletLocationMap';
 
 /**
  * Rescue Request Tracking Page
@@ -595,10 +596,21 @@ export default function RequestTrackingPage({ params }: PageProps) {
                 </div>
               </div>
 
-              {/* Map Placeholder */}
-              <div className="mt-4 h-48 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                <p className="text-gray-500">Map View</p>
-              </div>
+              {/* Map */}
+              {rescue.lat && rescue.lng ? (
+                <div className="mt-4">
+                  <LeafletLocationMap
+                    lat={rescue.lat}
+                    lng={rescue.lng}
+                    address={rescue.address}
+                    className="h-64"
+                  />
+                </div>
+              ) : (
+                <div className="mt-4 h-48 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                  <p className="text-gray-500">Location coordinates not available</p>
+                </div>
+              )}
             </Card>
           </div>
 
