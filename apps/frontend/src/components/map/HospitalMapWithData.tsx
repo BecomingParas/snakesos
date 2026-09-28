@@ -5,10 +5,10 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { GoogleHospitalMap } from './GoogleHospitalMap';
 import type { HospitalLocation } from './map.types';
-import { useNearbyHospitals } from '@/lib/graphql/hooks/hospital.hooks';
+import { useHospitals } from '@/lib/graphql/hooks/hospital.hooks';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, MapPin } from 'lucide-react';
@@ -76,6 +76,32 @@ function mapHospitalData(apiHospital: any): HospitalLocation {
   };
 }
 
+/**
+ * Calculate distance between two coordinates using Haversine formula
+ */
+function calculateDistance(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number {
+  const R = 6371; // Earth's radius in kilometers
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) *
+    Math.cos(lat2 * (Math.PI / 180)) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
+  
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c;
+  
+  return Math.round(distance * 100) / 100; // Round to 2 decimal places
+}
+
 export function HospitalMapWithData({
   useUserLocation = false,
   defaultCenter = [27.7172, 85.324], // Kathmandu
@@ -117,26 +143,56 @@ export function HospitalMapWithData({
     }
   }, [useUserLocation]);
 
-  // Fetch nearby hospitals from API
+  // Fetch all hospitals with snakebite treatment (like admin dashboard)
   const {
     data,
     loading: queryLoading,
     error: queryError,
     refetch,
-  } = useNearbyHospitals(
-    userLocation?.latitude || defaultCenter[0],
-    userLocation?.longitude || defaultCenter[1],
-    {
-      radiusKm,
-      antivenomRequired,
-      limit,
-      skip: isRequestingLocation || (!userLocation && useUserLocation), // Skip query while getting location OR if we need user location but don't have it yet
-    }
+  } = useHospitals(
+    { 
+      status: 'ACTIVE',
+      snakebiteTreatmentAvailable: snakebiteTreatmentOnly ? true : undefined,
+    },
+    { first: limit || 100 }
   );
 
-  const hospitals = (data as any)?.nearbyHospitals
-    ? (data as any).nearbyHospitals.map(mapHospitalData)
-    : [];
+  const hospitalsFromQuery = useMemo(() => {
+    const hospitalsData = (data as any)?.hospitals?.edges?.map((edge: any) => edge.node) || [];
+    return hospitalsData.filter((h: any) => 
+      h.latitude !== null && 
+      h.longitude !== null &&
+      !(h.latitude === 0 && h.longitude === 0)
+    );
+  }, [data]);
+
+  // Map to expected format
+  const hospitals = useMemo(() => {
+    return hospitalsFromQuery.map((h: any) => ({
+      id: h.id,
+      name: h.name,
+      latitude: h.latitude,
+      longitude: h.longitude,
+      address: h.address,
+      municipality: h.municipality,
+      district: h.district,
+      phone: h.phone,
+      emergencyPhone: h.emergencyPhone,
+      snakebiteTreatmentAvailable: h.snakebiteTreatmentAvailable || false,
+      antivenomStatus: h.antivenomStatus || 'UNKNOWN',
+      antivenomLastVerifiedAt: h.antivenomLastVerifiedAt,
+      antivenomVerificationFreshness: h.antivenomVerificationFreshness || 'NEVER',
+      emergencyAvailable: h.emergencyAvailable || false,
+      emergency24x7: h.emergency24x7 || false,
+      ventilatorAvailable: h.ventilatorAvailable || false,
+      distance: userLocation ? calculateDistance(
+        userLocation.latitude,
+        userLocation.longitude,
+        h.latitude,
+        h.longitude
+      ) : undefined,
+    }));
+  }, [hospitalsFromQuery, userLocation]);
 
   const loading = isRequestingLocation || queryLoading;
 
