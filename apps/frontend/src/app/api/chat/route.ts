@@ -7,17 +7,18 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
  * IMPORTANT: Keep this in sync with libs/backend/modules/src/ai/infrastructure/gemini/gemini.config.ts
  * 
  * Current supported models (as of 2026):
- * - Gemini 3.x: gemini-3.8-flash, gemini-3.7-flash, gemini-3.6-flash, gemini-3.5-flash
- * - Gemini 2.5: gemini-2.5-flash, gemini-2.5-flash-lite, gemini-2.5-pro
+ * - Gemini 3.8: gemini-3.8-flash (RECOMMENDED - latest, most intelligent Flash model)
+ * - Gemini 3.x: gemini-3.7-flash, gemini-3.6-flash, gemini-3.5-flash
  * 
- * Retired models (shut down):
- * - All gemini-1.5-* variants
- * - All gemini-2.0-* variants
+ * No longer available:
+ * - gemini-2.5-* (Google says: "no longer available to new users, use gemini-3.8-flash")
+ * - gemini-2.0-* (all variants shut down)
+ * - gemini-1.5-* (all variants shut down)
  * 
  * @see https://ai.google.dev/gemini-api/docs/models
  */
-const DEFAULT_GEMINI_MODEL = 'gemini-3.5-flash';
-const FALLBACK_GEMINI_MODEL = 'gemini-2.5-flash'; // Fallback if default fails
+const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash';
+const FALLBACK_GEMINI_MODEL = 'gemini-3.7-flash'; // Fallback if default fails
 const RETIRED_GEMINI_MODELS = new Set([
   'gemini-1.5-flash',
   'gemini-1.5-flash-8b',
@@ -26,6 +27,9 @@ const RETIRED_GEMINI_MODELS = new Set([
   'gemini-2.0-flash',
   'gemini-2.0-flash-exp',
   'gemini-2.0-flash-lite',
+  'gemini-2.5-flash',
+  'gemini-2.5-flash-lite',
+  'gemini-2.5-pro',
 ]);
 
 function getErrorMessage(error: unknown): string {

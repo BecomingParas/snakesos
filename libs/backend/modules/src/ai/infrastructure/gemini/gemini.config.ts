@@ -7,12 +7,13 @@
  * - Rotate key immediately if exposed
  *
  * CURRENT MODEL SUPPORT (as of 2026):
- * - Gemini 3.x series: gemini-3.8-flash, gemini-3.7-flash, gemini-3.6-flash, gemini-3.5-flash
- * - Gemini 2.5 series: gemini-2.5-flash, gemini-2.5-flash-lite, gemini-2.5-pro
+ * - Gemini 3.8: gemini-3.8-flash (RECOMMENDED - latest stable)
+ * - Gemini 3.x: gemini-3.7-flash, gemini-3.6-flash, gemini-3.5-flash
  *
- * RETIRED/SHUT DOWN MODELS:
- * - gemini-1.5-* (all variants shut down)
+ * NO LONGER AVAILABLE:
+ * - gemini-2.5-flash (shut down - Google recommends gemini-3.8-flash)
  * - gemini-2.0-* (all variants shut down)
+ * - gemini-1.5-* (all variants shut down)
  *
  * @see https://ai.google.dev/gemini-api/docs/models
  */
@@ -24,12 +25,12 @@ export interface GeminiConfig {
   maxRetries: number;
 }
 
-// Default to a stable, currently supported Flash model
-// gemini-3.5-flash: Stable model balancing speed and multimodal capabilities
-const DEFAULT_GEMINI_MODEL = 'gemini-3.5-flash';
+// Use the latest recommended model from Google
+// gemini-3.8-flash: Most intelligent Flash model for complex workflows
+const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash';
 
-// Models that are confirmed shut down or deprecated
-// Based on official Google Gemini API documentation
+// Models that are confirmed shut down or no longer available
+// Based on official Google Gemini API documentation and production errors
 const RETIRED_GEMINI_MODELS = new Set([
   // Gemini 1.5 series - All shut down
   'gemini-1.5-flash',
@@ -40,6 +41,10 @@ const RETIRED_GEMINI_MODELS = new Set([
   'gemini-2.0-flash',
   'gemini-2.0-flash-exp',
   'gemini-2.0-flash-lite',
+  // Gemini 2.5 series - No longer available to new users
+  'gemini-2.5-flash',
+  'gemini-2.5-flash-lite',
+  'gemini-2.5-pro',
   // Other historical models
   'gemini-exp-1206',
 ]);
@@ -53,7 +58,10 @@ function normalizeGeminiModel(model?: string): string {
 
   if (RETIRED_GEMINI_MODELS.has(sanitized)) {
     console.warn(
-      `⚠️ GEMINI_MODEL "${sanitized}" is retired or shut down. Falling back to "${DEFAULT_GEMINI_MODEL}".`,
+      `⚠️ GEMINI_MODEL "${sanitized}" is retired or no longer available. Falling back to "${DEFAULT_GEMINI_MODEL}".`,
+    );
+    console.warn(
+      `   Update GEMINI_MODEL to "gemini-3.8-flash" in your environment variables.`,
     );
     console.warn(
       `   See https://ai.google.dev/gemini-api/docs/models for current model list.`,

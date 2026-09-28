@@ -335,7 +335,7 @@ export default function IdentifyPage() {
         model:
           mlResult.meta?.model ??
           mlResult.identification?.model ??
-          'gemini-3.5-flash',
+          'gemini-3.8-flash',
         dangerAssessment,
         venomousDetected: data.species?.venomous ?? null,
         imageQuality: data.image_quality,
