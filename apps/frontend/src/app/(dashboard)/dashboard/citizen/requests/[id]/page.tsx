@@ -549,17 +549,24 @@ export default function RequestTrackingPage({ params }: PageProps) {
                   </div>
                 </div>
 
-                {rescue.snakeImages.length > 0 && (
+                {rescue.snakeImages && rescue.snakeImages.length > 0 && (
                   <div>
                     <p className="text-sm font-medium text-gray-500 mb-2">
-                      Photos
+                      Snake Photos
                     </p>
-                    <div className="flex gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {rescue.snakeImages.map((img, idx) => (
                         <div
                           key={idx}
-                          className="h-20 w-20 rounded bg-gray-200"
-                        />
+                          className="relative aspect-square rounded-lg overflow-hidden border border-border bg-muted"
+                        >
+                          <img
+                            src={img}
+                            alt={`Snake photo ${idx + 1}`}
+                            className="w-full h-full object-cover hover:scale-110 transition-transform duration-200 cursor-pointer"
+                            onClick={() => window.open(img, '_blank')}
+                          />
+                        </div>
                       ))}
                     </div>
                   </div>
