@@ -170,11 +170,14 @@ export function HospitalMapWithData({
 
   // Map to expected format
   const hospitals = useMemo(() => {
+    console.log('HospitalMapWithData: Mapping hospitals', hospitalsFromQuery.length);
     return hospitalsFromQuery.map((h: any) => {
-      // Calculate freshness from lastAntivenomVerification
-      let freshness: 'FRESH' | 'STALE' | 'VERY_OLD' | 'NEVER' = 'NEVER';
-      if (h.lastAntivenomVerification) {
-        const verifiedDate = new Date(h.lastAntivenomVerification);
+      // Use backend-provided freshness or calculate if not available
+      let freshness: 'FRESH' | 'STALE' | 'VERY_OLD' | 'NEVER' = h.antivenomVerificationFreshness || 'NEVER';
+      
+      // Fallback: Calculate from antivenomLastVerifiedAt if freshness not provided
+      if (!h.antivenomVerificationFreshness && h.antivenomLastVerifiedAt) {
+        const verifiedDate = new Date(h.antivenomLastVerifiedAt);
         const now = new Date();
         const hoursDiff = (now.getTime() - verifiedDate.getTime()) / (1000 * 60 * 60);
         
@@ -187,19 +190,19 @@ export function HospitalMapWithData({
         }
       }
 
-      return {
+      const hospital = {
         id: h.id,
         name: h.name,
         latitude: h.latitude,
         longitude: h.longitude,
-        address: h.address,
-        municipality: h.municipality,
-        district: h.district,
-        phone: h.phone,
-        emergencyPhone: h.emergencyPhone,
+        address: h.address || '',
+        municipality: h.municipality || '',
+        district: h.district || '',
+        phone: h.phone || '',
+        emergencyPhone: h.emergencyPhone || '',
         snakebiteTreatmentAvailable: h.snakebiteTreatmentAvailable || false,
         antivenomStatus: h.antivenomStatus || 'UNKNOWN',
-        antivenomLastVerifiedAt: h.lastAntivenomVerification,
+        antivenomLastVerifiedAt: h.antivenomLastVerifiedAt,
         antivenomVerificationFreshness: freshness,
         emergencyAvailable: h.emergencyAvailable || false,
         emergency24x7: h.emergency24x7 || false,
@@ -211,6 +214,9 @@ export function HospitalMapWithData({
           h.longitude
         ) : undefined,
       };
+      
+      console.log('Mapped hospital:', hospital.name, hospital.latitude, hospital.longitude);
+      return hospital;
     });
   }, [hospitalsFromQuery, userLocation]);
 

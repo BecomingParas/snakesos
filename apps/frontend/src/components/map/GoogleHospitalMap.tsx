@@ -119,9 +119,19 @@ export function GoogleHospitalMap({
   const [selectedHospital, setSelectedHospital] =
     useState<HospitalLocation | null>(null);
 
+  console.log('GoogleHospitalMap: Received hospitals', hospitals.length);
+  console.log('GoogleHospitalMap: First hospital', hospitals[0]);
+  console.log('GoogleHospitalMap: Filters', filters);
+
   const filteredHospitals = useMemo(
     () =>
       hospitals.filter((hospital) => {
+        console.log('Filtering hospital:', hospital.name, {
+          validCoords: isValidCoordinate(hospital.latitude, hospital.longitude),
+          snakebiteTreatment: hospital.snakebiteTreatmentAvailable,
+          filterSnakebiteTreatmentOnly: filters.snakebiteTreatmentOnly,
+        });
+        
         if (!isValidCoordinate(hospital.latitude, hospital.longitude)) return false;
         if (filters.snakebiteTreatmentOnly && !hospital.snakebiteTreatmentAvailable)
           return false;
@@ -137,6 +147,8 @@ export function GoogleHospitalMap({
       }),
     [hospitals, filters],
   );
+
+  console.log('GoogleHospitalMap: Filtered hospitals', filteredHospitals.length);
 
   const hospitalsWithDistance = useMemo(
     () =>
