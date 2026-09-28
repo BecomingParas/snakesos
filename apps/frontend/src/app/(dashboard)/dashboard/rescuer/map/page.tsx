@@ -353,7 +353,25 @@ export default function RescuerMapPage() {
               lat: r.lat as number,
               lng: r.lng as number,
             }))}
-            hospitals={showHospitals ? nearbyHospitals : []}
+            hospitals={
+              showHospitals
+                ? nearbyHospitals.map((h: any) => ({
+                    id: h.id,
+                    name: h.name,
+                    latitude: h.latitude as number,
+                    longitude: h.longitude as number,
+                    address: h.address,
+                    municipality: h.municipality,
+                    district: h.district,
+                    phone: h.phone,
+                    emergencyPhone: h.emergencyPhone,
+                    antivenomStatus: h.antivenomStatus,
+                    emergency24x7: h.emergency24x7,
+                    snakebiteTreatmentAvailable: h.snakebiteTreatmentAvailable,
+                    ventilatorAvailable: h.ventilatorAvailable,
+                  }))
+                : []
+            }
             center={mapCenter}
             zoom={mapZoom}
             userLocation={location}
