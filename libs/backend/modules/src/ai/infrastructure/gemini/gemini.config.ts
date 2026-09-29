@@ -20,6 +20,7 @@
 
 export interface GeminiConfig {
   apiKey: string;
+  apiKeys: string[]; // Multiple API keys for fallback
   model: string;
   timeout: number;
   maxRetries: number;
@@ -74,14 +75,23 @@ function normalizeGeminiModel(model?: string): string {
 
 /**
  * Load Gemini configuration from environment
+ * Supports multiple API keys separated by commas for automatic fallback
  * Fails fast if required variables are missing in production
  */
 export function loadGeminiConfig(): GeminiConfig {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKeyEnv = process.env.GEMINI_API_KEY || '';
   const model = normalizeGeminiModel(process.env.GEMINI_MODEL);
 
-  // Fail fast if API key is missing or placeholder
-  if (!apiKey || apiKey === 'your_gemini_api_key_here') {
+  // Parse multiple API keys (comma-separated)
+  const apiKeys = apiKeyEnv
+    .split(',')
+    .map(key => key.trim())
+    .filter(key => key && key !== 'your_gemini_api_key_here');
+
+  const apiKey = apiKeys[0] || '';
+
+  // Fail fast if no valid API keys
+  if (apiKeys.length === 0) {
     if (process.env.NODE_ENV === 'production') {
       throw new Error(
         'GEMINI_API_KEY is not configured. Get your key from https://aistudio.google.com/app/apikey',
@@ -90,10 +100,15 @@ export function loadGeminiConfig(): GeminiConfig {
     console.warn(
       '⚠️  GEMINI_API_KEY not configured. Gemini provider will not function.',
     );
+  } else if (apiKeys.length > 1) {
+    console.info(
+      `✅ Configured ${apiKeys.length} Gemini API keys for automatic fallback`,
+    );
   }
 
   return {
-    apiKey: apiKey || '',
+    apiKey,
+    apiKeys,
     model,
     timeout: 30000, // 30 seconds
     maxRetries: 2,

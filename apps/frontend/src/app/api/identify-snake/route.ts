@@ -432,17 +432,21 @@ export async function POST(request: NextRequest) {
     // ---- Step 5: Call Gemini with structured output ----
     console.log(`[${requestId}] 🔮 Calling Gemini API...`);
 
-    // Validate API key format
-    if (!geminiKey.startsWith('AIza') && !geminiKey.startsWith('AQ.')) {
-      console.error(
-        `[${requestId}] ❌ Invalid API key format. Must start with 'AIza' or 'AQ.'`,
-      );
+    // Parse multiple API keys from environment (comma-separated)
+    const apiKeyEnv = geminiKey || '';
+    const apiKeys = apiKeyEnv
+      .split(',')
+      .map(key => key.trim())
+      .filter(key => key && key !== 'your_gemini_api_key_here');
+
+    if (apiKeys.length === 0) {
+      console.error(`[${requestId}] ❌ No valid API keys found`);
       return NextResponse.json(
         {
           success: false,
           error: {
             code: 'AI_SERVICE_NOT_CONFIGURED',
-            message: 'AI API key format is invalid. Please contact support.',
+            message: 'AI service not configured. Please contact support.',
           },
           meta: { request_id: requestId },
         },
@@ -450,9 +454,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const genAI = new GoogleGenerativeAI(geminiKey);
-    const modelCandidates = getGeminiModelCandidates();
+    console.log(`[${requestId}] 🔑 Found ${apiKeys.length} API key(s) for fallback`);
 
+    const modelCandidates = getGeminiModelCandidates();
     console.log(
       `[${requestId}] 🧭 Gemini model candidates: ${modelCandidates.join(', ')}`,
     );
@@ -464,89 +468,119 @@ export async function POST(request: NextRequest) {
     let result: { response: { text: () => string } } | undefined;
     let lastError: unknown;
     let activeModelName = modelCandidates[0];
+    let activeApiKeyIndex = 0;
 
-    for (const modelName of modelCandidates) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-      try {
-        console.log(`[${requestId}] 📝 Trying model: ${modelName}`);
-        const model = genAI.getGenerativeModel({
-          model: modelName,
-          generationConfig: {
-            responseMimeType: 'application/json',
-            responseSchema: GEMINI_RESPONSE_SCHEMA,
-            temperature: 0.2,
-          },
-        });
-
-        result = await Promise.race([
-          model.generateContent([
-            { text: prompt },
-            {
-              inlineData: {
-                mimeType: file.type || 'image/jpeg',
-                data: base64Image,
-              },
-            },
-          ]),
-          new Promise<never>((_, reject) =>
-            setTimeout(
-              () => reject(new Error('Gemini request timeout')),
-              timeout,
-            ),
-          ),
-        ]);
-
-        activeModelName = modelName;
-        clearTimeout(timeoutId);
-        break;
-      } catch (geminiError: unknown) {
-        lastError = geminiError;
-        clearTimeout(timeoutId);
-
-        const errorName =
-          geminiError instanceof Error ? geminiError.name : 'GeminiError';
-        const errorMessage = getErrorMessage(geminiError);
-        const errorStatus =
-          geminiError &&
-          typeof geminiError === 'object' &&
-          'status' in geminiError
-            ? String((geminiError as { status?: unknown }).status)
-            : undefined;
-        const errorStatusText =
-          geminiError &&
-          typeof geminiError === 'object' &&
-          'statusText' in geminiError
-            ? String((geminiError as { statusText?: unknown }).statusText)
-            : undefined;
-        const errorDetails =
-          geminiError &&
-          typeof geminiError === 'object' &&
-          'details' in geminiError
-            ? (geminiError as { details?: unknown }).details
-            : undefined;
-
-        console.error(`[${requestId}] ❌ Gemini API Error for ${modelName}:`, {
-          name: errorName,
-          message: errorMessage,
-          status: errorStatus,
-          statusText: errorStatusText,
-          details: errorDetails,
-        });
-
-        if (!isRetryableGeminiError(geminiError)) {
-          break;
-        }
-
-        console.warn(
-          `[${requestId}] ⚠️ ${modelName} failed; trying next Gemini fallback model...`,
+    // Try each API key with each model
+    for (let keyIndex = 0; keyIndex < apiKeys.length; keyIndex++) {
+      const currentApiKey = apiKeys[keyIndex];
+      
+      // Validate API key format
+      if (!currentApiKey.startsWith('AIza') && !currentApiKey.startsWith('AQ.')) {
+        console.error(
+          `[${requestId}] ❌ Invalid API key format for key #${keyIndex + 1}. Skipping...`,
         );
+        continue;
+      }
+
+      console.log(`[${requestId}] 🔑 Trying API key #${keyIndex + 1}/${apiKeys.length}`);
+      const genAI = new GoogleGenerativeAI(currentApiKey);
+
+      for (const modelName of modelCandidates) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+        try {
+          console.log(`[${requestId}] 📝 Trying model: ${modelName} with API key #${keyIndex + 1}`);
+          const model = genAI.getGenerativeModel({
+            model: modelName,
+            generationConfig: {
+              responseMimeType: 'application/json',
+              responseSchema: GEMINI_RESPONSE_SCHEMA,
+              temperature: 0.2,
+            },
+          });
+
+          result = await Promise.race([
+            model.generateContent([
+              { text: prompt },
+              {
+                inlineData: {
+                  mimeType: file.type || 'image/jpeg',
+                  data: base64Image,
+                },
+              },
+            ]),
+            new Promise<never>((_, reject) =>
+              setTimeout(
+                () => reject(new Error('Gemini request timeout')),
+                timeout,
+              ),
+            ),
+          ]);
+
+          activeModelName = modelName;
+          activeApiKeyIndex = keyIndex;
+          clearTimeout(timeoutId);
+          console.log(
+            `[${requestId}] ✅ Success with API key #${keyIndex + 1}, model: ${modelName}`,
+          );
+          break; // Success - exit model loop
+        } catch (geminiError: unknown) {
+          lastError = geminiError;
+          clearTimeout(timeoutId);
+
+          const errorName =
+            geminiError instanceof Error ? geminiError.name : 'GeminiError';
+          const errorMessage = getErrorMessage(geminiError);
+          const errorStatus =
+            geminiError &&
+            typeof geminiError === 'object' &&
+            'status' in geminiError
+              ? String((geminiError as { status?: unknown }).status)
+              : undefined;
+
+          console.error(`[${requestId}] ❌ Gemini API Error for ${modelName} with key #${keyIndex + 1}:`, {
+            name: errorName,
+            message: errorMessage,
+            status: errorStatus,
+          });
+
+          // Check if error is API key related (auth failure)
+          const isAuthError = 
+            errorMessage.includes('API key') ||
+            errorMessage.includes('authentication') ||
+            errorMessage.includes('unauthorized') ||
+            errorMessage.includes('401') ||
+            errorMessage.includes('403') ||
+            errorMessage.includes('invalid') ||
+            errorMessage.includes('PERMISSION_DENIED');
+
+          if (isAuthError) {
+            console.warn(
+              `[${requestId}] ⚠️ API key #${keyIndex + 1} authentication failed, trying next key...`,
+            );
+            break; // Try next API key
+          }
+
+          if (!isRetryableGeminiError(geminiError)) {
+            // Non-retryable error, try next key
+            break;
+          }
+
+          console.warn(
+            `[${requestId}] ⚠️ ${modelName} failed with key #${keyIndex + 1}; trying next model...`,
+          );
+        }
+      }
+
+      if (result) {
+        break; // Success - exit API key loop
       }
     }
 
     if (!result) {
-      throw lastError || new Error('Gemini model fallback failed');
+      console.error(`[${requestId}] ❌ All API keys and models exhausted`);
+      throw lastError || new Error('All Gemini API keys and model fallbacks failed');
     }
 
     const responseText = result.response.text();
@@ -836,6 +870,8 @@ export async function POST(request: NextRequest) {
         model: activeModelName,
         processing_time_ms: processingTime,
         request_id: requestId,
+        api_key_used: activeApiKeyIndex + 1,
+        total_api_keys: apiKeys.length,
       },
     });
   } catch (error) {

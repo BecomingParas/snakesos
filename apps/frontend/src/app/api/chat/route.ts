@@ -333,7 +333,30 @@ export async function POST(request: NextRequest) {
     }
 
     // ---- Initialize Gemini ----
-    const genAI = new GoogleGenerativeAI(geminiKey);
+    // Parse multiple API keys from environment (comma-separated)
+    const apiKeyEnv = geminiKey || '';
+    const apiKeys = apiKeyEnv
+      .split(',')
+      .map(key => key.trim())
+      .filter(key => key && key !== 'your_gemini_api_key_here');
+
+    if (apiKeys.length === 0) {
+      console.error(`[${requestId}] ❌ No valid API keys found`);
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'AI_SERVICE_NOT_CONFIGURED',
+            message: 'AI service not configured. Please contact support.',
+          },
+          meta: { request_id: requestId },
+        },
+        { status: 503 },
+      );
+    }
+
+    console.log(`[${requestId}] 🔑 Found ${apiKeys.length} API key(s) for fallback`);
+
     const modelCandidates = getGeminiModelCandidates();
     const systemInstruction = `You are SnakeSOS AI, an intelligent assistant for the SnakeSOS snake rescue and safety platform in Nepal.
 
@@ -370,80 +393,123 @@ Lives may depend on your guidance.`;
     let result: { response: { text: () => string } } | undefined;
     let lastError: unknown;
     let activeModelName = modelCandidates[0];
+    let activeApiKeyIndex = 0;
 
-    for (const modelName of modelCandidates) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
+    // Try each API key with each model
+    for (let keyIndex = 0; keyIndex < apiKeys.length; keyIndex++) {
+      const currentApiKey = apiKeys[keyIndex];
+      
+      // Validate API key format
+      if (!currentApiKey.startsWith('AIza') && !currentApiKey.startsWith('AQ.')) {
+        console.error(
+          `[${requestId}] ❌ Invalid API key format for key #${keyIndex + 1}. Skipping...`,
+        );
+        continue;
+      }
 
-      try {
-        console.log(`[${requestId}] 🔮 Trying Gemini model: ${modelName}...`);
-        const model = genAI.getGenerativeModel({
-          model: modelName,
-          systemInstruction,
-          generationConfig: {
-            temperature: imageData ? 0.2 : 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 1024,
-          },
-        });
+      console.log(`[${requestId}] 🔑 Trying API key #${keyIndex + 1}/${apiKeys.length}`);
+      const genAI = new GoogleGenerativeAI(currentApiKey);
 
-        const history = imageData ? [] : [];
-        const chat = model.startChat({ history });
+      for (const modelName of modelCandidates) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-        const messageParts: Array<
-          { text: string } | { inlineData: { mimeType: string; data: string } }
-        > = [];
-        const enhancedMessage =
-          contextFromKnowledge && !imageData
-            ? `${message}${contextFromKnowledge}`
-            : message;
-        messageParts.push({ text: enhancedMessage });
-
-        if (imageData) {
-          messageParts.push({
-            inlineData: {
-              mimeType: imageData.mimeType,
-              data: imageData.data,
+        try {
+          console.log(`[${requestId}] 🔮 Trying Gemini model: ${modelName} with API key #${keyIndex + 1}...`);
+          const model = genAI.getGenerativeModel({
+            model: modelName,
+            systemInstruction,
+            generationConfig: {
+              temperature: imageData ? 0.2 : 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 1024,
             },
           });
-        }
 
-        result = (await Promise.race([
-          chat.sendMessage(messageParts),
-          new Promise((_, reject) =>
-            setTimeout(
-              () => reject(new Error('Gemini request timeout')),
-              timeout,
+          const history = imageData ? [] : [];
+          const chat = model.startChat({ history });
+
+          const messageParts: Array<
+            { text: string } | { inlineData: { mimeType: string; data: string } }
+          > = [];
+          const enhancedMessage =
+            contextFromKnowledge && !imageData
+              ? `${message}${contextFromKnowledge}`
+              : message;
+          messageParts.push({ text: enhancedMessage });
+
+          if (imageData) {
+            messageParts.push({
+              inlineData: {
+                mimeType: imageData.mimeType,
+                data: imageData.data,
+              },
+            });
+          }
+
+          result = (await Promise.race([
+            chat.sendMessage(messageParts),
+            new Promise((_, reject) =>
+              setTimeout(
+                () => reject(new Error('Gemini request timeout')),
+                timeout,
+              ),
             ),
-          ),
-        ])) as { response: { text: () => string } };
+          ])) as { response: { text: () => string } };
 
-        activeModelName = modelName;
-        clearTimeout(timeoutId);
-        break;
-      } catch (error) {
-        lastError = error;
-        clearTimeout(timeoutId);
+          activeModelName = modelName;
+          activeApiKeyIndex = keyIndex;
+          clearTimeout(timeoutId);
+          console.log(
+            `[${requestId}] ✅ Success with API key #${keyIndex + 1}, model: ${modelName}`,
+          );
+          break; // Success - exit model loop
+        } catch (error) {
+          lastError = error;
+          clearTimeout(timeoutId);
 
-        const errorMessage = getErrorMessage(error);
-        console.error(
-          `[${requestId}] ❌ Gemini model failed for ${modelName}:`,
-          errorMessage,
-        );
+          const errorMessage = getErrorMessage(error);
+          console.error(
+            `[${requestId}] ❌ Gemini model failed for ${modelName} with key #${keyIndex + 1}:`,
+            errorMessage,
+          );
 
-        if (!isRetryableGeminiError(error)) {
-          break;
+          // Check if error is API key related (auth failure)
+          const isAuthError = 
+            errorMessage.includes('API key') ||
+            errorMessage.includes('authentication') ||
+            errorMessage.includes('unauthorized') ||
+            errorMessage.includes('401') ||
+            errorMessage.includes('403') ||
+            errorMessage.includes('invalid') ||
+            errorMessage.includes('PERMISSION_DENIED');
+
+          if (isAuthError) {
+            console.warn(
+              `[${requestId}] ⚠️ API key #${keyIndex + 1} authentication failed, trying next key...`,
+            );
+            break; // Try next API key
+          }
+
+          if (!isRetryableGeminiError(error)) {
+            break;
+          }
+
+          console.warn(
+            `[${requestId}] ⚠️ ${modelName} failed with key #${keyIndex + 1}; trying next model...`,
+          );
         }
+      }
 
-        console.warn(
-          `[${requestId}] ⚠️ ${modelName} failed; trying next Gemini fallback model...`,
-        );
+      if (result) {
+        break; // Success - exit API key loop
       }
     }
 
     if (!result) {
-      throw lastError || new Error('Gemini model fallback failed');
+      console.error(`[${requestId}] ❌ All API keys and models exhausted`);
+      throw lastError || new Error('All Gemini API keys and model fallbacks failed');
     }
 
     const responseText = result.response.text();
