@@ -86,14 +86,22 @@ export function SignupForm() {
             setActiveTab('signin')
             router.push('/login')
           }}
-          className="flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all signin-button"
+          className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all ${
+            activeTab === 'signin'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
         >
           Sign in
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('signup')}
-          className="flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all signup-button"
+          className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all ${
+            activeTab === 'signup'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
         >
           Create account
         </button>

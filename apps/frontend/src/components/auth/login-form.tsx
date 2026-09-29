@@ -98,7 +98,7 @@ export function LoginForm() {
           onClick={() => setActiveTab('signin')}
           className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all ${
             activeTab === 'signin'
-              ? 'bg-primary text-primary-foreground shadow-sm'
+              ? 'bg-background text-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
@@ -112,7 +112,7 @@ export function LoginForm() {
           }}
           className={`flex-1 py-2.5 px-4 rounded-md text-sm font-medium transition-all ${
             activeTab === 'signup'
-              ? 'bg-primary text-primary-foreground shadow-sm'
+              ? 'bg-background text-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >

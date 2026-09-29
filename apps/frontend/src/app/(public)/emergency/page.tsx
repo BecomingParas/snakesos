@@ -375,13 +375,14 @@ export default function EmergencyPage() {
                   </div>
                 ))}
               </div>
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <div className="mt-6 flex flex-col gap-3 sm:grid sm:grid-cols-2">
                 <Button variant="outline" size="lg" onClick={() => setStep(2)}>
                   Back
                 </Button>
                 <Button
                   variant="destructive"
                   size="lg"
+                  className="whitespace-nowrap"
                   disabled={submitting}
                   onClick={async () => {
                     setSubmitError(null);
@@ -438,7 +439,7 @@ export default function EmergencyPage() {
                   }}
                 >
                   <Send className="h-4 w-4" />{' '}
-                  {submitting ? 'Submitting...' : 'Submit Emergency Request'}
+                  {submitting ? 'Submitting...' : 'Submit Request'}
                 </Button>
               </div>
               {submitError && (
