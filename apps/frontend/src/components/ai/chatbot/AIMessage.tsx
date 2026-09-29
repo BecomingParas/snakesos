@@ -22,14 +22,14 @@ export function AIMessage({ message }: AIMessageProps) {
         transition={{ type: 'spring', stiffness: 500, damping: 25 }}
         className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
           isUser
-            ? 'bg-gradient-to-br from-blue-500 to-purple-600'
-            : 'bg-gradient-to-br from-emerald-500 to-teal-600'
+            ? 'bg-gradient-to-br from-primary to-primary/80'
+            : 'bg-gradient-to-br from-primary to-primary/80'
         }`}
       >
         {isUser ? (
-          <User className="w-4 h-4 text-white" />
+          <User className="w-4 h-4 text-primary-foreground" />
         ) : (
-          <Sparkles className="w-4 h-4 text-white" />
+          <Sparkles className="w-4 h-4 text-primary-foreground" />
         )}
       </motion.div>
 
@@ -41,13 +41,13 @@ export function AIMessage({ message }: AIMessageProps) {
           transition={{ delay: 0.1 }}
           className={`rounded-2xl px-4 py-3 ${
             isUser
-              ? 'bg-gradient-to-br from-blue-500/20 to-purple-600/20 backdrop-blur-sm border border-blue-500/30'
-              : 'bg-white/5 backdrop-blur-sm border border-white/10'
+              ? 'bg-primary/20 backdrop-blur-sm border border-primary/30'
+              : 'bg-muted/50 backdrop-blur-sm border border-border'
           }`}
         >
           {/* Text content */}
           {message.content && (
-            <div className="text-sm text-white/90 leading-relaxed whitespace-pre-wrap break-words">
+            <div className="text-sm text-foreground leading-relaxed whitespace-pre-wrap break-words">
               {message.content}
             </div>
           )}
@@ -67,14 +67,14 @@ export function AIMessage({ message }: AIMessageProps) {
               <img
                 src={message.imageUrl}
                 alt="Uploaded image"
-                className="rounded-lg max-w-full h-auto border border-white/10"
+                className="rounded-lg max-w-full h-auto border border-border"
               />
             </div>
           )}
 
           {/* Timestamp */}
           {message.timestamp && (
-            <div className={`text-[10px] mt-2 ${isUser ? 'text-right' : 'text-left'} text-white/40`}>
+            <div className={`text-[10px] mt-2 ${isUser ? 'text-right' : 'text-left'} text-muted-foreground`}>
               {new Date(message.timestamp).toLocaleTimeString([], {
                 hour: '2-digit',
                 minute: '2-digit',

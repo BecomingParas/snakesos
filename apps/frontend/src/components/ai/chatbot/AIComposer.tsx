@@ -74,7 +74,7 @@ export function AIComposer({
   const canSend = (message.trim() || imageFile) && !disabled;
 
   return (
-    <div className="border-t border-white/10 bg-black/20 backdrop-blur-md p-4">
+    <div className="border-t border-border bg-muted/30 backdrop-blur-md p-4">
       {/* Image Preview */}
       <AnimatePresence>
         {imagePreview && (
@@ -87,11 +87,11 @@ export function AIComposer({
             <img
               src={imagePreview}
               alt="Preview"
-              className="h-20 rounded-lg border border-white/20"
+              className="h-20 rounded-lg border border-border"
             />
             <button
               onClick={removeImage}
-              className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white hover:bg-red-600 transition-colors"
+              className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-destructive flex items-center justify-center text-destructive-foreground hover:bg-destructive/90 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -112,10 +112,10 @@ export function AIComposer({
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled}
-          className="flex-shrink-0 w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-shrink-0 w-10 h-10 rounded-xl bg-background/50 hover:bg-muted border border-border flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           title="Attach image"
         >
-          <ImageIcon className="w-5 h-5 text-white/60" />
+          <ImageIcon className="w-5 h-5 text-muted-foreground" />
         </button>
 
         {/* Textarea */}
@@ -128,7 +128,7 @@ export function AIComposer({
             placeholder={placeholder}
             disabled={disabled}
             rows={1}
-            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             style={{
               maxHeight: '120px',
               minHeight: '44px',
@@ -144,8 +144,8 @@ export function AIComposer({
           whileTap={canSend ? { scale: 0.95 } : {}}
           className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
             canSend
-              ? 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white'
-              : 'bg-white/5 border border-white/10 text-white/30 cursor-not-allowed'
+              ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
+              : 'bg-muted border border-border text-muted-foreground cursor-not-allowed'
           }`}
           title="Send message"
         >
@@ -154,7 +154,7 @@ export function AIComposer({
       </div>
 
       {/* Hint */}
-      <div className="mt-2 text-[10px] text-white/30 text-center">
+      <div className="mt-2 text-[10px] text-muted-foreground text-center">
         Press Enter to send • Shift+Enter for new line
       </div>
     </div>

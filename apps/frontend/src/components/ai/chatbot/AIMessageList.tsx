@@ -26,10 +26,6 @@ export function AIMessageList({ messages, isLoading = false }: AIMessageListProp
     <div
       ref={scrollContainerRef}
       className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 space-y-6 scroll-smooth"
-      style={{
-        scrollbarWidth: 'thin',
-        scrollbarColor: 'rgba(255, 255, 255, 0.2) transparent',
-      }}
     >
       <AnimatePresence mode="popLayout" initial={false}>
         {messages.map((message, index) => (

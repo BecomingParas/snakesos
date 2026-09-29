@@ -60,10 +60,10 @@ export function AIChatWindow({ children, onClose }: AIChatWindowProps) {
         className={`
           fixed z-[101]
           ${isMobile ? 'inset-0' : 'bottom-6 right-6 w-[400px] h-[600px]'}
-          bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95
+          bg-gradient-to-br from-background via-muted/50 to-background
           backdrop-blur-xl
-          border border-white/10
-          shadow-2xl shadow-black/50
+          border border-border
+          shadow-2xl
           ${isMobile ? 'rounded-none' : 'rounded-2xl'}
           flex flex-col
           overflow-hidden
