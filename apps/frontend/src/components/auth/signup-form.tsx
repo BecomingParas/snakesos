@@ -216,7 +216,7 @@ export function SignupForm() {
           className="w-full h-9 font-medium text-sm"
           onClick={() => {
             // Redirect to Google OAuth via Better Auth
-            window.location.href = '/api/auth/signin/google'
+            window.location.href = '/api/auth/sign-in/social/google'
           }}
         >
           <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
